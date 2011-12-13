@@ -1,5 +1,8 @@
 <?php
 
+// Example connection_library.php file.  Change paths in execstring, targethost, targetdatabase, username, 
+// and password to fit local configuration.
+
 $debug = false;
 
 $execstring = '/var/www/phpexec/java -jar /var/www/phpinclude/Encryption.jar decrypt ';

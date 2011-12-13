@@ -1042,6 +1042,8 @@ function ingestCollectionObject() {
       $df.= "specimenremarks=[$specimenremarks] ";
    }
 
+   $link = "";
+   
    if (!$fail) {
       //  persist
       $adds = "";
@@ -1266,6 +1268,7 @@ function ingestCollectionObject() {
             $statement->bind_param('iiiis',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks);
             if ($statement->execute()) {
                $collectionobjectid = $statement->insert_id;
+               $link = "<a href='http://kiki.huh.harvard.edu/databases/specimen_search.php?barcode=$barcode'>$herbariumacronym $barcode</a>";
                $adds .= "collobj=[$collectionobjectid]";
             } else {
                $fail = true;
@@ -1707,7 +1710,7 @@ function ingestCollectionObject() {
       if ($debug) { 
          $feedback .= " $adds";
       }
-      $feedback = "<div style='background-color: #B3FF9F;'>OK $feedback $df</div>";
+      $feedback = "<div style='background-color: #B3FF9F;'>OK $link $feedback $df</div>";
    }
    return $feedback;
 }  // end ingestCollectionObject

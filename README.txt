@@ -6,6 +6,8 @@ create table huh_webuser (username varchar(255) not null primary key, sessionsec
 
 create index agentvartype on agentvariant(vartype);
 
-(2) connection_library.php off the web tree in phpincludes
+(2) connection_library.php off the web tree in phpincludes.  An example connection_library.php file
+is included.
 
-(3) /usr/bin/java -jar /var/www/phpincludes/Encryption.jar
+(3) /usr/bin/java -jar /var/www/phpincludes/Encryption.jar  With path to java and path to Encryption.jar
+configured within connection_library.php.
