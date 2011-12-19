@@ -66,7 +66,7 @@ if ($connection && $authenticated) {
         	@$collectors= substr(preg_replace('/[^0-9]/','',$_GET['collectors']),0,huh_agentvariant::NAME_SIZE);
         	@$etal= substr(preg_replace('/[^A-Za-z& \.0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
         	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-        	@$verbatimdate= substr(preg_replace('/[^A-Za-z\- \/\.\,0-9\[\]]/','',$_GET['verbatimdate']),0,huh_collectingevent::VERBATIMDATE_SIZE);
+        	@$verbatimdate= substr(preg_replace('/[^A-Za-z\- \/\.\,0-9\[\]\']/','',$_GET['verbatimdate']),0,huh_collectingevent::VERBATIMDATE_SIZE);
         	@$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_GET['datecollected']),0,40);  // allow larger than date to parse ISO date range
         	@$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_GET['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
         	@$barcode= substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
