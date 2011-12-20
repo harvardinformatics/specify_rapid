@@ -62,6 +62,8 @@ if ($connection && $authenticated) {
          $feedback = "";
          
             $todo = 100;
+            $truncation = false;
+            $truncated = "";
 
         	@$collectors= substr(preg_replace('/[^0-9]/','',$_GET['collectors']),0,huh_agentvariant::NAME_SIZE);
         	@$etal= substr(preg_replace('/[^A-Za-z& \.0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
@@ -108,8 +110,52 @@ if ($connection && $authenticated) {
         	@$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\&\']/','',$_GET['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
             
-
         	//@$= substr(preg_replace('/[^0-9]/','',$_GET['']),0,huh_);
+
+        	if ($collectors!=$_GET['collectors'])  { $truncation = true; $truncated .= "Collector: [$collectors] "; }  
+        	if ($etal!=$_GET['etal']) { $truncation = true; $truncated .= "etal : [$etal] "; }
+        	if ($fieldnumber!=$_GET['fieldnumber']) { $truncation = true; $truncated .= "fieldnumber : [$fieldnumber] "; }
+        	if ($verbatimdate!=$_GET['verbatimdate']) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
+        	if ($datecollected!=$_GET['datecollected']) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
+        	if ($herbariumacronym!=$_GET['herbariumacronym']) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
+        	if ($barcode!=$_GET['barcode']) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
+        	if ($filedundername!=$_GET['filedundername']) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
+        	if ($fiidentificationqualifier!=$_GET['fiidentificationqualifier']) { $truncation = true; $truncated .= "fiidentificationqualifier : [$fiidentificationqualifier] "; }
+        	if ($currentdetermination!=$_GET['currentdetermination']) { $truncation = true; $truncated .= "currentdetermination : [$currentdetermination] "; }
+        	if ($identificationqualifier!=$_GET['identificationqualifier']) { $truncation = true; $truncated .= "identificationqualifier : [$identificationqualifier] "; }
+        	if ($identifiedby!=$_GET['identifiedby']) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
+        	if ($dateidentified!=$_GET['dateidentified']) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
+        	if ($highergeography!=$_GET['highergeography']) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
+        	if ($specificlocality!=$_GET['specificlocality']) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; } 
+        	if ($prepmethod!=$_GET['prepmethod']) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; } 
+        	if ($format!=$_GET['format']) { $truncation = true; $truncated .= "format : [$format] "; } 
+
+        	if ($verbatimlat!=$_GET['verbatimlat']) { $truncation = true; $truncated .= "verbatimlat : [$verbatimlat] "; }
+        	if ($verbatimlong!=$_GET['verbatimlong']) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
+        	if ($decimallat!=$_GET['decimallat']) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
+        	if ($decimallong!=$_GET['decimallong']) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
+        	if ($datum!=$_GET['datum']) { $truncation = true; $truncated .= "datum : [$datum] "; }
+        	if ($coordinateuncertanty!=$_GET['coordinateuncertanty']) { $truncation = true; $truncated .= "coordinateuncertanty : [$coordinateuncertanty] "; }
+        	if ($georeferencedby!=$_GET['georeferencedby']) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
+        	if ($georeferencedate!=$_GET['georeferencedate']) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
+        	if ($georeferencesource!=$_GET['georeferencesource']) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
+        	if ($utmzone!=$_GET['utmzone']) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
+        	if ($utmeasting!=$_GET['utmeasting']) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
+        	if ($utmnorthing!=$_GET['utmnorthing']) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
+
+        	if ($typestatus!=$_GET['typestatus']) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
+        	if ($basionym!=$_GET['basionym']) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
+        	if ($publication!=$_GET['publication']) { $truncation = true; $truncated .= "publication : [$publication] "; }
+        	if ($page!=$_GET['page']) { $truncation = true; $truncated .= "page : [$page] "; }
+        	if ($datepublished!=$_GET['datepublished']) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
+        	if ($isfragment!=$_GET['isfragment']) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
+        	if ($habitat!=$_GET['habitat']) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
+          	if ($phenology!=$_GET['phenology']) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
+        	if ($verbatimelevation!=$_GET['verbatimelevation']) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
+        	if ($minelevation!=$_GET['minelevation']) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
+        	if ($maxelevation!=$_GET['maxelevation']) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
+        	if ($specimenremarks!=$_GET['specimenremarks']) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
+        	if ($container!=$_GET['container']) { $truncation = true; $truncated .= "container : [$container] "; }
 
         	$feedback = ingestCollectionObject();
 

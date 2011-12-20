@@ -810,15 +810,21 @@ class huh_geography_custom extends huh_geography {
 
 function ingestCollectionObject() {
    global $connection, $debug,
+   $truncation, $truncated, 
    $collectors,$etal,$fieldnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,
    $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing;
-
+ 
    $fail = false;
    $feedback = "";
+
+   if ($truncation) { 
+     $fail = true;
+     $feedback = "Data truncation: $truncated";
+   }
 
    // Test for required elements:
    if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectors=='' ) {
