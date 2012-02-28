@@ -213,9 +213,9 @@ function form() {
    
    if ($defaultcountry=='') { 
        $defaultcountry = "United States of America";
-   }
-   if ($defaultprimary=='') { 
-       $defaultprimary = "California";
+       if ($defaultprimary=='') { 
+           $defaultprimary = "California";
+       }
    }
    
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
