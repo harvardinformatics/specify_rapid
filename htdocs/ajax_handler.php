@@ -107,7 +107,7 @@ if ($connection && $authenticated) {
         	@$verbatimelevation= substr(preg_replace('/[^A-Za-z0-9°\-\.\, \[\]\(\)\? \&\']/','',$_GET['verbatimelevation']),0,huh_locality::VERBATIMELEVATION_SIZE);
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
-        	@$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\&\']/','',$_GET['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
+        	@$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\&\'\]\[]/','',$_GET['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
             
         	//@$= substr(preg_replace('/[^0-9]/','',$_GET['']),0,huh_);
