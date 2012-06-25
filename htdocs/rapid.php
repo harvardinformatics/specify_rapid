@@ -29,7 +29,7 @@ if ($require_authentication) {
       $display = "logindialog";
       if (@$_POST['password']!="" && $_POST['username']!="") {
          // authenticate
-         $password = substr(preg_replace("/[^A-Za-z0-9!#$%*+\/=?^_{|}~\-@.]*/","",$_POST['password']),0,255);
+         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",$_POST['password']),0,255);
          $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_POST['username']),0,255);
          $user = new User($username,$password);
          if ($user->authenticate()){
