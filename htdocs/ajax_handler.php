@@ -56,7 +56,9 @@ if ($connection && $authenticated) {
    @$action = substr(preg_replace('/[^a-z]/','',$_GET['druid_action']),0,40);
 
    if ($debug) { echo "[$action]"; } 
-   
+
+   $alpha = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
+
    switch ($action) {
       case 'rapidaddprocessor':
          $feedback = "";
@@ -79,7 +81,7 @@ if ($connection && $authenticated) {
         	@$identifiedby= substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
         	@$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
         	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
-        	@$specificlocality = substr(preg_replace('/[^A-Za-z[:alpha:]0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['specificlocality']),0,huh_locality::LOCALITYNAME_SIZE);
+        	@$specificlocality = substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/u','',$_GET['specificlocality']),0,huh_locality::LOCALITYNAME_SIZE);
         	@$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_GET['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
         	@$format = substr(preg_replace('/[^A-Za-z]/','',$_GET['format']),0,huh_preptype::NAME_SIZE);
 
