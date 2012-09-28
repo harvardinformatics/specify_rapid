@@ -629,6 +629,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              $this->error = 'Error: No search terms provided';
        } else {
           $statement = $connection->prepare($sql);
+          if ($statement) { 
           $vars = Array();
           $vars[] = $types;
           $i = 0;
@@ -637,10 +638,10 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
                $$varname = $value;    // using that variable name store the value 
                $vars[] = &$$varname;  // add a reference to the variable to the array
                $i++;
-           }
-           //$vars[] contains $types followed by references to variables holding each value in $searchTermArray.
-          call_user_func_array(array($statement,'bind_param'),$vars);
-          //$statement->bind_param($types,$names);
+          }
+          //$vars[] contains $types followed by references to variables holding each value in $searchTermArray.
+          call_user_func_array(array($statement, 'bind_param'),$vars);
+
           $statement->execute();
           $statement->bind_result($id);
           $ids = array();
@@ -653,6 +654,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
               $obj->load($ids[$i]);
               $returnvalue[] = $obj;
               $result=true;
+          }
           }
           if ($result===false) { $this->error = mysqli_error($connection); }
        }

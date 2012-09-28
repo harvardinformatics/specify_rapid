@@ -236,6 +236,8 @@ class User {
          }
          $returnvalue .= ' Last login: '.$this->date_last_login . ' ';
          $returnvalue .= '<a href="'.$caller.'?display=logout">Logout</a>';
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=upload">Upload a spreadsheet</a>'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>'; } 
       }
       return $returnvalue;
    }
@@ -341,6 +343,10 @@ class Page {
      <script src='/dojo/1.6.1/dojo/dojo.js' djConfig='parseOnLoad: true'></script>
        <link rel='stylesheet' type='text/css' href='/dojo/1.6.1/dijit/themes/claro/claro.css' />
        <link rel='stylesheet' type='text/css' href='/dojo/1.6.1/dojo/resources/dojo.css' />
+        <style type='text/css'>
+            @import '/dojo/1.6.1/dojox/grid/enhanced/resources/claro/EnhancedGrid.css';
+            @import '/dojo/1.6.1/dojox/grid/enhanced/resources/claro/Common.css';
+        </style>
      <script type='text/javascript'>
                 dojo.require('dijit.layout.AccordionContainer');
                 dojo.require('dojo.data.ItemFileReadStore');
@@ -353,6 +359,7 @@ class Page {
                 dojo.require('dijit.layout.BorderContainer');
                 dojo.require('dijit.form.TextBox');
                 dojo.require('dijit.Dialog');
+                dojo.require('dijit.ProgressBar');
                 dojo.require('custom.ComboBoxReadStore');
                 dojo.require('custom.LoadingMsgFilteringSelect');
      </script>
