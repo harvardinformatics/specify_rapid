@@ -235,9 +235,12 @@ class User {
             $returnvalue .= '<em>'.$this->about.'</em>';
          }
          $returnvalue .= ' Last login: '.$this->date_last_login . ' ';
-         $returnvalue .= '<a href="'.$caller.'?display=logout">Logout</a>';
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=upload">Upload a spreadsheet</a>'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>'; } 
+         $returnvalue .= '<a href="'.$caller.'?display=logout">Logout</a>&nbsp;';
+         // PJM putting in place, but not displaying yet, link to upload spreadsheet.
+         // TODO: Remove coment when ready for production use
+         // if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=upload">Upload a spreadsheet</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH Defaults</a>&nbsp;'; } 
       }
       return $returnvalue;
    }

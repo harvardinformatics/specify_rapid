@@ -230,15 +230,27 @@ function form() {
         </script>
    ';
    
-   $defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
-   $defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
+   $cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
+   if ($cleardefaultgeography==1) {
+       $defaultcountry = "";
+       $defaultprimary = "";
+   } else { 
+        $defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
+        $defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
    
-   if ($defaultcountry=='') { 
-       $defaultcountry = "United States of America";
-       if ($defaultprimary=='') { 
-           $defaultprimary = "California";
-       }
+        if ($defaultcountry=='') { 
+            $defaultcountry = "United States of America";
+            if ($defaultprimary=='') { 
+                $defaultprimary = "California";
+            }
+        }
    }
+   $defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
+   if ($defaultherbarium=='') { $defaultherbarium = "GH"; }
+   $defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
+   if ($defaultformat=='') { $defaultformat = "Sheet"; }
+   $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
+   if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; } 
    
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
    //echo "<div dojoType='dijit.form.Form' id='rapidForm' jsId='rapidForm' encType='multipart/form-data' action='ajax_handler.php' method='GET'>";
@@ -252,7 +264,7 @@ function form() {
    field ("fieldnumber","Collector number");
    field ("verbatimdate","Verb. date coll.");
    field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18');  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDate
-   selectAcronym();
+   selectAcronym("herbariumacronym",$defaultherbarium);
    field ("barcode","Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    selectCurrentID("filedundername","Filed under name",'true');   // filed under
    fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26);
@@ -260,12 +272,13 @@ function form() {
    fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26);
    selectCollectorsID("identifiedby","Identified by"); // for current id 
    field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18');  // for current id
+   //geographyselect("country","Country limit",$defaultcountry,'false','country');
    staticvalue("Country limit",$defaultcountry);
    staticvalue("State limit",$defaultprimary);
    selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); // higher picklist limited by country/primary
    field ("specificlocality","Verbatim locality",'','true');
-   fieldselectpicklist("prepmethod",'Preparation method','Pressed','true','prepmethodpl',55);
-   preptypeselect("format","Format",'Sheet','true','formatStore','huh_preptype','Name');
+   fieldselectpicklist("prepmethod",'Preparation method',$defaultprepmethod,'true','prepmethodpl',55);
+   preptypeselect("format","Format",$defaultformat,'true','formatStore','huh_preptype','Name');
    echo "<tr><td></td><td>";
    //echo "<input type=submit value='Add'>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Add</button>";
@@ -338,10 +351,14 @@ function form() {
    echo "<form action='rapid.php' method='GET'>";
    echo "<table>\n";
    staticvalue("","Pressing the Set default button below sets the values for the filter that is placed on Higher Geography.");  
-   staticvalue("","You can leave one or both of these filters blank.");  
+   staticvalue("","You can leave one of these filters blank.  Select \"yes\" on clear both to clear both filters.");  
    staticvalue("","If you set a country and a state, the state will be used as the filter.");  
    geographyselect("defaultcountry","Country limit",$defaultcountry,'false','country');
    geographyselect("defaultprimary","State/province limit",$defaultprimary,'false','primary');   
+   selectYesNo ("cleardefaultgeography","Clear both Country and State/Province limit");
+   selectAcronym("defaultherbarium",$defaultherbarium);
+   fieldselectpicklist("defaultprepmethod",'Preparation method','Pressed','true','prepmethodpl',55);
+   preptypeselect("defaultformat","Format",'Sheet','true','formatStore','huh_preptype','Name');
    staticvalue("Note:","Clears and resets all form values.  You will lose all unsaved data.");
    echo "<tr><td></td><td>";
    echo "<input type=submit value='Set default values'>\n";
@@ -393,7 +410,8 @@ function staticvalue($label,$default) {
 }
 
 function geographyselect($name,$label,$default,$required,$rank) {
-	$returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='store$name$rank'
+	// $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='store$name$rank'
+	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='store$name$rank'
 	 url='ajax_handler.php?druid_action=return".$rank."json'> </div>";
 	$returnvalue .= "<label for=\"$name\">$label</label></td><td>
 	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
@@ -435,18 +453,24 @@ function selectYesNo($field,$label) {
 	echo "</td></tr>\n";
 }
 
-function selectAcronym() {
+function selectAcronym($field,$default) {
    echo "<tr><td>\n";
-   echo "<label for='herbariumacronym'>Herbarium acronym</label>";
+   echo "<label for='$field'>Herbarium acronym</label>";
    echo "</td><td>\n";
-   echo '<select name="herbariumacronym" dojoType="dijit.form.Select">
-	<option value="GH" selected>GH</option>
-	<option value="A">A</option>
-	<option value="FH">FH</option>
-	<option value="AMES">AMES</option>
-	<option value="ECON">ECON</option>
-	<option value="NEBC">NEBC</option>
-	</select>';
+   if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; } 
+   if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; } 
+   if ($default=="FH") { $ghs = ""; $as = ""; $fhs = 'selected="selected"'; $amess=""; $econs=""; $nebcs=""; } 
+   if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; } 
+   if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; } 
+   if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; } 
+   echo "<select name=\"$field\" dojoType=\"dijit.form.Select\">
+	<option value=\"GH\" $ghs>GH</option>
+	<option value=\"A\" $as>A</option>
+	<option value=\"FH\" $fhs>FH</option>
+	<option value=\"AMES\" $amess>AMES</option>
+	<option value=\"ECON\" $econs>ECON</option>
+	<option value=\"NEBC\" $nebcs>NEBC</option>
+	</select>";
    echo "</td></tr>\n";
 }
 
