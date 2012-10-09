@@ -320,6 +320,9 @@ function form() {
    field ("minelevation","Minimum elevation meters",'','false','[0-9]*');
    field ("maxelevation","Maximum elevation meters",'','false','[0-9]*');
    selectContainerID ("container","Container");  
+   selectRefWorkID("exsiccati","Exsiccati");
+   field ("fascicle","Fascicle");
+   field ("exsiccatinumber","Number");
    field ("specimenremarks","Specimen remarks");
    echo "</table>\n";
    echo '</div>'; // accordion pane
@@ -495,9 +498,14 @@ function selectCollectorsID($field,$label,$required='false') {
 }
 
 
-function selectRefWorkID($field,$label,$required='false') {
-   $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
-	 url='ajax_handler.php?druid_action=returndistinctjsontitle' > </div>";
+function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
+   if ($exsiccati=='true') { 
+       $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
+	      url='ajax_handler.php?druid_action=returndistinctjsonexsiccati' > </div>";
+   } else { 
+       $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
+	      url='ajax_handler.php?druid_action=returndistinctjsontitle' > </div>";
+   }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
 	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;' 

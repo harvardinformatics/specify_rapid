@@ -826,7 +826,8 @@ function ingestCollectionObject() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing;
+   $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing,
+   $exsiccati,$fascicle,$exsiccatinumber ;
  
    $fail = false;
    $feedback = "";
@@ -876,6 +877,12 @@ function ingestCollectionObject() {
          $fail=true;
          $feedback = "For a type, you must provide both basionym and typestatus";
       }
+   }
+ 
+   // If fascicle or number is given, exsiccati must also be given
+   if (($fascicle!='' || $exsiccatinumber!='') && $exsiccati=='') { 
+      $fail = true;
+      $feedback .= "A fascicle or number was given, but not the Exsiccata.";      
    }
 
    // zero pad barcode up to 8 digits if needed
@@ -984,6 +991,9 @@ function ingestCollectionObject() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($container=='') { $container = null; }
+   if ($exsiccati=='') { $exsiccati = null; }
+   if ($fascicle=='') { $fascicle = null; }
+   if ($exsiccatinumber=='') { $exsiccatinumber = null; }
    if ($dateidentified=='') {
       $dateidentified = null;
       $dateidentifiedprecision = 1;
@@ -1012,7 +1022,6 @@ function ingestCollectionObject() {
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
    }
-    
     
    $df = "";
    if ($debug) {
@@ -1055,6 +1064,9 @@ function ingestCollectionObject() {
       $df.= "identifiedby=[$identifiedby] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";  
+      $df.= "exsiccati=[$exsiccati] ";  
+      $df.= "fascicle=[$fascicle] ";  
+      $df.= "exsiccatinumber=[$exsiccatinumber] ";  
       $df.= "specimenremarks=[$specimenremarks] ";
    }
 
@@ -1452,6 +1464,67 @@ function ingestCollectionObject() {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
+      }
+
+      if (!$fail) { 
+         if ($exsiccati!=null) { 
+            // exsiccati
+            // referencework of type=6 plus fragmentcitation
+            $rworkid = null;
+            $referenceworkid = null;
+            if (preg_match("/^[0-9]+$/", $exsiccati )) {
+               $sql = "select referenceworkid from referencework where referenceworkid = ? ";
+               $param = "i";
+            } else {
+               $sql = "select referenceworkid from referencework where text1 = ? and referenceworktype = 6 ";
+               $param = "s";
+            }
+            $statement = $connection->prepare($sql);
+            if ($statement) {
+               $statement->bind_param($param,$exsiccati);
+               $statement->execute();
+               $statement->bind_result($rworkid);
+               $statement->store_result();
+               if ($statement->num_rows==1) {
+                  if ($statement->fetch()) {
+                     // retrieves referenceworkid
+                     $referenceworkid = $rworkid;
+                  } else {
+                     $fail = true;
+                     $feedback.= "Query Error " . $connection->error;
+                  }
+               } else {
+                  $fail = true;
+                  $feedback.= "No Match for Exsiccati referencework: " . $basionym;
+               }
+               $statement->free_result();
+               $statement->close();
+            } else {
+               $fail = true;
+               $feedback.= "Query error: " . $connection->error . " " . $sql;
+            }
+      
+            if ($referenceworkid != null) { 
+
+               $sql = "insert into fragmentcitation (text1, text2, referenceworkid, fragmentid, timestampcreated, createdbyagentid, version) " .
+                " values (?,?,?,?,now(),?,1) ";
+               $statement = $connection->prepare($sql);
+               if ($statement) {
+                  $statement->bind_param('ssiii', $fascicle,$exsiccatinumber,$referenceworkid,$fragmentid,$currentuserid);
+                  if ($statement->execute()) {
+                     $determinationid = $statement->insert_id;
+                     $adds .= "exsic=[$determinationid]";
+                  } else {
+                     $fail = true;
+                     $feedback.= "Unable to save Exsiccata: " . $connection->error;
+                  }
+                  $statement->free_result();
+               } else {
+                  $fail = true;
+                  $feedback.= "Query error: " . $connection->error . " " . $sql;
+               }
+           } // referenceworkid is not null
+         } // exsiccati is not null
       }
 
       if (!$fail) {
