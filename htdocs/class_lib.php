@@ -697,6 +697,36 @@ class huh_container_custom extends huh_container {
 	 
 }
 
+class huh_storage_custom extends huh_storage {
+
+    public function keySelectDistinctJSONName($term) {
+        global $connection;
+        $returnvalue = '';
+        $preparemysql = "select distinct storageid, name from storage where name like ? order by name asc ";
+        $comma = '';
+        $term = str_replace("*", "%", $term);
+        $term = mysql_escape_string($term);
+        if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param("s", $term);
+            $stmt->execute();
+            $stmt->bind_result($id, $name);
+            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
+            $comma = ', ';
+            while ($stmt->fetch()) {
+                $name = trim($name);
+                if ($name!='') {
+                    $name = str_replace('"','&quot;',$name);
+                    $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+                }
+            }
+            $stmt->close();
+        }
+        return $returnvalue;
+    }
+}
+
+
+
 class huh_project_custom extends huh_project {
 
     public function keySelectDistinctJSONname($term) {
@@ -860,7 +890,7 @@ function ingestCollectionObject() {
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing,
-   $project, 
+   $project, $storagelocation, $storage, 
    $exsiccati,$fascicle,$exsiccatinumber ;
  
    $fail = false;
@@ -1025,7 +1055,9 @@ function ingestCollectionObject() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($container=='') { $container = null; }
+   if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
+   if ($storage=='') { $storage = null; }  // subcollection
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
@@ -1099,6 +1131,7 @@ function ingestCollectionObject() {
       $df.= "identifiedby=[$identifiedby] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";  
+      $df.= "storagelocation=[$storagelocation] ";  
       $df.= "project=[$project] ";  
       $df.= "exsiccati=[$exsiccati] ";  
       $df.= "fascicle=[$fascicle] ";  
@@ -1483,11 +1516,11 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
 
-         $sql = "insert into preparation (version,timestampcreated,countamt,samplenumber,createdbyagentid,preptypeid) " .
-              " values (0,now(),1,1,?,?) ";
+         $sql = "insert into preparation (version,timestampcreated,countamt,samplenumber,createdbyagentid,preptypeid,storagelocation,storageid) " .
+              " values (0,now(),1,1,?,?,?,?) ";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('ii', $currentuserid, $preptypeid);
+            $statement->bind_param('iisi', $currentuserid, $preptypeid,$storagelocation,$storage);
             if ($statement->execute()) {
                $preparationid = $statement->insert_id;
                $adds .= "preparation=[$preparationid]";

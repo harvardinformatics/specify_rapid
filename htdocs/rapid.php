@@ -308,25 +308,35 @@ function form() {
    echo '</div>';
    
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Additional Fields">';
+   echo "<table><tr><td valign='top'>\n";
    echo "<table>\n";
+   field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
+   fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
+   staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>"); 
+   field ("verbatimelevation","Verbatim elevation");
+   field ("minelevation","Minimum elevation meters",'','false','[0-9]*');
+   field ("maxelevation","Maximum elevation meters",'','false','[0-9]*');
+   selectProject("project","Project",$defaultproject);  
+   selectStorageID("storage","Subcollection");
+   selectContainerID ("container","Container");  
+   selectRefWorkID("exsiccati","Exsiccati");
+   field ("fascicle","Fascicle");
+   field ("exsiccatinumber","Number");
+   field ("storagelocation","Storage Location");
+   field ("specimenremarks","Specimen remarks");
+   echo "</table>\n";
+   echo "</td>\n";
+   echo "<td valign='top'>\n";
+   echo "<table>\n";
+   staticvalue("","Type Specimen Information"); 
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
    selectCurrentID("basionym","Basionym");
    selectRefWorkID("publication","Publication");
    field ("page","Page");
    field ("datepublished","Year published");
    selectYesNo ("isfragment","Is fragment");
-   field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
-   fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
-   field ("verbatimelevation","Verbatim elevation");
-   field ("minelevation","Minimum elevation meters",'','false','[0-9]*');
-   field ("maxelevation","Maximum elevation meters",'','false','[0-9]*');
-   selectProject("project","Project",$defaultproject);  
-   selectContainerID ("container","Container");  
-   selectRefWorkID("exsiccati","Exsiccati");
-   field ("fascicle","Fascicle");
-   field ("exsiccatinumber","Number");
-   field ("specimenremarks","Specimen remarks");
    echo "</table>\n";
+   echo "</td></tr></table>\n";
    echo '</div>'; // accordion pane
    
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Entering Data">';
@@ -509,6 +519,16 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
        $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsontitle' > </div>";
    }
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
+	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;' 
+	searchAttr='name' value='' ></td></tr>";
+   echo $returnvalue;
+}
+
+function selectStorageID($field,$label,$required='false') {
+   $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
+	      url='ajax_handler.php?druid_action=returndistinctjsonstorage' > </div>";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
 	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;' 
