@@ -20,7 +20,7 @@ class huh_project implements  model , loadableModel, saveableModel, tableSchema
    const NUMBER1_SIZE         = 20; //REAL
    const NUMBER2_SIZE         = 20; //REAL
    const PROJECTDESCRIPTION_SIZE = 255; //255
-   const PROJECTNAME_SIZE     = 20; //YEAR
+   const PROJECTNAME_SIZE     = 50; //50
    const PROJECTNUMBER_SIZE   = 64; //64
    const REMARKS_SIZE         = 255; //LONGVARCHAR
    const STARTDATE_SIZE       = 12; //DATE

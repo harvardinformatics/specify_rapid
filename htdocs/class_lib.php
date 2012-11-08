@@ -240,7 +240,9 @@ class User {
          // TODO: Remove coment when ready for production use
          // if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=upload">Upload a spreadsheet</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH Defaults</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' Defaults: <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Lichen%20and%20Bryophyte%20TCN">Lichen&amp;BryophyteTCN</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Macrofungi%20TCN">MacrofungiTCN</a>&nbsp;'; } 
       }
       return $returnvalue;
    }
@@ -695,6 +697,37 @@ class huh_container_custom extends huh_container {
 	 
 }
 
+class huh_project_custom extends huh_project {
+
+    public function keySelectDistinctJSONname($term) {
+        global $connection;
+        $returnvalue = '';
+        $preparemysql = "select distinct projectid, projectname from project where projectname like ? order by projectname asc ";
+        $comma = '';
+        $term = str_replace("*", "%", $term);
+        $term = mysql_escape_string($term);
+        if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param("s", $term);
+            $stmt->execute();
+            $stmt->bind_result($id, $name);
+            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
+            $comma = ', ';
+            while ($stmt->fetch()) {
+                $name = trim($name);
+                if ($name!='') {
+                    $name = str_replace('"','&quot;',$name);
+                    $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+                }
+            }
+            $stmt->close();
+        }
+        return $returnvalue;
+
+    }
+
+}
+
+
 
 class huh_geography_custom extends huh_geography {
 
@@ -827,6 +860,7 @@ function ingestCollectionObject() {
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing,
+   $project, 
    $exsiccati,$fascicle,$exsiccatinumber ;
  
    $fail = false;
@@ -991,6 +1025,7 @@ function ingestCollectionObject() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($container=='') { $container = null; }
+   if ($project=='') { $project = null; }
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
@@ -1064,6 +1099,7 @@ function ingestCollectionObject() {
       $df.= "identifiedby=[$identifiedby] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";  
+      $df.= "project=[$project] ";  
       $df.= "exsiccati=[$exsiccati] ";  
       $df.= "fascicle=[$fascicle] ";  
       $df.= "exsiccatinumber=[$exsiccatinumber] ";  
@@ -1364,6 +1400,61 @@ function ingestCollectionObject() {
             }
          }
           
+      }
+      if (!$fail) {
+         // project, collectionobject
+         if ($project!=null) {
+            $projectid = null;
+            if (preg_match("/^[0-9]+$/", $project)) {
+               $sql = "select distinct projectid from project where projectid = ? ";
+               $param = "i";
+            } else {
+               $sql = "select distinct projectid from project where projectname = ?  ";
+               $param = "s";
+            }
+            $statement = $connection->prepare($sql);
+            if ($statement) {
+               $statement->bind_param($param,$project);
+               $statement->execute();
+               $statement->bind_result($projectid);
+               $statement->store_result();
+               if ($statement->num_rows==1) {
+                  if ($statement->fetch()) {
+                     // retrieves projectid
+                  } else {
+                     $fail = true;
+                     $feedback.= "Query Error " . $connection->error;
+                  }
+               } else {
+                  $fail = true;
+                  $feedback.= "No Match for project: " . $project;
+               }
+               $statement->free_result();
+               $statement->close();
+            } else {
+               $fail = true;
+               $feedback.= "Query error: " . $connection->error . " " . $sql;
+            }
+             
+            $sql = "insert into project_colobj (projectid, collectionobjectid) values (?,?) ";
+            $statement = $connection->prepare($sql);
+            if ($statement) {
+               $statement->bind_param('ii',$projectid, $collectionobjectid);
+               if ($statement->execute()) {
+                  if ($statement->affected_rows!=1) {
+                     $fail = true;
+                     $feedback.= "Error setting project for collection object: " . $connection->error;
+                  }
+               } else {
+                  $fail = true;
+                  $feedback.= "Unable to set project for collection object: " . $connection->error;
+               }
+               $statement->free_result();
+            } else {
+               $fail = true;
+               $feedback.= "Query error: " . $connection->error . " " . $sql;
+            }
+         }
       }
 
       if (!$fail) {

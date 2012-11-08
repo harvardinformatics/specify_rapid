@@ -251,6 +251,7 @@ function form() {
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
    $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; } 
+   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. ]/','',$_GET['defaultproject']),0,255);
    
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
    //echo "<div dojoType='dijit.form.Form' id='rapidForm' jsId='rapidForm' encType='multipart/form-data' action='ajax_handler.php' method='GET'>";
@@ -319,6 +320,7 @@ function form() {
    field ("verbatimelevation","Verbatim elevation");
    field ("minelevation","Minimum elevation meters",'','false','[0-9]*');
    field ("maxelevation","Maximum elevation meters",'','false','[0-9]*');
+   selectProject("project","Project",$defaultproject);  
    selectContainerID ("container","Container");  
    selectRefWorkID("exsiccati","Exsiccati");
    field ("fascicle","Fascicle");
@@ -362,6 +364,7 @@ function form() {
    selectAcronym("defaultherbarium",$defaultherbarium);
    fieldselectpicklist("defaultprepmethod",'Preparation method','Pressed','true','prepmethodpl',55);
    preptypeselect("defaultformat","Format",'Sheet','true','formatStore','huh_preptype','Name');
+   selectProject ("defaultproject","Project",$defaultproject);  
    staticvalue("Note:","Clears and resets all form values.  You will lose all unsaved data.");
    echo "<tr><td></td><td>";
    echo "<input type=submit value='Set default values'>\n";
@@ -522,6 +525,17 @@ function selectContainerID($field,$label,$required='false') {
 	searchAttr='name' value='' ></td></tr>";
 	echo $returnvalue;
 }
+
+function selectProject($field,$label,$default,$required='false') {
+    $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='projectStore$field'
+     url='ajax_handler.php?druid_action=returndistinctjsonproject&name=*' > </div>";
+    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+    <input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
+    store='projectStore$field' required='$required' hasDownArrow='false' style='border-color: blue;'
+    searchAttr='name' value='$default' ></td></tr>";
+    echo $returnvalue;
+}
+
 
 
 function pagefooter() {
