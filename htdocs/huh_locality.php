@@ -39,7 +39,7 @@ class huh_locality implements  model , loadableModel, saveableModel, tableSchema
    const REMARKS_SIZE         = 255; //LONGVARCHAR
    const SHORTNAME_SIZE       = 32; //32
    const SRCLATLONGUNIT_SIZE  = 4; //TINYINT
-   const VERBATIMELEVATION_SIZE = 20; //YEAR
+   const VERBATIMELEVATION_SIZE = 50; //50
    const VISIBILITY_SIZE      = 4; //TINYINT
    const DISCIPLINEID_SIZE    = 11; //INTEGER
    const MODIFIEDBYAGENTID_SIZE = 11; //INTEGER
