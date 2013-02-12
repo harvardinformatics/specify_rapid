@@ -1384,8 +1384,8 @@ function ingestCollectionObject() {
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks) " . 
-                   " values (?,4,?,?,now(),1,0,now(),?,?)" ;
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampupdated) " . 
+                   " values (?,4,?,?,now(),1,0,now(),?,?,now())" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
             $statement->bind_param('iiiis',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks);
