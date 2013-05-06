@@ -269,6 +269,7 @@ class User {
          if ($caller=="rapid.php") { $returnvalue .= ' Defaults: <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Lichen%20and%20Bryophyte%20TCN">Lichen&amp;BryophyteTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Macrofungi%20TCN">MacrofungiTCN</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=GH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=New%20England%20Vascular%20Plants%20TCN">NEVPTCN</a>&nbsp;'; } 
       }
       return $returnvalue;
    }
