@@ -1813,6 +1813,12 @@ function ingestCollectionObject() {
          }
       }
 
+      $namesidentical = FALSE;
+      if ($filedundername==$currentdetermination) { 
+         // See BugID: 588 if both names are the same, only add filed under, and mark it as current.
+         $namesidentical = TRUE;
+      }
+
       if (!$fail) {
          // Filed under name
          $taxonid = null;
@@ -1850,13 +1856,17 @@ function ingestCollectionObject() {
          // yesno1 = isLabel (no)
          // yesno2 = isFragment (of type) (no)
          // yesno3 = isFiledUnder (yes)
-         // iscurrent = isCurrent (no)
+         // iscurrent = isCurrent (no/yes)  // no if current det is supplied, yes if current det and filed under are the same.
+         $iscurrent = 0;
+         if ($namesidentical===TRUE) { 
+            $iscurrent = 1;
+         }
          $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
                  " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                 " values (?,?,?,?,0,0,1,0,now(),0,4) ";
+                 " values (?,?,?,?,0,0,1,?,now(),0,4) ";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiis', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier);
+            $statement->bind_param('iiisi', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$iscurrent);
             if ($statement->execute()) {
                $determinationid = $statement->insert_id;
                $adds .= "det=[$determinationid]";
@@ -1872,6 +1882,7 @@ function ingestCollectionObject() {
       }
 
       if (!$fail) {
+       if ($namesidentical===FALSE) { 
          // Current determination
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $currentdetermination )) {
@@ -1959,6 +1970,7 @@ function ingestCollectionObject() {
          }
 
       }
+     } 
    }
 
    if ($fail) {
