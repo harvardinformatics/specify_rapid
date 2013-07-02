@@ -87,8 +87,8 @@ if ($connection && $authenticated) {
 
         	@$verbatimlat= substr(preg_replace('/[^0-9\. \'"°NSn-]/','',$_GET['verbatimlat']),0,huh_locality::LAT1TEXT_SIZE);
         	@$verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',$_GET['verbatimlong']),0,huh_locality::LONG1TEXT_SIZE);
-        	@$decimallat= substr(preg_replace('/[^0-9\.]/','',$_GET['decimallat']),0,huh_locality::LATITUDE1_SIZE);
-        	@$decimallong= substr(preg_replace('/[^0-9\.]/','',$_GET['decimallong']),0,huh_locality::LONGITUDE1_SIZE);
+        	@$decimallat= substr(preg_replace('/[^0-9\.\-]/','',$_GET['decimallat']),0,huh_locality::LATITUDE1_SIZE);
+        	@$decimallong= substr(preg_replace('/[^0-9\.\-]/','',$_GET['decimallong']),0,huh_locality::LONGITUDE1_SIZE);
         	@$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_GET['datum']),0,huh_locality::DATUM_SIZE);
         	@$coordinateuncertanty= substr(preg_replace('/[^0-9]/','',$_GET['coordinateuncertanty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
         	@$georeferencedby= substr(preg_replace('/[^0-9]/','',$_GET['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
