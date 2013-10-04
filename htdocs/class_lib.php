@@ -1817,10 +1817,17 @@ function ingestCollectionObject() {
       if ($filedundername==$currentdetermination) { 
          // See BugID: 588 if both names are the same, only add filed under, and mark it as current.
          $namesidentical = TRUE;
+         // Consequences:  If the names are the same: Create one record with a determiner, 
+         //    date determined, filed under flag, and current flag set.
+         // If the names are different, create two records, one filed under name without
+         //    a determiner, and one current name with a determier and date determined.
       }
 
       if (!$fail) {
-         // Filed under name
+       // Filed under name
+       // Add only if there are different filed under and current determination names.
+       if ($namesidentical===FALSE) { 
+
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $filedundername )) {
             $sql = "select taxonid from taxon where taxonid = ? ";
@@ -1859,6 +1866,7 @@ function ingestCollectionObject() {
          // iscurrent = isCurrent (no/yes)  // no if current det is supplied, yes if current det and filed under are the same.
          $iscurrent = 0;
          if ($namesidentical===TRUE) { 
+            // Leaving this in, but we shouldn't end up in this block with the current logic.
             $iscurrent = 1;
          }
          $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
@@ -1879,11 +1887,12 @@ function ingestCollectionObject() {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
+        }
       }
 
       if (!$fail) {
-       if ($namesidentical===FALSE) { 
          // Current determination
+         // Always add.  May also be filed under name.
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $currentdetermination )) {
             $sql = "select taxonid from taxon where taxonid = ? ";
@@ -1932,7 +1941,7 @@ function ingestCollectionObject() {
             $statement->store_result();
             if ($statement->num_rows==1) {
                if ($statement->fetch()) {
-                  // retrieves georeferencagentid
+                  // retrieves determiner agentid
                } else {
                   $fail = true;
                   $feedback.= "Query Error " . $connection->error;
@@ -1948,14 +1957,18 @@ function ingestCollectionObject() {
          // yesno1 = isLabel (user)
          $islabel = 0;
          // yesno2 = isFragment (of type) (no)
-         // yesno3 = isFiledUnder (no)
+         // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
+         $isfiledunder = 0;
+         if ($namesidentical===TRUE) { 
+            $isfiledunder = 1;
+         }
          // iscurrent = isCurrent (yes)
          $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
                           " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                          " values (?,?,?,?,?,?,?,?,0,0,1,now(),0,4) ";
+                          " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4) ";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiisisii', $taxonid,$fragmentid,$currentuserid,$identificationqualifier,$determinerid, $dateidentified,$dateidentifiedprecision, $islabel);
+            $statement->bind_param('iiisisiii', $taxonid,$fragmentid,$currentuserid,$identificationqualifier,$determinerid, $dateidentified,$dateidentifiedprecision, $islabel,$isfiledunder);
             if ($statement->execute()) {
                $determinationid = $statement->insert_id;
                $adds .= "det=[$determinationid]";
@@ -1970,7 +1983,6 @@ function ingestCollectionObject() {
          }
 
       }
-     } 
    }
 
    if ($fail) {
