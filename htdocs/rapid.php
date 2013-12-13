@@ -153,12 +153,12 @@ function pageheader($error="") {
    echo "<html>\n";
    echo "<head>\n";
    echo "<title>HUH Rapid Data Entry Form</title>\n";
-   echo '<script src="/dojo/1.6.1/dojo/dojo.js" djConfig="parseOnLoad: true">
+   echo '<script src="/dojo/1.9.2/dojo/dojo.js" djConfig="parseOnLoad: true">
         </script>
         <style type="text/css">
-            @import "/dojo/1.6.1/dojox/grid/enhanced/resources/claro/EnhancedGrid.css";
-            @import "/dojo/1.6.1/dojox/grid/enhanced/resources/claro/Common.css";
-            @import "/dojo/1.6.1/dijit/themes/claro/claro.css";
+            @import "/dojo/1.9.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css";
+            @import "/dojo/1.9.2/dojox/grid/enhanced/resources/claro/Common.css";
+            @import "/dojo/1.9.2/dijit/themes/claro/claro.css";
         </style>
         <script type="text/javascript">
              dojo.require("dijit.layout.AccordionContainer");

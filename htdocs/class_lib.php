@@ -372,12 +372,12 @@ class Page {
 
    public function getDojoPageHead() {
       return "      
-     <script src='/dojo/1.6.1/dojo/dojo.js' djConfig='parseOnLoad: true'></script>
-       <link rel='stylesheet' type='text/css' href='/dojo/1.6.1/dijit/themes/claro/claro.css' />
-       <link rel='stylesheet' type='text/css' href='/dojo/1.6.1/dojo/resources/dojo.css' />
+     <script src='/dojo/1.9.2/dojo/dojo.js' djConfig='parseOnLoad: true'></script>
+       <link rel='stylesheet' type='text/css' href='/dojo/1.9.2/dijit/themes/claro/claro.css' />
+       <link rel='stylesheet' type='text/css' href='/dojo/1.9.2/dojo/resources/dojo.css' />
         <style type='text/css'>
-            @import '/dojo/1.6.1/dojox/grid/enhanced/resources/claro/EnhancedGrid.css';
-            @import '/dojo/1.6.1/dojox/grid/enhanced/resources/claro/Common.css';
+            @import '/dojo/1.9.2/dojox/grid/enhanced/resources/claro/EnhancedGrid.css';
+            @import '/dojo/1.9.2/dojox/grid/enhanced/resources/claro/Common.css';
         </style>
      <script type='text/javascript'>
                 dojo.require('dijit.layout.AccordionContainer');
@@ -389,10 +389,10 @@ class Page {
                 dojo.require('dijit.form.ValidationTextBox');
                 dojo.require('dijit.layout.ContentPane');
                 dojo.require('dijit.layout.BorderContainer');
+                dojo.require('custom.ComboBoxReadStore');
                 dojo.require('dijit.form.TextBox');
                 dojo.require('dijit.Dialog');
                 dojo.require('dijit.ProgressBar');
-                dojo.require('custom.ComboBoxReadStore');
                 dojo.require('custom.LoadingMsgFilteringSelect');
      </script>
            <style type='text/css'>
