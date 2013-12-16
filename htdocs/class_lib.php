@@ -569,7 +569,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          $fielde = mysql_escape_string($field);
          $preparemysql = "SELECT DISTINCT taxonid, $fielde FROM taxon where $fielde like ? order by $fielde $order ";
          if ($field=="FullName") {
-            $preparemysql = "SELECT DISTINCT taxonid, concat(FullName, ' ',Author) FROM taxon where FullName like ? order by $fielde $order ";
+            $preparemysql = "SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,'')) FROM taxon where FullName like ? order by $fielde $order ";
          }
          echo $preparedmysql;
          $comma = '';
