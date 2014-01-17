@@ -283,6 +283,7 @@ function form() {
    echo "<tr><td></td><td>";
    //echo "<input type=submit value='Add'>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Add</button>";
+   echo "<button type='button' dojoType='dijit.form.Button' id='grabButton' onclick='dataentry_grab();'>Grab</button>";
    echo "</td></tr>";
    echo "</table>\n";
    echo '</div>';
