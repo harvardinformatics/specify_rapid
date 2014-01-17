@@ -1,28 +1,32 @@
 function dataentry_grab() {
+  require(['http://localhost:8080/STATE']);
+}
+
+function dataentry_callback(data) {
   var collectors_dojo = dijit.byId('collectors');
-  var collectors_val = 'TODO: collector';
+  var collectors_val = data['recordedBy'];
 
   var name_dojo = dijit.byId('filedundername');
-  var name_val = 'TODO: scientific name';
+  var name_val = data['specificEpithet'];
 
   var number_el = dojo.query("input[name=fieldnumber]")[0];
-  var number_val = 'TODO: number';
+  var number_val = data['recordNumber'];
 
   var locality_el = dojo.query("input[name=specificlocality]")[0];
-  var locality_val = 'TODO: locality';
+  var locality_val = data['verbatimLocality'];
 
   var lat_el = dojo.query("input[name=verbatimlat]")[0];
-  var lat_val = 'TODO: latitude';
+  var lat_val = data['decimalLatitude'];
 
   var long_el = dojo.query("input[name=verbatimlong]")[0];
-  var long_val = 'TODO: longitude';
+  var long_val = data['decimalLongitude'];
 
   var date_el = dojo.query("input[name=datecollected]")[0];
-  var date_val = 'TODO: date';
+  var date_val = data['eventDate'];
   var date_hint_el = dojo.query("input[name=datecollected] + span")[0]; // TODO: seems fragile?
 
   var elevation_el = dojo.query("input[name=verbatimelevation]")[0];
-  var elevation_val = 'TODO: elevation';
+  var elevation_val = data['verbatimElevation'];;
 
 
 // done	RECORD_NUMBER(DwcTerm.RECORD_NUMBER), //
