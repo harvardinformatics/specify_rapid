@@ -22,7 +22,7 @@ function dataentry_callback(data) {
   var long_val = data['decimalLongitude'];
 
   var date_el = dojo.query("input[name=datecollected]")[0];
-  var date_val = data['eventDate'];
+  var date_val = data['eventDate'].replace(/T.*/,'');
   var date_hint_el = dojo.query("input[name=datecollected] + span")[0]; // TODO: seems fragile?
 
   var elevation_el = dojo.query("input[name=verbatimelevation]")[0];
