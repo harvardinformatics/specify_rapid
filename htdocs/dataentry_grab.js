@@ -1,5 +1,8 @@
+dojo.require("dojo.io.script");
+
 function dataentry_grab() {
-  require(['http://localhost:8080/STATE']);
+  dojo.io.script.get({'url':'http://localhost:8080/STATE'});
+  // TODO: make callback param explicit.
 }
 
 function dataentry_callback(data) {
