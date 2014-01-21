@@ -7,9 +7,11 @@ function dataentry_grab() {
 
 function dataentry_callback(data) {
   var collectors_dojo = dijit.byId('collectors');
+  var collectors_el = dojo.query("input[name=collectors]")[0];
   var collectors_val = data['recordedBy'];
 
   var name_dojo = dijit.byId('filedundername');
+  var name_el = dojo.query("input[name=filedundername]")[0];
   var name_val = data['specificEpithet'];
 
   var number_el = dojo.query("input[name=fieldnumber]")[0];
@@ -32,37 +34,13 @@ function dataentry_callback(data) {
   var elevation_val = data['verbatimElevation'];;
 
 
-// done	RECORD_NUMBER(DwcTerm.RECORD_NUMBER), //
-// done	RECORDED_BY(DwcTerm.RECORDED_BY), //
-// done	VERBATIM_LOCALITY(DwcTerm.VERBATIM_LOCALITY), //
-// ?	COUNTRY(DwcTerm.COUNTRY_CODE, DwcTerm.COUNTRY), //
-// ?	LATITUDE_LONGITUDE(DwcTerm.DECIMAL_LATITUDE, DwcTerm.DECIMAL_LONGITUDE), //
-// done	EVENT_DATE(DwcTerm.EVENT_DATE), //
-// done	ELEVATION_DEPTH(DwcTerm.VERBATIM_ELEVATION, DwcTerm.VERBATIM_DEPTH), //
-//	KINGDOM(DwcTerm.KINGDOM), //
-//	PHYLUM(DwcTerm.PHYLUM), //
-//	CLASS(DwcTerm.CLASS), //
-//	ORDER(DwcTerm.ORDER), //
-//	FAMILY(DwcTerm.FAMILY), //
-//	SCIENTIFIC_NAME( //
-// done?		DwcTerm.GENUS, //
-//			DwcTerm.SUBGENUS, //
-//			DwcTerm.SPECIFIC_EPITHET, //
-//			DwcTerm.INFRASPECIFIC_EPITHET, //
-//			DwcTerm.TAXON_RANK, //
-//			DwcTerm.SCIENTIFIC_NAME_AUTHORSHIP),
-//	
-//	SOURCE(DwcTerm.SOURCE), //
-//	SEQUENCE(DwcTerm.SEQUENCE);
-
-
-
-
   dojo.attr(collectors_dojo,'value',collectors_val);
   collectors_dojo.textbox.value = collectors_val;
+  collectors_el.value = 81637; // TODO
 
   dojo.attr(name_dojo,'value',name_val);
   name_dojo.textbox.value = name_val;
+  name_el.value = 17996; // TODO
 
   number_el.value = number_val;
 

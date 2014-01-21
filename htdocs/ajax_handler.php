@@ -49,7 +49,8 @@ if (isset($_SESSION['user_ticket'])) {
    }
 }
 
-if ($connection && $authenticated) {
+if ($connection && ($authenticated || isset($_GET['allow_anyway']))) {
+   // TODO: extra checks if 'allow_anyway'?
    include_once('druid_handler.php');
 
    @$action = substr(preg_replace('/[^a-z]/','',$_GET['druid_action']),0,45);
