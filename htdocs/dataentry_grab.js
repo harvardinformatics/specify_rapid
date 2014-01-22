@@ -9,10 +9,12 @@ function dataentry_callback(data) {
   var collectors_dojo = dijit.byId('collectors');
   var collectors_el = dojo.query("input[name=collectors]")[0];
   var collectors_val = data['recordedBy'];
+  var collectors_id = data['recordedBy_id'];
 
   var name_dojo = dijit.byId('filedundername');
   var name_el = dojo.query("input[name=filedundername]")[0];
   var name_val = data['specificEpithet'];
+  var name_id = data['specificEpithet_id'] || data['scientificName_id'];
 
   var number_el = dojo.query("input[name=fieldnumber]")[0];
   var number_val = data['recordNumber'];
@@ -33,14 +35,15 @@ function dataentry_callback(data) {
   var elevation_el = dojo.query("input[name=verbatimelevation]")[0];
   var elevation_val = data['verbatimElevation'];;
 
+  // ... now set the fields:
 
   dojo.attr(collectors_dojo,'value',collectors_val);
   collectors_dojo.textbox.value = collectors_val;
-  collectors_el.value = 81637; // TODO
+  collectors_el.value = collectors_id;
 
   dojo.attr(name_dojo,'value',name_val);
   name_dojo.textbox.value = name_val;
-  name_el.value = 17996; // TODO
+  name_el.value = name_id;
 
   number_el.value = number_val;
 
