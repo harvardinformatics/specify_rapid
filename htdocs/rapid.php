@@ -5,6 +5,8 @@ session_start();
 include_once("connection_library.php");
 include_once("class_lib.php");
 
+define("ENABLE_DUPLICATE_FINDING",TRUE);
+
 // Header lines specifying format for spreadsheet uploads.
 $expectedheader = "herbarium,barcode,Collector(s),et al,field number,verbatim date,ISO date collected,identification,authorship,qualifier,identified by,date identified,country,primary division,secondary division,specific locality,prep method,format,verbatim lat,verbatim long,decimal lat,decimal long,datum,coordinate uncertainty,georeferenced by,georeference date,georeferencesource,utm zone,utm easting,utm northing,type status,basionym,basionymauthorship,publication,page,year published,is fragment,habitat,phenology,verbatim elevation,min elevation,max elevation,specimen remarks,container";
 $expectedheaderquoted = '"herbarium","barcode","Collector(s)","et al","field number","verbatim date","ISO date collected","identification","authorship","qualifier","identified by","date identified","country","primary division","secondary division","specific locality","prep method","format","verbatim lat","verbatim long","decimal lat","decimal long","datum","coordinate uncertainty","georeferenced by","georeference date","georeferencesource","utm zone","utm easting","utm northing","type status","basionym","basionymauthorship","publication","page","year published","is fragment","habitat","phenology","verbatim elevation","min elevation","max elevation","specimen remarks","container"';
@@ -283,7 +285,9 @@ function form() {
    echo "<tr><td></td><td>";
    //echo "<input type=submit value='Add'>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Add</button>";
-   echo "<button type='button' dojoType='dijit.form.Button' id='grabButton' onclick='on_grab_click(); return false;'>Grab</button>";
+   if (ENABLE_DUPLICATE_FINDING===TRUE) { 
+       echo "<button type='button' dojoType='dijit.form.Button' id='grabButton' onclick='on_grab_click(); return false;'>Grab</button>";
+   }
    echo "</td></tr>";
    echo "</table>\n";
    echo '</div>';
@@ -338,7 +342,9 @@ function form() {
    selectYesNo ("isfragment","Is fragment");
    echo "</table>\n";
    echo "</td>\n";
-   echo "<td><div id='fp-data-entry-plugin-goes-here'></div></td>";
+   if (ENABLE_DUPLICATE_FINDING===TRUE) { 
+      echo "<td><div id='fp-data-entry-plugin-goes-here'></div></td>";
+   }
    echo "</tr></table>\n";
    echo '</div>'; // accordion pane
    
