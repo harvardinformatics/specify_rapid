@@ -477,15 +477,15 @@ class DateRangeWithPrecision {
    
    public function parsePart($part) { 
       $result = new DateWithPrecision();
-      if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$part)) {
+      if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$part)) {
       	$result->setDate($part);
       	$result->setDatePrecision(1);
       } else {
-      	if (preg_match("/^[0-9]{4}-[0-9]{2}$/",$part)) {
+      	if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$part)) {
          	$result->setDate($part . "-01");
          	$result->setDatePrecision(2);
       	} else {
-      		if (preg_match("/^[0-9]{4}$/",$part)) {
+      		if (preg_match("/^[1-2][0-9]{3}$/",$part)) {
           	    $result->setDate($part . "-01-01");
          	    $result->setDatePrecision(3);
       		} else {
@@ -1012,8 +1012,16 @@ function ingestCollectionObject() {
           $feedback .= "Unrecognized date format: " . $datecollected;
       } else { 
          $startdate = $date->getStartDate();
+         if ($startdate=='0000-00-00' || strlen($startdate)==0 || substr($startdate,0,4)=='0000' || strpos($startdate,'-00')!==FALSE) { 
+             $fail = true;
+             $feedback .= "Unrecognized start date [$startdate] in: " . $datecollected;
+         }
          $startdateprecision = $date->getStartDatePrecision();
          $enddate = $date->getEndDate();
+         if ($enddate=='0000-00-00' || substr($enddate,0,4)=='0000' || strpos($enddate,'-00')!==FALSE) { 
+             $fail = true;
+             $feedback .= "Unrecognized end date [$enddate] in: " . $datecollected;
+         }
          $enddateprecision = $date->getEndDatePrecision();
       }
       
@@ -1093,15 +1101,15 @@ function ingestCollectionObject() {
       $dateidentified = null;
       $dateidentifiedprecision = 1;
    } else {
-      if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
+      if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
          $dateidentified = $dateidentified;
          $dateidentifiedprecision = 1;
       } else {
-         if (preg_match("/^[0-9]{4}-[0-9]{2}$/",$dateidentified)) {
+         if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dateidentified)) {
             $dateidentified = $dateidentified . "-01";
             $dateidentifiedprecision = 2;
          } else {
-            if (preg_match("/^[0-9]{4}$/",$dateidentified)) {
+            if (preg_match("/^[1-2][0-9]{3}$/",$dateidentified)) {
                $dateidentified = $dateidentified . "-01-01";
                $dateidentifiedprecision = 3;
             } else {
