@@ -670,7 +670,7 @@ class huh_referencework_custom extends huh_referencework {
    public function keySelectDistinctJSONTitle($term) {
    	global $connection;
    	$returnvalue = '';
-   	$preparemysql = "select distinct referenceworkid, concat(text1, ' (', title, ')') from referencework where text1 like ? or title like ? order by title asc ";
+   	$preparemysql = "select distinct referenceworkid, concat(text1, ' (', coalesce(title,''), ')') from referencework where text1 like ? or title like ? order by title asc ";
    	$comma = '';
    	$term = str_replace("*", "%", $term);
    	$term = mysql_escape_string($term);
