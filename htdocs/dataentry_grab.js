@@ -10,7 +10,6 @@ function on_grab_click() {
 		],
 		js_urls: [
 			"http://localhost/rapid/dataentry_extra.js" 
-			// TODO
 		],
 	
 		// optional:
