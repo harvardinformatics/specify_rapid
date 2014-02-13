@@ -16,20 +16,16 @@ function on_grab_click() {
 		// optional:
 		width: window.innerWidth * 1/3,
 		//height: 800,
-	
+		
+		// To hide input fields, find and remove them in your extra JS.
+		outputs_to_hide: ["recordNumber","verbatimDepth",
+		                  "exsiccateTitle","exsiccateNumber",
+		                  "kingdom", "phylum", "class", "order"],
+
 		q_names: {
-			// TODO: expand this, when we have the data to back it.
-			// taxon: "my_name",
-			// geography: "specificlocality",
-			// collector: "collectors",
-			// number: "my_number",
-			// date: "datecollected"
-			// Just for exsiccate:
-			// exsiccate_title: "???",
 			exsiccate_number: "exsiccatinumber"
 		},
 		q_ids: {
-			// collector: "collectors",
 			exsiccate_title: "exsiccati"
 		},
 		a_names: {
@@ -38,27 +34,16 @@ function on_grab_click() {
 			// country: "?",
 			// verbatimElevation: "?",
 			// verbatimDepth: "?",
-			// recordedBy: "collectors",
 			recordedBy_id: "collectors",
 			verbatimLocality: "specificlocality",
 			decimalLatitude: "verbatimlat",
 			decimalLongitude: "verbatimlong",
 			eventDate: "datecollected",
-			// kingdom: "?",
-			// phylum: "?",
-			// class: "?",
-			// order: "?",
-			// family: "?",
-			// genus: "?",
-			// subgenus: "?",
-			// specificEpithet: "?",
-			// infraspecificEpithet: "?",
-			// taxonRank: "?",
-			// scientificNameAuthorship: "?",
-			// scientificName: "?",
-			// scientificName_id: "?",
+			habitat: "habitat",
+			scientificName_id: "filedundername"
 		},
 		a_ids: {
+			scientificName: "filedundername",
 			recordedBy: "collectors"
 		}
 	});
