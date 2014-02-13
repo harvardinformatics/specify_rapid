@@ -37,7 +37,20 @@ while ($stub && count($matches)<2) {
   // ... but I want to be sure this is the right track before spending time on that case.
   // For instance, maybe we want to stem the genus and species separately?
   $matches = get_matches($stub,$type);
+  if (count($matches)==1) {
+    $best = $matches[0];
+  }
   $stub = substr($stub,0,-1);
+}
+
+if (isset($best) && count($matches)>1) {
+  // Put the best one first:
+  foreach ($matches as $i=>$match) {
+    if ($best==$match) {
+      unset($matches[$i]);
+    }
+  }
+  array_unshift($matches,$best);
 }
 
 //
