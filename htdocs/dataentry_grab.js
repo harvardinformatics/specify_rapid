@@ -9,27 +9,28 @@ function on_grab_click() {
 			"css/data-entry.css", // default css is provided on server.
 		],
 		js_urls: [
-			"http://localhost:8080/js/demo-extra.js" 
-			// TODO: point at ajax-handling js.
+			"http://localhost/rapid/dataentry_extra.js" 
+			// TODO
 		],
 	
 		// optional:
-		//width: window.innerWidth * 2/3,
+		width: window.innerWidth * 1/3,
 		//height: 800,
 	
 		q_names: {
 			// TODO: expand this, when we have the data to back it.
 			// taxon: "my_name",
-			geography: "specificlocality",
+			// geography: "specificlocality",
 			// collector: "collectors",
-			number: "my_number",
-			date: "datecollected"
+			// number: "my_number",
+			// date: "datecollected"
 			// Just for exsiccate:
-			// source: "?",
-			// sequence: "?"
+			// exsiccate_title: "???",
+			exsiccate_number: "exsiccatinumber"
 		},
 		q_ids: {
-			collector: "collectors"
+			// collector: "collectors",
+			exsiccate_title: "exsiccati"
 		},
 		a_names: {
 			// recordNumber: "?",
