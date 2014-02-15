@@ -13,13 +13,12 @@ function on_grab_click() {
 		],
 	
 		// optional:
-		width: window.innerWidth * 1/3,
+		width: window.innerWidth * 1/3, // TODO: better logic for this.
 		//height: 800,
 		
 		// To hide input fields, find and remove them in your extra JS.
-		outputs_to_hide: ["recordNumber","verbatimDepth",
-		                  "exsiccateTitle","exsiccateNumber",
-		                  "kingdom", "phylum", "class", "order"],
+		outputs_to_hide: ["exsiccateTitle","exsiccateNumber","countryCode",
+		                  "kingdom", "phylum", "class", "order","scientificNameAuthorship"],
 
 		q_names: {
 			exsiccate_number: "exsiccatinumber"
@@ -28,22 +27,23 @@ function on_grab_click() {
 			exsiccate_title: "exsiccati"
 		},
 		a_names: {
-			// recordNumber: "?",
-			// countryCode: "?",
-			// country: "?",
-			// verbatimElevation: "?",
-			// verbatimDepth: "?",
-			recordedBy_id: "collectors",
 			verbatimLocality: "specificlocality",
 			decimalLatitude: "verbatimlat",
 			decimalLongitude: "verbatimlong",
 			eventDate: "datecollected",
 			habitat: "habitat",
-			scientificName_id: "filedundername"
+			recordNumber: "fieldnumber",
+			minimumElevationInMeters: "minelevation",
+			maximumElevationInMeters: "maxelevation",
+
+			recordedBy_id: "collectors",
+			scientificName_id: "filedundername",
+			typeStatus_id: "typestatus"
 		},
 		a_ids: {
+			recordedBy: "collectors",
 			scientificName: "filedundername",
-			recordedBy: "collectors"
+			typeStatus: "typestatus"
 		}
 	});
 }
