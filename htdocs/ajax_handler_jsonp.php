@@ -1,5 +1,26 @@
 <?php
 
+$sql = array(
+    'scientificName' => "
+      SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,''))
+      FROM taxon
+      WHERE FullName like ?
+      ORDER BY FullName
+      LIMIT 50",
+    'recordedBy' => "
+      SELECT DISTINCT agentid, name
+      FROM agentvariant
+      WHERE name like ?
+        AND vartype = 4 -- What is this about?
+      LIMIT 50",
+    'typeStatus' => "
+      SELECT DISTINCT value, title
+      FROM picklistitem
+      WHERE picklistid = 56
+        AND value like ?
+      ORDER BY Title ASC
+      LIMIT 50");
+
 //
 // Validate
 //
@@ -14,7 +35,7 @@ if (!isset($_GET['callback']) || !preg_match('/^[a-z][\w.]*$/',$_GET['callback']
   die('valid "callback" param is required.');
 }
 
-if (!isset($_GET['name']) || !in_array($_GET['name'],array('recordedBy','scientificName','specificEpithet'))) {
+if (!isset($_GET['name']) || !in_array($_GET['name'],array_keys($sql))) {
   die('valid "name" param is required.');
 }
 
@@ -26,10 +47,7 @@ if (!isset($_GET['value'])) {
 // Get the data
 //
 
-$type = $_GET['name'] == 'recordedBy'
-  ? 'people'
-  : 'taxa';
-
+$type = $_GET['name'];
 $stub = $_GET['value'];
 $matches = array();
 while ($stub && count($matches)<2) {
@@ -69,23 +87,10 @@ echo $_GET['callback'] . '(' . $json . ');';
 //
 
 function get_matches($stub,$type) {
+  global $sql;
   $matches = array();
   $stub_search = $stub . '%';
   global $connection;
-
-  $sql = array(
-    'taxa' => "
-      SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,''))
-      FROM taxon
-      WHERE FullName like ?
-      ORDER BY FullName
-      LIMIT 50",
-    'people' => "
-      SELECT DISTINCT agentid, name
-      FROM agentvariant
-      WHERE name like ?
-        AND vartype = 4 -- What is this about?
-      LIMIT 50");
 
   $stmt = $connection->prepare($sql[$type]);
   $stmt->bind_param("s",$stub_search);

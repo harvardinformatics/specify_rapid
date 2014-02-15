@@ -15,7 +15,8 @@ $('#input input').not('[name^="exsiccate_"]').parent().remove();
 
 fp.suggestion_fields = [
 	'recordedBy',
-	'scientificName'
+	'scientificName',
+	'typeStatus'
 ];
 
 fp.autosuggest_ajax = function(field_name,value,callback_name) {
