@@ -286,7 +286,10 @@ function form() {
    //echo "<input type=submit value='Add'>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Add</button>";
    if (ENABLE_DUPLICATE_FINDING===TRUE) { 
-       echo "<button type='button' dojoType='dijit.form.Button' id='grabButton' onclick='on_grab_click(); return false;'>Grab</button>";
+       echo "<button type='button' dojoType='dijit.form.Button' id='grabLichenButton'
+                     onclick='on_grab_lichen_click(); return false;'>Grab Lichen</button>";
+       echo "<button type='button' dojoType='dijit.form.Button' id='grabNevpButton'
+                     onclick='on_grab_nevp_click(); return false;'>Grab NEVP</button>";
    }
    echo "</td></tr>";
    echo "</table>\n";
