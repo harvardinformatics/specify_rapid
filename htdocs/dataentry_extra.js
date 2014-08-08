@@ -20,7 +20,7 @@ fp.suggestion_fields = [
 ];
 
 fp.autosuggest_ajax = function(field_name,value,callback_name) {
-	var ajax_url = 'http://localhost/rapid/ajax_handler_jsonp.php'
+	var ajax_url = 'http://watson.huh.harvard.edu/rapid/ajax_handler_jsonp.php'
 		+ '?name='+encodeURIComponent(field_name)
 		+ '&value='+encodeURIComponent(value)
 		+ '&callback='+encodeURIComponent(callback_name);
