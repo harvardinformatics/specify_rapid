@@ -6,6 +6,7 @@ include_once("connection_library.php");
 include_once("class_lib.php");
 
 define("ENABLE_DUPLICATE_FINDING",TRUE);
+define("BASEWIDTH",21);  // em for width of form fields
 
 // Header lines specifying format for spreadsheet uploads.
 $expectedheader = "herbarium,barcode,Collector(s),et al,field number,verbatim date,ISO date collected,identification,authorship,qualifier,identified by,date identified,country,primary division,secondary division,specific locality,prep method,format,verbatim lat,verbatim long,decimal lat,decimal long,datum,coordinate uncertainty,georeferenced by,georeference date,georeferencesource,utm zone,utm easting,utm northing,type status,basionym,basionymauthorship,publication,page,year published,is fragment,habitat,phenology,verbatim elevation,min elevation,max elevation,specimen remarks,container";
@@ -180,6 +181,7 @@ function pageheader($error="") {
              dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
              dojo.require("dojox.data.CsvStore");
              dojo.require("dojo.parser");
+             dojo.require("dojo.dom");
         </script>        
         <style type="text/css">
             html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
@@ -322,8 +324,8 @@ function form() {
    fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
    staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>"); 
    field ("verbatimelevation","Verbatim elevation");
-   field ("minelevation","Minimum elevation meters",'','false','[0-9]*');
-   field ("maxelevation","Maximum elevation meters",'','false','[0-9]*');
+   field ("minelevation","Min. elevation meters",'','false','[0-9]*');
+   field ("maxelevation","Max. elevation meters",'','false','[0-9]*');
    selectProject("project","Project",$defaultproject);  
    selectStorageID("storage","Subcollection");
    selectContainerID ("container","Container");  
@@ -362,6 +364,7 @@ function form() {
    staticvalue("CurrentID:","The most recent identification on the sheet, leave blank if the same as Filed Under Name.  Identified by and date identified pertain to the Current Id."); 
    staticvalue("Collector(s)","The names of people (collectors, determiners, georeferencers) must be present as agents with variant names of type Label/Collector name in Specify before they can be entered here."); 
    staticvalue("Country/State:","Change the default settings for the higher geography filter on the Set Default Values, note that this resets all form entries to blank values."); 
+   staticvalue("Clear Button:","The button <button id='buttonResetDummy' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' data-dojo-props=\"iconClass:'dijitIconClear'\" ></button> will clear the field next to the button.  You must use this button to change the field to an empty value, simply erasing the current value will still retain and submit that value."); 
    staticvalue("See:","<a href='http://watson.huh.harvard.edu/wiki/index.php/Minimal_Data_Capture'>Minimal Data Capture Wiki Page</a>"); 
    staticvalue("See:","<a href='http://watson.huh.harvard.edu/wiki/index.php/Field_Definitions'>Field Definitions</a>"); 
    staticvalue("See:","<a href='https://code.google.com/p/applecore/wiki/CodesAndNumbers'>AppleCore guidance document</a>"); 
@@ -408,7 +411,7 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
    if ($placeholder!='') {
       $placeholder = "placeHolder='$placeholder'";
    }
-   echo "<input name=$name value='$default' dojoType='dijit.form.ValidationTextBox' required='$required' $regex $placeholder >";
+   echo "<input name=$name value='$default' dojoType='dijit.form.ValidationTextBox' required='$required' $regex $placeholder  style='width: ".BASEWIDTH."em; ' >";
    echo "</td></tr>\n";
 }
 
@@ -454,6 +457,7 @@ function selectHigherGeography($field,$label, $defaultcountry='', $defaultprimar
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
 	store='geoStore$field' 
+    style='width: ".BASEWIDTH."em; '
 	searchAttr='name' value='' ></td></tr>";
 	echo $returnvalue;
 }
@@ -505,20 +509,30 @@ function selectAcronym($field,$default) {
 function selectCurrentID($field,$label,$required='false') {
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
-   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
-	searchAttr='name' value='' ></td></tr>";
+   $width = BASEWIDTH - 3;
+   $returnvalue .= "<label for=\"fst$field\">$label</label></td><td>
+	<input type=text name=$field id=fst$field dojoType='dijit.form.FilteringSelect' 
+	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
+    style='width: ".$width."em; border-color: blue; '
+	searchAttr='name' value='' >
+    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+      onclick=\"dijit.byId('fst$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+    </td></tr>";
    echo $returnvalue;
 }
 
 function selectCollectorsID($field,$label,$required='false') {
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsoncollector' > </div>";
-   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
-	searchAttr='name' value='' ></td></tr>";
+   $width = BASEWIDTH - 3;
+   $returnvalue .= "<label for=\"fs$field\">$label</label></td><td>
+	<input type='text' name=$field id='fs$field' dojoType='dijit.form.FilteringSelect' 
+	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
+    style='width: ".$width."em; border-color: blue; '
+	searchAttr='name' value='' >
+    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+      onclick=\"dijit.byId('fs$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+    </td></tr>";
    echo $returnvalue;
 }
 
