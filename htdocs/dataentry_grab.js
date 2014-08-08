@@ -1,15 +1,15 @@
 dojo.require("dojo.io.script");
-dojo.io.script.get({url: "http://localhost:8080/js/fp-data-entry-plugin.js"});
+dojo.io.script.get({url: "http://140.247.98.183:8086/js/fp-data-entry-plugin.js"});
 
 function on_grab_lichen_click() {
 	fp_data_entry_plugin({
 		iframe_parent_id: "fp-data-entry-plugin-goes-here",
-		url: "http://localhost:8080", // Change this to point to the real server.
+		url: "http://140.247.98.183:8086", // Change this to point to the real server.
 		css_urls: [
 			"css/data-entry.css", // default css is provided on server.
 		],
 		js_urls: [
-			"http://localhost/rapid/dataentry_extra.js" 
+			"http://watson.huh.harvard.edu/rapid/dataentry_extra.js" 
 		],
 	
 		// optional:
