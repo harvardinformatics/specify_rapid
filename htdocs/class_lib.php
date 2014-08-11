@@ -271,6 +271,8 @@ class User {
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Macrofungi%20TCN">MacrofungiTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=GH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=New%20England%20Vascular%20Plants%20TCN">NEVPTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Macroalgae%20TCN">Macroalgae</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="utility.php">Utilities</a>&nbsp;'; } 
+         if ($caller=="utility.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; } 
       }
       return $returnvalue;
    }
@@ -322,6 +324,7 @@ class Page {
 
    private $title;
    private $errormessage;
+   private $targetPage = "rapid.php";
 
    public function setTitle($pageTitle) {
       $title = 'HUH Specify';
@@ -330,6 +333,10 @@ class Page {
    
    public function setErrorMessage($error) { 
       $this->errormessage = $error;
+   }
+
+   public function setTargetPage($targetpage) { 
+      $this->targetPage = $targetpage;
    }
 
    public function getHeader($user) {
@@ -348,7 +355,7 @@ class Page {
    }
    if ($user!=null) { 
       if ($user->getAuthenticationState()==true) {
-   	     $returnvalue .= $user->getUserHtml("rapid.php");
+   	     $returnvalue .= $user->getUserHtml($this->targetPage);
       }
    }
    $returnvalue .= '</div>';

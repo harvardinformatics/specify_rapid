@@ -19,6 +19,11 @@ if ($debug) {
 	mysqli_report(MYSQLI_REPORT_OFF);
 }
 
+class Result { 
+  public $success;
+  public $html;
+  public $errors;
+} 
 
 include_once('class_lib.php');  // contains declaration of User() class
 
@@ -61,6 +66,70 @@ if ($connection && $authenticated) {
    $alpha = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
 
    switch ($action) {
+      case 'prepmergeprocessorpre':
+        	@$firstbarcode= substr(preg_replace('/[^0-9]/','',$_GET['targetbarcode']),0,huh_fragment::IDENTIFIER_SIZE);
+        	@$secondbarcode= substr(preg_replace('/[^0-9]/','',$_GET['movebarcode']),0,huh_fragment::IDENTIFIER_SIZE);
+            if (strlen($firstbarcode)==0 || strlen($secondbarcode)==0) { 
+               echo "You must provide two barcodes.";
+            } elseif ($firstbarcode==$secondbarcode) { 
+               echo "You must provide two different barcodes.";
+            } else { 
+               $barcodes[0]=$firstbarcode;
+               $barcodes[1]=$secondbarcode;
+               
+               $result =  preMergeCheck($barcodes);
+               echo $result->html;
+               echo $result->errors;
+               if ($result->success===TRUE) { 
+                  echo "Merge preparation for $firstbarcode with $secondbarcode?";
+                  echo '<div>';
+                  echo "<form action='ajax_handler.php' method='GET' id='doMergeForm' >\n";
+                  echo "<input type=hidden name='druid_action' value='prepmergeprocessor'>";
+                  echo "<input type=hidden name='targetbarcode' value='$firstbarcode'>";
+                  echo "<input type=hidden name='movebarcode' value='$secondbarcode'>";
+                  echo "<button type='submit' dojoType='dijit.form.Button' id='doMergeButton'>Merge</button>";
+                  echo "</form >";
+                  echo "</div >";
+               }
+            }
+         break;
+      case 'prepmergeprocessor':
+        	@$firstbarcode= substr(preg_replace('/[^0-9]/','',$_GET['targetbarcode']),0,huh_fragment::IDENTIFIER_SIZE);
+        	@$secondbarcode= substr(preg_replace('/[^0-9]/','',$_GET['movebarcode']),0,huh_fragment::IDENTIFIER_SIZE);
+            $barcodes[0]=$firstbarcode;
+            $barcodes[1]=$secondbarcode;
+            $result =  preMergeCheck($barcodes);
+            if ($result->success===TRUE) { 
+
+               if (TRUE) { 
+                  echo "Merge function not currently enabled. ";
+               } else { 
+
+               $result = merge($barcodes);
+               echo "Merge $firstbarcode with $secondbarcode ";
+               if ($result->success) {  
+                  echo "<strong>success</strong>.<br/>";
+               } else { 
+                  echo "<strong>failed</strong>.<br/>";
+                  echo $result->errors;
+               }
+
+               }
+
+            } else { 
+               echo $result->errors;
+            }
+         break;
+      case 'showstructure':
+        	@$barcode= substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
+            $result = showStructure($barcode);
+            if ($result->success===TRUE) { 
+               echo $result->html;
+            } else { 
+               echo $result->errors;
+            }
+       
+         break;
       case 'rapidaddprocessor':
          $feedback = "";
          
@@ -628,6 +697,463 @@ if ($connection && $authenticated) {
 
 } else {
    echo 'Error: Unable to connect to database.';
+}
+
+function preMergeCheck($barcodes) { 
+   global $connection;
+   $retval = new Result();
+   $retval->html = "";
+   $hitFailureCondition = FALSE;
+   $retval->success = FALSE;
+
+   $coPrepList = Array();
+   $prepCount = 0;
+   $coCount = 0; 
+   $allowedPrepsToMerge = Array();
+   $allowedPrepsToMerge[]="Sheet";
+
+   $sql = "select identifier, f.text1, f.remarks, prepmethod, f.timestampcreated, co.timestampcreated, co.catalogeddate, ce.stationfieldnumber, ce.collectingeventid, l.localityname, g.name, g.geographyid, f.preparationid, co.createdbyagentid, f.createdbyagentid, f.fragmentid from fragment f left join collectionobject co on f.collectionobjectid = co.collectionobjectid left join collectingevent ce on co.collectingeventid = ce.collectingeventid left join locality l on ce.localityid = l.localityid left join geography g on l.geographyid = g.geographyid where f.identifier = ? ";
+   $stmt = $connection->prepare($sql);
+   $sqlprep = "select preparation.timestampcreated, preparation.createdbyagentid, preptype.name, preparation.parentid from preparation left join preptype on preparation.preptypeid = preptype.preptypeid where preparationid = ? ";
+   $stmtprep = $connection->prepare($sqlprep);
+   $sqlcoll = " select name, etal  from collector left join agentvariant on collector.agentid = agentvariant.agentid where collectingeventid = ? and vartype = 4 order by isprimary, ordernumber";
+   $stmtcoll = $connection->prepare($sqlcoll);
+   $sqldet= "select fullname, typestatusname from determination left join taxon on determination.taxonid = taxon.taxonid where fragmentid = ? order by yesno3 desc, iscurrent desc limit 1 ";
+   $stmtdet = $connection->prepare($sqldet);
+   $sqlhg= "select trim(concat(ifnull(p5.name,''), ' ' ,ifnull(p4.name,''), ' ', ifnull(ppp.name,''),' ', ifnull(pp.name,''), ' ', ifnull(p.name,''), ' ', ifnull(g.name, ''))) hg from geography g left join geography p on g.parentid = p.geographyid left join geography pp on p.parentid = pp.geographyid left join geography ppp on pp.parentid = ppp.geographyid left join geography p4 on ppp.parentid = p4.geographyid left join geography p5 on p4.parentid = p5.geographyid where g.geographyid = ? ";
+   $stmthg = $connection->prepare($sqlhg);
+   $sqlimg = "select url_prefix, uri, barcodes from fragment f left join IMAGE_SET_collectionobject isco on f.collectionobjectid = isco.collectionobjectid left join IMAGE_OBJECT io on isco.imagesetid = io.image_set_id left join REPOSITORY r on io.repository_id = r.id  where identifier = ? and object_type_id = 2 limit 1 ";
+   $stmtimg = $connection->prepare($sqlimg);
+   if ($connection->error!="") { 
+      $result .=  '['.$connection->error.']'; 
+   } else { 
+      $initialPrepType = "";
+      $itemCount= 0;
+      $prepCount= 0;
+      $prepIds = Array();
+      foreach ($barcodes as $barcode) { 
+         $stmt->bind_param("i",$barcode);
+         $stmt->execute();
+         $stmt->store_result();
+         $stmt->bind_result($identifier, $acronym, $fragmentremarks, $prepmethod, $fragmentcreated, $cocreated, $catalogeddate, $fieldnumber, $collectingeventid, $localityname, $geographyname, $geographyid, $preparationid, $cocreatedbyagentid, $fcreatedbyagentid,$fragmentid);
+         $itemCount += $stmt->num_rows;
+         if ($stmt->num_rows==1) { 
+            $stmt->fetch();
+
+            $stmtdet->bind_param("i",$fragmentid);
+            $stmtdet->execute();
+            $stmtdet->store_result();
+            $stmtdet->bind_result($fullname,$typestatus);
+            $stmtdet->fetch();
+
+            $etal = "";
+            $collector = "";
+            $stmtcoll->bind_param("i",$collectingeventid);
+            $stmtcoll->execute();
+            $stmtcoll->store_result();
+            $stmtcoll->bind_result($name, $et_al);
+            while ($stmtcoll->fetch()) { 
+                $collector .= " " . $name;
+                $etal .= " " .$et_al;
+            }
+            $collector .= $etal;
+            $collector = trim($collector);
+
+            $stmthg->bind_param("i",$geographyid);
+            $stmthg->execute();
+            $stmthg->store_result();
+            $stmthg->bind_result($highergeography);
+            $stmthg->fetch();
+
+            $stmtimg->bind_param("i",$barcode);
+            $stmtimg->execute();
+            $stmtimg->store_result();
+            $stmtimg->bind_result($url_prefix, $url, $barcodesfound);
+            while ($stmtimg->fetch()) { 
+               $result .= "<div><img src='$url_prefix$url' width='100' />$barcodesfound</div>";
+            }
+            if (in_array($preparationid,$prepIds)) { 
+               $hitFailureCondition = TRUE; 
+               $retval->errors .= "Items share a preparation. ";
+            } else { 
+                $prepIds[] = $preparationid;
+            }
+            $stmtprep->bind_param("i",$preparationid);
+            $stmtprep->execute();
+            $stmtprep->store_result();
+            $stmtprep->bind_result($prepcreated,$prcreatedbyagentid,$preptype,$prepparent);
+            if ($prepparent=="0") { $prepparent = ""; } 
+            $preps = "";
+            // Rule, if preparation is child, don't merge.
+            if ($stmtprep->num_rows!=1 || strlen($prepparent)>0 ) { 
+               $hitFailureCondition = TRUE; 
+               $retval->errors .= "Unable to merge when preparation is a child of another preparation. ";
+            } 
+            $prepCount += $stmtprep->num_rows;
+            while ($stmtprep->fetch()) { 
+               if ($initialPrepType=="") { $initialPrepType = $preptype; } 
+               $prepAgent = getAgentName($prcreatedbyagentid);
+               // Rule, if preparation isn't the same type as , don't merge.
+               if ($preptype != $initialPrepType ) { 
+                  $hitFailureCondition = TRUE; 
+                  $retval->errors .= "Unable to merge when preparations aren't all the same type  ";
+               } 
+               if (array_key_exists($preptype,$allowedPrepsToMerge)) { 
+                  $hitFailureCondition = TRUE; 
+                  $retval->errors .= "Only sheets can be merged. ";
+               } 
+               $preps .= "<strong>$preptype</strong>: $prepAgent,$prepcreated id=[$preparationid]<br>";
+            }       
+            $coAgent = getAgentName($cocreatedbyagentid);
+            $fAgent = getAgentName($fcreatedbyagentid);
+            $result .= "<strong>$acronym $identifier</strong><br/>$highergeography $geographyname $localityname <br/>$fullname $typestatus<br/>$collector $fieldnumber  $fragmentremarks<br/> $prepmethod cataloged:$catalogeddate <br/>Data Entry: coll.obj.:$coAgent,$cocreated; item:$fAgent,$fragmentcreated<br>$preps<hr>";
+         } else { 
+            $hitFailureCondition = TRUE; 
+            $retval->errors .= "Barcode $barcode not found. ";
+         }
+      }
+      // if got an equal number of items and preps, set success to true
+      if ($itemCount>0 && $itemCount==$prepCount) { $retval->success=TRUE; } 
+   }
+   $stmt->close();
+   $stmtprep->close();
+   // but if we hit any failure condition, set success to false.
+   if ($hitFailureCondition===TRUE) { $retval->success=FALSE; } 
+   $retval->html = $result;
+   return $retval;
+} 
+
+function getAgentName($agentid) { 
+   $result = "[No Agent]";
+   if (strlen($agentid)>0) { 
+      $agent = new HUH_AGENT();
+      $agent->load($agentid);
+      $result = $agent->getFirstName() . " " . $agent->getLastName();
+   }
+   return $result;
+}
+
+function merge($barcodes) { 
+   global $connection;
+   $retval = new Result();
+   $retval->html = "";
+   $retval->success = FALSE;
+   $hitFailureCondition = FALSE;
+
+   if (count($barcodes) < 2) { 
+      $retval->errors = "Provided less than two barcodes";
+   } else { 
+   
+      $sql = " select preparationid from fragment where identifier = ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("i",$barcodes[0]); 
+      $stmt->execute();
+      $stmt->store_result();
+      $stmt->bind_result($targetPreparationId);
+      $stmt->fetch();
+      $targetCount = $stmt->num_rows;
+      $stmt->close();
+      if ($targetCount!=1) { 
+         $retval->errors .= "Barcode " .$barcodes[0]. " not found.";
+      } else { 
+         // begin transaction
+         $connection->autocommit(false);
+         // $connection->begin_transaction();
+         $sql = " ";
+         $stmt = $connection->prepare($sql);
+         // loop through barcodes, skipping first (it is the target).
+         for($i=1; $i<count($barcodes); $i++) { 
+            $sql = "select fragmentid, preparationid from fragment where identifier = ? ";
+            
+            $stmt = $connection->prepare($sql);
+            $stmt->bind_param("i",$barcodes[$i]); 
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($moveFragmentId,$movePreparationId);
+            $stmt->fetch();
+            $moveCount = $stmt->num_rows;
+            $stmt->close();
+            if ($moveCount!=1) { 
+               $hitFailureCondition = TRUE;
+               $retval->errors .= "Barcode " .$barcodes[$i]. " found other than 1 fragment.  ";
+            } else { 
+               $sql = "update fragment set preparationid = ? where fragmentid = ? ";
+               $stmt = $connection->prepare($sql);
+               $stmt->bind_param("ii",$targetPreparationId,$moveFragmentId); 
+               if (!$stmt->execute()) { 
+                  $hitFailureCondition = TRUE;
+                  $retval->errors .= "Barcode " . $stmt->error . "  ";
+               }
+               $stmt->close();
+
+               $sql = "select count(*) from fragment where preparationid = ? ";
+               $stmt = $connection->prepare($sql);
+               $stmt->bind_param("i",$movePreparationId); 
+               $stmt->execute();
+               $stmt->bind_result($moveCount);
+               $stmt->store_result();
+               $stmt->fetch();
+               $moveCount = $stmt->num_rows;
+               $stmt->close();
+               if ($moveCount!=1) { 
+                  $hitFailureCondition = TRUE;
+                  $retval->errors .= "Barcode " .$barcodes[$i]. " is attached to a preparation with multiple Items. ";
+               } else { 
+                   $usql = Array();
+                   $usql[] = "update loanpreparation set preparationid = ? where preparationid = ? ";
+                   $usql[] = "update accessionpreparation set preparationid = ? where preparationid = ? ";
+                   $usql[] = "update conservdescription set preparationid = ? where preparationid = ? ";
+                   $usql[] = "update deaccessionpreparation set preparationid = ? where preparationid = ?  ";
+                   $usql[] = "update exchangeoutpreparation set preparationid = ? where preparationid = ?  ";
+                   $usql[] = "update giftpreparation set preparationid = ? where preparationid = ?  ";
+                   $usql[] = "update preparationattachment set preparationid = ? where preparationid = ?  ";
+                   $usql[] = "update preparationattr set preparationid = ? where preparationid = ?  ";
+                   $usql[] = "update treatmentevent set preparationid = ? where preparationid = ? ";
+                   foreach($usql as $sql) { 
+                       $updateResult = movePreparation($targetPreparationId,$movePreparationId,$sql);
+                       if ($updateResult->success!==TRUE) { 
+                          $hitFailureCondition = TRUE;
+                          $retval->errors .= "Update Failed. ". $updateResult->errors;
+                       } 
+                   }
+                    $sql = "delete from preparation where preparationid = ? ";
+
+               }
+
+            }
+         }      
+   
+         if ($hitFailureCondition===FALSE) { 
+            // success, commit
+            if ($connection->commit()) { 
+               $retval->success = TRUE;
+            } else {
+               $retval->errors .= "Commit failed. ". $connection->error ;
+            } 
+         } else { 
+            // failure, rollback
+            $connection->rollback();
+         }
+      }
+   }
+   return $retval;
+}
+
+/**
+ * Given a sql statement in the form 
+ * update loanpreparation set preparationid = ? where preparationid = ? 
+ * and two preparationIds, execute the query.
+ * @param targetPreparationId the preparation to move to. 
+ * @param movePreparationId the preparation that is being moved from (and 
+ * which is expected to be deleted by the code that calls this function).
+ * @param the sql statement to be executed
+ * 
+ * @return a Result object with Result->success indicating successful 
+ * execution of the sql statement or not, and Result->errors containing 
+ * any error messages.
+ */
+function movePreparation($targetPreparationId,$movePreparationId,$sql) {
+   global $connection;
+   $result = new Result();
+   $result->success=FALSE;
+   $regex="/^update [a-zA-Z]+ set preparationid = \? where preparationid = \? */"; 
+   if (preg_match($regex,$sql)) { 
+      if ($stmt = $connection->prepare($sql)) { 
+         $stmt->bind_param("ii",$targetPreparationId,$movePreparationId); 
+         if ($stmt->execute()) { 
+            $result->success=TRUE;
+         } else {
+            $result->errors .= $stmt->error . " ";
+         }
+      } else { 
+        $result->errors .= $connection->error . " ";
+      }
+   } else { 
+     $result->errors .= " sql statement not in expected form. ";
+   }
+   return $result;
+}
+
+function showStructure($barcode) {
+   global $connection;
+   $result = new Result();
+   $result->success=FALSE;
+
+
+
+ 
+   $sql = "select f.text1, f.prepmethod, f.fragmentid, f.createdbyagentid, f.timestampcreated, f.preparationid, f.collectionobjectid, co.createdbyagentid, co.timestampcreated, co.text1 as habitat, co.catalogeddate, p.createdbyagentid, p.timestampcreated, preptype.name, ce.collectingeventid, ce.createdbyagentid, ce.timestampcreated, l.localityid, l.createdbyagentid, l.timestampcreated, g.geographyid, ce.stationfieldnumber, l.localityname, g.name, p.remarks, f.remarks, co.remarks from fragment f left join collectionobject co on f.collectionobjectid = co.collectionobjectid left join preparation p on f.preparationid = p.preparationid left join preptype on p.preptypeid = preptype.preptypeid left join collectingevent ce on co.collectingeventid = ce.collectingeventid left join locality l on ce.localityid = l.localityid left join geography g on l.geographyid = g.geographyid where f.identifier = ? ";
+   $stmt0 = $connection->prepare($sql);
+   $stmt0->bind_param("i",$barcode); 
+   $stmt0->execute();
+   $stmt0->bind_result($acronym,$prepmethod,$fragmentid,$fcreatedby,$fcreated,$preparationid,$collectionobjectid,$cocreatedby, $cocreated, $habitat, $datecataloged, $pcreatedby, $pcreated, $preptype,$collectingeventid,$cecreatedby,$cecreated,$localityid,$lcreatedby,$lcreated,$geographyid,$collectornumber,$localityname,$geography,$premarks,$fremarks,$coremarks);
+   $stmt0->store_result();
+   $barcodecount = 0;
+   while ($stmt0->fetch()) { 
+      $barcodecount++;
+      if (strlen(trim($habitat))>0) { $habitat = "$habitat<br/>"; } 
+      $loans = "";
+      $sql = "select isresolved, loannumber,isclosed from loanpreparation lp left join loan lo on lp.loanid = lo.loanid left join loanreturnpreparation lrp on lp.loanpreparationid = lrp.loanpreparationid where lp.preparationid = ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("i",$preparationid); 
+      $stmt->execute();
+      $stmt->bind_result($isresolved,$loannumber,$isclosed);
+      $stmt->store_result();
+      $loancount = $stmt->num_rows;
+      while ($stmt->fetch()) { 
+         $loans .= "$loannumber</br>";
+      }
+      $stmt->close();
+   
+      $coitems = "";
+      $sql = "select text1, identifier from fragment where collectionobjectid = ? and fragmentid <> ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("ii",$collectionobjectid,$fragmentid); 
+      $stmt->execute();
+      $stmt->bind_result($coac, $cobarcode);
+      $stmt->store_result();
+      $cofcount = $stmt->num_rows;
+      while ($stmt->fetch()) { 
+         $coitems .= "<a href='utility.php?barcode=$cobarcode'>$coac-$cobarcode</a></br>";
+      }
+      $stmt->close();
+   
+      $pitems = "";
+      $sql = "select text1, identifier from fragment where preparationid = ? and fragmentid <> ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("ii",$preparationid,$fragmentid); 
+      $stmt->execute();
+      $stmt->bind_result($pac,$pbarcode);
+      $stmt->store_result();
+      $pfcount = $stmt->num_rows;
+      while ($stmt->fetch()) { 
+         $pitems .= "<a href='utility.php?barcode=$pbarcode'>$pac-$pbarcode</a></br>";
+      }
+      $stmt->close();
+   
+      $sql= "select trim(concat(ifnull(p5.name,''), ': ' ,ifnull(p4.name,''), ': ', ifnull(ppp.name,''),': ', ifnull(pp.name,''), ': ', ifnull(p.name,''), ': ', ifnull(g.name, ''))) hg from geography g left join geography p on g.parentid = p.geographyid left join geography pp on p.parentid = pp.geographyid left join geography ppp on pp.parentid = ppp.geographyid left join geography p4 on ppp.parentid = p4.geographyid left join geography p5 on p4.parentid = p5.geographyid where g.geographyid = ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("i",$geographyid); 
+      $stmt->execute();
+      $stmt->bind_result($highergeography);
+      $stmt->store_result();
+      $stmt->fetch();
+      $stmt->close();
+      $highergeography = preg_replace("/^[: ]*/","",$highergeography);
+   
+
+      $ceitems = "";
+      $sql = "select f.text1, identifier from collectionobject co left join fragment f on co.collectionobjectid = f.collectionobjectid where collectingeventid = ? and fragmentid <> ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("ii",$collectingeventid,$fragmentid); 
+      $stmt->execute();
+      $stmt->bind_result($ceac,$cebarcode);
+      $stmt->store_result();
+      $cefcount = $stmt->num_rows;
+      while ($stmt->fetch()) { 
+         $ceitems .= "<a href='utility.php?barcode=$cebarcode'>$ceac-$cebarcode</a></br>";
+      }
+      $stmt->close();
+
+      $litems = "";
+      $sql = "select f.text1, identifier from collectingevent ce left join  collectionobject co on ce.collectingeventid = co.collectingeventid left join fragment f on co.collectionobjectid = f.collectionobjectid where localityid = ? and fragmentid <> ? ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("ii",$localityid,$fragmentid); 
+      $stmt->execute();
+      $stmt->bind_result($lac,$lbarcode);
+      $stmt->store_result();
+      $lfcount = $stmt->num_rows;
+      while ($stmt->fetch()) { 
+         $litems .= "<a href='utility.php?barcode=$lbarcode'>$lac-$lbarcode</a></br>";
+      }
+      $stmt->close();
+
+      $collector = "";
+      $sql = " select name, etal  from collector left join agentvariant on collector.agentid = agentvariant.agentid where collectingeventid = ? and vartype = 4 order by isprimary, ordernumber";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("i",$collectingeventid); 
+      $stmt->execute();
+      $stmt->bind_result($collname,$etal);
+      $stmt->store_result();
+      while ($stmt->fetch()) { 
+         $colls .= " " . $collname;
+         $et_al .= " " . $etal;
+      }
+      $stmt->close();
+      $collector = trim($colls . $et_al);
+
+      $determinations = "";
+      $sql = "select fullname, author, typestatusname from determination left join taxon on determination.taxonid = taxon.taxonid where fragmentid = ? order by yesno3 desc, iscurrent desc ";
+      $stmt = $connection->prepare($sql);
+      $stmt->bind_param("i",$fragmentid); 
+      $stmt->execute();
+      $stmt->bind_result($fullname,$author,$typestatus);
+      $stmt->store_result();
+      while ($stmt->fetch()) { 
+         $determinations .= "<em>$fullname</em> $author $typestatus</br>";
+      }
+      $stmt->close();
+
+
+      if ($barcodecount>1) { 
+      $html .= "<strong style='color: Red;'>Warning: $barcode is not unique.</strong><br/>";
+      } else { 
+      $html .= "Relationships of <strong>$acronym-$barcode</strong>:<br/>";
+      }
+
+      $html .= "<table border=1>";  
+      $html .= "<tr>";  
+   
+      $html .= "<th style='text-align: center; font-weight: bold;'>Geography</th>";  
+      $html .= "<th style='text-align: center; font-weight: bold;'>Locality</th>";  
+      $html .= "<th style='text-align: center; font-weight: bold;'>Collecting Event</th>";  
+      $html .= "<th style='text-align: center; font-weight: bold;'>Collection Object</th>";  
+      $html .= "<th style='text-align: center; font-weight: bold;'>Item</th>";  
+      $html .= "<th style='text-align: center; font-weight: bold;'>Preparation</th>";  
+      $html .= "<th style='text-align: center; font-weight: bold;'>Loan</th>";  
+   
+      $html .= "</tr><tr>";
+     
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$geography [$geographyid]</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$localityname [$localityid]<br/>".getAgentName($lcreatedby)." $lcreated</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$collector $collectornumber [$collectingeventid]<br/>".getAgentName($cecreatedby)." $cecreated</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>Cataloged: $datecataloged<br/>$habitat [$collectionobjectid]<br/>".getAgentName($cocreatedby)." $cocreated<br/>$coremarks</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'><strong>$acronym-$barcode</strong> [$fragmentid]<br/>".getAgentName($fcreatedby)." $fcreated<br/>$fremarks</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$preptype [$preparationid]<br/>".getAgentName($pcreatedby)." $pcreated<br/>$premarks</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>In $loancount loan".plural($loancount).".<br/>$loans</td>";  
+   
+      $html .= "</tr><tr>";
+     
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$highergeography</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$lfcount other Item".plural($lfcount)." from this locality.<br/>$litems</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>Collected with $cefcount other Item".plural($cefcount)."<br/>$ceitems</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>Collection includes $cofcount other Item".plural($cofcount)."<br/>$coitems</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>$determinations</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'>Shares preparation with $pfcount other Item".plural($pfcount)."<br/>$pitems</td>";  
+      $html .= "<td style='vertical-align:text-top; text-align: center;'></td>";  
+   
+      $html .= "</tr>";  
+      $html .= "</table>";  
+
+      $html .= "Numbers in square brackets are internal database identifiers.  Created by and date created shown for locality, collecting event, collection object, item, and preparation records.  Date created of 2010-08-16 was date of migration from ASA to Specify-HUH.<br/>";
+      
+      $result->success = TRUE;
+      $result->html = $html;
+   }  
+   $count = $stmt0->num_rows;
+   $stmt0->close();
+
+   if ($count==0) { 
+     $result->errors .= "Barcode $barcode not found.";
+   }
+
+   return $result;
+}
+
+function plural($count) { 
+  $result = "s";
+  if ($count==1) { $result = ""; } 
+  return $result;
 }
 
 mysqli_report(MYSQLI_REPORT_OFF);

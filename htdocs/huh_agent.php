@@ -990,6 +990,8 @@ class huh_agent implements  model , loadableModel, saveableModel, tableSchema
               $statement->bind_result($this->AgentID, $this->TimestampCreated, $this->TimestampModified, $this->Version, $this->Abbreviation, $this->AgentType, $this->DateOfBirth, $this->DateOfBirthConfidence, $this->DateOfBirthPrecision, $this->DateOfDeath, $this->DateOfDeathConfidence, $this->DateOfDeathPrecision, $this->DatesType, $this->Email, $this->FirstName, $this->GUID, $this->Initials, $this->Interests, $this->JobTitle, $this->LastName, $this->MiddleInitial, $this->Remarks, $this->Title, $this->URL, $this->InstitutionCCID, $this->CollectionCCID, $this->CreatedByAgentID, $this->ModifiedByAgentID, $this->SpecifyUserID, $this->CollectionTCID, $this->DivisionID, $this->InstitutionTCID, $this->ParentOrganizationID);
               $statement->fetch();
               $statement->close();
+           } else { 
+               throw new Exception($connection->error);
            }
 
             $this->loaded = true;
