@@ -510,13 +510,13 @@ function selectCurrentID($field,$label,$required='false') {
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
    $width = BASEWIDTH - 3;
-   $returnvalue .= "<label for=\"fst$field\">$label</label></td><td>
-	<input type=text name=$field id=fst$field dojoType='dijit.form.FilteringSelect' 
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
 	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
     style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
-      onclick=\"dijit.byId('fst$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+      onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
    echo $returnvalue;
 }
@@ -525,13 +525,13 @@ function selectCollectorsID($field,$label,$required='false') {
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsoncollector' > </div>";
    $width = BASEWIDTH - 3;
-   $returnvalue .= "<label for=\"fs$field\">$label</label></td><td>
-	<input type='text' name=$field id='fs$field' dojoType='dijit.form.FilteringSelect' 
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+	<input type='text' name=$field id='$field' dojoType='dijit.form.FilteringSelect' 
 	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
     style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
-      onclick=\"dijit.byId('fs$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+      onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
    echo $returnvalue;
 }

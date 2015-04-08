@@ -801,7 +801,7 @@ class huh_geography_custom extends huh_geography {
    public function selectDistinctJSONCountry() {
       global $connection;
       $returnvalue = '';
-      $preparemysql = "select distinct name from geography where rankid = 200 order by name asc ";
+      $preparemysql = "select distinct name from geography where rankid = 200 and isaccepted = 1 order by name asc ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
@@ -824,7 +824,7 @@ class huh_geography_custom extends huh_geography {
    public function selectDistinctJSONPrimary() {
       global $connection;
       $returnvalue = '';
-      $preparemysql = "select distinct name from geography where rankid = 300 order by name asc ";
+      $preparemysql = "select distinct name from geography where rankid = 300 and isaccepted = 1 order by name asc ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
@@ -847,14 +847,14 @@ class huh_geography_custom extends huh_geography {
    public function limitedSelectDistinctJSONGeography($country,$primary) {
       global $connection;
       $returnvalue = '';
-      $wherebit = " where ";
+      $wherebit = " where isaccepted = 1 ";
       $primaryid = "";
       $countryid = "";
-      $and = "";
+      $and = " and ";
 
       if ($primary !='') {
          $wherebit .= "";
-         $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 300 and name = ? ";
+         $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 300 and name = ? and isaccepted = 1 ";
          if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param("s",$primary);
             $stmt->execute();
@@ -869,7 +869,7 @@ class huh_geography_custom extends huh_geography {
       } else {
          if ($country !='') {
             $wherebit .= "";
-            $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 200 and name = ? ";
+            $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 200 and name = ? and isaccepted = 1 ";
             if ($stmt = $connection->prepare($sql)) {
                $stmt->bind_param("s",$country);
                $stmt->execute();

@@ -72,6 +72,8 @@ function on_grab_nevp_click() {
 			collector: "collector",
 			collectionNumber: "collectionNumber"
 		},
+		q_ids: {
+		},
 		
 		// As changes are made in the widget, which fields in the parent are changed?
 		// Typically, these are input name attributes, but if you need something more flexible,

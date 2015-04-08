@@ -173,7 +173,7 @@ if ($connection && $authenticated) {
         	@$page= substr(preg_replace('/[^0-9 A-Za-z]/','',$_GET['page']),0,huh_taxoncitation::TEXT1_SIZE);
         	@$datepublished= substr(preg_replace('/[^0-9\- ]/','',$_GET['datepublished']),0,huh_taxoncitation::TEXT2_SIZE);
         	@$isfragment= substr(preg_replace('/[^0-9a-z]/','',$_GET['isfragment']),0,1);   // taxon 
-        	@$habitat= substr(preg_replace('/[^A-Za-z 0-9]/','',$_GET['habitat']),0,huh_collectingevent::REMARKS_SIZE); 
+        	@$habitat= substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?]/','',$_GET['habitat']),0,huh_collectingevent::REMARKS_SIZE); 
           	@$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_GET['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
         	@$verbatimelevation= substr(preg_replace('/[^A-Za-z0-9°\-\.\, \[\]\(\)\? \&\']/','',$_GET['verbatimelevation']),0,huh_locality::VERBATIMELEVATION_SIZE);
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
