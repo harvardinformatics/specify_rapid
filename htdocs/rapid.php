@@ -321,6 +321,7 @@ function form() {
    echo "<table><tr><td valign='top'>\n";
    echo "<table>\n";
    field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
+   field ("host","Host"); 
    fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
    staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>"); 
    field ("verbatimelevation","Verbatim elevation");

@@ -269,6 +269,7 @@ class User {
          if ($caller=="rapid.php") { $returnvalue .= ' Defaults: <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Lichen%20and%20Bryophyte%20TCN">Lichen&amp;BryophyteTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Macrofungi%20TCN">MacrofungiTCN</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Microfungi%20TCN">MicrofungiTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=GH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=New%20England%20Vascular%20Plants%20TCN">NEVPTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Macroalgae%20TCN">Macroalgae</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="utility.php">Utilities</a>&nbsp;'; } 
@@ -927,7 +928,7 @@ function ingestCollectionObject() {
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, 
-   $exsiccati,$fascicle,$exsiccatinumber ;
+   $exsiccati,$fascicle,$exsiccatinumber, $host ;
  
    $fail = false;
    $feedback = "";
@@ -1093,6 +1094,7 @@ function ingestCollectionObject() {
    if ($datepublished=='') { $datepublished = null; }
    if ($isfragment=='') { $isfragment = null; }
    if ($habitat=='') { $habitat = null; }
+   if ($host=='') { $host = null; }
    if ($phenology=='') { $phenology = 'NotDetermined'; }
    if ($verbatimelevation=='') { $verbatimelevation = null; }
    if ($minelevation=='') { $minelevation = null; }
@@ -1177,6 +1179,7 @@ function ingestCollectionObject() {
       $df.= "container=[$container] ";  
       $df.= "storagelocation=[$storagelocation] ";  
       $df.= "project=[$project] ";  
+      $df.= "host=[$host] ";  
       $df.= "exsiccati=[$exsiccati] ";  
       $df.= "fascicle=[$fascicle] ";  
       $df.= "exsiccatinumber=[$exsiccatinumber] ";  
@@ -1402,11 +1405,11 @@ function ingestCollectionObject() {
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified) " . 
-                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now())" ;
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1) " . 
+                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?)" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiiis',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks);
+            $statement->bind_param('iiiiss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host);
             if ($statement->execute()) {
                $collectionobjectid = $statement->insert_id;
                $link = "<a href='http://kiki.huh.harvard.edu/databases/specimen_search.php?barcode=$barcode'>$herbariumacronym $barcode</a>";
