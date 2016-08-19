@@ -343,7 +343,7 @@ function form() {
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
    selectCurrentID("basionym","Basionym");
    selectRefWorkID("publication","Publication");
-   field ("page","Page");
+   field ("page","Vol: Page");
    field ("datepublished","Year published");
    selectYesNo ("isfragment","Is fragment");
    echo "</table>\n";
