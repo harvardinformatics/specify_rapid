@@ -11,3 +11,5 @@ is included.
 
 (3) /usr/bin/java -jar /var/www/phpincludes/Encryption.jar  With path to java and path to Encryption.jar
 configured within connection_library.php.
+
+(4) MySQL mode should not include ONLY_FULL_GROUP_BY, which is included by default since MySQL 5.7.5
