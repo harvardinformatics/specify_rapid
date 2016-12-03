@@ -302,8 +302,8 @@ function form() {
    
    echo '<div dojoType="dijit.layout.AccordionPane" title="Georeference">';
    echo "<table>\n";
-   field ("verbatimlat","verbatim latitude  ° ' \"");
-   field ("verbatimlong","verbatim longitude ° ' \"");
+   field ("verbatimlat","verbatim latitude  &deg; ' \"");
+   field ("verbatimlong","verbatim longitude &deg; ' \"");
    field ("decimallat","decimal latitude",'','false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
    field ("decimallong","decimal longitude",'','false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
    field ("datum","datum");
