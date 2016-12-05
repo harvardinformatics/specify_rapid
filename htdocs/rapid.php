@@ -339,6 +339,7 @@ function form() {
    field ("exsiccatinumber","Number");
    field ("storagelocation","Storage Location");
    field ("specimenremarks","Specimen remarks");
+   field ("specimendescription","Specimen (coll. obj.) description");
    field ("itemdescription", "Item description");
    echo "</table>\n";
    echo "</td>\n";

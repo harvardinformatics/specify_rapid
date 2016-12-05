@@ -956,7 +956,7 @@ function ingestCollectionObject() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, 
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate ;
  
@@ -1164,6 +1164,7 @@ function ingestCollectionObject() {
       }
    }
    if ($specimenremarks=='') { $specimenremarks = null; }
+   if ($specimendescription=='') { $specimendescription = null; }
    if ($itemdescription=='') { $itemdescription = null; }
    
    $latlongtype = 'point';
@@ -1223,6 +1224,7 @@ function ingestCollectionObject() {
       $df.= "fascicle=[$fascicle] ";  
       $df.= "exsiccatinumber=[$exsiccatinumber] ";  
       $df.= "specimenremarks=[$specimenremarks] ";
+      $df.= "specimendescription=[$specimendescription] ";
       $df.= "itemdescription=[$itemdescription] ";
    }
 
@@ -1481,11 +1483,11 @@ function ingestCollectionObject() {
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2) " . 
-                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?)" ;
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2,description) " . 
+                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?,?)" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiiisss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate);
+            $statement->bind_param('iiiissss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate,$specimendescription);
             if ($statement->execute()) {
                $collectionobjectid = $statement->insert_id;
                $link = "<a href='http://kiki.huh.harvard.edu/databases/specimen_search.php?barcode=$barcode'>$herbariumacronym $barcode</a>";
