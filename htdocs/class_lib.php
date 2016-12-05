@@ -951,14 +951,14 @@ class huh_geography_custom extends huh_geography {
 function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated, 
-   $collectors,$etal,$fieldnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,
+   $collectors,$etal,$fieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$dateidentified,$specimenremarks,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, 
-   $exsiccati,$fascicle,$exsiccatinumber, $host ;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate ;
  
    $fail = false;
    $feedback = "";
@@ -1037,6 +1037,8 @@ function ingestCollectionObject() {
    if ($collectors=='') { $collectors = null; }
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
+   if ($accessionnumber=='') { $accessionnumber = null; }
+   if ($provenance=='') { $provenance = null; }
    if ($verbatimdate=='') { $verbatimdate = null; }
    if ($datecollected=='') {
       $datecollected = null;
@@ -1125,6 +1127,7 @@ function ingestCollectionObject() {
    if ($isfragment=='') { $isfragment = null; }
    if ($habitat=='') { $habitat = null; }
    if ($host=='') { $host = null; }
+   if ($substrate=='') { $substrate = null; }
    if ($phenology=='') { $phenology = 'NotDetermined'; }
    if ($verbatimelevation=='') { $verbatimelevation = null; }
    if ($minelevation=='') { $minelevation = null; }
@@ -1161,7 +1164,8 @@ function ingestCollectionObject() {
       }
    }
    if ($specimenremarks=='') { $specimenremarks = null; }
-    
+   if ($itemdescription=='') { $itemdescription = null; }
+   
    $latlongtype = 'point';
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
@@ -1173,10 +1177,12 @@ function ingestCollectionObject() {
       $df.= "collectors=[$collectors] ";
       $df.= "etal=[$etal] ";
       $df.= "fieldnumber=[$fieldnumber] ";
+      $df.= "accessionnumber=[$accessionnumber] ";
       $df.= "verbatimdate=[$verbatimdate] ";
       $df.= "datecollected=[$datecollected] ";
       $df.= "herbariumacronym=[$herbariumacronym] ";
       $df.= "barcode=[$barcode] ";  // required
+      $df.= "provenance=[$provenance] ";
       $df.= "filedundername=[$filedundername] ";  // required
       $df.= "fiidentificationqualifier=[$fiidentificationqualifier] ";
       $df.= "currentdetermination=[$currentdetermination] ";
@@ -1212,10 +1218,12 @@ function ingestCollectionObject() {
       $df.= "storagelocation=[$storagelocation] ";  
       $df.= "project=[$project] ";  
       $df.= "host=[$host] ";  
+      $df.= "substrate=[$substrate] ";
       $df.= "exsiccati=[$exsiccati] ";  
       $df.= "fascicle=[$fascicle] ";  
       $df.= "exsiccatinumber=[$exsiccatinumber] ";  
       $df.= "specimenremarks=[$specimenremarks] ";
+      $df.= "itemdescription=[$itemdescription] ";
    }
 
    $link = "";
@@ -1389,7 +1397,7 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
           
-         if (!$fail) {
+         if (!$fail && $collectingtrip != null) {
          	// CollectingTrip, Collecting Event
          	$collectingtripid = null;
          	if (preg_match("/^[0-9]+$/", $collectingtrip)) {
@@ -1473,11 +1481,11 @@ function ingestCollectionObject() {
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1) " . 
-                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?)" ;
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2) " . 
+                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?)" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiiiss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host);
+            $statement->bind_param('iiiisss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate);
             if ($statement->execute()) {
                $collectionobjectid = $statement->insert_id;
                $link = "<a href='http://kiki.huh.harvard.edu/databases/specimen_search.php?barcode=$barcode'>$herbariumacronym $barcode</a>";
@@ -1687,10 +1695,10 @@ function ingestCollectionObject() {
          $isminimal = 1;  // yesno2
 
          $sql = "insert into fragment (createdbyagentid, identifier, collectionobjectid, preparationid,text1,prepmethod,phenology,number1,sex,yesno2, " .
-             " timestampcreated,version,collectionmemberid) values (?,?,?,?,?,?,?,?,?,?,now(),0,4)";
+             " timestampcreated,version,collectionmemberid,accessionnumber,provenance,description) values (?,?,?,?,?,?,?,?,?,?,now(),0,4,?,?,?)";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('isiisssisi', $currentuserid, $barcode,$collectionobjectid,$preparationid,$herbariumacronym,$prepmethod,$phenology,$replicates,$sex,$isminimal);
+            $statement->bind_param('isiisssisisss', $currentuserid, $barcode,$collectionobjectid,$preparationid,$herbariumacronym,$prepmethod,$phenology,$replicates,$sex,$isminimal,$accessionnumber,$provenance,$itemdescription);
             if ($statement->execute()) {
                $fragmentid = $statement->insert_id;
                $adds  .= "item=[$fragmentid]";

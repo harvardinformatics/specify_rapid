@@ -267,10 +267,12 @@ function form() {
    selectCollectorsID('collectors','Collector(s)','true');
    field ("etal","et al.");
    field ("fieldnumber","Collector number");
+   field ("accessionnumber", "Accession number");
    field ("verbatimdate","Verb. date coll.");
    field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18');  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDate
    selectAcronym("herbariumacronym",$defaultherbarium);
    field ("barcode","Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
+   field ("provenance", "Provenance");
    selectCurrentID("filedundername","Filed under name",'true');   // filed under
    fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26);
    selectCurrentID("currentdetermination","Current Id");   // current id
@@ -322,6 +324,7 @@ function form() {
    echo "<table>\n";
    field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
    field ("host","Host"); 
+   field ("substrate", "Substrate");
    fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
    staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>"); 
    field ("verbatimelevation","Verbatim elevation");
@@ -336,6 +339,7 @@ function form() {
    field ("exsiccatinumber","Number");
    field ("storagelocation","Storage Location");
    field ("specimenremarks","Specimen remarks");
+   field ("itemdescription", "Item description");
    echo "</table>\n";
    echo "</td>\n";
    echo "<td valign='top'>\n";

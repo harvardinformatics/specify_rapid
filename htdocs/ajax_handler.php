@@ -139,10 +139,12 @@ if ($connection && $authenticated) {
         	@$collectors= substr(preg_replace('/[^0-9]/','',$_GET['collectors']),0,huh_agentvariant::NAME_SIZE);
         	@$etal= substr(preg_replace('/[^A-Za-z&\, \.0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
         	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+        	@$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
         	@$verbatimdate= substr(preg_replace('/[^A-Za-z:\- \/\.\,0-9\[\]\&\']/','',$_GET['verbatimdate']),0,huh_collectingevent::VERBATIMDATE_SIZE);
         	@$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_GET['datecollected']),0,40);  // allow larger than date to parse ISO date range
         	@$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_GET['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
         	@$barcode= substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
+        	@$provenance= substr(preg_replace('/^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_GET['provenance']),0,huh_fragment::PROVENANCE_SIZE);
         	@$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['filedundername']),0,huh_taxon::FULLNAME_SIZE);
         	@$fiidentificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['fiidentificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
         	@$currentdetermination= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['currentdetermination']),0,huh_taxon::FULLNAME_SIZE);
@@ -175,11 +177,13 @@ if ($connection && $authenticated) {
         	@$isfragment= substr(preg_replace('/[^0-9a-z]/','',$_GET['isfragment']),0,1);   // taxon 
         	@$habitat= substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?]/','',$_GET['habitat']),0,huh_collectingevent::REMARKS_SIZE); 
         	@$host = substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?\;]/','',$_GET['host']),0,900); 
-          	@$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_GET['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
+        	@$substrate= substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_GET['substrate']),0,huh_fragment::TEXT2_SIZE);
+        	@$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_GET['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
         	@$verbatimelevation= substr(preg_replace('/[^A-Za-z0-9°\-\.\, \[\]\(\)\? \&\']/','',$_GET['verbatimelevation']),0,huh_locality::VERBATIMELEVATION_SIZE);
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
         	@$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\&\'\]\[]/','',$_GET['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
+        	@$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
 			@$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
         	@$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_GET['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
@@ -194,10 +198,12 @@ if ($connection && $authenticated) {
         	if ($collectors!=$_GET['collectors'])  { $truncation = true; $truncated .= "Collector: [$collectors] "; }  
         	if ($etal!=$_GET['etal']) { $truncation = true; $truncated .= "etal : [$etal] "; }
         	if ($fieldnumber!=$_GET['fieldnumber']) { $truncation = true; $truncated .= "fieldnumber : [$fieldnumber] "; }
+        	if ($accessionnumber!=$_GET['accessionnumber']) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
         	if ($verbatimdate!=$_GET['verbatimdate']) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
         	if ($datecollected!=$_GET['datecollected']) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
         	if ($herbariumacronym!=$_GET['herbariumacronym']) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
         	if ($barcode!=$_GET['barcode']) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
+        	if ($provenance!=$_GET['provenance']) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
         	if ($filedundername!=$_GET['filedundername']) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
         	if ($fiidentificationqualifier!=$_GET['fiidentificationqualifier']) { $truncation = true; $truncated .= "fiidentificationqualifier : [$fiidentificationqualifier] "; }
         	if ($currentdetermination!=$_GET['currentdetermination']) { $truncation = true; $truncated .= "currentdetermination : [$currentdetermination] "; }
@@ -230,11 +236,13 @@ if ($connection && $authenticated) {
         	if ($isfragment!=$_GET['isfragment']) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
         	if ($habitat!=$_GET['habitat']) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
         	if ($host!=$_GET['host']) { $truncation = true; $truncated .= "host : [$host] "; }
-          	if ($phenology!=$_GET['phenology']) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
+        	if ($substrate!=$_GET['substrate']) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
+        	if ($phenology!=$_GET['phenology']) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
         	if ($verbatimelevation!=$_GET['verbatimelevation']) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
         	if ($minelevation!=$_GET['minelevation']) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
         	if ($maxelevation!=$_GET['maxelevation']) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
         	if ($specimenremarks!=$_GET['specimenremarks']) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
+        	if ($itemdescription!=$_GET['itemdescription']) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
         	if ($container!=$_GET['container']) { $truncation = true; $truncated .= "container : [$container] "; }
         	if ($collectingtrip!=$_GET['collectingtrip']) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
         	if ($storagelocation!=$_GET['storagelocation']) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
