@@ -734,6 +734,36 @@ class huh_container_custom extends huh_container {
 	 
 }
 
+class huh_collectingtrip_custom extends huh_collectingtrip {
+
+	public function keySelectDistinctJSONname($term) {
+		global $connection;
+		$returnvalue = '';
+		$preparemysql = "select distinct collectingtripid, collectingtripname from collectingtrip where collectingtripname like ? order by collectingtripname asc ";
+		$comma = '';
+		$term = str_replace("*", "%", $term);
+		$term = mysql_escape_string($term);
+		if ($stmt = $connection->prepare($preparemysql)) {
+			$stmt->bind_param("s", $term);
+			$stmt->execute();
+			$stmt->bind_result($id, $name);
+			$returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
+			$comma = ', ';
+			while ($stmt->fetch()) {
+				$name = trim($name);
+				if ($name!='') {
+					$name = str_replace('"','&quot;',$name);
+					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+				}
+			}
+			$stmt->close();
+		}
+		return $returnvalue;
+			
+	}
+
+}
+
 class huh_storage_custom extends huh_storage {
 
     public function keySelectDistinctJSONName($term) {
@@ -926,7 +956,7 @@ function ingestCollectionObject() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$dateidentified,$specimenremarks,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, 
    $exsiccati,$fascicle,$exsiccatinumber, $host ;
  
@@ -1101,6 +1131,7 @@ function ingestCollectionObject() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($container=='') { $container = null; }
+   if ($collectingtrip=='') { $collectingtrip = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
    if ($storage=='') { $storage = null; }  // subcollection
@@ -1176,7 +1207,8 @@ function ingestCollectionObject() {
       $df.= "maxelevation=[$maxelevation] ";
       $df.= "identifiedby=[$identifiedby] ";
       $df.= "dateidentified=[$dateidentified] ";
-      $df.= "container=[$container] ";  
+      $df.= "container=[$container] ";
+      $df.= "collectingtrip=[$collectingtrip] ";
       $df.= "storagelocation=[$storagelocation] ";  
       $df.= "project=[$project] ";  
       $df.= "host=[$host] ";  
@@ -1357,13 +1389,49 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
           
+         if (!$fail) {
+         	// CollectingTrip, Collecting Event
+         	$collectingtripid = null;
+         	if (preg_match("/^[0-9]+$/", $collectingtrip)) {
+         		$sql = "select distinct collectingtripid from collectingtrip where collectingtripid = ? ";
+         		$param = "i";
+         	} else {
+         		$sql = "select distinct collectingtripid from collectingtrip where collectingtripname = ? ";
+         		$param = "s";
+         	}
+         	$statement = $connection->prepare($sql);
+         	if ($statement) {
+         		$statement->bind_param($param,$collectingtrip);
+         		$statement->execute();
+         		$statement->bind_result($tripid);
+         		$statement->store_result();
+         		if ($statement->num_rows==1) {
+         			if ($statement->fetch()) {
+         				// retrieves collectingtripid
+         				$collectingtripid = $tripid;
+         			} else {
+         				$fail = true;
+         				$feedback.= "Query Error " . $connection->error;
+         			}
+         		} else {
+         			$fail = true;
+         			$feedback.= "No Match for collecting trip: " . $collectingtrip;
+         		}
+         		$statement->free_result();
+         		$statement->close();
+         	} else {
+         		$fail = true;
+         		$feedback.= "Query error: " . $connection->error . " " . $sql;
+         	}
+         }
+         
          // Collecting event
          $sql = "insert into collectingevent (localityid, stationfieldnumber, verbatimdate, startdate, startdateprecision, enddate, enddateprecision,
-                                                createdbyagentid, remarks, timestampcreated, version, disciplineid)
-                                                values (?,?,?,?,?,?,?,?,?,now(),0,3)";
+                                                collectingtripid, createdbyagentid, remarks, timestampcreated, version, disciplineid)
+                                                values (?,?,?,?,?,?,?,?,?,?,now(),0,3)";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('isssisiis',$localityid,$fieldnumber,$verbatimdate, $startdate,$startdateprecision,$enddate,$enddateprecision, $currentuserid,$habitat);
+            $statement->bind_param('isssisiiis',$localityid,$fieldnumber,$verbatimdate, $startdate,$startdateprecision,$enddate,$enddateprecision, $collectingtripid, $currentuserid,$habitat);
             if ($statement->execute()) {
                $collectingeventid = $statement->insert_id;
                $adds .= "collectingevent=[$collectingeventid]";

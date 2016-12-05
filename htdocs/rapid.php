@@ -329,7 +329,8 @@ function form() {
    field ("maxelevation","Max. elevation meters",'','false','[0-9]*');
    selectProject("project","Project",$defaultproject);  
    selectStorageID("storage","Subcollection");
-   selectContainerID ("container","Container");  
+   selectContainerID ("container","Container");
+   selectCollectingTripID("collectingtrip","Collecting Trip");
    selectRefWorkID("exsiccati","Exsiccati");
    field ("fascicle","Fascicle");
    field ("exsiccatinumber","Number");
@@ -569,6 +570,16 @@ function selectContainerID($field,$label,$required='false') {
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
 	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
+	searchAttr='name' value='' ></td></tr>";
+	echo $returnvalue;
+}
+
+function selectCollectingTripID($field,$label,$required='false') {
+	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='collectingTripStore$field'
+	url='ajax_handler.php?druid_action=returndistinctjsoncollectingtrip' > </div>";
+	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
+	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	store='collectingTripStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' ></td></tr>";
 	echo $returnvalue;
 }

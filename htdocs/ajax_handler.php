@@ -181,6 +181,7 @@ if ($connection && $authenticated) {
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
         	@$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\&\'\]\[]/','',$_GET['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
+			@$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
         	@$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_GET['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
         	@$project= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['project']),0,huh_project::PROJECTNAME_SIZE);
         	@$storage= substr(preg_replace('/[^0-9]/','',$_GET['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
@@ -235,6 +236,7 @@ if ($connection && $authenticated) {
         	if ($maxelevation!=$_GET['maxelevation']) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
         	if ($specimenremarks!=$_GET['specimenremarks']) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
         	if ($container!=$_GET['container']) { $truncation = true; $truncated .= "container : [$container] "; }
+        	if ($collectingtrip!=$_GET['collectingtrip']) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
         	if ($storagelocation!=$_GET['storagelocation']) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
         	if ($project!=$_GET['project']) { $truncation = true; $truncated .= "project : [$project] "; }
         	if ($storage!=$_GET['storage']) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
@@ -375,6 +377,38 @@ if ($connection && $authenticated) {
          	}
          	break;         
 
+         case 'returndistinctjsoncollectingtrip':
+         	$ok = false;
+         	$table = '';
+         	$key = '';
+         	$field = '';
+         	$value = '';
+         	$uniqueid = '';
+         	$controltype = '';
+         	@$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
+         		 
+         	if (strlen($limit)>4) {
+         		$t = new huh_collectingtrip_custom();
+         		try {
+         			$values = $t->keySelectDistinctJSONname($limit);
+        			$ok = true;
+         		} catch (Exception $e) {
+         			$ok = false;
+         		}
+         	}
+         	//header("Content-type application/json");
+         	header("Content-type text/json-comment-filtered");
+         	if ($ok) {
+         		$response = '';
+         		echo '{ "identifier":"value", "label":"name",';
+         		echo '"items": [ ';
+         		echo $values;
+         		echo ' ] }';
+         	} else {
+         		$response = '{ }';
+         	}
+         	break;
+         		
          case 'returndistinctjsonproject':
             $ok = false;
             $table = '';
