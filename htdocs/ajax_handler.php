@@ -149,7 +149,8 @@ if ($connection && $authenticated) {
         	@$fiidentificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['fiidentificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
         	@$currentdetermination= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['currentdetermination']),0,huh_taxon::FULLNAME_SIZE);
         	@$identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
-        	@$identifiedby= substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
+        	@$identifiedby=      substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
+        	@$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['determinertext']),0,huh_determination::TEXT1_SIZE);
         	@$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
         	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
         	@$specificlocality = substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['specificlocality']),0,huh_locality::LOCALITYNAME_SIZE);
@@ -170,6 +171,7 @@ if ($connection && $authenticated) {
         	@$utmnorthing= substr(preg_replace('/[^0-9]/','',$_GET['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
 
         	@$typestatus= substr(preg_replace('/[^A-Za-z]/','',$_GET['typestatus']),0,huh_determination::TYPESTATUSNAME_SIZE);
+        	@$typeconfidence= substr(preg_replace('/[^A-Za-z]/','',$_GET['typeconfidence']),0,huh_determination::CONFIDENCE_SIZE);
         	@$basionym= substr(preg_replace('/[^0-9]/','',$_GET['basionym']),0,huh_taxon::FULLNAME_SIZE);
         	@$publication= substr(preg_replace('/[^[:alpha:]A-Za-z 0-9]/','',$_GET['publication']),0,huh_referencework::REFERENCEWORKID_SIZE);
         	@$page= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_GET['page']),0,huh_taxoncitation::TEXT1_SIZE);
@@ -210,6 +212,7 @@ if ($connection && $authenticated) {
         	if ($currentdetermination!=$_GET['currentdetermination']) { $truncation = true; $truncated .= "currentdetermination : [$currentdetermination] "; }
         	if ($identificationqualifier!=$_GET['identificationqualifier']) { $truncation = true; $truncated .= "identificationqualifier : [$identificationqualifier] "; }
         	if ($identifiedby!=$_GET['identifiedby']) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
+        	if ($determinertext!=$_GET['determinertext']) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
         	if ($dateidentified!=$_GET['dateidentified']) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
         	if ($highergeography!=$_GET['highergeography']) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
         	if ($specificlocality!=$_GET['specificlocality']) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; } 
@@ -230,6 +233,7 @@ if ($connection && $authenticated) {
         	if ($utmnorthing!=$_GET['utmnorthing']) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
 
         	if ($typestatus!=$_GET['typestatus']) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
+        	if ($typeconfidence!=$_GET['typeconfidence']) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
         	if ($basionym!=$_GET['basionym']) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
         	if ($publication!=$_GET['publication']) { $truncation = true; $truncated .= "publication : [$publication] "; }
         	if ($page!=$_GET['page']) { $truncation = true; $truncated .= "page : [$page] "; }

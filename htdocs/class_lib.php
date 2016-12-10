@@ -958,7 +958,7 @@ function ingestCollectionObject() {
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, 
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate ;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
  
    $fail = false;
    $feedback = "";
@@ -1120,6 +1120,7 @@ function ingestCollectionObject() {
    }  
    
    if ($typestatus=='') { $typestatus = null; }
+   if ($typeconfidence=='') { $typeconfidence = null; }
    if ($basionym=='') { $basionym = null; }
    if ($publication=='') { $publication = null; }
    if ($page=='') { $page = null; }
@@ -1133,6 +1134,7 @@ function ingestCollectionObject() {
    if ($minelevation=='') { $minelevation = null; }
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
+   if ($determinertext=='') { $determinertext = null; }
    if ($container=='') { $container = null; }
    if ($collectingtrip=='') { $collectingtrip = null; }
    if ($storagelocation=='') { $storagelocation = null; }
@@ -1202,6 +1204,7 @@ function ingestCollectionObject() {
       $df.= "georeferencedate=[$georeferencedate] ";
       $df.= "georeferencesource=[$georeferencesource] ";
       $df.= "typestatus=[$typestatus] ";  
+      $df.= "typeconfidence=[$typeconfidence] ";
       $df.= "basionym=[$basionym] ";  
       $df.= "publication=[$publication] "; 
       $df.= "page=[$page] ";
@@ -1213,6 +1216,7 @@ function ingestCollectionObject() {
       $df.= "minelevation=[$minelevation] ";
       $df.= "maxelevation=[$maxelevation] ";
       $df.= "identifiedby=[$identifiedby] ";
+      $df.= "determinertext=[$determinertext] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";
       $df.= "collectingtrip=[$collectingtrip] ";
@@ -1838,11 +1842,11 @@ function ingestCollectionObject() {
             // yesno3 = isFiledUnder (no)
             // iscurrent = isCurrent (no)
             $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, typestatusname, " .
-                          " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                          " values (?,?,?,?,?,0,?,0,0,now(),0,4) ";
+                          " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version, collectionmemberid, confidence) " .
+                          " values (?,?,?,?,?,0,?,0,0,now(),0,4,?) ";
             $statement = $connection->prepare($sql);
             if ($statement) {
-               $statement->bind_param('iiiisi', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$typestatus,$isfragment);
+               $statement->bind_param('iiiisis', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$typestatus,$isfragment,$typeconfidence);
                if ($statement->execute()) {
                   $determinationid = $statement->insert_id;
                   $adds .= "det=[$determinationid]";
@@ -2062,11 +2066,11 @@ function ingestCollectionObject() {
          }
          // iscurrent = isCurrent (yes)
          $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                          " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                          " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4) ";
+                          " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
+                          " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiisisiii', $taxonid,$fragmentid,$currentuserid,$identificationqualifier,$determinerid, $dateidentified,$dateidentifiedprecision, $islabel,$isfiledunder);
+            $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
             if ($statement->execute()) {
                $determinationid = $statement->insert_id;
                $adds .= "det=[$determinationid]";

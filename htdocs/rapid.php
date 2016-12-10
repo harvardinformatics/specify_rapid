@@ -278,6 +278,7 @@ function form() {
    selectCurrentID("currentdetermination","Current Id");   // current id
    fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26);
    selectCollectorsID("identifiedby","Identified by"); // for current id 
+   field ("determinertext", "Identified by (text)");
    field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18');  // for current id
    //geographyselect("country","Country limit",$defaultcountry,'false','country');
    staticvalue("Country limit",$defaultcountry);
@@ -339,7 +340,7 @@ function form() {
    field ("exsiccatinumber","Number");
    field ("storagelocation","Storage Location");
    field ("specimenremarks","Specimen remarks");
-   field ("specimendescription","Specimen (coll. obj.) description");
+   field ("specimendescription","Specimen (collection object) description");
    field ("itemdescription", "Item description");
    echo "</table>\n";
    echo "</td>\n";
@@ -347,11 +348,13 @@ function form() {
    echo "<table>\n";
    staticvalue("","Type Specimen Information"); 
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
+   fieldselectpicklist("confidence",'Confidence','','false','confidencepl',47);
    selectCurrentID("basionym","Basionym");
    selectRefWorkID("publication","Publication");
    field ("page","Vol: Page");
    field ("datepublished","Year published");
    selectYesNo ("isfragment","Is fragment");
+   
    echo "</table>\n";
    echo "</td>\n";
    if (ENABLE_DUPLICATE_FINDING===TRUE) { 
