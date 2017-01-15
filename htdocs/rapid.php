@@ -230,7 +230,33 @@ function form() {
                 var defDialog = dijit.byId("defaultsDialog");
                 dojo.connect(dijit.byId("buttonDefaults"), "onClick", defDialog, "show");
                 dojo.connect(dijit.byId("buttonCancel"), "onClick", defDialog, "hide");
-            });           
+            });
+   		
+   			dojo.addOnLoad(function() {
+   				var topOfForm = dojo.byId("collectors");
+   				var rapidForm = dojo.byId("rapidForm");
+   				if (rapidForm && topOfForm) {
+	   				dojo.on(rapidForm, "keyup", function(evt) {
+   						switch(evt.keyCode) {
+   							case dojo.keys.UP_ARROW:   							
+   								dijit.focus(topOfForm);
+   								break;
+   						}
+   					});
+   				}   				
+   			});
+   		
+   			dojo.addOnUnload(function() {
+   				var yesLeave = confirm("Are you sure you want to leave the page?");
+   				if (yesLeave == true) {
+   					window.returnValue = true;
+   					window.close();
+   				}
+   				else {
+   					return false;
+   				}
+   			});
+   		
         </script>
    ';
    

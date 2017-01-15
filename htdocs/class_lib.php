@@ -403,6 +403,9 @@ class Page {
                 dojo.require('dijit.Dialog');
                 dojo.require('dijit.ProgressBar');
                 dojo.require('custom.LoadingMsgFilteringSelect');
+   				dojo.require('dojo.keys');
+   				dojo.require('dojo.on');
+   				dojo.require('dijit.focus');
      </script>
      <script type='text/javascript' src='dataentry_grab.js'></script>
            <style type='text/css'>
