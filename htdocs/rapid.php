@@ -237,10 +237,13 @@ function form() {
    				var rapidForm = dojo.byId("rapidForm");
    				if (rapidForm && topOfForm) {
 	   				dojo.on(rapidForm, "keyup", function(evt) {
-   						switch(evt.keyCode) {
+						if (evt.shiftKey) {
+   							var charOrCode = evt.charCode || evt.keyCode;
+   							switch(charOrCode) {
    							case dojo.keys.UP_ARROW:   							
    								dijit.focus(topOfForm);
    								break;
+	   						}
    						}
    					});
    				}   				
