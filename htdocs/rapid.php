@@ -182,6 +182,7 @@ function pageheader($error="") {
              dojo.require("dojox.data.CsvStore");
              dojo.require("dojo.parser");
              dojo.require("dojo.dom");
+   			 
         </script>        
         <style type="text/css">
             html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
@@ -247,17 +248,6 @@ function form() {
    						}
    					});
    				}   				
-   			});
-   		
-   			dojo.addOnUnload(function() {
-   				var yesLeave = confirm("Are you sure you want to leave the page?");
-   				if (yesLeave == true) {
-   					window.returnValue = true;
-   					window.close();
-   				}
-   				else {
-   					return false;
-   				}
    			});
    		
         </script>
