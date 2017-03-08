@@ -238,7 +238,7 @@ function form() {
    				var rapidForm = dojo.byId("rapidForm");
    				if (rapidForm && topOfForm) {
 	   				dojo.on(rapidForm, "keyup", function(evt) {
-						if (evt.shiftKey) {
+						if (evt.shiftKey || evt.ctrlKey) {
    							var charOrCode = evt.charCode || evt.keyCode;
    							switch(charOrCode) {
    							case dojo.keys.UP_ARROW:   							
