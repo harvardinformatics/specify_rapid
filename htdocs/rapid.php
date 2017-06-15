@@ -283,29 +283,34 @@ function form() {
    echo '<div dojoType="dijit.layout.AccordionContainer" region="left" layoutPriority="1">';
    echo '<div dojoType="dijit.layout.ContentPane" title="Required">';
    echo "<table>\n";
-   selectCollectorsID('collectors','Collector(s)','true');
-   field ("etal","et al.");
-   field ("fieldnumber","Collector number");
-   field ("accessionnumber", "Accession number");
-   field ("verbatimdate","Verb. date coll.");
-   field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18');  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDate
-   selectAcronym("herbariumacronym",$defaultherbarium);
    field ("barcode","Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
-   field ("provenance", "Provenance");
+   selectAcronym("herbariumacronym",$defaultherbarium);
    selectCurrentID("filedundername","Filed under name",'true');   // filed under
    fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26);
-   selectCurrentID("currentdetermination","Current Id");   // current id
-   fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26);
-   selectCollectorsID("identifiedby","Identified by"); // for current id 
-   field ("determinertext", "Identified by (text)");
-   field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18');  // for current id
+   field ("provenance", "Provenance");
+   selectContainerID ("container","Container");
+   selectCollectingTripID("collectingtrip","Collecting Trip");
    //geographyselect("country","Country limit",$defaultcountry,'false','country');
    staticvalue("Country limit",$defaultcountry);
    staticvalue("State limit",$defaultprimary);
    selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); // higher picklist limited by country/primary
    field ("specificlocality","Verbatim locality",'','true');
+   field ("host","Host");
+   field ("substrate", "Substrate");
+   selectCollectorsID('collectors','Collector(s)','true');
+   field ("etal","et al.");
+   field ("fieldnumber","Collector number");
+   field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18');  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDate
+   field ("verbatimdate","Verb. date coll.");
+   selectCurrentID("currentdetermination","Current Id");   // current id
+   fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26);
+   selectCollectorsID("identifiedby","Identified by"); // for current id
+   field ("determinertext", "Identified by (text)");
+   field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18');  // for current id
    fieldselectpicklist("prepmethod",'Preparation method',$defaultprepmethod,'true','prepmethodpl',55);
    preptypeselect("format","Format",$defaultformat,'true','formatStore','huh_preptype','Name');
+   selectProject("project","Project",$defaultproject);
+    
    echo "<tr><td></td><td>";
    //echo "<input type=submit value='Add'>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Add</button>";
@@ -319,7 +324,6 @@ function form() {
    echo "</table>\n";
    echo '</div>';
    echo '</div>';
-   
    echo '<div dojoType="dijit.layout.AccordionContainer" region="center" >';
    
    echo '<div dojoType="dijit.layout.AccordionPane" title="Georeference">';
@@ -340,31 +344,36 @@ function form() {
    echo '</div>';
    
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Additional Fields">';
-   echo "<table><tr><td valign='top'>\n";
-   echo "<table>\n";
-   field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
-   field ("host","Host"); 
-   field ("substrate", "Substrate");
-   fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
-   staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>"); 
-   field ("verbatimelevation","Verbatim elevation");
-   field ("minelevation","Min. elevation meters",'','false','[0-9]*');
-   field ("maxelevation","Max. elevation meters",'','false','[0-9]*');
-   selectProject("project","Project",$defaultproject);  
-   selectStorageID("storage","Subcollection");
-   selectContainerID ("container","Container");
-   selectCollectingTripID("collectingtrip","Collecting Trip");
-   selectRefWorkID("exsiccati","Exsiccati");
-   field ("fascicle","Fascicle");
-   field ("exsiccatinumber","Number");
-   field ("storagelocation","Storage Location");
+   echo "<table><tr><td valign='top'><table>\n";
+   
    field ("specimenremarks","Specimen remarks");
    field ("specimendescription","Specimen (collection object) description");
    field ("itemdescription", "Item description");
-   echo "</table>\n";
-   echo "</td>\n";
-   echo "<td valign='top'>\n";
-   echo "<table>\n";
+   field ("verbatimelevation","Verbatim elevation");
+   //field ("minelevation","Min. elevation meters",'','false','[0-9]*');
+   //field ("maxelevation","Max. elevation meters",'','false','[0-9]*');
+   
+   field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
+   fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
+   staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>");
+    
+   echo "</table></td>\n";
+   echo "<td valign=\"top\" style=\"padding: 25px\"><table>\n";
+   
+   selectRefWorkID("exsiccati","Exsiccati");
+   field ("exsiccatinumber","Number");
+   field ("fascicle","Fascicle");
+    
+   echo "</table></td></tr>\n";
+   echo "<tr><td valign='center'><table>\n";
+
+   field ("accessionnumber", "Accession number");
+   selectStorageID("storage","Subcollection");
+   field ("storagelocation","Storage Location");
+   
+   echo "</table></td>\n";
+   echo "<td valign='top'><table>\n";
+   
    staticvalue("","Type Specimen Information"); 
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
    fieldselectpicklist("confidence",'Confidence','','false','confidencepl',47);
@@ -374,12 +383,12 @@ function form() {
    field ("datepublished","Year published");
    selectYesNo ("isfragment","Is fragment");
    
-   echo "</table>\n";
-   echo "</td>\n";
+   echo "</table></td></tr>\n";
+
    if (ENABLE_DUPLICATE_FINDING===TRUE) { 
-      echo "<td><div id='fp-data-entry-plugin-goes-here'></div></td>";
+      echo "<tr><td><div id='fp-data-entry-plugin-goes-here'></div></td><td></td></tr>";
    }
-   echo "</tr></table>\n";
+   echo "</table>\n";
    echo '</div>'; // accordion pane
    
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Entering Data">';
@@ -548,6 +557,21 @@ function selectCurrentID($field,$label,$required='false') {
       onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
    echo $returnvalue;
+}
+
+function selectBasionymID($field,$label,$required='false') {
+	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
+	url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
+	$width = BASEWIDTH - 3;
+	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
+	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false'
+	style='width: ".$width."em; border-color: blue; '
+	searchAttr='name' value='' >
+	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
+	onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+	</td></tr>";
+	echo $returnvalue;
 }
 
 function selectCollectorsID($field,$label,$required='false') {
