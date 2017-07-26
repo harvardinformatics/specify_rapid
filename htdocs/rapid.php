@@ -261,12 +261,13 @@ function form() {
         $defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
         $defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
    
-        if ($defaultcountry=='') { 
-            $defaultcountry = "United States of America";
-            if ($defaultprimary=='') { 
-                $defaultprimary = "California";
-            }
-        }
+       // Sensible default values for original California project, no longer sensible.
+       // if ($defaultcountry=='') { 
+       //     $defaultcountry = "United States of America";
+       //     if ($defaultprimary=='') { 
+       //         $defaultprimary = "California";
+       //     }
+       // }
    }
    $defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
    if ($defaultherbarium=='') { $defaultherbarium = "GH"; }
@@ -484,7 +485,7 @@ function geographyselect($name,$label,$default,$required,$rank) {
 	 url='ajax_handler.php?druid_action=return".$rank."json'> </div>";
 	$returnvalue .= "<label for=\"$name\">$label</label></td><td>
 	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
-	store='store$name$rank' 
+	store='store$name$rank' required='$required'
 	searchAttr='name' value='$default' ></td></tr>";
 	echo $returnvalue;
 }
