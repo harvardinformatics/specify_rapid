@@ -275,7 +275,7 @@ function form() {
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
    $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; } 
-   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. ]/','',$_GET['defaultproject']),0,255);
+   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
    
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
    //echo "<div dojoType='dijit.form.Form' id='rapidForm' jsId='rapidForm' encType='multipart/form-data' action='ajax_handler.php' method='GET'>";

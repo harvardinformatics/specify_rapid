@@ -190,7 +190,7 @@ if ($connection && $authenticated) {
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
 			@$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
         	@$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_GET['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
-        	@$project= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['project']),0,huh_project::PROJECTNAME_SIZE);
+        	@$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_GET['project']),0,huh_project::PROJECTNAME_SIZE);
         	@$storage= substr(preg_replace('/[^0-9]/','',$_GET['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
         	@$exsiccati= substr(preg_replace('/[^0-9]/','',$_GET['exsiccati']),0,huh_referencework::REFERENCEWORKID_SIZE);
         	@$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
