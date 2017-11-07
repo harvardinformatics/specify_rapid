@@ -23,9 +23,9 @@ if (!$connection) {
 }
 
 $display = '';
-$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+@$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
 if ($display=='') { 
-   $display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
+   @$display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
 } 
 $tdisplay = $display;
 $showDefault = true;
@@ -33,6 +33,7 @@ $showDefault = true;
 $require_authentication = true;
 $authenticated = false;
 $user = new User();
+$username = "";
 
 if ($require_authentication) {
    if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
@@ -149,6 +150,39 @@ echo $apage->getFooter();
 // ****  Supporting functions  ****************************************************
 // ********************************************************************************
 
+function inProfile($profile,$field, $location) {
+   global $profiles;
+
+   if ($profiles ==null) { 
+      $profiles = array();
+      // load data from profiles.conf, blank lines and lines starting with # are ignored.
+      $fh = fopen('profiles.conf','r');
+      while ($line = fgets($fh)) {
+        if ( (strlen($line)>0)  && (substr($line,0,1)<>"#") ) { 
+           $bits = explode(",",$line);
+           if (count($bits)==4) {
+              $key = $bits[0].$bits[1].$bits[2];
+              $profiles[$key] = trim($bits[3]);
+           }
+        }
+      }  
+      fclose($fh);
+      reset($profiles);
+   }
+
+   $key = $profile . $field . $location;
+
+   $result = true;
+   //profile,field,location,show
+   if (array_key_exists($key,$profiles)) {
+      $val = $profiles[$key];
+      if ($val=='true') { $result = true; }
+      if ($val=='false') { $result = false; }
+   }
+   return $result;
+}
+
+
 // NOTE: Page header isn't used, you  want Page->getHeader
 function pageheader($error="") {
    global $user;
@@ -203,6 +237,8 @@ function pageheader($error="") {
 
 function form() {
 
+   @$profile = substr(preg_replace("/[^0-9A-Za-z]/","",$_GET['profile']),0,255);
+   if ($profile == "") { $profile = "default"; } 
    echo '
            <script type="text/javascript">
             dojo.addOnLoad( function() {
@@ -253,13 +289,13 @@ function form() {
         </script>
    ';
    
-   $cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
+   @$cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
    if ($cleardefaultgeography==1) {
        $defaultcountry = "";
        $defaultprimary = "";
    } else { 
-        $defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
-        $defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
+        @$defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
+        @$defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
    
        // Sensible default values for original California project, no longer sensible.
        // if ($defaultcountry=='') { 
@@ -269,13 +305,13 @@ function form() {
        //     }
        // }
    }
-   $defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
+   @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
    if ($defaultherbarium=='') { $defaultherbarium = "GH"; }
-   $defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
+   @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
-   $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
+   @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; } 
-   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
+   @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
    
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
    //echo "<div dojoType='dijit.form.Form' id='rapidForm' jsId='rapidForm' encType='multipart/form-data' action='ajax_handler.php' method='GET'>";
@@ -288,21 +324,21 @@ function form() {
    selectAcronym("herbariumacronym",$defaultherbarium);
    selectCurrentID("filedundername","Filed under name",'true');   // filed under
    fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26);
-   field ("provenance", "Provenance");
-   selectContainerID ("container","Container");
-   selectCollectingTripID("collectingtrip","Collecting Trip");
+   if(inProfile($profile, 'provenance','main')) { field ("provenance", "Provenance"); }
+   if(inProfile($profile, 'container','main')) { selectContainerID ("container","Container"); }
+   if(inProfile($profile, 'collectingtrip','main')) { selectCollectingTripID("collectingtrip","Collecting Trip"); }
    //geographyselect("country","Country limit",$defaultcountry,'false','country');
    staticvalue("Country limit",$defaultcountry);
    staticvalue("State limit",$defaultprimary);
    selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); // higher picklist limited by country/primary
-   field ("specificlocality","Verbatim locality",'','true');
-   field ("host","Host");
-   field ("substrate", "Substrate");
+   if(inProfile($profile, 'specificlocality','main')) { field ("specificlocality","Verbatim locality",'','true'); }
+   if(inProfile($profile, 'host','main')) { field ("host","Host"); } 
+   if(inProfile($profile, 'substrate','main')) { field ("substrate", "Substrate"); }
    selectCollectorsID('collectors','Collector(s)','true');
    field ("etal","et al.");
    field ("fieldnumber","Collector number");
-   field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18');  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDate
-   field ("verbatimdate","Verb. date coll.");
+   if(inProfile($profile, 'datecollected','main')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); }  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDatea
+   if(inProfile($profile, 'verbatimdate','main')) { field ("verbatimdate","Verb. date coll."); }
    selectCurrentID("currentdetermination","Current Id");   // current id
    fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26);
    selectCollectorsID("identifiedby","Identified by"); // for current id
@@ -357,6 +393,12 @@ function form() {
    field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
    fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
    staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>");
+
+   if(inProfile($profile, 'host','additional')) { field ("host","Host"); } 
+   if(inProfile($profile, 'substrate','additional')) { field ("substrate", "Substrate"); }
+   if(inProfile($profile, 'provenance','additional')) { field ("provenance", "Provenance"); }
+   if(inProfile($profile, 'container','additional')) { selectContainerID ("container","Container"); }
+   if(inProfile($profile, 'collectingtrip','additional')) { selectCollectingTripID("collectingtrip","Collecting Trip"); }
     
    echo "</table></td>\n";
    echo "<td valign=\"top\" style=\"padding: 25px\"><table>\n";
@@ -371,6 +413,9 @@ function form() {
    field ("accessionnumber", "Accession number");
    selectStorageID("storage","Subcollection");
    field ("storagelocation","Storage Location");
+   if(inProfile($profile, 'specificlocality','additional')) { field ("specificlocality","Verbatim locality",'','true'); }
+   if(inProfile($profile, 'datecollected','additional')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); } 
+   if(inProfile($profile, 'verbatimdate','additional')) { field ("verbatimdate","Verb. date coll."); }
    
    echo "</table></td>\n";
    echo "<td valign='top'><table>\n";

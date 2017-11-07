@@ -272,8 +272,8 @@ class User {
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Microfungi%20TCN">MicrofungiTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=GH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=New%20England%20Vascular%20Plants%20TCN">NEVPTCN</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Macroalgae%20TCN">Macroalgae</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Southern%20Rockies%20TCN">SoRo</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=US%20and%20Canada%20-%20Mass%20Digitization">US and Canada</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Southern%20Rockies%20TCN&profile=SoRo">SoRo</a>&nbsp;'; } 
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=US%20and%20Canada%20-%20Mass%20Digitization&profile=US">US and Canada</a>&nbsp;'; } 
          if ($caller=="rapid.php") { $returnvalue .= ' <a href="utility.php">Utilities</a>&nbsp;'; } 
          if ($caller=="utility.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; } 
       }
@@ -325,9 +325,13 @@ class User {
 class Page {
    // customize the header and footer methods for your own site style and navigation
 
-   private $title;
-   private $errormessage;
-   private $targetPage = "rapid.php";
+   protected $title;
+   protected $errormessage;
+   protected $targetPage = "rapid.php";
+
+   public function __construct() { 
+       $this->targetPage = "rapid.php";
+   }
 
    public function setTitle($pageTitle) {
       $title = 'HUH Specify';
