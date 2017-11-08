@@ -160,9 +160,9 @@ function inProfile($profile,$field, $location) {
       while ($line = fgets($fh)) {
         if ( (strlen($line)>0)  && (substr($line,0,1)<>"#") ) { 
            $bits = explode(",",$line);
-           if (count($bits)==4) {
-              $key = $bits[0].$bits[1].$bits[2];
-              $profiles[$key] = trim($bits[3]);
+           if (count($bits)==3) {
+              $key = $bits[0].$bits[1];
+              $profiles[$key] = trim($bits[2]);
            }
         }
       }  
@@ -170,14 +170,24 @@ function inProfile($profile,$field, $location) {
       reset($profiles);
    }
 
-   $key = $profile . $field . $location;
+   $key = $profile . $field;
 
-   $result = true;
-   //profile,field,location,show
+   //profile,field,location
    if (array_key_exists($key,$profiles)) {
+      // a location is provided in the profile for the field
       $val = $profiles[$key];
-      if ($val=='true') { $result = true; }
-      if ($val=='false') { $result = false; }
+      if ($val==$location) { 
+         $result = true; 
+      } else { 
+         $result = false; 
+      }
+   } else { 
+       // the combination of profile and field are not present in the selected profile.
+       if ($location=="main") {  
+          $result = true;
+       } else { 
+          $result = false;
+       }
    }
    return $result;
 }
@@ -323,27 +333,28 @@ function form() {
    field ("barcode","Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    selectAcronym("herbariumacronym",$defaultherbarium);
    selectCurrentID("filedundername","Filed under name",'true');   // filed under
-   fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26);
+   if(inProfile($profile, 'fiidentificationqualifier','main')) { fieldselectpicklist("fiidentificationqualifier",'Id qualifier (filed)','','false','fiidqualifierpl',26); }
    if(inProfile($profile, 'provenance','main')) { field ("provenance", "Provenance"); }
    if(inProfile($profile, 'container','main')) { selectContainerID ("container","Container"); }
    if(inProfile($profile, 'collectingtrip','main')) { selectCollectingTripID("collectingtrip","Collecting Trip"); }
-   //geographyselect("country","Country limit",$defaultcountry,'false','country');
-   staticvalue("Country limit",$defaultcountry);
-   staticvalue("State limit",$defaultprimary);
-   selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); // higher picklist limited by country/primary
+   if(inProfile($profile, 'highergeography','main')) { staticvalue("Country limit",$defaultcountry); }
+   if(inProfile($profile, 'highergeography','main')) { staticvalue("State limit",$defaultprimary); } 
+   if(inProfile($profile, 'highergeography','main')) { selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); } // higher picklist limited by country/primary
    if(inProfile($profile, 'specificlocality','main')) { field ("specificlocality","Verbatim locality",'','true'); }
    if(inProfile($profile, 'host','main')) { field ("host","Host"); } 
    if(inProfile($profile, 'substrate','main')) { field ("substrate", "Substrate"); }
-   selectCollectorsID('collectors','Collector(s)','true');
-   field ("etal","et al.");
-   field ("fieldnumber","Collector number");
+   if(inProfile($profile, 'collectors','main')) { selectCollectorsID('collectors','Collector(s)','true'); } 
+   if(inProfile($profile, 'etal','main')) {field ("etal","et al."); }
+   if(inProfile($profile, 'fieldnumber','main')) {field ("fieldnumber","Collector number"); }
    if(inProfile($profile, 'datecollected','main')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); }  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDatea
    if(inProfile($profile, 'verbatimdate','main')) { field ("verbatimdate","Verb. date coll."); }
-   selectCurrentID("currentdetermination","Current Id");   // current id
-   fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26);
-   selectCollectorsID("identifiedby","Identified by"); // for current id
-   field ("determinertext", "Identified by (text)");
-   field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18');  // for current id
+
+   if(inProfile($profile, 'currentdetermination','main')) { selectCurrentID("currentdetermination","Current Id");  }  // current id
+   if(inProfile($profile, 'identificationqualifier','main')) { fieldselectpicklist("identificationqualifier",'Id qualifier (curr.)','','false','idqualifierpl',26); }
+   if(inProfile($profile, 'identifiedby','main')) { selectCollectorsID("identifiedby","Identified by"); } // for current id
+   if(inProfile($profile, 'determinertext','main')) {field ("determinertext", "Identified by (text)"); }
+   if(inProfile($profile, 'dateidentified','main')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
+
    fieldselectpicklist("prepmethod",'Preparation method',$defaultprepmethod,'true','prepmethodpl',55);
    preptypeselect("format","Format",$defaultformat,'true','formatStore','huh_preptype','Name');
    selectProject("project","Project",$defaultproject);
@@ -383,6 +394,7 @@ function form() {
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Additional Fields">';
    echo "<table><tr><td valign='top'><table>\n";
    
+   if(inProfile($profile, 'fiidentificationqualifier','additional')) { fieldselectpicklist("fiidentificationqualifier",'Id qualifier (filed)','','false','fiidqualifierpl',26); }
    field ("specimenremarks","Specimen remarks");
    field ("specimendescription","Specimen (collection object) description");
    field ("itemdescription", "Item description");
@@ -406,6 +418,13 @@ function form() {
    selectRefWorkID("exsiccati","Exsiccati");
    field ("exsiccatinumber","Number");
    field ("fascicle","Fascicle");
+   echo "<BR>";
+   if(inProfile($profile, 'highergeography','additional')) { staticvalue("Country limit",$defaultcountry); }
+   if(inProfile($profile, 'highergeography','additional')) { staticvalue("State limit",$defaultprimary); } 
+   if(inProfile($profile, 'highergeography','additional')) { selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); } // higher picklist limited by country/primary
+   if(inProfile($profile, 'collectors','additional')) { selectCollectorsID('collectors','Collector(s)','true'); } 
+   if(inProfile($profile, 'etal','additional')) {field ("etal","et al."); }
+   if(inProfile($profile, 'fieldnumber','additional')) {field ("fieldnumber","Collector number"); }
     
    echo "</table></td></tr>\n";
    echo "<tr><td valign='center'><table>\n";
@@ -416,6 +435,13 @@ function form() {
    if(inProfile($profile, 'specificlocality','additional')) { field ("specificlocality","Verbatim locality",'','true'); }
    if(inProfile($profile, 'datecollected','additional')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); } 
    if(inProfile($profile, 'verbatimdate','additional')) { field ("verbatimdate","Verb. date coll."); }
+
+   if(inProfile($profile, 'currentdetermination','additional')) { selectCurrentID("currentdetermination","Current Id");  }  // current id
+   if(inProfile($profile, 'identificationqualifier','additional')) { fieldselectpicklist("identificationqualifier",'Id qualifier (curr.)','','false','idqualifierpl',26); }
+   if(inProfile($profile, 'identifiedby','additional')) { selectCollectorsID("identifiedby","Identified by"); } // for current id
+   if(inProfile($profile, 'determinertext','additional')) {field ("determinertext", "Identified by (text)"); }
+   if(inProfile($profile, 'dateidentified','additional')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
+
    
    echo "</table></td>\n";
    echo "<td valign='top'><table>\n";
@@ -439,7 +465,7 @@ function form() {
    
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Entering Data">';
    echo "<table>\n";
-   staticvalue("Required:","Fill in all fields under Required if there is data to put in them.  You cannot leave Herbarium acronym, Barcode, Filed under Name, Higher Geography, Specific Locality, Preparation Method, or Format Blank."); 
+   staticvalue("Required:","Fill in all fields under Required if there is data to put in them.  You cannot leave Herbarium acronym, Barcode, Filed under Name, Higher Geography, Verbatim Locality, Preparation Method, or Format Blank."); 
    staticvalue("Picklists:","For people and taxa: type part of the value and wait for the picklist to popup.  Use * as a wildcard, Collector='J*Mack' finds 'J. A. Macklin'.  For qualifiers, format, etc, you can just pull down the list.");  
    staticvalue("Dates:","Must be in the form 2011-02-25 (except for verbatim dates). 2011-05 and 2011 are allowed to express just month or year."); 
    staticvalue("DateCollected:","Also allows ranges with start and end dates separated by a slash: e.g. 2006/2008,  1886-11/1887-02, 1902-03-16/1902-03-18, 1912-03/1922 "); 

@@ -233,7 +233,7 @@ if ($connection && $authenticated) {
         	if ($utmnorthing!=$_GET['utmnorthing']) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
 
         	if ($typestatus!=$_GET['typestatus']) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
-        	if ($typeconfidence!=$_GET['typeconfidence']) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
+        	if ($typeconfidence!=@$_GET['typeconfidence']) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
         	if ($basionym!=$_GET['basionym']) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
         	if ($publication!=$_GET['publication']) { $truncation = true; $truncated .= "publication : [$publication] "; }
         	if ($page!=$_GET['page']) { $truncation = true; $truncated .= "page : [$page] "; }
@@ -244,8 +244,8 @@ if ($connection && $authenticated) {
         	if ($substrate!=$_GET['substrate']) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
         	if ($phenology!=$_GET['phenology']) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
         	if ($verbatimelevation!=$_GET['verbatimelevation']) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
-        	if ($minelevation!=$_GET['minelevation']) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
-        	if ($maxelevation!=$_GET['maxelevation']) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
+        	if ($minelevation!=@$_GET['minelevation']) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
+        	if ($maxelevation!=@$_GET['maxelevation']) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
         	if ($specimenremarks!=$_GET['specimenremarks']) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
         	if ($specimendescription!=$_GET['specimendescription']) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
         	if ($itemdescription!=$_GET['itemdescription']) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }

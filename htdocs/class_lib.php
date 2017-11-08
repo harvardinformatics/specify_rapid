@@ -2098,7 +2098,7 @@ function ingestCollectionObject() {
 
    if ($fail) {
       $connection->rollback();
-      $feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
+      @$feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
    } else {
       $connection->commit();
       if ($debug) { 
