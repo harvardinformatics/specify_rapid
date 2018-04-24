@@ -1616,45 +1616,45 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
   public function loadLinkedTo() { 
      $returnvalue = array(); 
        // fk: VisibilitySetByID
-      $t = new specifyuser();
-      $t->load(getVisibilitySetByID());
-      $returnvalue[VisibilitySetByID] = $t;
+      $t = new huh_specifyuser();
+      $t->load($this->getVisibilitySetByID());
+      $returnvalue['VisibilitySetByID'] = $t;
        // fk: CreatedByAgentID
-      $t = new agent();
-      $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getCreatedByAgentID());
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: CatalogerID
-      $t = new agent();
-      $t->load(getCatalogerID());
-      $returnvalue[CatalogerID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getCatalogerID());
+      $returnvalue['CatalogerID'] = $t;
        // fk: ContainerID
-      $t = new container();
-      $t->load(getContainerID());
-      $returnvalue[ContainerID] = $t;
+      $t = new huh_container();
+      $t->load($this->getContainerID());
+      $returnvalue['ContainerID'] = $t;
        // fk: CollectingEventID
-      $t = new collectingevent();
-      $t->load(getCollectingEventID());
-      $returnvalue[CollectingEventID] = $t;
+      $t = new huh_collectingevent();
+      $t->load($this->getCollectingEventID());
+      $returnvalue['CollectingEventID'] = $t;
        // fk: CollectionObjectAttributeID
-      $t = new collectionobjectattribute();
-      $t->load(getCollectionObjectAttributeID());
-      $returnvalue[CollectionObjectAttributeID] = $t;
+      $t = new huh_collectionobjectattribute();
+      $t->load($this->getCollectionObjectAttributeID());
+      $returnvalue['CollectionObjectAttributeID'] = $t;
        // fk: PaleoContextID
-      $t = new paleocontext();
-      $t->load(getPaleoContextID());
-      $returnvalue[PaleoContextID] = $t;
+      $t = new huh_paleocontext();
+      $t->load($this->getPaleoContextID());
+      $returnvalue['PaleoContextID'] = $t;
        // fk: CollectionID
-      $t = new collection();
-      $t->load(getCollectionID());
-      $returnvalue[CollectionID] = $t;
+      $t = new huh_collection();
+      $t->load($this->getCollectionID());
+      $returnvalue['CollectionID'] = $t;
        // fk: FieldNotebookPageID
-      $t = new fieldnotebookpage();
-      $t->load(getFieldNotebookPageID());
-      $returnvalue[FieldNotebookPageID] = $t;
+      $t = new huh_fieldnotebookpage();
+      $t->load($this->getFieldNotebookPageID());
+      $returnvalue['FieldNotebookPageID'] = $t;
        // fk: ModifiedByAgentID
-      $t = new agent();
-      $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getModifiedByAgentID());
+      $returnvalue['ModifiedByAgentID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)

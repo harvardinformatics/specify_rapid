@@ -1038,33 +1038,33 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
   public function loadLinkedTo() { 
      $returnvalue = array(); 
        // fk: LocalityID
-      $t = new locality();
-      $t->load(getLocalityID());
-      $returnvalue[LocalityID] = $t;
+      $t = new huh_locality();
+      $t->load($this->getLocalityID());
+      $returnvalue['LocalityID'] = $t;
        // fk: CollectingEventAttributeID
-      $t = new collectingeventattribute();
-      $t->load(getCollectingEventAttributeID());
-      $returnvalue[CollectingEventAttributeID] = $t;
+      $t = new huh_collectingeventattribute();
+      $t->load($this->getCollectingEventAttributeID());
+      $returnvalue['CollectingEventAttributeID'] = $t;
        // fk: DisciplineID
-      $t = new discipline();
-      $t->load(getDisciplineID());
-      $returnvalue[DisciplineID] = $t;
+      $t = new huh_discipline();
+      $t->load($this->getDisciplineID());
+      $returnvalue['DisciplineID'] = $t;
        // fk: ModifiedByAgentID
-      $t = new agent();
-      $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getModifiedByAgentID());
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: CollectingTripID
-      $t = new collectingtrip();
-      $t->load(getCollectingTripID());
-      $returnvalue[CollectingTripID] = $t;
+      $t = new huh_collectingtrip();
+      $t->load($this->getCollectingTripID());
+      $returnvalue['CollectingTripID'] = $t;
        // fk: CreatedByAgentID
-      $t = new agent();
-      $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getCreatedByAgentID());
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: VisibilitySetByID
-      $t = new specifyuser();
-      $t->load(getVisibilitySetByID());
-      $returnvalue[VisibilitySetByID] = $t;
+      $t = new huh_specifyuser();
+      $t->load($this->getVisibilitySetByID());
+      $returnvalue['VisibilitySetByID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)

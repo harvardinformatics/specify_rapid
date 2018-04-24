@@ -1090,21 +1090,21 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
   public function loadLinkedTo() { 
      $returnvalue = array(); 
        // fk: ModifiedByAgentID
-      $t = new agent();
-      $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getModifiedByAgentID());
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: CollectionObjectID
-      $t = new collectionobject();
-      $t->load(getCollectionObjectID());
-      $returnvalue[CollectionObjectID] = $t;
+      $t = new huh_collectionobject();
+      $t->load($this->getCollectionObjectID());
+      $returnvalue['CollectionObjectID'] = $t;
        // fk: PreparationID
-      $t = new preparation();
-      $t->load(getPreparationID());
-      $returnvalue[PreparationID] = $t;
+      $t = new huh_preparation();
+      $t->load($this->getPreparationID());
+      $returnvalue['PreparationID'] = $t;
        // fk: CreatedByAgentID
-      $t = new agent();
-      $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $t = new huh_agent();
+      $t->load($this->getCreatedByAgentID());
+      $returnvalue['CreatedByAgentID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
