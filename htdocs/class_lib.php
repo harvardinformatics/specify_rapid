@@ -899,7 +899,7 @@ class huh_geography_custom extends huh_geography {
             $stmt->bind_param("s",$primary);
             $stmt->execute();
             $stmt->bind_result($primaryid,$nn,$hcnn);
-            if ($stmt->fetch()) {
+           if ($stmt->fetch()) {
                $name = str_replace('"','&quot;',$name);
                $wherebit .= "$and nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
                $and = " and ";
@@ -928,7 +928,7 @@ class huh_geography_custom extends huh_geography {
          $wherebit = "";
       }
 
-      $preparemysql = "select distinct geographyid, fullname from geography $wherebit order by name asc ";
+      $preparemysql = "select distinct geographyid, fullname from geography $wherebit order by name, fullname asc ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
