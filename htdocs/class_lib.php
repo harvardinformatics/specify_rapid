@@ -7,7 +7,9 @@
 include_once("connection_library.php");
 include_once("druid_classes.php");
 
-class UUID { 
+
+
+class UUID {
   // ** from http://www.php.net/manual/en/function.uniqid.php#94959
   public static function v4() {
     return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -129,7 +131,7 @@ class User {
       $stmt->bind_param("ss",$this->session_secret,$this->email);
       $stmt->execute();
       // echo '['.$connection->error.']';
-       
+
       $_SESSION["user_ticket"]=$this->user_token;
       $stmt->close();
       return $this->user_token;
@@ -212,11 +214,11 @@ class User {
             $statement->fetch();
             if ($statement->num_rows()==1) {
                // watson
-               $exec = '/var/www/phpexec/java -jar /var/www/phpinclude/Encryption.jar decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
+               $exec = $javaexe . ' -jar ' . $encryptionjar . ' decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
                // test
                $exec = '/usr/bin/java -jar /var/www/phpincludes/Encryption.jar decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
                $exec = $execstring . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
-               
+
                $decryptedPassword = shell_exec($exec);
                if (trim($decryptedPassword)==trim($this->password)) {
                   $preparesql = 'SELECT  specifyuser.timestampcreated,   specifyuser.TimestampModified,
@@ -264,18 +266,18 @@ class User {
          $returnvalue .= '<a href="'.$caller.'?display=logout">Logout</a>&nbsp;';
          // PJM putting in place, but not displaying yet, link to upload spreadsheet.
          // TODO: Remove coment when ready for production use
-         // if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=upload">Upload a spreadsheet</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' Defaults: <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Lichen%20and%20Bryophyte%20TCN">Lichen&amp;BryophyteTCN</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Macrofungi%20TCN">MacrofungiTCN</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Microfungi%20TCN">MicrofungiTCN</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=GH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=New%20England%20Vascular%20Plants%20TCN">NEVPTCN</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Macroalgae%20TCN">Macroalgae</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Southern%20Rockies%20TCN&profile=SoRo">SoRo</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=US%20and%20Canada%20-%20Mass%20Digitization&profile=US">US and Canada</a>&nbsp;'; } 
-         if ($caller=="rapid.php") { $returnvalue .= ' <a href="utility.php">Utilities</a>&nbsp;'; } 
-         if ($caller=="utility.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; } 
+         // if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=upload">Upload a spreadsheet</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' Defaults: <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet">FH</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Lichen%20and%20Bryophyte%20TCN">Lichen&amp;BryophyteTCN</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Macrofungi%20TCN">MacrofungiTCN</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Dried&defaultformat=Packet&defaultproject=Microfungi%20TCN">MicrofungiTCN</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=GH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=New%20England%20Vascular%20Plants%20TCN">NEVPTCN</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=FH&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Macroalgae%20TCN">Macroalgae</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=Southern%20Rockies%20TCN&profile=SoRo">SoRo</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="rapid.php?display=mainform&defaultcountry=&defaultprimary=&cleardefaultgeography=1&defaultherbarium=&defaultprepmethod=Pressed&defaultformat=Sheet&defaultproject=US%20and%20Canada%20-%20Mass%20Digitization&profile=US">US and Canada</a>&nbsp;'; }
+         if ($caller=="rapid.php") { $returnvalue .= ' <a href="utility.php">Utilities</a>&nbsp;'; }
+         if ($caller=="utility.php") { $returnvalue .= ' <a href="rapid.php?display=mainform">Data Entry</a>&nbsp;'; }
       }
       return $returnvalue;
    }
@@ -329,7 +331,7 @@ class Page {
    protected $errormessage;
    protected $targetPage = "rapid.php";
 
-   public function __construct() { 
+   public function __construct() {
        $this->targetPage = "rapid.php";
    }
 
@@ -337,12 +339,12 @@ class Page {
       $title = 'HUH Specify';
       $this->title.=$pageTitle;
    }
-   
-   public function setErrorMessage($error) { 
+
+   public function setErrorMessage($error) {
       $this->errormessage = $error;
    }
 
-   public function setTargetPage($targetpage) { 
+   public function setTargetPage($targetpage) {
       $this->targetPage = $targetpage;
    }
 
@@ -360,7 +362,7 @@ class Page {
    if ($error!="") {
    	$returnvalue .= "<h2>$error</h2>";
    }
-   if ($user!=null) { 
+   if ($user!=null) {
       if ($user->getAuthenticationState()==true) {
    	     $returnvalue .= $user->getUserHtml($this->targetPage);
       }
@@ -376,7 +378,7 @@ class Page {
         <div id="feedback">Status</div>
 	</div>
 	<div dojoType="dijit.layout.ContentPane" region="bottom" layoutPriority="2" splitter="false">
-        Database: ' . $targethostdb . ' 
+        Database: ' . $targethostdb . '
 	</div>
 	';
    $returnvalue .= "</div>\n";
@@ -386,7 +388,7 @@ class Page {
    }
 
    public function getDojoPageHead() {
-      return "      
+      return "
      <script src='/dojo/1.9.2/dojo/dojo.js' djConfig='parseOnLoad: true'></script>
        <link rel='stylesheet' type='text/css' href='/dojo/1.9.2/dijit/themes/claro/claro.css' />
        <link rel='stylesheet' type='text/css' href='/dojo/1.9.2/dojo/resources/dojo.css' />
@@ -417,10 +419,10 @@ class Page {
            <style type='text/css'>
                html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
                #borderContainer { width: 100%; height: 100%; }
-           </style>     
+           </style>
       ";
    }
-   
+
 
 
 }
@@ -430,46 +432,46 @@ class DateWithPrecision {
 	private $date = null;
 	private $datePrecision = 1;
 	private $badValue = false;
-	
-	public function setDate($aDate) { 
+
+	public function setDate($aDate) {
 	   $this->date = $aDate;
 	}
-	public function setDatePrecision($aDatePrecision) { 
+	public function setDatePrecision($aDatePrecision) {
 	   $this->datePrecision = $aDatePrecision;
 	}
-	public function getDate() { 
+	public function getDate() {
 	   return $this->date;
 	}
-	public function getDatePrecision() { 
+	public function getDatePrecision() {
 	   return $this->datePrecision;
 	}
-	public function isBadValue() { 
+	public function isBadValue() {
 	   return $this->badValue;
 	}
-	public function setBadValue($isbadvalue) { 
+	public function setBadValue($isbadvalue) {
 	   $this->badValue = $isbadvalue;
 	}
-	
+
 }
 
-class DateRangeWithPrecision { 
-   
+class DateRangeWithPrecision {
+
    private $startDate = null;
    private $startDatePrecision = 1;
-   private $endDate = null; 
+   private $endDate = null;
    private $endDatePrecision = 1;
    private $badValue = false;
-   
-   public function DateRangeWithPrecision($isodate) { 
-      if (strpos($isodate,'/')>0) { 
-         $parts = explode('/',$isodate); 
-         if (sizeof($parts)>0) { 
+
+   public function DateRangeWithPrecision($isodate) {
+      if (strpos($isodate,'/')>0) {
+         $parts = explode('/',$isodate);
+         if (sizeof($parts)>0) {
             $startDateStr = $this->parsePart($parts[0]);
             if ($startDateStr->isBadValue()) {
             	$this->badValue = true;
             }
             $this->startDate = $startDateStr->getDate();
-            $this->startDatePrecision = $startDateStr->getDatePrecision();            
+            $this->startDatePrecision = $startDateStr->getDatePrecision();
          }
          if (sizeof($parts)>1) {
          	$startDateStr = $this->parsePart($parts[1]);
@@ -478,22 +480,22 @@ class DateRangeWithPrecision {
          	}
          	$this->endDate = $startDateStr->getDate();
          	$this->endDatePrecision = $startDateStr->getDatePrecision();
-         }         
-         if (sizeof($parts)>2) { 
+         }
+         if (sizeof($parts)>2) {
             $this->badValue = true;
          }
-      } else { 
+      } else {
          $startDateStr = $this->parsePart($isodate);
-         if ($startDateStr->isBadValue()) { 
+         if ($startDateStr->isBadValue()) {
             $this->badValue = true;
          }
          $this->startDate = $startDateStr->getDate();
          $this->startDatePrecision = $startDateStr->getDatePrecision();
       }
-      
+
    }
-   
-   public function parsePart($part) { 
+
+   public function parsePart($part) {
       $result = new DateWithPrecision();
       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$part)) {
       	$result->setDate($part);
@@ -512,32 +514,32 @@ class DateRangeWithPrecision {
       	}
       }
       return $result;
-   } 
-   
-   public function hasEndDate() { 
+   }
+
+   public function hasEndDate() {
       $result = false;
-      if ($this->endDate!=null) { 
+      if ($this->endDate!=null) {
          $result = true;
-      }     
+      }
       return $result;
-   } 
-   
-   public function getStartDate() { 
+   }
+
+   public function getStartDate() {
       return $this->startDate;
    }
-   public function getEndDate() { 
+   public function getEndDate() {
       return $this->endDate;
    }
-   public function getStartDatePrecision() { 
+   public function getStartDatePrecision() {
       return $this->startDatePrecision;
    }
-   public function getEndDatePrecision() { 
+   public function getEndDatePrecision() {
       return $this->endDatePrecision;
    }
-   public function isBadValue() { 
+   public function isBadValue() {
       return $this->badValue;
    }
-   
+
 }
 
 class huh_preptype_custom extends huh_preptype {
@@ -683,7 +685,7 @@ class huh_agentvariant_custom extends huh_agentvariant {
    }
 }
 
-class huh_referencework_custom extends huh_referencework { 
+class huh_referencework_custom extends huh_referencework {
 
    public function keySelectDistinctJSONTitle($term) {
    	global $connection;
@@ -708,9 +710,9 @@ class huh_referencework_custom extends huh_referencework {
    		$stmt->close();
    	}
    	return $returnvalue;
-   
+
    }
-   
+
 }
 
 class huh_container_custom extends huh_container {
@@ -738,9 +740,9 @@ class huh_container_custom extends huh_container {
 			$stmt->close();
 		}
 		return $returnvalue;
-		 
+
 	}
-	 
+
 }
 
 class huh_collectingtrip_custom extends huh_collectingtrip {
@@ -768,7 +770,7 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 			$stmt->close();
 		}
 		return $returnvalue;
-			
+
 	}
 
 }
@@ -935,12 +937,12 @@ class huh_geography_custom extends huh_geography {
          $stmt->bind_result($id,$name);
          $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
          $comma = ', ';
-         if ($primaryid!="") { 
+         if ($primaryid!="") {
              //$returnvalue .= $comma . ' { "value":"'.$primaryid.'", "name":"'.$primary.'" } ';    // include state/province as option
-         } else { 
-            if ($countryid != "") { 
+         } else {
+            if ($countryid != "") {
                 //$returnvalue .= $comma . ' { "value":"'.$countryid.'", "name":"'.$country.'" } ';    // include country as an option
-            } 
+            }
          }
          while ($stmt->fetch()) {
             $name = trim($name);
@@ -959,20 +961,20 @@ class huh_geography_custom extends huh_geography {
 
 function ingestCollectionObject() {
    global $connection, $debug,
-   $truncation, $truncated, 
+   $truncation, $truncated,
    $collectors,$etal,$fieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
-   $project, $storagelocation, $storage, 
+   $project, $storagelocation, $storage,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
- 
+
    $fail = false;
    $feedback = "";
 
-   if ($truncation) { 
+   if ($truncation) {
      $fail = true;
      $feedback = "Data truncation: $truncated";
    }
@@ -1004,35 +1006,35 @@ function ingestCollectionObject() {
       }
       if ($collectors=='') {
       	$feedback.= "Collector.";
-      }      
+      }
    }
-   
+
    // if either a typestatus or basionym is given, both must be.
    if ($typestatus=='' || $basionym=='') {
       // one or both are blank
       if ($typestatus=='' &&  $basionym=='') {
          // both are blank, ok.
-      } else { 
+      } else {
          // just one is blank
          $fail=true;
          $feedback = "For a type, you must provide both basionym and typestatus";
       }
    }
- 
+
    // If fascicle or number is given, exsiccati must also be given
-   if (($fascicle!='' || $exsiccatinumber!='') && $exsiccati=='') { 
+   if (($fascicle!='' || $exsiccatinumber!='') && $exsiccati=='') {
       $fail = true;
-      $feedback .= "A fascicle or number was given, but not the Exsiccata.";      
+      $feedback .= "A fascicle or number was given, but not the Exsiccata.";
    }
 
    // zero pad barcode up to 8 digits if needed
    $barcode = str_pad($barcode,8,"0",STR_PAD_LEFT);
-   // Test for validly formed barcode 
-   if (!preg_match("/^[0-9]{8}$/",$barcode)) { 
+   // Test for validly formed barcode
+   if (!preg_match("/^[0-9]{8}$/",$barcode)) {
       $fail = true;
-      $feedback .= "Barcode [$barcode] is invalid.  Must be zero padded with exactly 8 digits: ";      
+      $feedback .= "Barcode [$barcode] is invalid.  Must be zero padded with exactly 8 digits: ";
    }
-    
+
    // handle special case of filed under name with blank current id
    if ($currentdetermination=='') {
       // set a blank current determination to the filed under name
@@ -1057,26 +1059,26 @@ function ingestCollectionObject() {
       $enddateprecision = 1;
    } else {
       $date = new DateRangeWithPrecision($datecollected);
-      if ($date->isBadValue()) { 
+      if ($date->isBadValue()) {
           $fail = true;
           $feedback .= "Unrecognized date format: " . $datecollected;
-      } else { 
+      } else {
          $startdate = $date->getStartDate();
-         if ($startdate=='0000-00-00' || strlen($startdate)==0 || substr($startdate,0,4)=='0000' || strpos($startdate,'-00')!==FALSE) { 
+         if ($startdate=='0000-00-00' || strlen($startdate)==0 || substr($startdate,0,4)=='0000' || strpos($startdate,'-00')!==FALSE) {
              $fail = true;
              $feedback .= "Unrecognized start date [$startdate] in: " . $datecollected;
          }
          $startdateprecision = $date->getStartDatePrecision();
          $enddate = $date->getEndDate();
-         if ($enddate=='0000-00-00' || substr($enddate,0,4)=='0000' || strpos($enddate,'-00')!==FALSE) { 
+         if ($enddate=='0000-00-00' || substr($enddate,0,4)=='0000' || strpos($enddate,'-00')!==FALSE) {
              $fail = true;
              $feedback .= "Unrecognized end date [$enddate] in: " . $datecollected;
          }
          $enddateprecision = $date->getEndDatePrecision();
       }
-      
+
       //TODO: Split on / then get value for each half
-      
+
       //if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$datecollected)) {
       //} else {
       //   if (preg_match("/^[0-9]{4}-[0-9]{2}$/",$datecollected)) {
@@ -1097,7 +1099,7 @@ function ingestCollectionObject() {
       //   }
       //}
    }
-   
+
    if ($herbariumacronym=='') { $herbariumacronym = null; }
    if ($fiidentificationqualifier=='') { $fiidentificationqualifier = null; }
    if ($currentdetermination=='') { $currentdetermination = null; }
@@ -1107,8 +1109,8 @@ function ingestCollectionObject() {
    if ($decimallat=='') { $decimallat = null; }
    if ($decimallong=='') { $decimallong = null; }
    if ($datum=='') { $datum = null; }
-   if ($coordinateuncertanty=='') { 
-      $coordinateuncertanty = null; 
+   if ($coordinateuncertanty=='') {
+      $coordinateuncertanty = null;
       $maxuncertantyestunit = null;
    } else {
       $maxuncertantyestunit = 'm';
@@ -1119,15 +1121,15 @@ function ingestCollectionObject() {
    if ($utmzone=='') { $utmzone = null; }
    if ($utmeasting=='') { $utmeasting = null; }
    if ($utmnorthing=='') { $utmnorthing = null; }
-   if ($utmeasting!=null) { 
-      if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) { 
+   if ($utmeasting!=null) {
+      if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) {
          // OK, specify takes UTM easting and northing in meters, can't abstract to MGRS or USNG
-      } else { 
+      } else {
          $fail = true;
-         $feedback .= "UTM Easting and northing must be in meters, there must be 6 digits in the easting and 7 in the northing.";      
+         $feedback .= "UTM Easting and northing must be in meters, there must be 6 digits in the easting and 7 in the northing.";
       }
-   }  
-   
+   }
+
    if ($typestatus=='') { $typestatus = null; }
    if ($typeconfidence=='') { $typeconfidence = null; }
    if ($basionym=='') { $basionym = null; }
@@ -1177,12 +1179,12 @@ function ingestCollectionObject() {
    if ($specimenremarks=='') { $specimenremarks = null; }
    if ($specimendescription=='') { $specimendescription = null; }
    if ($itemdescription=='') { $itemdescription = null; }
-   
+
    $latlongtype = 'point';
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
    }
-    
+
    $df = "";
    if ($debug) {
       $df.=" ";
@@ -1212,10 +1214,10 @@ function ingestCollectionObject() {
       $df.= "georeferencedby=[$georeferencedby] ";
       $df.= "georeferencedate=[$georeferencedate] ";
       $df.= "georeferencesource=[$georeferencesource] ";
-      $df.= "typestatus=[$typestatus] ";  
+      $df.= "typestatus=[$typestatus] ";
       $df.= "typeconfidence=[$typeconfidence] ";
-      $df.= "basionym=[$basionym] ";  
-      $df.= "publication=[$publication] "; 
+      $df.= "basionym=[$basionym] ";
+      $df.= "publication=[$publication] ";
       $df.= "page=[$page] ";
       $df.= "datepublished=[$datepublished] ";
       $df.= "isfragment=[$isfragment] ";
@@ -1229,20 +1231,20 @@ function ingestCollectionObject() {
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";
       $df.= "collectingtrip=[$collectingtrip] ";
-      $df.= "storagelocation=[$storagelocation] ";  
-      $df.= "project=[$project] ";  
-      $df.= "host=[$host] ";  
+      $df.= "storagelocation=[$storagelocation] ";
+      $df.= "project=[$project] ";
+      $df.= "host=[$host] ";
       $df.= "substrate=[$substrate] ";
-      $df.= "exsiccati=[$exsiccati] ";  
-      $df.= "fascicle=[$fascicle] ";  
-      $df.= "exsiccatinumber=[$exsiccatinumber] ";  
+      $df.= "exsiccati=[$exsiccati] ";
+      $df.= "fascicle=[$fascicle] ";
+      $df.= "exsiccatinumber=[$exsiccatinumber] ";
       $df.= "specimenremarks=[$specimenremarks] ";
       $df.= "specimendescription=[$specimendescription] ";
       $df.= "itemdescription=[$itemdescription] ";
    }
 
    $link = "";
-   
+
    if (!$fail) {
       //  persist
       $adds = "";
@@ -1279,7 +1281,7 @@ function ingestCollectionObject() {
       if (!$fail) {
          // Locality + localitydetail + geocoorddetail
          $sql = "insert into locality (geographyid, localityname, datum, lat1text, long1text, latitude1, " .
-                                  " longitude1, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid, " . 
+                                  " longitude1, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid, " .
                                   " latlongtype, disciplineid,timestampcreated,version,originallatlongunit,srclatlongunit) " .
                                   " values (?,?,?,?,?,?,?,?,?,?,?,?,?,3,now(),0,0,0)";
          $statement = $connection->prepare($sql);
@@ -1411,7 +1413,7 @@ function ingestCollectionObject() {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
-          
+
          if (!$fail && $collectingtrip != null) {
          	// CollectingTrip, Collecting Event
          	$collectingtripid = null;
@@ -1447,7 +1449,7 @@ function ingestCollectionObject() {
          		$feedback.= "Query error: " . $connection->error . " " . $sql;
          	}
          }
-         
+
          // Collecting event
          $sql = "insert into collectingevent (localityid, stationfieldnumber, verbatimdate, startdate, startdateprecision, enddate, enddateprecision,
                                                 collectingtripid, createdbyagentid, remarks, timestampcreated, version, disciplineid)
@@ -1491,12 +1493,12 @@ function ingestCollectionObject() {
 
       if (!$fail) {
 
-          
+
          // Collection object
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2,description) " . 
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2,description) " .
                    " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?,?)" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
@@ -1550,7 +1552,7 @@ function ingestCollectionObject() {
                $fail = true;
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
-             
+
             $sql = "update collectionobject set containerid = ? where collectionobjectid = ?  ";
             $statement = $connection->prepare($sql);
             if ($statement) {
@@ -1570,7 +1572,7 @@ function ingestCollectionObject() {
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
          }
-          
+
       }
       if (!$fail) {
          // project, collectionobject
@@ -1606,7 +1608,7 @@ function ingestCollectionObject() {
                $fail = true;
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
-             
+
             $sql = "insert into project_colobj (projectid, collectionobjectid) values (?,?) ";
             $statement = $connection->prepare($sql);
             if ($statement) {
@@ -1675,7 +1677,7 @@ function ingestCollectionObject() {
 
       if (!$fail) {
          // Fragment (item)
-          
+
          // check for duplicate barcode
          $sql = "select count(*) from fragment where identifier = ?";
          $statement = $connection->prepare($sql);
@@ -1704,7 +1706,7 @@ function ingestCollectionObject() {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
-          
+
          $replicates = 0;
          $sex = 'not determined';
          $isminimal = 1;  // yesno2
@@ -1733,22 +1735,22 @@ function ingestCollectionObject() {
           $uuid = UUID::v4();
           $sql = "insert into guids (tablename,primarykey,uuid) values ('fragment',?,?)";
           $statement = $connection->prepare($sql);
-          if ($statement) { 
+          if ($statement) {
              $statement->bind_param('is',$fragmentid,$uuid);
-             if ($statement->execute()) { 
+             if ($statement->execute()) {
                $adds  .= "guid=[$uuid]";
-             } else { 
+             } else {
                $fail = true;
                $feedback.= "Unable to save guid: " . $connection->error;
              }
           } else {
              $fail = true;
              $feedback.= "Query error: " . $connection->error . " " . $sql;
-          } 
+          }
       }
 
-      if (!$fail) { 
-         if ($exsiccati!=null) { 
+      if (!$fail) {
+         if ($exsiccati!=null) {
             // exsiccati
             // referencework of type=6 plus fragmentcitation
             $rworkid = null;
@@ -1784,8 +1786,8 @@ function ingestCollectionObject() {
                $fail = true;
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
-      
-            if ($referenceworkid != null) { 
+
+            if ($referenceworkid != null) {
 
                $sql = "insert into fragmentcitation (text1, text2, referenceworkid, fragmentid, timestampcreated, createdbyagentid, version) " .
                 " values (?,?,?,?,now(),?,1) ";
@@ -1809,7 +1811,7 @@ function ingestCollectionObject() {
       }
 
       if (!$fail) {
-          
+
          if ($basionym!=null) {
             // type name
             $taxonid = null;
@@ -1845,7 +1847,7 @@ function ingestCollectionObject() {
                $fail = true;
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
-             
+
             // yesno1 = isLabel (no)
             // yesno2 = isFragment (of type) (parameter)
             // yesno3 = isFiledUnder (no)
@@ -1868,7 +1870,7 @@ function ingestCollectionObject() {
                $fail = true;
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
-             
+
 
             if ($publication!=null) {
                $referenceworkid = null;
@@ -1902,7 +1904,7 @@ function ingestCollectionObject() {
                   $fail = true;
                   $feedback.= "Query error: " . $connection->error . " " . $sql;
                }
-                
+
                $sql = "insert into taxoncitation (text1, text2, referenceworkid, taxonid, timestampcreated, createdbyagentid, version) " .
                 " values (?,?,?,?,now(),?,1) ";
                $statement = $connection->prepare($sql);
@@ -1925,10 +1927,10 @@ function ingestCollectionObject() {
       }
 
       $namesidentical = FALSE;
-      if ($filedundername==$currentdetermination) { 
+      if ($filedundername==$currentdetermination) {
          // See BugID: 588 if both names are the same, only add filed under, and mark it as current.
          $namesidentical = TRUE;
-         // Consequences:  If the names are the same: Create one record with a determiner, 
+         // Consequences:  If the names are the same: Create one record with a determiner,
          //    date determined, filed under flag, and current flag set.
          // If the names are different, create two records, one filed under name without
          //    a determiner, and one current name with a determier and date determined.
@@ -1937,7 +1939,7 @@ function ingestCollectionObject() {
       if (!$fail) {
        // Filed under name
        // Add only if there are different filed under and current determination names.
-       if ($namesidentical===FALSE) { 
+       if ($namesidentical===FALSE) {
 
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $filedundername )) {
@@ -1976,7 +1978,7 @@ function ingestCollectionObject() {
          // yesno3 = isFiledUnder (yes)
          // iscurrent = isCurrent (no/yes)  // no if current det is supplied, yes if current det and filed under are the same.
          $iscurrent = 0;
-         if ($namesidentical===TRUE) { 
+         if ($namesidentical===TRUE) {
             // Leaving this in, but we shouldn't end up in this block with the current logic.
             $iscurrent = 1;
          }
@@ -2070,7 +2072,7 @@ function ingestCollectionObject() {
          // yesno2 = isFragment (of type) (no)
          // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
          $isfiledunder = 0;
-         if ($namesidentical===TRUE) { 
+         if ($namesidentical===TRUE) {
             $isfiledunder = 1;
          }
          // iscurrent = isCurrent (yes)
@@ -2101,7 +2103,7 @@ function ingestCollectionObject() {
       @$feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
    } else {
       $connection->commit();
-      if ($debug) { 
+      if ($debug) {
          $feedback .= " $adds";
       }
       $feedback = "<div style='background-color: #B3FF9F;'>OK $link $feedback $df</div>";
