@@ -214,9 +214,9 @@ class User {
             $statement->fetch();
             if ($statement->num_rows()==1) {
                // watson
-               $exec = $javaexe . ' -jar ' . $encryptionjar . ' decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
+               // $exec = $javaexe . ' -jar ' . $encryptionjar . ' decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
                // test
-               $exec = '/usr/bin/java -jar /var/www/phpincludes/Encryption.jar decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
+               //$exec = '/usr/bin/java -jar /var/www/phpincludes/Encryption.jar decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
                $exec = $execstring . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
 
                $decryptedPassword = shell_exec($exec);
@@ -592,7 +592,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          if ($field=="FullName") {
             $preparemysql = "SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,'')) FROM taxon where FullName like ? and FullName <> '' order by $fielde $order ";
          }
-         echo $preparedmysql;
+         echo $preparemysql;
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s",$limit);
