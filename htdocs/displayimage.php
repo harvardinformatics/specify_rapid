@@ -15,21 +15,29 @@ $mode= '';
 $startbarcode = '';
 @$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['startbarcode']),0,20);
 
-function imageForBarcode($barcode) {
+function imageDataForBarcode($barcode) {
    global $connection;
-   $result = "";
-   $sql = " select concat(url_prefix,uri) as url
+   $result = new ImageReturn();
+   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width 
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id 
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
             where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
             limit 1 ";
    if ($statement = $connection->prepare($sql)) {
-       $statement->bind_param("i", $barcode);
+       $statement->bind_param("s", $barcode);
        $statement->execute();
-       $statement->bind_result($url);
+       $statement->bind_result($image_set_id, $url, $pixel_height, $pixel_width);
        if ($statement->fetch()) {
-         $result .= $url;
+         $result->image_set_id = $image_set_id;
+         $result->url = $url;
+         if ($pixel_height==0||$pixel_height==null) {
+            $size = getImageSize($url);
+            $pixel_width = $size[0];
+            $pixel_height = $size[1];
+         }
+         $result->pixel_height = $pixel_height;
+         $result->pixel_width = $pixel_width;
        } else {
           echo $connection->error;
        }
@@ -39,6 +47,7 @@ function imageForBarcode($barcode) {
    }
    return $result;
 }
+
 
 
 ?>
@@ -62,9 +71,22 @@ function imageForBarcode($barcode) {
       pingchannel.postMessage('ping');
    }
 
+   $(window).on('load', function(){
+       $('#cover').fadeOut(100);
+   })
 </script>
+<style>
+#cover {
+    background: url('ajaxloader.gif') no-repeat scroll center center #FFF;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+</style>
 </head>
 <body>
+<div id="cover"></div>
 <?php
 
 switch ($mode) { 
@@ -82,6 +104,7 @@ function error() {
 
 function image($barcode) { 
     echo "<div id='info'>imageclicks</div>";
+    // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
            channel.onmessage = function(e) {
@@ -90,11 +113,10 @@ function image($barcode) {
                   window.close();
                } else {
                   if (e.data.action=='load') { 
-                     alert(e.data)
-                     setupCanvas();
+                     setupCanvas(e.data.uri,e.data.origheight,ed.data.origwidth);
                   } else {  
                      document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
-                     doZoom(e.data.x,e.data.y);
+                     doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
                   }
               }
            };
@@ -109,8 +131,12 @@ function image($barcode) {
     ";
    $mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
    if ($barcode!="") { 
-       $mediauri = imageForBarcode($barcode);
-echo "[$barcode][$mediauri]";
+       $media = imageDataForBarcode($barcode);
+       $mediauri = $media->url;
+       $mediaid = $media->image_set_id;
+       $h = $media->pixel_height;
+       $w = $media->pixel_width;
+echo "[$barcode][$mediauri][$h]";
    }
    echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
    echo "<script>
@@ -119,37 +145,24 @@ echo "[$barcode][$mediauri]";
      canvas.height = 1000;
      context = canvas.getContext('2d');
 
-     setupCanvas('$mediauri');
+     setupCanvas('$mediauri',$h,$w);
 
-     function setupCanvas(uri) {
+     function setupCanvas(uri,h,w) {
          base_image = new Image();
          base_image.src = uri;
          base_image.onload = function() { 
-             context.drawImage(base_image, 1, 1,3420,4897,1,1,800,1200);
+             context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
          }
      }
 
-     function doZoom(x,y) {
-         xnew =  (3420/140) * x;
-         ynew =  (4897/200) * y;
-         xnew = xnew - 250;  if (xnew < 1) { xnew = 1; } 
-         ynew = ynew - 250;  if (ynew < 1) { ynew = 1; } 
+     function doZoom(x,y,h,w,oh,ow) {
+         xnew =  (ow/w) * x;
+         ynew =  (oh/h) * y;
+         xnew = xnew - 600;  if (xnew < 1) { xnew = 1; } 
+         ynew = ynew - 400;  if (ynew < 1) { ynew = 1; } 
          context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
          context.drawImage(base_image,xnew,ynew,1500,1200,1,1,1200,1000);
      }
-
-        function oldDoZoom(x,y) { 
-            var image = $('#testimage img');
-            var imageWidth = image.width();
-            var imageHeight = image.height();
-
-            image.css({
-                height: imageHeight * 1.2,
-                width: imageWidth * 1.2,
-                left: -x,
-                top: -y
-            });
-        }
 
    </script>";
 }   

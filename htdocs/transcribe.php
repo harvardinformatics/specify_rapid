@@ -86,6 +86,7 @@ class targetReturn {
    public $barcode;
    public $mediauri;
    public $medialink;
+   public $imagesetid;
 }
 
 
@@ -101,7 +102,9 @@ function checkReady() {
 
 function doSetup() { 
      $target = target();
-     echo "<button type='button' onclick='dosetup($target->barcode);' class='ui-button'>Start</button>";
+     $barcode = $target->barcode;
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetup(\"$barcode\");' class='ui-button'>Start</button>";
+     echo " with [$barcode]";
 }
 
 function target() {
@@ -125,17 +128,27 @@ function target() {
        $statement->store_result();
        while ($statement->fetch()) {
          $result->barcode = $barcode;
-         $mediauri = imageForBarcode($barcode);
+         $media = imageDataForBarcode($barcode);
+echo "[$media->image_set_id]";
+         $mediauri = $media->url;
+         $mediaid = $media->image_set_id;
+         $height = $media->pixel_height;
+         $width = $media->pixel_width;
+         if ($height==0||$height==null) { 
+            $size = getImageSize($mediauri);
+            $width = $size[0];
+            $height = $size[1];
+         }
          $result->mediauri = $mediauri;
          //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
-         $height =  4897;
-         $width  =  3420;
-         $s = $height / 200;
-         $h = round($height/$s);
-         $w = round($width/$s);
+         //$height =  4897;
+         //$width  =  3420;
+         $s = 200/$height; // scale factor 
+         $h = round($height*$s);
+         $w = round($width*$s);
          $medialink = "";
-         $medialink .= "<a onclick='alert(\"$barcode\"); channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
-         $medialink .= "<img id='image_div' onclick=' getClick(event);' src='$mediauri' width='$w' height='$h'></div>";
+         $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+         $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
          $result->medialink = $medialink;
        }
        $statement->close();
@@ -167,6 +180,36 @@ function imageForBarcode($barcode) {
    }
    return $result;
 }
+
+function imageDataForBarcode($barcode) {
+   global $connection;
+   $result = new ImageReturn();
+   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width 
+            from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id 
+            left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
+            left join fragment f on f.collectionobjectid = isco.collectionobjectid
+            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            limit 1 ";
+   if ($statement = $connection->prepare($sql)) {
+       $statement->bind_param("s", $barcode);
+       $statement->execute();
+       $statement->bind_result($image_set_id, $url, $pixel_height, $pixel_width);
+       if ($statement->fetch()) {
+         $result->image_set_id = $image_set_id;
+         $result->url = $url;
+         $result->pixel_height = $pixel_height;
+         $result->pixel_width = $pixel_width;
+       } else { 
+          echo $connection->error;
+       }
+       $statement->close();
+   } else { 
+          echo $connection->error;
+   }
+   return $result;
+}
+
+
 
 # Show the page with the selected display mode.
 
@@ -285,7 +328,7 @@ function imageForBarcode($barcode) {
 // ** Functions
 
 function navigation() {
-    echo "<button type='button' onclick='doclear();' class='ui-button' >Restart</button>";
+    echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
 }
 
@@ -508,7 +551,11 @@ function form() {
         @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false'); 
    }
 
-   echo "<tr><td><input type='submit' value='Save' id='saveButton'></td></tr>";
+   echo "<tr><td>";
+   echo "<input type='submit' value='Save' id='saveButton'> ";
+   echo "<input type='button' value='Next', disabled='true' id='nextButton'>";
+   echo "</td></tr>";
+
    if ($test=="true") { 
        // in test mode, only log data capture rate
    echo "<script>
@@ -520,10 +567,11 @@ function form() {
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 
                        $('#feedback').html( data ) ;
-                       goNext();
+                       $('#nextButton').prop('disabled',false) 
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       $('#nextButton').prop('disabled',true) 
                    }
                });
                event.preventDefault();
@@ -540,10 +588,11 @@ function form() {
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 
                        $('#feedback').html( data ) ;
-                       goNext();
+                       $('#nextButton').prop('disabled',false) 
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       $('#nextButton').prop('disabled',true) 
                    }
                });
                event.preventDefault();
@@ -579,10 +628,10 @@ function form() {
         <script>
            channel.onmessage = function (e) { console.log(e); }
 
-           function getClick(event){
+           function getClick(event,height, width, origheight,origwidth,imagesetid){
                xpos = event.offsetX?(event.offsetX):event.pageX-document.getElementById('image_div').offsetLeft;
                ypos = event.offsetY?(event.offsetY):event.pageY-document.getElementById('image_div').offsetTop;
-               channel.postMessage( { x:xpos, y:ypos } )
+               channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
            }
 
         </script>

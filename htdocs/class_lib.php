@@ -7,7 +7,13 @@
 include_once("connection_library.php");
 include_once("druid_classes.php");
 
-
+/** Data structure to describe information about images **/
+class ImageReturn { 
+   public $image_set_id;
+   public $url ;
+   public $pixel_width ;
+   public $pixel_height ;
+}
 
 class UUID {
   // ** from http://www.php.net/manual/en/function.uniqid.php#94959
