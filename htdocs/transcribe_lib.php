@@ -25,6 +25,44 @@ class TPage extends Page {
       if ($user!=null) { 
          if ($user->getAuthenticationState()==true) {
       	     $returnvalue .= $user->getUserHtml($this->targetPage);
+             $returnvalue .= "
+<script>
+
+   const channel = new BroadcastChannel('imageclicks');
+   const pingchannel = new BroadcastChannel('ping');
+
+   function dosetup(barcode) { 
+   
+      window.open('displayimage.php?mode=image&startbarcode='+barcode ,'_blank','modal=yes');
+
+      window.location.href = 'transcribe.php?display=mainform&barcode='+barcode;
+
+   }
+   function doclear() { 
+      channel.postMessage('close');
+      window.location.href = 'transcribe.php?display=setup';
+
+   }
+   function ping() { 
+      pingchannel.postMessage('ping');
+   }
+
+   function goNext() { 
+      alert(\"TODO: Go next, load next image.\");
+   }
+
+   pingchannel.onmessage = function(e) { 
+      console.log(e);
+      if (e.data=='ping') { 
+         pingchannel.postMessage('pong');
+      }
+      if (e.data=='pong') { 
+         alert('pong');
+      }
+   } 
+
+</script>
+              ";
          }
       }
       $returnvalue .= '</header>';

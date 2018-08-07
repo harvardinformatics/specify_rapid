@@ -48,7 +48,7 @@ if ($require_authentication) {
             $_SESSION["lastlogin"]=$user->getLastLogin();
             $_SESSION["about"]=$user->getAbout();
             if ($tdisplay == "") {
-               $display = "mainform";
+               $display = "setup";
             } else {
                $display = $tdisplay;
             }
@@ -77,8 +77,98 @@ if ($require_authentication) {
    $authenticated = true;
 }
 if ($display=="") {
-   $display="mainform";
+   $display="setup";
 }
+
+# Data Structures  *********************************
+
+class targetReturn { 
+   public $barcode;
+   public $mediauri;
+   public $medialink;
+}
+
+
+# Supporting functions ******************************
+
+function checkReady() { 
+    # TODO: ping image window
+
+    # this check probably needs to go into javascript inside mainform.
+   
+    return true;
+}
+
+function doSetup() { 
+     $target = target();
+     echo "<button type='button' onclick='dosetup($target->barcode);' class='ui-button'>Start</button>";
+}
+
+function target() {
+   global $connection;
+   $result = new targetReturn();
+   $sql = "select distinct f.text1, f.identifier 
+         from locality l left join collectingevent ce on l.localityid = ce.localityid 
+                         left join collectionobject co on ce.collectingeventid = co.collectingeventid 
+                         left join fragment f on co.collectionobjectid = f.collectionobjectid 
+                         left join IMAGE_SET_collectionobject isco on co.collectionobjectid = isco.collectionobjectid 
+                         left join IMAGE_OBJECT io on isco.imagesetid = io.image_set_id
+          where localityname = '[data not captured]' 
+                and isco.collectionobjectid is not null 
+                and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+          limit ? ";
+   $limit = 1;
+   if ($statement = $connection->prepare($sql)) {
+       $statement->bind_param("i", $limit);
+       $statement->execute();
+       $statement->bind_result($acronym, $barcode);
+       $statement->store_result();
+       while ($statement->fetch()) {
+         $result->barcode = $barcode;
+         $mediauri = imageForBarcode($barcode);
+         $result->mediauri = $mediauri;
+         //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
+         $height =  4897;
+         $width  =  3420;
+         $s = $height / 200;
+         $h = round($height/$s);
+         $w = round($width/$s);
+         $medialink = "";
+         $medialink .= "<a onclick='alert(\"$barcode\"); channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+         $medialink .= "<img id='image_div' onclick=' getClick(event);' src='$mediauri' width='$w' height='$h'></div>";
+         $result->medialink = $medialink;
+       }
+       $statement->close();
+   }
+   return $result;
+}
+
+function imageForBarcode($barcode) {
+   global $connection;
+   $result = "";
+   $sql = " select concat(url_prefix,uri) as url
+            from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id 
+            left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
+            left join fragment f on f.collectionobjectid = isco.collectionobjectid
+            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            limit 1 ";
+   if ($statement = $connection->prepare($sql)) {
+       $statement->bind_param("s", $barcode);
+       $statement->execute();
+       $statement->bind_result($url);
+       if ($statement->fetch()) {
+         $result .= $url;
+       } else { 
+          echo $connection->error;
+       }
+       $statement->close();
+   } else { 
+          echo $connection->error;
+   }
+   return $result;
+}
+
+# Show the page with the selected display mode.
 
 $apage = new TPage();
 $apage->setTitle("HUH Data Transcription Form");
@@ -86,10 +176,20 @@ $apage->setErrorMessage($error);
 
 echo $apage->getHeader($user);
 
+// Check to see if conditions are setup for displaying the main data entry form, if not, go to setup.
+if ($display=='mainform') { 
+   if (!checkReady()) { 
+       $display = "setup";
+   }
+}
+
 switch ($display) {
 
    case 'mainform':
       form();
+      break;
+   case 'setup':
+      doSetup();
       break;
    case 'logout':
       $user->logout();
@@ -106,7 +206,7 @@ switch ($display) {
                Specify username:<input type=textbox name=username value='$username'>
                Password:<input type=password name=password>
                <input type=hidden name=action value='getpassword'>
-               <input type=hidden name=display value='mainform'>
+               <input type=hidden name=display value='setup'>
                <input type=submit value='Login' class='ui-button'>
                </form>";
       echo "<script type='text/javascript'>
@@ -159,7 +259,7 @@ function targetlist() {
    }
    return $result;
 }
-
+/*
 function imageForBarcode($barcode) { 
    global $connection;
    $result = "";
@@ -180,8 +280,14 @@ function imageForBarcode($barcode) {
    }
    return $result;
 }
+*/
 
 // ** Functions
+
+function navigation() {
+    echo "<button type='button' onclick='doclear();' class='ui-button' >Restart</button>";
+    echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
+}
 
 function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecision) { 
    $result = "";
@@ -208,24 +314,53 @@ function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecis
 }
 
 function form() {
+   global $user;
 
-   $targetbarcode = '00460286';
-   @$targetbarcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,8);
+   @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
+   @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
+   switch ($config) { 
+      case 'minimal':
+          $config="minimal";
+          break;
+      case 'standard':
+      default :
+          $config="standard";
+   }
+
+   #$targetbarcode = '00460286';
+   #@$targetbarcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,8);
+
+   # Find out the barcode to lookup.
+   $target = target();
+   $targetbarcode = $target->barcode;
 
    $habitat = "";
 
+   echo "[$targetbarcode]";
+
+   if ($test=="true") { 
+     // populate with data for testing
+   } else { 
+     // load data from database
+   }
    $huh_fragment = new huh_fragment();
    $matches = $huh_fragment->loadArrayByIdentifier($targetbarcode);
    $num_matches = count($matches);
+   $project = null;
    if ($num_matches==1) { 
        $match = $matches[0];
        $match->load($match->getFragmentID());
+       $prepmethod = $match->getPrepMethod();
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
+       $rprep = $related['PreparationID'];
        $rcolobj->load($rcolobj->getCollectionObjectID());
+       $rprep->load($rprep->getPreparationID());
        $created = $rcolobj->getTimestampCreated();
        $habitat = $rcolobj->getText1();
        $related = $rcolobj->loadLinkedTo();
+       $proj = new huh_project_custom();
+       $project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
        $rcoleve->load($rcoleve->getCollectingEventID());
        $stationfieldnumber = $rcoleve->getStationFieldNumber();
@@ -237,6 +372,13 @@ function form() {
        $namedPlace = $rlocality->getNamedPlace();
        $verbatimElevation = $rlocality->getVerbatimElevation();
        $specificLocality = $rlocality->getLocalityName();
+       
+       
+       $format = "Sheet";
+       
+
+//TODO: Save Project
+
    }
 
    @$cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
@@ -257,15 +399,18 @@ function form() {
    @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; } 
    @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
+   if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = 'US and Canada - Mass Digitization'; } 
+   if ($project==null || strlen($project)==0) { $project = $defaultproject; } 
  
    echo "<div class='hfbox' style='height: 1em;'>";  
-   echo targetlist();
+   echo navigation();
    echo "</div>";
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
 
    echo "<form action='transcribe_handler.php' method='GET' id='transcribeForm' >\n";
    echo "<input type=hidden name='action' value='transcribe'>";
+   echo "<input type=hidden name='operator' value='".$user->getAgentId()."'>";
    
    echo '<script>
          $( function(){
@@ -277,8 +422,13 @@ function form() {
    echo '<div>';
 
    echo "<table>";
+
+
    @staticvalue("Record Created:",$created);
-   field ("barcode","Barcode",$targetbarcode,'required','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
+   selectProject ("defaultproject","Project",$defaultproject);  
+   @staticvalue("Barcode:",$targetbarcode);
+   echo "<input type='hidden' name='barcode' id='barcode' value='$targetbarcode'>";
+   // field ("barcode","Barcode",$targetbarcode,'required','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    echo '<script>
    $(function () {
        $("#barcode").on( "invalid", function () {
@@ -290,17 +440,97 @@ function form() {
    }); 
    </script>
    ';
-   selectAcronym("herbariumacronym",$defaultherbarium);
+   @field ("prepmathod","Prep Method",$prepmethod,'true'); 
+   selectPrepType("preptype","Format:",$defaultformat,'true'); 
+   
+   if ($config=="minimal") { 
+       /* 
+       barcode - known, not editable - on save, go to next in list.
+       project - default US and Canada, show
+       format - default sheet, show
+       preparation method - pressed default, show
+       collectioncode - likely (GH, A, NEBC)
+       highergeography - pick
+       scientific name - filed under, plus qualifier - carry forward
+       */
+       selectAcronym("herbariumacronym",$defaultherbarium);
+       // higher geography
+       // scientific name
 
-   @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
-   @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
-   @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
-   @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
-   field ("habitat","Habitat",$habitat); 
-   @field ("namedplace","Named place",$namedPlace); 
-   @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false'); 
+   } elseif ($config=="standard") { 
+
+        @field ("filedundername","Filed Under",$specificLocality,'true');  // TODO
+        @field ("filedunderqualifier","ID Qualifier",$specificLocality,'true'); // TODO
+        @field ("currentname","Current Name",$specificLocality,'true'); // TODO
+        @field ("currentqualifier","ID Qualifier",$specificLocality,'true'); // TODO
+
+
+       selectAcronym("herbariumacronym",$defaultherbarium);
+       /* 
+       Longer list (12 fields, for comparison)
+       project - default US and Canada, show  
+       barcode - known, not editable - on save, go to next in list.
+       format - default sheet, show 
+       preparation method - pressed default, show
+       scientific name - 
+          filed under  -   carry forward
+          plus qualifier - carry forward
+       scientific name - 
+          current -- carry forward
+          qualifier
+       collectioncode - likely (GH, A, NEBC)
+       collecting trip - pick
+       highergeography - pick
+       *verbatim locality
+       collectors, et al
+       *collector number
+       *verbatim date collected
+       *date collected
+       */
+        @field ("collectingtrip","Collecting Trip",$specificLocality,'true');  // TODO
+        @field ("highergeography","Higher Geography",$specificLocality,'true'); // TODO
+
+        @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
+
+        @field ("collectors","Collectors",$specificLocality,'true');  // TODO
+        @field ("etal","Et al.",$specificLocality,'true');      // TODO
+
+        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
+        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
+        @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
+   } else { 
+        @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
+        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
+        @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
+        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
+        field ("habitat","Habitat",$habitat); 
+        @field ("namedplace","Named place",$namedPlace); 
+        @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false'); 
+   }
 
    echo "<tr><td><input type='submit' value='Save' id='saveButton'></td></tr>";
+   if ($test=="true") { 
+       // in test mode, only log data capture rate
+   echo "<script>
+         $('#transcribeForm').submit(function(event){
+               $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
+               $.ajax({ 
+                   type: 'GET',
+                   url: 'transcribe_logger.php',
+                   data: $('#transcribeForm').serialize(),
+                   success: function(data) { 
+                       $('#feedback').html( data ) ;
+                       goNext();
+                   },
+                   error: function() { 
+                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                   }
+               });
+               event.preventDefault();
+          });
+   </script>";
+   } else { 
+       // otherwise, save the changes 
    echo "<script>
          $('#transcribeForm').submit(function(event){
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
@@ -310,6 +540,7 @@ function form() {
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 
                        $('#feedback').html( data ) ;
+                       goNext();
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
@@ -318,6 +549,7 @@ function form() {
                event.preventDefault();
           });
    </script>";
+   }
    
 
    echo "</table>";
@@ -334,13 +566,35 @@ function form() {
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
-   echo '<h3>Click to zoom, then move mouse to pan, then click to hold.</h3>';
+   echo '<h3>Click to zoom in other window.</h3>';
    echo '<div>';
 
-   $mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
-   $mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
-   $mediauri = imageForBarcode($targetbarcode);
+   #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
+   #$mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
+   #$mediauri = imageForBarcode($targetbarcode);
+   
+   echo '<div class=flexbox>';
+    $medialink = $target->medialink;
+    echo "
+        <script>
+           channel.onmessage = function (e) { console.log(e); }
 
+           function getClick(event){
+               xpos = event.offsetX?(event.offsetX):event.pageX-document.getElementById('image_div').offsetLeft;
+               ypos = event.offsetY?(event.offsetY):event.pageY-document.getElementById('image_div').offsetTop;
+               channel.postMessage( { x:xpos, y:ypos } )
+           }
+
+        </script>
+    ";
+    echo "$medialink";
+   echo '</div>';
+
+
+
+   echo '</div>';
+
+   /* 
    echo '<div class="flexbox"><div id="testimage"><img src="'.$mediauri.'" width="360"></div><div class="flexbox"><div id="imgtarget" style="width: 680px;"></div></div></div>';
    echo "<script>
          $(document).ready(function(){
@@ -364,6 +618,7 @@ function form() {
   
    echo '</div>';
    echo '</div>';
+   */
    
 }
 
@@ -384,6 +639,32 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
    }
    echo "</td></tr>\n";
 }
+
+function selectPrepType($field,$label,$default,$required='false') {
+    $returnvalue = "
+  <script>
+  $( function() {
+    $( '#$field' ).autocomplete({
+      source: 'ajax_handler.php?druid_action=returndistinctjqapreptype',
+      minLength: 2,
+      select: function( event, ui ) {
+         // alert( 'Selected: ' + ui.item.value + ' aka ' + ui.item.id );
+      }
+    });
+  } );
+  </script>
+  <tr><td>
+  <label for='$field'>$label</label>
+  </td><td>
+     <div class='ui-widget'>
+        <input id='$field' value='$default'  style='width: ".BASEWIDTH."em; ' >
+     </div>
+  </td></tr>
+    ";
+    echo $returnvalue;
+}
+
+
 
 function utm() {
 	echo "<tr><td>\n";
@@ -576,14 +857,26 @@ function selectCollectingTripID($field,$label,$required='false') {
 }
 
 function selectProject($field,$label,$default,$required='false') {
-    $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='projectStore$field'
-     url='ajax_handler.php?druid_action=returndistinctjsonproject&name=*' > </div>";
-    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-    store='projectStore$field' required='$required' hasDownArrow='false' style='border-color: blue;'
-    searchAttr='name' value='$default' >
-    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
-    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
+    $returnvalue = "
+  <script>
+  $( function() {
+    $( '#$field' ).autocomplete({
+      source: 'ajax_handler.php?druid_action=returndistinctjqaproject',
+      minLength: 2,
+      select: function( event, ui ) {
+         // alert( 'Selected: ' + ui.item.value + ' aka ' + ui.item.id );
+      }
+    });
+  } );
+  </script>
+  <tr><td>
+  <label for='$field'>$label</label>
+  </td><td>
+     <div class='ui-widget'>
+        <input id='$field' value='$default'  style='width: ".BASEWIDTH."em; ' >
+     </div>
+  </td></tr>
+    ";
     echo $returnvalue;
 }
 

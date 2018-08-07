@@ -553,10 +553,40 @@ class huh_preptype_custom extends huh_preptype {
             $order = 'ASC';
          } else { $order = 'DESC';
          }
-         $field = mysql_escape_string($field);
+         $field = $connection->real_escape_string($field);
          $preparemysql = "SELECT DISTINCT $field FROM preptype order by $field $order ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->execute();
+            $stmt->bind_result($val);
+            while ($stmt->fetch()) {
+               $val = trim($val);
+               if ($val!='') {
+                  $val = str_replace('"','&quot;',$val);
+                  $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$val.'" } ';
+                  $comma = ', ';
+               }
+            }
+            $stmt->close();
+         }
+      }
+      return $returnvalue;
+   }
+   public function keySelectDistinctJSONFiltered($field,$filter,$orderby='ASC') {
+      // ******* Note: $connection must be a mysqli object.
+      global $connection;
+      $returnvalue = '';
+      if ($this->hasField($field)) {
+         $order = '';
+         if ($orderby=='ASC') {
+            $order = 'ASC';
+         } else { $order = 'DESC';
+         }
+         $field = $connection->real_escape_string($field);
+         $preparemysql = "SELECT DISTINCT $field FROM preptype where $field like ? order by $field $order ";
+         $comma = '';
+         if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param("s",$filter);
             $stmt->execute();
             $stmt->bind_result($val);
             while ($stmt->fetch()) {
@@ -592,7 +622,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          if ($field=="FullName") {
             $preparemysql = "SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,'')) FROM taxon where FullName like ? and FullName <> '' order by $fielde $order ";
          }
-         echo $preparemysql;
+         // echo $preparemysql;
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s",$limit);
@@ -807,7 +837,7 @@ class huh_storage_custom extends huh_storage {
 
 class huh_project_custom extends huh_project {
 
-    public function keySelectDistinctJSONname($term) {
+    public function keySelectDistinctJSONname($term, $withid=FALSE) {
         global $connection;
         $returnvalue = '';
         $preparemysql = "select distinct projectid, projectname from project where projectname like ? order by projectname asc ";
@@ -818,13 +848,23 @@ class huh_project_custom extends huh_project {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
-            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-            $comma = ', ';
+            if ($withid) {
+               // $returnvalue .= $comma . ' { "id":"", "value":"", "name":"[no project]" } ';    // include blank as an option
+               $comma = '';
+            } else {
+               $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
+               $comma = ', ';
+            }
             while ($stmt->fetch()) {
                 $name = trim($name);
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
-                    $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+                    if ($withid) {
+                        $returnvalue .= $comma . ' { "id":"'.$name.'", "value":"'.$name.'", "name":"'.$name.'" } ';
+                    } else {
+                        $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+                    }
+                    $comma = ', ';
                 }
             }
             $stmt->close();
@@ -832,6 +872,29 @@ class huh_project_custom extends huh_project {
         return $returnvalue;
 
     }
+
+   public function getFirstProjectForCollectionObject($collectionobjectid) {
+
+        global $connection;
+        $returnvalue = '';
+        $preparemysql = " select projectname from project_colobj pco left join project on pco.projectid = project.projectid where collectionobjectid = ? limit 1  ";
+        $comma = '';
+        if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param("i", $collectionobjectid);
+            $stmt->execute();
+            $stmt->bind_result($name);
+            while ($stmt->fetch()) {
+                $name = trim($name);
+                if ($name!='') {
+                    $name = str_replace('"','&quot;',$name);
+                    $returnvalue = $name;
+                }
+            }
+            $stmt->close();
+        }
+        return $returnvalue;
+   }
+
 
 }
 
