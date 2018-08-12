@@ -580,7 +580,12 @@ function form() {
 
 
    @staticvalue("Record Created:",$created);
-   selectProject ("defaultproject","Project",$defaultproject);  
+   if ($test) { 
+      @staticvalue("Project",$defaultproject);  
+      echo "<input type='hidden' name='project' id='project' value='$defaultproject'>";
+   } else { 
+      selectProject("defaultproject","Project",$defaultproject);  
+   }
    @staticvalue("Barcode:",$targetbarcode);
    echo "<input type='hidden' name='barcode' id='barcode' value='$targetbarcode'>";
    // field ("barcode","Barcode",$targetbarcode,'required','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
@@ -595,8 +600,15 @@ function form() {
    }); 
    </script>
    ';
-   @field ("prepmathod","Prep Method",$prepmethod,'true'); 
-   selectPrepType("preptype","Format:",$defaultformat,'true'); 
+   if ($test) { 
+      @staticvalue("Prep Method",$prepmethod); 
+      echo "<input type='hidden' name='prepmethod' id='prepmethod' value='$prepmethod'>";
+      @staticvalue("Format:",$defaultformat); 
+      echo "<input type='hidden' name='preptype' id='preptype' value='$defaultformat'>";
+   } else {
+      @field ("prepmethod","Prep Method",$prepmethod,'true'); 
+      selectPrepType("preptype","Format:",$defaultformat,'true'); 
+   }
    
    if ($config=="minimal") { 
        /* 
@@ -614,11 +626,10 @@ function form() {
 
    } elseif ($config=="standard") { 
 
-        @field ("filedundername","Filed Under",$specificLocality,'true');  // TODO
-        @field ("filedunderqualifier","ID Qualifier",$specificLocality,'true'); // TODO
-        @field ("currentname","Current Name",$specificLocality,'true'); // TODO
-        @field ("currentqualifier","ID Qualifier",$specificLocality,'true'); // TODO
-
+       @field ("filedundername","Filed Under",$filedundername,'true');  // TODO
+       @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier); // TODO: Load/Save
+       @field ("currentname","Current Name",$currentname,'true'); // TODO
+       @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); // TODO: Load/Save
 
        selectAcronym("herbariumacronym",$defaultherbarium);
        /* 
@@ -894,6 +905,29 @@ function selectYesNo($field,$label) {
 	<option value="1">Yes</option>
 	<option value="0">No</option>
 	</select>';
+	echo "</td></tr>\n";
+}
+
+function selectQualifier($field,$label,$default) {
+	echo "<tr><td>\n";
+	echo "<label for='$field'>$label</label>";
+	echo "</td><td>\n";
+	echo '<select name="'.$field.'" id="'.$field.'">';
+    if ($default=="") { $s0 = 'selected="selected"'; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; } 
+    if ($default=="SensuStricto") { $s0 = ''; $sss = 'selected="selected"'; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; } 
+    if ($default=="InQuestion") { $s0 = ''; $sss = ""; $sq = 'selected="selected"'; $sn=""; $scf=""; $ssl=""; $saf=""; } 
+    if ($default=="Not") { $s0 = ''; $sss = ""; $sq = ""; $sn='selected="selected"'; $scf=""; $ssl=""; $saf=""; } 
+    if ($default=="Compare") { $s0 = ''; $sss = ""; $sq = ""; $sn=""; $scf='selected="selected"'; $ssl=""; $saf=""; } 
+    if ($default=="SensuLato") { $s0 = ''; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl='selected="selected"'; $saf=""; } 
+    if ($default=="Affine") { $s0 = ''; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf='selected="selected"'; } 
+	echo "<option value='' $s0></option>";
+    echo "<option value='SensuStricto' $sss>s. str.</option>";
+    echo "<option value='InQuestion' $sq>?</option>";
+    echo "<option value='Not' $sn>not</option>";
+    echo "<option value='Compare' $cfs>cf.</option>";
+    echo "<option value='SensuLato' $ssl>s. lat.</option>";
+    echo "<option value='Affine' $saf>aff.</option>";
+	echo '</select>';
 	echo "</td></tr>\n";
 }
 
