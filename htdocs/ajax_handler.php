@@ -302,7 +302,7 @@ if ($connection && $authenticated) {
             }
          }
          //header("Content-type application/json");
-         header("Content-type text/json-comment-filtered");
+         eader("Content-type text/json-comment-filtered");
          if ($ok) {
             $response = '';
             echo '{ "identifier":"value", "label":"name",';

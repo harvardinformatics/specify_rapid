@@ -10,10 +10,11 @@ if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
+define("BASE_IMAGE_PATH","/var/www/htdocs/");
+define("BASE_IMAGE_URI","http://localhost/");
+
 $mode= '';
 @$mode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
-$startbarcode = '';
-@$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['startbarcode']),0,20);
 
 function imageDataForBarcode($barcode) {
    global $connection;
@@ -91,7 +92,16 @@ function imageDataForBarcode($barcode) {
 
 switch ($mode) { 
     case 'image': 
+       $startbarcode = '';
+       @$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['startbarcode']),0,20);
        image($startbarcode);
+       break;
+    case 'imagefile': 
+       $path= '';
+       @$path = urldecode($_GET['path']);
+       $filename= '';
+       @$filename = urldecode($_GET['filename']);
+       imagefile($path,$filename);
        break;
     default: 
        error();
@@ -103,7 +113,7 @@ function error() {
 } 
 
 function image($barcode) { 
-    echo "<div id='info'>imageclicks</div>";
+    echo "$barcode <div id='info'>imageclicks</div>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
@@ -167,6 +177,80 @@ echo "[$barcode][$mediauri][$h]";
    </script>";
 }   
 
+/** Given a path and a filename, load an image and echo html and javascript to display the image with zoom on click via channel.
+ *  
+ *  @param path the path relative to BASE_IMAGE_PATH and BASE_IMAGE_URI
+ *  @param filename the filename below the path.
+ */
+function imagefile($path,$filename) { 
+    echo "$filename <div id='info'>imageclicks</div>";
+    // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
+    echo "
+        <script>
+           channel.onmessage = function(e) {
+               console.log(e);
+               if (e.data=='close') { 
+                  window.close();
+               } else {
+                  if (e.data.action=='load') { 
+                     setupCanvas(e.data.uri,e.data.origheight,ed.data.origwidth);
+                  } else {  
+                     document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
+                     doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
+                  }
+              }
+           };
+
+           pingchannel.onmessage = function(e) { 
+               console.log(e);
+               if (e.data=='ping') { 
+                  pingchannel.postMessage('pong');
+               }
+           } 
+        </script>
+    ";
+   $mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
+   $mediauri = BASE_IMAGE_URI.$path."/".$filename;
+   
+   if ($filename!="") { 
+       // TODO: Lookup values from IMAGE_LOCAL_FILE
+       //$media = imageDataForBarcode($barcode);
+       //$mediauri = $media->url;
+       //$mediaid = $media->image_set_id;
+       //$h = $media->pixel_height;
+       //$w = $media->pixel_width;
+       $h = 5616;
+       $w = 3744;
+echo "[$barcode][$mediauri][$h]";
+   }
+   echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
+   echo "<script>
+     var canvas = document.getElementById('viewport');
+     canvas.width  = 1200;
+     canvas.height = 1000;
+     context = canvas.getContext('2d');
+
+     setupCanvas('$mediauri',$h,$w);
+
+     function setupCanvas(uri,h,w) {
+         base_image = new Image();
+         base_image.src = uri;
+         base_image.onload = function() { 
+             context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
+         }
+     }
+
+     function doZoom(x,y,h,w,oh,ow) {
+         xnew =  (ow/w) * x;
+         ynew =  (oh/h) * y;
+         xnew = xnew - 600;  if (xnew < 1) { xnew = 1; } 
+         ynew = ynew - 400;  if (ynew < 1) { ynew = 1; } 
+         context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
+         context.drawImage(base_image,xnew,ynew,1500,1200,1,1,1200,1000);
+     }
+
+   </script>";
+}   
 
 ?>
 

@@ -9,6 +9,9 @@ include_once("transcribe_lib.php");
 define("ENABLE_DUPLICATE_FINDING",TRUE);
 define("BASEWIDTH",21);  // em for width of form fields
 
+define("BASE_IMAGE_PATH","/var/www/htdocs/");
+define("BASE_IMAGE_URI","http://localhost/");
+
 $error = "";
 $targethostdb = "Not Set";
 if (!function_exists('specify_connect')) {
@@ -89,6 +92,12 @@ class targetReturn {
    public $imagesetid;
 }
 
+class PathFile { 
+   public $path;  // path to batch
+   public $filename;  // next file in batch
+   public $position; // numeric position of filename in batch
+} 
+
 
 # Supporting functions ******************************
 
@@ -101,11 +110,40 @@ function checkReady() {
 }
 
 function doSetup() { 
-     $target = target();
-     $barcode = $target->barcode;
-     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetup(\"$barcode\");' class='ui-button'>Start</button>";
-     echo " with [$barcode]";
+     //$target = target();
+     //$barcode = $target->barcode;
+     $targetBatch = getNextBatch();
+     // echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetup(\"$barcode\");' class='ui-button'>Start</button>";
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"test\");' class='ui-button'>Start (test mode)</button>";
+     echo "&nbsp;";
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button'>Start (production mode)</button>";
+     echo " with [$targetBatch->path][$targetBatch->filename]";
+     // echo " with [$barcode]";
 }
+
+function getNextBatch() { 
+     global $connection, $user;
+     $result = new PathFile();
+     // find the next batch to be worked on
+     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where username = ? and b.completed_date is null limit 1';
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("s",$_SESSION["username"]);
+        $statement->execute();
+        $statement->bind_result($path, $position);
+        $statement->store_result();
+        while ($statement->fetch()) {
+            $result->path = $path;
+            $result->position = $position;
+        } 
+     }
+     // find the first file to work on in the batch 
+     if (strlen($result->path)>0) {     
+        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
+        $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and ..
+     }
+
+     return $result;
+} 
 
 function target() {
    global $connection;
@@ -156,6 +194,72 @@ echo "[$media->image_set_id]";
    return $result;
 }
 
+function targetfile($path,$filename) {
+   global $connection;
+   $result = new targetReturn();
+
+   $result->barcode = '999999999';
+   $mediauri = BASE_IMAGE_URI.$path."/".$filename;
+   $result->mediauri = $mediauri;
+
+   $height = 5616;
+   $width = 3744;
+   $s = 600/$height; // scale factor 
+   $h = round($height*$s);
+   $w = round($width*$s);
+
+   $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+   $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
+   $result->medialink = $medialink;
+   
+   // TODO: Lookup barcode image height, image width from path and filename.
+   /* 
+   $sql = "select distinct f.text1, f.identifier 
+         from locality l left join collectingevent ce on l.localityid = ce.localityid 
+                         left join collectionobject co on ce.collectingeventid = co.collectingeventid 
+                         left join fragment f on co.collectionobjectid = f.collectionobjectid 
+                         left join IMAGE_SET_collectionobject isco on co.collectionobjectid = isco.collectionobjectid 
+                         left join IMAGE_OBJECT io on isco.imagesetid = io.image_set_id
+          where localityname = '[data not captured]' 
+                and isco.collectionobjectid is not null 
+                and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+          limit ? ";
+   $limit = 1;
+   if ($statement = $connection->prepare($sql)) {
+       $statement->bind_param("i", $limit);
+       $statement->execute();
+       $statement->bind_result($acronym, $barcode);
+       $statement->store_result();
+       while ($statement->fetch()) {
+         $result->barcode = $barcode;
+         $media = imageDataForBarcode($barcode);
+echo "[$media->image_set_id]";
+         $mediauri = $media->url;
+         $mediaid = $media->image_set_id;
+         $height = $media->pixel_height;
+         $width = $media->pixel_width;
+         if ($height==0||$height==null) { 
+            $size = getImageSize($mediauri);
+            $width = $size[0];
+            $height = $size[1];
+         }
+         $result->mediauri = $mediauri;
+         //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
+         //$height =  4897;
+         //$width  =  3420;
+         $s = 200/$height; // scale factor 
+         $h = round($height*$s);
+         $w = round($width*$s);
+         $medialink = "";
+         $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+         $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
+         $result->medialink = $medialink;
+       }
+       $statement->close();
+   }
+   */ 
+   return $result;
+}
 function imageForBarcode($barcode) {
    global $connection;
    $result = "";
@@ -271,9 +375,6 @@ switch ($display) {
                }
                </script>";
       echo "</div>";
-      //echo '<div class="flexbox" id="pwresult">';
-      //echo "</div>";
-      //echo '<div class="flexbox"><div id="testimage"><img src="http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2" width="200"></div><div class="flexbox"><div id="imgtarget" style="width: 500px;"></div></div></div>';
       break;
 }
 
@@ -288,6 +389,7 @@ echo $apage->getFooter();
 
 function targetlist() { 
    global $connection;
+
    $result = "";
    $sql = "select distinct f.text1, f.identifier from locality l left join collectingevent ce on l.localityid = ce.localityid left join collectionobject co on ce.collectingeventid = co.collectingeventid left join fragment f on co.collectionobjectid = f.collectionobjectid left join IMAGE_SET_collectionobject isco on co.collectionobjectid = isco.collectionobjectid  where localityname = '[data not captured]' and isco.collectionobjectid is not null limit ? ";
    $limit = 10;
@@ -361,6 +463,8 @@ function form() {
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
+   @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
+   @$path = urldecode($_GET['path']);
    switch ($config) { 
       case 'minimal':
           $config="minimal";
@@ -370,11 +474,12 @@ function form() {
           $config="standard";
    }
 
-   #$targetbarcode = '00460286';
-   #@$targetbarcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,8);
-
-   # Find out the barcode to lookup.
-   $target = target();
+   # Find out the barcode to load.
+   if (strlen($filename)==0) { 
+      $target = target(); 
+   } else { 
+      $target = targetfile($path,$filename);
+   }
    $targetbarcode = $target->barcode;
 
    $habitat = "";
@@ -382,9 +487,11 @@ function form() {
    echo "[$targetbarcode]";
 
    if ($test=="true") { 
-     // populate with data for testing
+       // populate with data for testing
+       $prepmethod = "Pressed";
+       $format = "Sheet";
    } else { 
-     // load data from database
+       // load data from database
    }
    $huh_fragment = new huh_fragment();
    $matches = $huh_fragment->loadArrayByIdentifier($targetbarcode);
@@ -399,6 +506,11 @@ function form() {
        $rprep = $related['PreparationID'];
        $rcolobj->load($rcolobj->getCollectionObjectID());
        $rprep->load($rprep->getPreparationID());
+       $formatid = $rprep->getPrepTypeID();
+       $related = $rprep->loadLinkedTo();
+       $rpreptype = $related['PrepTypeID'];
+       $rpreptype->load($rpreptype->getPrepTypeID());
+       $format = $rpreptype->getName();
        $created = $rcolobj->getTimestampCreated();
        $habitat = $rcolobj->getText1();
        $related = $rcolobj->loadLinkedTo();
@@ -417,11 +529,7 @@ function form() {
        $specificLocality = $rlocality->getLocalityName();
        
        
-       $format = "Sheet";
        
-
-//TODO: Save Project
-
    }
 
    @$cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
@@ -451,10 +559,14 @@ function form() {
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
 
-   echo "<form action='transcribe_handler.php' method='GET' id='transcribeForm' >\n";
+   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' >\n";
    echo "<input type=hidden name='action' value='transcribe'>";
    echo "<input type=hidden name='operator' value='".$user->getAgentId()."'>";
-   
+   if ($test=="true") { 
+      echo "<input type=hidden name='test' value='true'>";
+   } else { 
+      echo "<input type=hidden name='test' value='false'>";
+   }
    echo '<script>
          $( function(){
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
@@ -562,7 +674,7 @@ function form() {
          $('#transcribeForm').submit(function(event){
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
                $.ajax({ 
-                   type: 'GET',
+                   type: 'POST',
                    url: 'transcribe_logger.php',
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 
@@ -583,7 +695,7 @@ function form() {
          $('#transcribeForm').submit(function(event){
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
                $.ajax({ 
-                   type: 'GET',
+                   type: 'POST',
                    url: 'transcribe_handler.php',
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 

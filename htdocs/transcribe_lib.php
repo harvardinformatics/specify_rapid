@@ -38,6 +38,15 @@ class TPage extends Page {
       window.location.href = 'transcribe.php?display=mainform&barcode='+barcode;
 
    }
+
+   function dosetuppath(path,filename,position,mode) { 
+   
+      window.open('displayimage.php?mode=imagefile&path='+path+'&filename='+filename ,'_blank','modal=yes');
+ 
+      var added = '';
+      if (mode=='test') { added = '&test=true'; }  
+      window.location.href = 'transcribe.php?display=mainform&path='+path+'&filename='+filename+'&position='+position+added;
+   } 
    function doclear() { 
       channel.postMessage('close');
       window.location.href = 'transcribe.php?display=setup';
