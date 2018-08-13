@@ -611,6 +611,33 @@ class huh_preptype_custom extends huh_preptype {
 }
 
 class huh_taxon_CUSTOM extends huh_taxon {
+   /** Backing support for autocomplete, given a query term returns json containing taxonid as id  along with concatenated fullname and author as label and value.
+    *
+    *  @param term query term for like search on taxon.fullname.
+    *  @return json array of results.
+    */
+   public function keySelectTaxonTaxonIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT taxonid, concat(fullname,' ',ifnull(author,'')) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$label.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
 
    public function keySelectDistinctJSONLimit($field,$limit,$orderby='ASC') {
       global $connection;
@@ -781,6 +808,36 @@ class huh_container_custom extends huh_container {
 
 }
 
+class huh_collector_custom extends huh_collectingtrip {
+
+   public function keySelectCollectorAgentIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT agentvariant.agentid, concat(name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ']') as label, name as value FROM agentvariant left join agent on agentvariant.agentid = agent.agentid where name like ? and vartype = 4 order by name ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label,$value);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $value = str_replace('"','&quot;',$value);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
+
+
+}
+
+
 class huh_collectingtrip_custom extends huh_collectingtrip {
 
 	public function keySelectDistinctJSONname($term) {
@@ -907,6 +964,35 @@ class huh_project_custom extends huh_project {
 
 
 class huh_geography_custom extends huh_geography {
+
+   /** Backing support for autocomplete, given a query term returns json containing taxonid as id  along with concatenated fullname and author as label and value.
+    *
+    *  @param term query term for like search on taxon.fullname.
+    *  @return json array of results.
+    */
+   public function keySelectGeoGeoIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label,$value);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
+
 
 
    public function selectDistinctJSONCountry() {

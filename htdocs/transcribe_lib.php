@@ -71,6 +71,11 @@ class TPage extends Page {
    } 
 
 </script>
+<style>
+  .ui-autocomplete-loading {
+    background: white url('ui-anim_basic_16x16.gif') right center no-repeat;
+  }
+</style>
               ";
          }
       }

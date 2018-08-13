@@ -302,7 +302,7 @@ if ($connection && $authenticated) {
             }
          }
          //header("Content-type application/json");
-         eader("Content-type text/json-comment-filtered");
+         header("Content-type text/json-comment-filtered");
          if ($ok) {
             $response = '';
             echo '{ "identifier":"value", "label":"name",';
@@ -313,6 +313,97 @@ if ($connection && $authenticated) {
             $response = '{ }';
          }
          break;
+    case 'taxonidtaxonjsonp': 
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_taxon_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectTaxonTaxonIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            //echo '{ "identifier":"value", "label":"name",';
+            //echo '"items": [ ';
+            echo $values;
+            //echo ' ] }';
+         } else {
+            $response = '{ }';
+         }
+         break;
+    case 'geoidgeojson': 
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_geography_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectGeoGeoIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            echo $values;
+         } else {
+            $response = '{ }';
+         }
+         break;
+    case 'collagentidjson':
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_collector_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectCollectorAgentIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            echo $values;
+         } else {
+            $response = '[]';
+         }
+         break;
+
     case 'returndistinctjqapreptype': 
          $ok = false;
          $table = 'huh_preptype';

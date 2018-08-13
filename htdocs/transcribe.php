@@ -181,7 +181,7 @@ echo "[$media->image_set_id]";
          //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
          //$height =  4897;
          //$width  =  3420;
-         $s = 200/$height; // scale factor 
+         $s = 400/$height; // scale factor 
          $h = round($height*$s);
          $w = round($width*$s);
          $medialink = "";
@@ -204,7 +204,7 @@ function targetfile($path,$filename) {
 
    $height = 5616;
    $width = 3744;
-   $s = 600/$height; // scale factor 
+   $s = 700/$height; // scale factor 
    $h = round($height*$s);
    $w = round($width*$s);
 
@@ -560,12 +560,12 @@ function form() {
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
 
    echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' >\n";
-   echo "<input type=hidden name='action' value='transcribe'>";
-   echo "<input type=hidden name='operator' value='".$user->getAgentId()."'>";
+   echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
+   echo "<input type=hidden name='operator' value='".$user->getAgentId()."' class='carryforward'>";
    if ($test=="true") { 
-      echo "<input type=hidden name='test' value='true'>";
+      echo "<input type=hidden name='test' value='true' class='carryforward'>";
    } else { 
-      echo "<input type=hidden name='test' value='false'>";
+      echo "<input type=hidden name='test' value='false' class='carryforward'>";
    }
    echo '<script>
          $( function(){
@@ -582,12 +582,12 @@ function form() {
    @staticvalue("Record Created:",$created);
    if ($test) { 
       @staticvalue("Project",$defaultproject);  
-      echo "<input type='hidden' name='project' id='project' value='$defaultproject'>";
+      echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
    } else { 
       selectProject("defaultproject","Project",$defaultproject);  
    }
    @staticvalue("Barcode:",$targetbarcode);
-   echo "<input type='hidden' name='barcode' id='barcode' value='$targetbarcode'>";
+   echo "<input type='hidden' name='barcode' id='barcode' value='$targetbarcode' class='carryforward'>";
    // field ("barcode","Barcode",$targetbarcode,'required','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    echo '<script>
    $(function () {
@@ -602,11 +602,11 @@ function form() {
    ';
    if ($test) { 
       @staticvalue("Prep Method",$prepmethod); 
-      echo "<input type='hidden' name='prepmethod' id='prepmethod' value='$prepmethod'>";
+      echo "<input type='hidden' name='prepmethod' id='prepmethod' value='$prepmethod' class='carryforward'>";
       @staticvalue("Format:",$defaultformat); 
-      echo "<input type='hidden' name='preptype' id='preptype' value='$defaultformat'>";
+      echo "<input type='hidden' name='preptype' id='preptype' value='$defaultformat' class='carryforward'>";
    } else {
-      @field ("prepmethod","Prep Method",$prepmethod,'true'); 
+      @field ("prepmethod","Prep Method",$prepmethod,'true');  // TODO
       selectPrepType("preptype","Format:",$defaultformat,'true'); 
    }
    
@@ -621,15 +621,15 @@ function form() {
        scientific name - filed under, plus qualifier - carry forward
        */
        selectAcronym("herbariumacronym",$defaultherbarium);
-       // higher geography
-       // scientific name
+       @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
+       @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');  
 
    } elseif ($config=="standard") { 
 
-       @field ("filedundername","Filed Under",$filedundername,'true');  // TODO
-       @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier); // TODO: Load/Save
-       @field ("currentname","Current Name",$currentname,'true'); // TODO
-       @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); // TODO: Load/Save
+       @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');  
+       @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier); 
+       @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true'); 
+       @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); 
 
        selectAcronym("herbariumacronym",$defaultherbarium);
        /* 
@@ -653,18 +653,26 @@ function form() {
        *verbatim date collected
        *date collected
        */
-        @field ("collectingtrip","Collecting Trip",$specificLocality,'true');  // TODO
-        @field ("highergeography","Higher Geography",$specificLocality,'true'); // TODO
+        @field ("collectingtrip","Collecting Trip",$specificLocality,'false');  // TODO
+        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
 
-        @field ("collectors","Collectors",$specificLocality,'true');  // TODO
-        @field ("etal","Et al.",$specificLocality,'true');      // TODO
+        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false'); 
+        @field ("etal","Et al.",$etal,'false');    
 
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
         @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
         @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
    } else { 
+        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');  
+        @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier); 
+        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true'); 
+        @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); 
+
+        selectAcronym("herbariumacronym",$defaultherbarium);
+        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
+
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
         @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
@@ -675,9 +683,23 @@ function form() {
    }
 
    echo "<tr><td>";
-   echo "<input type='submit' value='Save' id='saveButton'> ";
-   echo "<input type='button' value='Next', disabled='true' id='nextButton'>";
+   echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
+   echo "<input type='button' value='Next', disabled='true' id='nextButton' class='carryforward ui-button'>";
    echo "</td></tr>";
+
+   echo "<script>
+         $('#nextButton').click(function(event){
+               $('#feedback').html( 'Loading next...');
+               // clear fields 
+               $('#transcribeForm  input:not(.carryforward)').val('');
+
+               // load next image
+  
+               // load data
+
+               event.preventDefault();
+          });
+   </script>";
 
    if ($test=="true") { 
        // in test mode, only log data capture rate
@@ -812,8 +834,9 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
    echo "</td></tr>\n";
 }
 
-function selectPrepType($field,$label,$default,$required='false') {
-    $returnvalue = "
+function selectPrepType($field,$label,$default,$required='false',$carryforward='true') {
+   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; } 
+   $returnvalue = "
   <script>
   $( function() {
     $( '#$field' ).autocomplete({
@@ -829,11 +852,11 @@ function selectPrepType($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' value='$default'  style='width: ".BASEWIDTH."em; ' >
+        <input id='$field' value='$default'  style='width: ".BASEWIDTH."em; ' $carryforward >
      </div>
   </td></tr>
-    ";
-    echo $returnvalue;
+   ";
+   echo $returnvalue;
 }
 
 
@@ -865,8 +888,6 @@ function staticvalue($label,$default) {
 
 function geographyselect($name,$label,$default,$required,$rank) {
 	// $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='store$name$rank'
-	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='store$name$rank'
-	 url='ajax_handler.php?druid_action=return".$rank."json'> </div>";
 	$returnvalue .= "<label for=\"$name\">$label</label></td><td>
 	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
 	store='store$name$rank' required='$required'
@@ -874,15 +895,39 @@ function geographyselect($name,$label,$default,$required,$rank) {
 	echo $returnvalue;
 }
 
-function selectHigherGeography($field,$label, $defaultcountry='', $defaultprimary='') { 
-	$returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='geoStore$field'
-	 url='ajax_handler.php?druid_action=returndistinctgeography&country=$defaultcountry&primary=$defaultprimary'> </div>";
-	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='geoStore$field' 
-    style='width: ".BASEWIDTH."em; '
-	searchAttr='name' value='' ></td></tr>";
-	echo $returnvalue;
+function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry='', $defaultprimary='',$required='true') { 
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' >
+    <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' >
+    </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 3,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "geoidgeojson",
+                       term: request.term
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
+   echo $returnvalue;
 }
 
 function fieldselectpicklist($name,$label,$default,$required,$storeId,$picklistid) {
@@ -900,7 +945,7 @@ function selectYesNo($field,$label) {
 	echo "<tr><td>\n";
 	echo "<label for='$field'>$label</label>";
 	echo "</td><td>\n";
-	echo '<select name="'.$field.'" dojoType="dijit.form.Select">
+	echo '<select name="'.$field.'" >
 	<option value="" selected>&nbsp;&nbsp;&nbsp;</option>
 	<option value="1">Yes</option>
 	<option value="0">No</option>
@@ -952,18 +997,39 @@ function selectAcronym($field,$default) {
    echo "</td></tr>\n";
 }
 
-function selectCurrentID($field,$label,$required='false') {
-   $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
-	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
-   $width = BASEWIDTH - 3;
+function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforward='false') {
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; } 
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
-    style='width: ".$width."em; border-color: blue; '
-	searchAttr='name' value='' >
-    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
-      onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+	<input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' $carryforward >
+	<input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
     </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 3,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "taxonidtaxonjsonp",
+                       term: request.term
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
    echo $returnvalue;
 }
 
@@ -982,18 +1048,39 @@ function selectBasionymID($field,$label,$required='false') {
 	echo $returnvalue;
 }
 
-function selectCollectorsID($field,$label,$required='false') {
-   $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
-	 url='ajax_handler.php?druid_action=returndistinctjsoncollector' > </div>";
-   $width = BASEWIDTH - 3;
+function selectCollectorsID($field,$label,$value,$valueid,$required='false',$carryforward='false') {
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id='$field' dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
-    style='width: ".$width."em; border-color: blue; '
-	searchAttr='name' value='' >
-    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
-      onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
+    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
     </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 3,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "collagentidjson",
+                       term: request.term
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
    echo $returnvalue;
 }
 
