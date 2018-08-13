@@ -404,6 +404,36 @@ if ($connection && $authenticated) {
          }
          break;
 
+    case 'colltripidcolltripjson':
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_collectingtrip_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectCollectingTripIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            echo $values;
+         } else {
+            $response = '[]';
+         }
+         break;
+
     case 'returndistinctjqapreptype': 
          $ok = false;
          $table = 'huh_preptype';

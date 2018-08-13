@@ -810,6 +810,11 @@ class huh_container_custom extends huh_container {
 
 class huh_collector_custom extends huh_collectingtrip {
 
+   /** Given a search term, obtain a list of matching agent names and agent ids for use as collectors.
+    *
+    *  @param term search term for like agentvariant.name.
+    *  @return json string with agentid as id, agentvariant.name and agent type as label, and agentvariant.name as value.
+    */
    public function keySelectCollectorAgentIDJSON($term) {
       global $connection;
       $returnvalue = '[';
@@ -834,11 +839,35 @@ class huh_collector_custom extends huh_collectingtrip {
       return $returnvalue;
    }
 
-
 }
 
 
 class huh_collectingtrip_custom extends huh_collectingtrip {
+
+
+   public function keySelectCollectingTripIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT collectingtripid, collectingtripname as label, collectingtripname as value FROM collectingtrip where collectingtripname like ? order by collectingtripname ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label,$value);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $value = str_replace('"','&quot;',$value);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
 
 	public function keySelectDistinctJSONname($term) {
 		global $connection;

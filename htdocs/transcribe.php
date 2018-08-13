@@ -653,7 +653,7 @@ function form() {
        *verbatim date collected
        *date collected
        */
-        @field ("collectingtrip","Collecting Trip",$specificLocality,'false');  // TODO
+        @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false'); 
         @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
@@ -663,7 +663,7 @@ function form() {
 
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
         @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
-        @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
+        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); 
    } else { 
         @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');  
         @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier); 
@@ -816,20 +816,26 @@ function form() {
    
 }
 
-function field($name, $label, $default="", $required='false', $regex='', $placeholder='') {
+function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='') {
    echo "<tr><td>\n";
    echo "<label for='$name'>$label</label>";
    echo "</td><td>\n";
    if ($regex!='') {
       $regex = "pattern='$regex'";
    }
+   if ($validationmessage!='') {
+      $validationmessage = "validationMessage='$validationmessage'";
+   }
    if ($placeholder!='') {
       $placeholder = "placeHolder='$placeholder'";
    }
    if ($required=='false') { 
-      echo "<input id=$name name=$name value='$default' $regex $placeholder  style='width: ".BASEWIDTH."em; ' >";
+      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".BASEWIDTH."em; ' >";
    } else { 
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder  style='width: ".BASEWIDTH."em; ' >";
+      if ($validationmessage!='') {
+         $validationmessage = "validationMessage='Required Field. $validationmessage'";
+      }
+      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".BASEWIDTH."em; ' >";
    }
    echo "</td></tr>\n";
 }
@@ -1126,16 +1132,39 @@ function selectContainerID($field,$label,$required='false') {
 	echo $returnvalue;
 }
 
-function selectCollectingTripID($field,$label,$required='false') {
-	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='collectingTripStore$field'
-	url='ajax_handler.php?druid_action=returndistinctjsoncollectingtrip' > </div>";
-	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='collectingTripStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
-	searchAttr='name' value='' >
-	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
-    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
-	echo $returnvalue;
+function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='false') {
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+    <input type=text name=$field id=$field  value='$value' style=' width: 25em; ' >
+    <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
+    </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 3,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "colltripidcolltripjson",
+                       term: request.term
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
+   echo $returnvalue;
 }
 
 function selectProject($field,$label,$default,$required='false') {
