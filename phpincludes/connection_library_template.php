@@ -12,6 +12,7 @@ $debug = false;
 // When using older php with safe_mode_exec_dir, put symbolic link to java in a phpexec directory
 // Current php, just point to java executable.
 $execstring = '/usr/bin/java -jar /var/www/phpinclude/Encryption.jar decrypt ';
+$vdateexecstring = '/usr/bin/java -jar /var/www/phpexec/event_date_qc-2.0.0-SNAPSHOT.jar -v ';
 
 function specify_connect() {
    global $targethostdb;

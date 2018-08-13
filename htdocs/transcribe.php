@@ -639,6 +639,27 @@ function form() {
 
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
         @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
+        echo "
+        <script>
+           $('#verbatimdate').blur(function() {
+               var verbatim = $('#verbatimdate').val();
+               $.ajax({ 
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   data: {
+                       action: 'interpretdate',
+                       verbatimdate: verbatim
+                   },
+                   success: function(data) { 
+                       if (data!='') { 
+                         $('#datecollected').val(data);
+                       }
+                   }
+               });
+
+           });
+        </script>
+        ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); 
    } else { 
         @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');  

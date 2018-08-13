@@ -57,6 +57,14 @@ if ($connection && $authenticated) {
    $alpha = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
 
    switch ($action) {
+      case 'interpretdate': 
+         @$verbatimdate = $_GET['verbatimdate'];
+         $exec = $vdateexecstring . escapeshellarg($verbatimdate) . " 2>&1";
+         $isodate = shell_exec($exec);
+
+         echo "$isodate";
+
+         break;   
       case 'transcribe':
          $feedback = "";
          
