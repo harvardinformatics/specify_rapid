@@ -660,7 +660,7 @@ function form() {
 
    echo "<tr><td>";
    echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
-   echo "<input type='button' value='Next', disabled='true' id='nextButton' class='carryforward ui-button'>";
+   echo "<input type='button' value='Next', disabled='true' id='nextButton' class='carryforward ui-button ui-state-disabled'>";
    echo "</td></tr>";
 
    echo "<script>
@@ -689,6 +689,7 @@ function form() {
                    success: function(data) { 
                        $('#feedback').html( data ) ;
                        $('#nextButton').prop('disabled',false) 
+                       $('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
