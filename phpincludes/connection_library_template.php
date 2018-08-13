@@ -15,7 +15,7 @@ function specify_connect() {
    $targetdatabase = 'specify';
    $targethostdb = "$targethost:$targetdatabase";
 
-   $connection = mysqli_connect($targethost,'username','password', $targetdatabase);
+   $connection = mysqli_connect($targethost,'_username_','_password_', $targetdatabase);
    if ($connection) { 
       $connection->set_charset('utf8');
       $returnvalue = $connection;
