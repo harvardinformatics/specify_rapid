@@ -9,8 +9,6 @@ include_once("transcribe_lib.php");
 define("ENABLE_DUPLICATE_FINDING",TRUE);
 define("BASEWIDTH",21);  // em for width of form fields
 
-define("BASE_IMAGE_PATH","/var/www/htdocs/");
-define("BASE_IMAGE_URI","http://localhost/");
 
 $error = "";
 $targethostdb = "Not Set";
@@ -92,11 +90,6 @@ class targetReturn {
    public $imagesetid;
 }
 
-class PathFile { 
-   public $path;  // path to batch
-   public $filename;  // next file in batch
-   public $position; // numeric position of filename in batch
-} 
 
 
 # Supporting functions ******************************
@@ -120,30 +113,6 @@ function doSetup() {
      echo " with [$targetBatch->path][$targetBatch->filename]";
      // echo " with [$barcode]";
 }
-
-function getNextBatch() { 
-     global $connection, $user;
-     $result = new PathFile();
-     // find the next batch to be worked on
-     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where username = ? and b.completed_date is null limit 1';
-     if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("s",$_SESSION["username"]);
-        $statement->execute();
-        $statement->bind_result($path, $position);
-        $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            $result->position = $position;
-        } 
-     }
-     // find the first file to work on in the batch 
-     if (strlen($result->path)>0) {     
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and ..
-     }
-
-     return $result;
-} 
 
 function target() {
    global $connection;
@@ -465,6 +434,7 @@ function form() {
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$path = urldecode($_GET['path']);
+
    switch ($config) { 
       case 'minimal':
           $config="minimal";
@@ -481,6 +451,9 @@ function form() {
       $target = targetfile($path,$filename);
    }
    $targetbarcode = $target->barcode;
+
+   $currentBatch = new TR_Batch();
+   $currentBatch->setPath($path);
 
    $habitat = "";
 

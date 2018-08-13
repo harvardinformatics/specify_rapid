@@ -1,10 +1,12 @@
 create table TR_BATCH (
    -- filesystem based batches of images for transcription
    tr_batch_id bigint not null auto_increment primary key,  -- surrogate numeric primary key
-   path varchar(2000) not null,  -- IMAGE_LOCAL_FILE.path to batch
+   path varchar(255) not null,  -- IMAGE_LOCAL_FILE.path to batch (length limited by unique index)
    image_batch_id bigint, -- foreign key to IMAGE_BATCH
    completed_date date default null -- set date when batch is completed
 );
+
+create unique index IDXUBATCHPATH on TR_BATCH(path);
 
 create table TR_USER_BATCH ( 
    -- pending, in progress, and completed batches for users.
