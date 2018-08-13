@@ -554,6 +554,12 @@ function form() {
 
    echo "<table>";
 
+   echo '<script>
+     $(document).ready(function() {
+         channel.postMessage( { x:"355", y:"569", oh:"5616", ow:"3744", h:"700", w:"467", id:"'.$target->imagesetid.'" }  );
+     });
+   </script>
+   ';
 
    @staticvalue("Record Created:",$created);
    if ($test) { 
