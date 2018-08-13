@@ -167,7 +167,10 @@ function targetfile($path,$filename) {
    global $connection;
    $result = new targetReturn();
 
-   $result->barcode = '999999999';
+   $acronym = 'A';
+   $barcode = '999999999';
+   $result->barcode = $barcode;
+   $mediaid = '';
    $mediauri = BASE_IMAGE_URI.$path."/".$filename;
    $result->mediauri = $mediauri;
 
@@ -177,7 +180,7 @@ function targetfile($path,$filename) {
    $h = round($height*$s);
    $w = round($width*$s);
 
-   $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+   $medialink = "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
    $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
    $result->medialink = $medialink;
    
@@ -514,7 +517,7 @@ function form() {
         @$defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
    }
    @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
-   if ($defaultherbarium=='') { $defaultherbarium = "FH"; }
+   if ($defaultherbarium=='') { $defaultherbarium = "A"; }
    if ($num_matches==1) { 
        $defaultherbarium = $match->getText1();
    } 

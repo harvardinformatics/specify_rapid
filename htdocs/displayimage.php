@@ -10,9 +10,6 @@ if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
-define("BASE_IMAGE_PATH","/var/www/htdocs/");
-define("BASE_IMAGE_URI","http://localhost/");
-
 $mode= '';
 @$mode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
 
@@ -221,7 +218,7 @@ function imagefile($path,$filename) {
        //$w = $media->pixel_width;
        $h = 5616;
        $w = 3744;
-echo "[$barcode][$mediauri][$h]";
+echo @"[$barcode][$mediauri][$h]";
    }
    echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
    echo "<script>

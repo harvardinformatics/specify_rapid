@@ -1,7 +1,6 @@
 <?php
 
-define("BASE_IMAGE_PATH","/var/www/htdocs/");
-define("BASE_IMAGE_URI","http://localhost/");
+include_once("connection_library.php");
 
 # Data Structures  *********************************
 

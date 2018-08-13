@@ -16,8 +16,8 @@ create table TR_USER_BATCH (
    position int not null default 0, -- last file transcribed in batch
 
    KEY IDXUSERBATCHBATCHID (tr_batch_id),
-   CONSTRAINT FKUSERBATCHBATCHID FOREIGN KEY (tr_batch_id) REFERENCES TR_BATCH (tr_batch_id),
-   CONSTRAINT FKUSERBATCHUSERNAME FOREIGN KEY (username) REFERENCES specifyuser (name)
+   CONSTRAINT FOREIGN KEY (tr_batch_id) REFERENCES TR_BATCH(tr_batch_id),
+   CONSTRAINT FOREIGN KEY (username) REFERENCES specifyuser(name)
 
 );
 
