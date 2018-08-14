@@ -52,7 +52,7 @@ class TR_Batch {
   private $image_batch_id;
   private $completed_date;
 
-  // construct a new tr_batch, then call setPath(path) to initialize the tr_batch object.
+  // construct a new tr_batch, then call setPath(path) to initialize the tr_batch object from path.
   function setPath($a_path) { 
      global $connection;
      if (strlen($a_path)>0) { 
@@ -80,6 +80,36 @@ class TR_Batch {
      }
   }
 
+  // construct a new tr_batch, then call setID(id) to initialize the tr_batch object from a tr_batch_id.
+  function setID($id) {
+     global $connection;
+     if (strlen($id)>0) {
+        $this->batch_id = $id;
+        $sql = 'select tr_batch_id, image_batch_id, completed_date, path from TR_BATCH where tr_batch_id = ?';
+        if ($statement = $connection->prepare($sql)) {
+           $statement->bind_param("i",$id);
+           $statement->execute();
+           $statement->bind_result($batch_id, $image_batch_id, $completed_date, $path);
+           $statement->store_result();
+           while ($statement->fetch()) {
+               $this->batch_id = $batch_id;
+               $this->path = $path;
+               $this->image_batch_id = $image_batch_id;
+               $this->completed_date = $completed_date;
+           }
+           $statement->close();
+           if (strlen($this->batch_id)==0) {
+               throw new Exception('Batch not found for path '. $path);
+           }
+        } else {
+            throw new Exception('Problem with database connection or query preparation.');
+        }
+     } else {
+         throw new Exception('No id provided for batch.');
+     }
+  }
+
+
   function getBatchID() { 
      return $this->batch_id;
   }
@@ -101,7 +131,7 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
      // find the current batch
-     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ?  username = ? and b.completed_date is null order by path limit 1';
+     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ? and b.completed_date is null order by path limit 1';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("is",$this->batch_id,$_SESSION["username"]);
         $statement->execute();
@@ -119,12 +149,12 @@ class TR_Batch {
         $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and .. 
         
         // does next file exist: 
-        if (array_key_exists($result->position + 2 + 1)) { 
+        if (array_key_exists($result->position + 2 + 1,$files)) { 
            // move to next file in batch
            $result->position = $result->position + 1; // increment position to the next file.
            $result->filename = $files[$result->position + 2]; 
            // persist
-           $sql = "update TR_USER_BATCH set position = position + 1 where username = ? and batch_id = ?";
+           $sql = "update TR_USER_BATCH set position = position + 1 where username = ? and tr_batch_id = ?";
            if ($statement = $connection->prepare($sql)) {
               $statement->bind_param("si",$_SESSION["username"],$batch_id);
               $statement->execute();
@@ -132,14 +162,24 @@ class TR_Batch {
            }
         } else { 
            // Done with batch
+           $result = new PathFile();
            //TODO: enable when not in test mode.
            if (0==1) { 
-               $sql = "update TR_BATCH set completed_date = now() where batch_id = ?";
+               // mark batch as done
+               $sql = "update TR_BATCH set completed_date = now() where tr_batch_id = ?";
                if ($statement = $connection->prepare($sql)) {
                   $statement->bind_param("i",$batch_id);
                   $statement->execute();
                   $statement->close();
                }
+           } else { 
+              // reset batch for user.
+              $sql = "update TR_USER_BATCH set position = 0 where username = ? and tr_batch_id = ?";
+              if ($statement = $connection->prepare($sql)) {
+                 $statement->bind_param("si",$_SESSION["username"],$batch_id);
+                 $statement->execute();
+                 $statement->close();
+              }
            }
         }
      }
@@ -154,11 +194,11 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
      // find the current batch
-     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ?  username = ? and b.completed_date is null order by path limit 1';
+     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ? and b.completed_date is null order by path limit 1';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("is",$this->batch_id,$_SESSION["username"]);
         $statement->execute();
-        $statement->bind_result($path, $position,$batch_id);
+        $statement->bind_result($path, $position);
         $statement->store_result();
         while ($statement->fetch()) {
             $result->path = $path;
@@ -172,7 +212,7 @@ class TR_Batch {
         $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and .. 
 
         // does next file exist: 
-        if (array_key_exists($result->position + 2 + 1)) {
+        if (array_key_exists($result->position + 2 + 1,$files)) {
            // move to next file in batch
            $result->position = $result->position + 1; // increment position to the next file.
            $result->filename = $files[$result->position + 2];

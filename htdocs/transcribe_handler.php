@@ -18,6 +18,7 @@ class Result {
 }
 
 include_once('class_lib.php');  // contains declaration of User() class
+include_once('transcribe_lib.php'); 
 
 // *******
 // *******  You must provide connections.php or a replacement means of
@@ -65,6 +66,28 @@ if ($connection && $authenticated) {
          echo "$isodate";
 
          break;   
+
+      case 'getnextimage':
+         $ok = false;
+         @$id = $_GET['batch_id'];
+         $currentBatch = new TR_Batch();
+         $currentBatch->setID($id);
+         $path = $currentBatch->getPath();
+         //$pathfile = $currentBatch->getNextFile();
+         $pathfile = $currentBatch->incrementFile();
+         $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         $values = "{ \"src\":\"$mediauri\" }";
+         if (strlen($pathfile->filename)>0) { $ok=true; } 
+
+         header("Content-type application/json"); 
+         if ($ok) { 
+            $response = $values;
+         } else {
+            $response = '{}';
+         }
+         echo $response;
+         break;
+
       case 'transcribe':
          $feedback = "";
          

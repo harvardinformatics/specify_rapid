@@ -180,8 +180,8 @@ function targetfile($path,$filename) {
    $h = round($height*$s);
    $w = round($width*$s);
 
-   $medialink = "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
-   $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
+   // $medialink = "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+   $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
    $result->medialink = $medialink;
    
    // TODO: Lookup barcode image height, image width from path and filename.
@@ -457,6 +457,7 @@ function form() {
 
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($path);
+   echo "[".$currentBatch->getPath()."]";
 
    $habitat = "";
 
@@ -613,7 +614,6 @@ function form() {
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true'); 
        @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); 
 
-       selectAcronym("herbariumacronym",$defaultherbarium);
        /* 
        Longer list (12 fields, for comparison)
        project - default US and Canada, show  
@@ -667,22 +667,48 @@ function form() {
         </script>
         ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); 
+       selectAcronym("herbariumacronym",$defaultherbarium);
+
    } else { 
+
         @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');  
         @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier); 
         @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true'); 
         @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); 
 
-        selectAcronym("herbariumacronym",$defaultherbarium);
         @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
-        @field ("datecollected","Date Collected",$datecollected,'false','[0-9-/]+','2010-03-18'); 
-        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false'); 
+        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+        echo "
+        <script>
+           $('#verbatimdate').blur(function() {
+               var verbatim = $('#verbatimdate').val();
+               $.ajax({ 
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   data: {
+                       action: 'interpretdate',
+                       verbatimdate: verbatim
+                   },
+                   success: function(data) { 
+                       if (data!='') { 
+                         $('#datecollected').val(data);
+                       }
+                   }
+               });
+
+           });
+        </script>
+        ";
+        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+
         field ("habitat","Habitat",$habitat); 
         @field ("namedplace","Named place",$namedPlace); 
         @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false'); 
+
+        selectAcronym("herbariumacronym",$defaultherbarium);
    }
 
    echo "<tr><td>";
@@ -697,11 +723,31 @@ function form() {
                $('#transcribeForm  input:not(.carryforward)').val('');
 
                // load next image
+               $.ajax({
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   dataType: 'json',
+                   data: { 
+                       action: 'getnextimage',
+                       batch_id: ".$currentBatch->getBatchID()."
+                   },
+                   success: function(data) { 
+                     console.log(data.src);
+                     $('#image_div').attr('src',data.src);
+                     var imagesource = data.src;
+                     channel.postMessage(  { action:'load', origheight:'5616', origwidth:'3744', uri: imagesource }  );
+                   },
+                   error: function() { 
+                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       $('#nextButton').prop('disabled',true) 
+                   }
+               });
   
                // load data
 
                event.preventDefault();
           });
+          
    </script>";
 
    if ($test=="true") { 
@@ -771,11 +817,20 @@ function form() {
    #$mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
    #$mediauri = imageForBarcode($targetbarcode);
    
+
+
    echo '<div class=flexbox>';
     $medialink = $target->medialink;
     echo "
         <script>
-           channel.onmessage = function (e) { console.log(e); }
+           channel.onmessage = function (e) { 
+               console.log(e); 
+               if (e.data=='loaded') {
+                  $('#feedback').html( 'Loaded');
+                  // trigger zoom onto loaded image. 
+                  channel.postMessage( { x:'355', y:'569', oh:'5616', ow:'3744', h:'700', w:'467', id:'' }  );
+               }
+           }
 
            function getClick(event,height, width, origheight,origwidth,imagesetid){
                xpos = event.offsetX?(event.offsetX):event.pageX-document.getElementById('image_div').offsetLeft;

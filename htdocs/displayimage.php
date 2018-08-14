@@ -190,7 +190,7 @@ function imagefile($path,$filename) {
                   window.close();
                } else {
                   if (e.data.action=='load') { 
-                     setupCanvas(e.data.uri,e.data.origheight,ed.data.origwidth);
+                     setupCanvas(e.data.uri,e.data.origheight,e.data.origwidth);
                   } else {  
                      document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
                      doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
@@ -234,6 +234,7 @@ echo @"[$barcode][$mediauri][$h]";
          base_image.src = uri;
          base_image.onload = function() { 
              context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
+             channel.postMessage('loaded');
          }
      }
 
