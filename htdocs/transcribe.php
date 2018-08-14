@@ -457,7 +457,8 @@ function form() {
 
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($path);
-   echo "[".$currentBatch->getPath()."]";
+   $path = $currentBatch->getPath();
+   $filecount = $currentBatch->getFileCount();
 
    $habitat = "";
 
@@ -532,6 +533,7 @@ function form() {
  
    echo "<div class='hfbox' style='height: 1em;'>";  
    echo navigation();
+   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files</span>";
    echo "</div>";
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
@@ -735,7 +737,13 @@ function form() {
                      console.log(data.src);
                      $('#image_div').attr('src',data.src);
                      var imagesource = data.src;
+                     var position = data.position;
+                     var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'5616', origwidth:'3744', uri: imagesource }  );
+                     $('#batch_info').html('$batch file ' + position +' of $filecount.');
+                     if (position==filecount) {  
+                        $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
+                     }
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;

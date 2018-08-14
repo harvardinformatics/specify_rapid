@@ -9,6 +9,7 @@ class PathFile {
    public $filename;  // next file in batch
    public $position; // numeric position of filename in batch
    public $batch_id; // ID of the batch
+   public $filecount; // total files in the batch
 } 
 
 # Supporting functions *****************************
@@ -38,6 +39,7 @@ function getNextBatch() {
      if (strlen($result->path)>0) {
         $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
         $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and ..
+        $result->filecount = count($files) - 2;
      }
 
      return $result;
@@ -51,6 +53,7 @@ class TR_Batch {
   private $path;
   private $image_batch_id;
   private $completed_date;
+  private $filecount;
 
   // construct a new tr_batch, then call setPath(path) to initialize the tr_batch object from path.
   function setPath($a_path) { 
@@ -67,6 +70,10 @@ class TR_Batch {
                $this->batch_id = $batch_id;
                $this->image_batch_id = $image_batch_id;
                $this->completed_date = $completed_date;
+           }
+           if (strlen($this->path)>0) {
+                $files = scandir(BASE_IMAGE_PATH.$this->path,SCANDIR_SORT_ASCENDING);
+                $this->filecount = count($files) - 2;
            }
            $statement->close();
            if (strlen($this->batch_id)==0) { 
@@ -97,6 +104,10 @@ class TR_Batch {
                $this->image_batch_id = $image_batch_id;
                $this->completed_date = $completed_date;
            }
+           if (strlen($this->path)>0) {
+                $files = scandir(BASE_IMAGE_PATH.$this->path,SCANDIR_SORT_ASCENDING);
+                $this->filecount = count($files) - 2;
+           }
            $statement->close();
            if (strlen($this->batch_id)==0) {
                throw new Exception('Batch not found for path '. $path);
@@ -121,6 +132,9 @@ class TR_Batch {
   }
   function getCompletedDate() { 
      return $this->completed_date;
+  }
+  function getFileCount() { 
+     return $this->filecount;
   }
 
   /** Find the next file in this batch for the current user and move to it.
@@ -147,6 +161,7 @@ class TR_Batch {
      if (strlen($result->path)>0) {
         $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
         $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and .. 
+        $result->filecount = count($files) - 2;
         
         // does next file exist: 
         if (array_key_exists($result->position + 2 + 1,$files)) { 
@@ -210,6 +225,7 @@ class TR_Batch {
      if (strlen($result->path)>0) {
         $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
         $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and .. 
+        $result->filecount = count($files) - 2;
 
         // does next file exist: 
         if (array_key_exists($result->position + 2 + 1,$files)) {

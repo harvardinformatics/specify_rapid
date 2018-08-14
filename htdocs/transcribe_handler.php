@@ -75,8 +75,10 @@ if ($connection && $authenticated) {
          $path = $currentBatch->getPath();
          //$pathfile = $currentBatch->getNextFile();
          $pathfile = $currentBatch->incrementFile();
+         $position = $pathfile->position;
+         $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\" }";
+         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; } 
 
          header("Content-type application/json"); 
