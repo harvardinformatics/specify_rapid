@@ -75,7 +75,7 @@ if ($connection && $authenticated) {
          $path = $currentBatch->getPath();
          //$pathfile = $currentBatch->getNextFile();
          $pathfile = $currentBatch->incrementFile();
-         $position = $pathfile->position;
+         $position = $pathfile->position +1;
          $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
          $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\" }";

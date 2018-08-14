@@ -462,8 +462,6 @@ function form() {
 
    $habitat = "";
 
-   echo "[$targetbarcode]";
-
    if ($test=="true") { 
        // populate with data for testing
        $prepmethod = "Pressed";
@@ -533,7 +531,7 @@ function form() {
  
    echo "<div class='hfbox' style='height: 1em;'>";  
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files</span>";
+   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>";
    echo "</div>";
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
@@ -716,6 +714,7 @@ function form() {
    echo "<tr><td>";
    echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', disabled='true' id='nextButton' class='carryforward ui-button ui-state-disabled'>";
+   echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "</td></tr>";
 
    echo "<script>
@@ -740,9 +739,10 @@ function form() {
                      var position = data.position;
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'5616', origwidth:'3744', uri: imagesource }  );
-                     $('#batch_info').html('$batch file ' + position +' of $filecount.');
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
                      if (position==filecount) {  
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
+                        $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                      }
                    },
                    error: function() { 
@@ -755,7 +755,35 @@ function form() {
 
                event.preventDefault();
           });
-          
+          $('#doneButton').click(function(event){
+               $('#feedback').html( 'Completing batch...');
+               // move position to mark batch as done 
+               $.ajax({
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   dataType: 'json',
+                   data: { 
+                       action: 'getnextimage',
+                       batch_id: ".$currentBatch->getBatchID()."
+                   },
+                   success: function(data) { 
+                     console.log(data.src);
+                     doclear();
+                   },
+                   error: function() { 
+                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       $('#nextButton').prop('disabled',true) 
+                   }
+               });
+  
+               // load data
+
+               event.preventDefault();
+          });
+    
+   
+
+      
    </script>";
 
    if ($test=="true") { 
