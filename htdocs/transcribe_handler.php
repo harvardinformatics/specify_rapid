@@ -67,6 +67,27 @@ if ($connection && $authenticated) {
 
          break;   
 
+      case 'getnextrecord': 
+         $ok = false;
+         @$id = $_GET['batch_id'];
+         @$position = $_GET['position'];  // zero based position in file array 
+         // lookup the filename for this position
+
+         // lookup the barcode for this filename
+
+         // lookup the data for this barcode.
+ 
+         $values = " 'barcode':'999999998';
+
+         header("Content-type application/json"); 
+         if ($ok) { 
+            $response = "{ $values }";
+         } else {
+            $response = '{}';
+         }
+         echo $response;
+         break; 
+
       case 'getnextimage':
          $ok = false;
          @$id = $_GET['batch_id'];
@@ -75,10 +96,10 @@ if ($connection && $authenticated) {
          $path = $currentBatch->getPath();
          //$pathfile = $currentBatch->getNextFile();
          $pathfile = $currentBatch->incrementFile();
-         $position = $pathfile->position +1;
+         $position1 = $pathfile->position +1;  // convert zero based file array position to 1 based file x of y position.
          $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\" }";
+         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; } 
 
          header("Content-type application/json"); 

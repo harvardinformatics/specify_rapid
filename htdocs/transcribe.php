@@ -437,6 +437,7 @@ function form() {
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$path = urldecode($_GET['path']);
+   @$position= preg_replace('/[^0-9]/','',$_GET['position']);
 
    switch ($config) { 
       case 'minimal':
@@ -531,7 +532,7 @@ function form() {
  
    echo "<div class='hfbox' style='height: 1em;'>";  
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>";
+   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span]";
    echo "</div>";
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
@@ -736,13 +737,17 @@ function form() {
                      console.log(data.src);
                      $('#image_div').attr('src',data.src);
                      var imagesource = data.src;
-                     var position = data.position;
+                     var position1 = data.position1;
+                     $('#current_position').html(data.position1);
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'5616', origwidth:'3744', uri: imagesource }  );
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
-                     if (position==filecount) {  
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position1 +' of $filecount.');
+                     if (position1==filecount) {  
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                         $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
+                     } else { 
+                         // load data
+                         loadNextData(position1,".$currentBatch->getBatchID().");
                      }
                    },
                    error: function() { 
@@ -750,11 +755,9 @@ function form() {
                        $('#nextButton').prop('disabled',true) 
                    }
                });
-  
-               // load data
-
                event.preventDefault();
           });
+
           $('#doneButton').click(function(event){
                $('#feedback').html( 'Completing batch...');
                // move position to mark batch as done 
@@ -775,13 +778,39 @@ function form() {
                        $('#nextButton').prop('disabled',true) 
                    }
                });
-  
-               // load data
-
                event.preventDefault();
           });
     
-   
+          function loadNextData(position1,batch_id) { 
+               var position0 = position1 - 1; // change one based position count to zero based position count. 
+               $.ajax({
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   dataType: 'json',
+                   data: { 
+                       action: 'getnextrecord',
+                       batch_id: batch_id
+                       position: position0
+                   },
+                   success: function(data) { 
+                     console.log(data.src);
+
+                     // interate through the elements in data
+
+                     // find the corresponding input (input id = data key) in transcribeForm
+                   
+                     // if the input value is empty, replace it with the value from data.
+
+                     // if the input value is not empty, and the input is not in class carry_forward, set the value from the data.
+                     // (if the input value is not empty, and the input is in class carry_forward, leave unchanged).
+                     
+                   },
+                   error: function() { 
+                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       $('#nextButton').prop('disabled',true) 
+                   }
+               });
+          }  
 
       
    </script>";
