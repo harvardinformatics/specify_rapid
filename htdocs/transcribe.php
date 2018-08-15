@@ -433,6 +433,35 @@ function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecis
 function form() {
    global $user;
 
+/* Supported field list:
+
+barcode
+created
+herbarium
+format
+prepmethod
+project
+highergeography
+highergeographyid
+filedundername
+filedundernameid
+filedunderqualifier
+currentname
+currentnameid
+currentqualifier
+collectingtrip
+collectors
+etal
+specificlocality
+stationfieldnumber
+verbatimdate
+datecollected
+namedplace
+verbatimelevation
+habitat
+
+*/
+
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
@@ -570,7 +599,7 @@ function form() {
    } else { 
       selectProject("defaultproject","Project",$defaultproject);  
    }
-   @staticvalue("Barcode:",$targetbarcode);
+   @staticvalueid("Barcode:",$targetbarcode,'staticbarcode');
    echo "<input type='hidden' name='barcode' id='barcode' value='$targetbarcode' class='carryforward'>";
    // field ("barcode","Barcode",$targetbarcode,'required','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    echo '<script>
@@ -705,7 +734,7 @@ function form() {
         ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
 
-        field ("habitat","Habitat",$habitat); 
+        @field ("habitat","Habitat",$habitat); 
         @field ("namedplace","Named place",$namedPlace); 
         @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false'); 
 
@@ -789,11 +818,14 @@ function form() {
                    dataType: 'json',
                    data: { 
                        action: 'getnextrecord',
-                       batch_id: batch_id
+                       batch_id: batch_id,
                        position: position0
                    },
                    success: function(data) { 
-                     console.log(data.src);
+                     console.log(data);
+
+                     $('#barcode').val(data.barcode);
+                     $('#staticbarcode').html(data.barcode);
 
                      // interate through the elements in data
 
@@ -1013,6 +1045,10 @@ function preptypeselect($name,$label,$default,$required,$storeId,$table,$field) 
 
 function staticvalue($label,$default) {
 	$returnvalue = "<tr><td><label>$label</label></td><td>$default</td></tr>";
+	echo $returnvalue;
+}
+function staticvalueid($label,$default,$id) {
+	$returnvalue = "<tr><td><label>$label</label></td><td><span id='$id'>$default</span></td></tr>";
 	echo $returnvalue;
 }
 

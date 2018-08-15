@@ -72,16 +72,40 @@ if ($connection && $authenticated) {
          @$id = $_GET['batch_id'];
          @$position = $_GET['position'];  // zero based position in file array 
          // lookup the filename for this position
+         $batch = new TR_BATCH();
+         $batch->setID($id);
+         $path = $batch->getPath();
+         $ir = $batch->getFile($position);
+         $filename = $ir->filename;
 
          // lookup the barcode for this filename
+         $barcode = getBarcodeForFilename($path,$filename);
 
          // lookup the data for this barcode.
+         $dataarray = getDataForBarcode($barcode);
+         $values = "";
+         switch ($dataarray['status']) { 
+            case "NOTFOUND":
+              $values = " 'barcode':'NOTFOUND' ";
+              $ok = true;
+              break;
  
-         $values = " 'barcode':'999999998';
+            case "FOUND":
+              $values = json_encode(dataarray);
+              $ok = true;
+              break;
+            case "ERROR":
+            default:
+              break;
+         }
+ 
+         // for testing work in progress
+         $values = "{ \"barcode\":\"999999998\" }";
+         $ok=true;
 
-         header("Content-type application/json"); 
+         header("Content-type: application/json"); 
          if ($ok) { 
-            $response = "{ $values }";
+            $response = $values;
          } else {
             $response = '{}';
          }
@@ -102,7 +126,7 @@ if ($connection && $authenticated) {
          $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; } 
 
-         header("Content-type application/json"); 
+         header("Content-type: application/json"); 
          if ($ok) { 
             $response = $values;
          } else {

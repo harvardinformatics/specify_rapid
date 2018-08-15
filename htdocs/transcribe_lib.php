@@ -45,6 +45,43 @@ function getNextBatch() {
      return $result;
 }
 
+function getBarcodeForFilename($path, $filename) { 
+    global $connection, $user;
+    $result = "";
+    // check if in image_local_file
+    $sql = "select id, barcode from IMAGE_LOCAL_FILE where filename = ? and path = ? limit 1";
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("ss",$filename,$path);
+        $statement->execute();
+        $statement->bind_result($id, $barcode);
+        $statement->store_result();
+        while ($statement->fetch()) {
+            $result = $barcode;
+            $image_local_file_id = $id;
+        }
+     }
+     // TODO: Failovers
+     // if image_local_file_id is not null and barcode is null, file exists but needs barcode read.
+     // if image_local_file_id is null and barcode is null, check image_object, but file may either not contain a barcode (cover/folder) or need to be databased.
+
+    return $result;
+} 
+
+/**
+ * Given a barcode number, find data for the transcription form associated with that barcode.
+ * 
+ * @param barcode the barcode number to look up, can be zero padded or not.
+ * @return an associative array of key value pairs of data for the transcription form, including 
+ *   key status with values NOTFOUND, ERROR, FOUND, and key error containing any error message.
+ */
+function getDataForBarcode($barcode) { 
+   $result = array( "status"=> "NOTFOUND", "error"=> "", "barcode"=> "", "created"=> "", "herbarium"=> "", "format"=> "", "prepmethod"=> "", "project"=> "", "highergeography"=> "", "highergeographyid"=> "", "filedundername"=> "", "filedundernameid"=> "", "filedunderqualifier"=> "", "currentname"=> "", "currentnameid"=> "", "currentqualifier"=> "", "collectingtrip"=> "", "collectors"=> "", "etal"=> "", "specificlocality"=> "", "stationfieldnumber"=> "", "verbatimdate"=> "", "datecollected"=> "", "namedplace"=> "", "verbatimelevation"=> "", "habitat"=> "" );
+
+   // TODO: Implement.
+
+   return $result;
+}
+
 # Classes *******************************************
 
 class TR_Batch { 
@@ -236,6 +273,24 @@ class TR_Batch {
      }
      return $result;
   }
+
+  /** Find the file at a specified position in this batch without moving to it.
+   * 
+   * @param position0 zero based position of the file to return.
+   * @return a PathFile object containing the file and it's path, empty if no file found at the provided position.
+   */
+  function getFile($position0) {
+     global $connection, $user;
+     $result = new PathFile();
+     // find the current file in the batch 
+     if (strlen($result->path)>0) {
+        $files = scandir(BASE_IMAGE_PATH.$this->path,SCANDIR_SORT_ASCENDING);
+        $result->filename = $files[$result->position0 + 2]; // position0 + 2 to account for the directory entries . and .. 
+        $result->filecount = count($files) - 2;
+     }
+     return $result;
+  }
+
 
 } 
 
