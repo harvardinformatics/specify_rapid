@@ -52,7 +52,7 @@ $retval->success = FALSE;
 if ($connection && $authenticated) {
     # find the action
     @$test = substr(preg_replace('/[^a-z]/','',$_POST['test']),0,10);
-    @$action = substr(preg_replace('/[^a-z]/','',$_POST['action']),0,10);
+    @$action = substr(preg_replace('/[^a-z]/','',$_POST['action']),0,50);
     $postjson = json_encode($_POST);
     $username = $_SESSION['username'];
     if (strlen($action)==0) { 

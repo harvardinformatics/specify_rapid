@@ -334,11 +334,12 @@ class TPage extends Page {
    }
 
    function dosetuppath(path,filename,position,mode) { 
-   
+
       window.open('displayimage.php?mode=imagefile&path='+path+'&filename='+filename ,'_blank','modal=yes');
  
       var added = '';
       if (mode=='test') { added = '&test=true'; }  
+      if (mode=='testminimal') { added = '&test=true&config=minimal'; }  
       window.location.href = 'transcribe.php?display=mainform&path='+path+'&filename='+filename+'&position='+position+added;
    } 
    function doclear() { 
@@ -363,6 +364,7 @@ class TPage extends Page {
          alert('pong');
       }
    } 
+
 
 </script>
 <style>

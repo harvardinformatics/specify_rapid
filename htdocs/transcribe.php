@@ -108,8 +108,9 @@ function doSetup() {
      $targetBatch = getNextBatch();
      // echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetup(\"$barcode\");' class='ui-button'>Start</button>";
      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"test\");' class='ui-button'>Start (test mode)</button>";
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"testminimal\");' class='ui-button'>Start (test mode minimal)</button>";
      echo "&nbsp;";
-     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button'>Start (production mode)</button>";
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui-state-disabled' disabled=\"true\">Start (production mode)</button>";
      echo " with [$targetBatch->path][$targetBatch->filename]";
      // echo " with [$barcode]";
 }
@@ -490,6 +491,32 @@ habitat
    $path = $currentBatch->getPath();
    $filecount = $currentBatch->getFileCount();
 
+   echo "
+   <script>
+        function logEvent(eventaction,eventdetails){
+              if(eventdetails=='') { eventdetails = 'event'; } 
+              $.ajax({ 
+                  type: 'POST',
+                  url: 'transcribe_logger.php',
+                  data: { 
+                       action: eventaction,
+                       username: '".$_SESSION["username"]."',
+                       batch_id: ".$currentBatch->getBatchID().",
+                       details: eventdetails
+                  },
+                  success: function(data) { 
+                      console.log( data );
+                  },
+                  error: function() { 
+                      console.log( 'logEvent Failed.  Ajax Error.');
+                  }
+              });
+         };
+
+      $(document).ready(logEvent('start_transcription','$path, $filename, $position'));
+   </script>";
+
+
    $habitat = "";
 
    if ($test=="true") { 
@@ -547,9 +574,9 @@ habitat
         @$defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
    }
    @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
-   if ($defaultherbarium=='') { $defaultherbarium = "A"; }
+   if ($defaultherbarium=='') { $herbarium = "GH"; }
    if ($num_matches==1) { 
-       $defaultherbarium = $match->getText1();
+       $herbarium = $match->getText1();
    } 
    @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
@@ -561,7 +588,7 @@ habitat
  
    echo "<div class='hfbox' style='height: 1em;'>";  
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span]";
+   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
    echo "</div>";
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";  
@@ -633,10 +660,32 @@ habitat
        highergeography - pick
        scientific name - filed under, plus qualifier - carry forward
        */
-       selectAcronym("herbariumacronym",$defaultherbarium);
+       @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');  
        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
-       @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');  
+       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+        echo "
+        <script>
+           $('#verbatimdate').blur(function() {
+               var verbatim = $('#verbatimdate').val();
+               $.ajax({ 
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   data: {
+                       action: 'interpretdate',
+                       verbatimdate: verbatim
+                   },
+                   success: function(data) { 
+                       if (data!='') { 
+                         $('#datecollected').val(data);
+                       }
+                   }
+               });
 
+           });
+        </script>
+        ";
+        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false'); 
+       selectAcronym("herbariumacronym",$herbarium);
    } elseif ($config=="standard") { 
 
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');  
@@ -696,8 +745,8 @@ habitat
            });
         </script>
         ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); 
-       selectAcronym("herbariumacronym",$defaultherbarium);
+        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false'); 
+       selectAcronym("herbariumacronym",$herbarium);
 
    } else { 
 
@@ -738,18 +787,23 @@ habitat
         @field ("namedplace","Named place",$namedPlace); 
         @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false'); 
 
-        selectAcronym("herbariumacronym",$defaultherbarium);
+        selectAcronym("herbariumacronym",$herbarium);
    }
 
-   echo "<tr><td>";
+   echo "<tr><td colspan=2>";
    echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
-   echo "<input type='button' value='Next', disabled='true' id='nextButton' class='carryforward ui-button ui-state-disabled'>";
+   echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "</td></tr>";
-
+   echo "<tr><td colspan=2>";
+   echo "For the autocomlete fields, quickly type a substring, press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
+   echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next.";
+   echo "</td></tr>";
    echo "<script>
+
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
+               logEvent('next_button_click',$('#batch_info').html())
                // clear fields 
                $('#transcribeForm  input:not(.carryforward)').val('');
 
@@ -766,10 +820,12 @@ habitat
                      console.log(data.src);
                      $('#image_div').attr('src',data.src);
                      var imagesource = data.src;
+                     var imagepath = data.path;
+                     var imagefilename = data.filename;
                      var position1 = data.position1;
                      $('#current_position').html(data.position1);
                      var filecount = data.filecount;
-                     channel.postMessage(  { action:'load', origheight:'5616', origwidth:'3744', uri: imagesource }  );
+                     channel.postMessage(  { action:'load', origheight:'5616', origwidth:'3744', uri: imagesource, path: imagepath, filename: imagefilename }  );
                      $('#batch_info').html('".$currentBatch->getPath()." file ' + position1 +' of $filecount.');
                      if (position1==filecount) {  
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
@@ -781,7 +837,7 @@ habitat
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       $('#nextButton').prop('disabled',true) 
+                       //$('#nextButton').prop('disabled',true) 
                    }
                });
                event.preventDefault();
@@ -789,6 +845,7 @@ habitat
 
           $('#doneButton').click(function(event){
                $('#feedback').html( 'Completing batch...');
+               logEvent('done',$('#batch_info').html())
                // move position to mark batch as done 
                $.ajax({
                    type: 'GET',
@@ -804,7 +861,6 @@ habitat
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       $('#nextButton').prop('disabled',true) 
                    }
                });
                event.preventDefault();
@@ -839,7 +895,6 @@ habitat
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       $('#nextButton').prop('disabled',true) 
                    }
                });
           }  
@@ -858,12 +913,11 @@ habitat
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 
                        $('#feedback').html( data ) ;
-                       $('#nextButton').prop('disabled',false) 
-                       $('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
+                       //$('#nextButton').prop('disabled',false) 
+                       //$('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       $('#nextButton').prop('disabled',true) 
                    }
                });
                event.preventDefault();
@@ -880,11 +934,9 @@ habitat
                    data: $('#transcribeForm').serialize(),
                    success: function(data) { 
                        $('#feedback').html( data ) ;
-                       $('#nextButton').prop('disabled',false) 
                    },
                    error: function() { 
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       $('#nextButton').prop('disabled',true) 
                    }
                });
                event.preventDefault();
@@ -923,9 +975,12 @@ habitat
            channel.onmessage = function (e) { 
                console.log(e); 
                if (e.data=='loaded') {
+                  logEvent('image_loaded',$('#batch_info').html())
                   $('#feedback').html( 'Loaded');
                   // trigger zoom onto loaded image. 
                   channel.postMessage( { x:'355', y:'569', oh:'5616', ow:'3744', h:'700', w:'467', id:'' }  );
+               } else { 
+                  logEvent('message',e.data)
                }
            }
 
@@ -972,7 +1027,7 @@ habitat
    
 }
 
-function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='') {
+function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true') {
    echo "<tr><td>\n";
    echo "<label for='$name'>$label</label>";
    echo "</td><td>\n";
@@ -985,13 +1040,18 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
    if ($placeholder!='') {
       $placeholder = "placeHolder='$placeholder'";
    }
+   if ($enabled=='false') { 
+      $disabled = "disabled='true'";
+   } else { 
+      $disabled = '';
+   }
    if ($required=='false') { 
-      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".BASEWIDTH."em; ' >";
+      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".BASEWIDTH."em; ' $disabled >";
    } else { 
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".BASEWIDTH."em; ' >";
+      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".BASEWIDTH."em; ' $disabled >";
    }
    echo "</td></tr>\n";
 }
@@ -1155,10 +1215,10 @@ function selectAcronym($field,$default) {
    echo "<select name=\"$field\" >
 	<option value=\"GH\" $ghs>GH</option>
 	<option value=\"A\" $as>A</option>
+	<option value=\"NEBC\" $nebcs>NEBC</option>
 	<option value=\"FH\" $fhs>FH</option>
 	<option value=\"AMES\" $amess>AMES</option>
 	<option value=\"ECON\" $econs>ECON</option>
-	<option value=\"NEBC\" $nebcs>NEBC</option>
 	</select>";
    echo "</td></tr>\n";
 }

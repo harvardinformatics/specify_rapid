@@ -180,7 +180,7 @@ echo "[$barcode][$mediauri][$h]";
  *  @param filename the filename below the path.
  */
 function imagefile($path,$filename) { 
-    echo "$filename <div id='info'>imageclicks</div>";
+    echo "$filename <div id='info'>imageclicks</div><div id='path'>$path</div><div id='filename'>$filename</div>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
@@ -190,6 +190,8 @@ function imagefile($path,$filename) {
                   window.close();
                } else {
                   if (e.data.action=='load') { 
+                     $('#path').html(e.data.path);
+                     $('#filename').html(e.data.filename);
                      setupCanvas(e.data.uri,e.data.origheight,e.data.origwidth);
                   } else {  
                      document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
@@ -218,7 +220,7 @@ function imagefile($path,$filename) {
        //$w = $media->pixel_width;
        $h = 5616;
        $w = 3744;
-echo @"[$barcode][$mediauri][$h]";
+//echo @"[$barcode][$mediauri][$h]";
    }
    echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
    echo "<script>
@@ -236,6 +238,7 @@ echo @"[$barcode][$mediauri][$h]";
              context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
              channel.postMessage('loaded');
          }
+         logEvent('setupcanvas',uri);
      }
 
      function doZoom(x,y,h,w,oh,ow) {
@@ -245,7 +248,31 @@ echo @"[$barcode][$mediauri][$h]";
          ynew = ynew - 400;  if (ynew < 1) { ynew = 1; } 
          context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
          context.drawImage(base_image,xnew,ynew,1500,1200,1,1,1200,1000);
+         var xy = \"\" + x + \",\" + y;
+         logEvent('zoom',xy)
      }
+
+     function logEvent(eventaction,eventdetails){
+         if(eventdetails=='') { eventdetails = 'event'; } 
+         $.ajax({ 
+             type: 'POST',
+             url: 'transcribe_logger.php',
+             data: { 
+                  action: eventaction,
+                  username: '".$_SESSION["username"]."',
+                  path: $('#path').html(),
+                  filename: $('#filename').html(),
+                  details: eventdetails
+             },
+             success: function(data) { 
+                 console.log( data );
+             },
+             error: function() { 
+                 console.log( 'logEvent Failed.  Ajax Error.');
+             }
+         });
+     };
+
 
    </script>";
 }   

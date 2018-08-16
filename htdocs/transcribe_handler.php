@@ -123,7 +123,9 @@ if ($connection && $authenticated) {
          $position1 = $pathfile->position +1;  // convert zero based file array position to 1 based file x of y position.
          $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\" }";
+         $path= $pathfile->path;
+         $filename = $pathfile->filename;
+         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; } 
 
          header("Content-type: application/json"); 
