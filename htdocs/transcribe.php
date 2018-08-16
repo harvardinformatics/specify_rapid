@@ -608,7 +608,7 @@ habitat
           });
    </script>';
    echo '<div style="width: 34em;" id="transcribediv" >';
-   echo '<h3>Transcribe into Fields</h3>';
+   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
 
    echo "<table>";
@@ -796,9 +796,9 @@ habitat
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "</td></tr>";
-   echo "<tr><td colspan=2>";
-   echo "For the autocomlete fields, quickly type a substring, press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
-   echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next.";
+   echo "<tr><td colspan=2 style=' font-size: 0.9em;'>";
+   echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
+   echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
    echo "</td></tr>";
    echo "<script>
 
@@ -960,7 +960,7 @@ habitat
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
-   echo '<h3>Click to zoom in other window.</h3>';
+   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
    echo '<div>';
 
    #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
@@ -995,7 +995,6 @@ habitat
     ";
     echo "$medialink";
    echo '</div>';
-
 
 
    echo '</div>';

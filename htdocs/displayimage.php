@@ -180,7 +180,7 @@ echo "[$barcode][$mediauri][$h]";
  *  @param filename the filename below the path.
  */
 function imagefile($path,$filename) { 
-    echo "$filename <div id='info'>imageclicks</div><div id='path'>$path</div><div id='filename'>$filename</div>";
+    echo "<span id='info'>imageclicks</span> <span id='path'>$path</span> <span id='filename'>$filename</span>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
