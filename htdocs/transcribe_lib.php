@@ -14,9 +14,9 @@ class PathFile {
 
 # Supporting functions *****************************
 
-/** Find out what the next batch is for the current user, and return the first file from that batch as a PathFile object.
+/** Find out what the next batch is for the current user, and return the file at the current position from that batch as a PathFile object.
  * 
- *  @return a PathFile containing the path for the first batch for the current user and the first file for the current user in that batch, 
+ *  @return a PathFile containing the path for the first batch for the current user and the current file for the current user in that batch, 
  *     empty if no batch or no next file.
  */
 function getNextBatch() {
@@ -44,6 +44,39 @@ function getNextBatch() {
 
      return $result;
 }
+
+/** Find out what the next batch is for the current user, and return the first file from that batch as a PathFile object.
+ * 
+ *  @return a PathFile containing the path for the first batch for the current user and the first file for the current user in that batch, 
+ *     empty if no batch or no first file.
+ * 
+ */
+function getFirstFileInNextBatch() {
+     global $connection, $user;
+     $result = new PathFile();
+     // find the next batch to be worked on
+     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where username = ? and b.completed_date is null limit 1';
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("s",$_SESSION["username"]);
+        $statement->execute();
+        $statement->bind_result($path, $position,$batch_id);
+        $statement->store_result();
+        while ($statement->fetch()) {
+            $result->path = $path;
+            $result->position = $position;
+            $result->batch_id= $batch_id;
+        }
+     }
+     // find the first file in this batch 
+     if (strlen($result->path)>0) {
+        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
+        $result->filename = $files[0 + 2]; // position + 2 to account for the directory entries . and ..
+        $result->filecount = count($files) - 2;
+     }
+
+     return $result;
+}
+
 
 function getBarcodeForFilename($path, $filename) { 
     global $connection, $user;
@@ -273,6 +306,22 @@ class TR_Batch {
      }
      return $result;
   }
+
+  /** Reset the position in this batch for the current user to the specified position.
+   * 
+   * @param position the position to move to.
+   */
+  function moveTo($position) { 
+     global $connection, $user;
+     $result = new PathFile();
+     // find the current batch
+     $sql = 'update TR_USER_BATCH set position = ? where tr_batch_id = ? and username = ?';
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("iis",$position, $this->batch_id,$_SESSION["username"]);
+        $statement->execute();
+     } 
+  }
+
 
   /** Find the file at a specified position in this batch without moving to it.
    * 

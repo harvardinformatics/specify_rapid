@@ -106,10 +106,18 @@ function doSetup() {
      //$target = target();
      //$barcode = $target->barcode;
      $targetBatch = getNextBatch();
+     $targetBatchFirst = getFirstFileInNextBatch();
+     $position = $targetBatch->position + 1;
      // echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetup(\"$barcode\");' class='ui-button'>Start</button>";
-     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"test\");' class='ui-button'>Start (test mode)</button>";
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"test\");' class='ui-button'>Start from $position (test mode)</button>";
+     if ($position > 1) { 
+        echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"test\");' class='ui-button'>Start from first (test mode)</button>";
+     }
      echo "&nbsp;";
-     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"testminimal\");' class='ui-button'>Start (test mode minimal)</button>";
+     echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"testminimal\");' class='ui-button'>Start from $position (test mode minimal)</button>";
+     if ($position > 1) { 
+         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"testminimal\");' class='ui-button'>Start from first (test mode minimal)</button>";
+     }
      echo "&nbsp;";
      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui-state-disabled' disabled=\"true\">Start (production mode)</button>";
      echo " with [$targetBatch->path][$targetBatch->filename]";
@@ -468,6 +476,7 @@ habitat
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$path = urldecode($_GET['path']);
+   $position = 0;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
 
    switch ($config) { 
@@ -479,6 +488,13 @@ habitat
           $config="standard";
    }
 
+
+   $currentBatch = new TR_Batch();
+   $currentBatch->setPath($path);
+   $path = $currentBatch->getPath();
+   $filecount = $currentBatch->getFileCount();
+   $currentBatch->moveTo($position);
+
    # Find out the barcode to load.
    if (strlen($filename)==0) { 
       $target = target(); 
@@ -486,11 +502,6 @@ habitat
       $target = targetfile($path,$filename);
    }
    $targetbarcode = $target->barcode;
-
-   $currentBatch = new TR_Batch();
-   $currentBatch->setPath($path);
-   $path = $currentBatch->getPath();
-   $filecount = $currentBatch->getFileCount();
 
    echo "
    <script>
