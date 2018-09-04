@@ -715,10 +715,11 @@ habitat
        *verbatim date collected
        *date collected
        */
-        @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false'); 
+        // @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false'); 
         @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
+        @field ("habitat","Habitat",$habitat); 
 
         @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false'); 
         @field ("etal","Et al.",$etal,'false');    
