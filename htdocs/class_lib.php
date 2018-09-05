@@ -999,10 +999,65 @@ class huh_geography_custom extends huh_geography {
     *  @param term query term for like search on taxon.fullname.
     *  @return json array of results.
     */
-   public function keySelectGeoGeoIDJSON($term) {
+   public function keySelectGeoGeoIDJSON($term,$within="") {
       global $connection;
       $returnvalue = '[';
-      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+      $hasfilter = FALSE;
+      if (strlen(trim($within))>0) { 
+          $sql = "select nodenumber, highestchildnodenumber from geography where name = ? order by rankid asc";
+          if ($stmt = $connection->prepare($sql)) {
+            $stmt->bind_param('s',$within);
+            $stmt->execute();
+            $stmt->bind_result($highernode, $higherhighestchildnode);
+            $stmt->fetch();
+            if (strlen($highernode)>0) {  $hasfilter=TRUE; } 
+            $stmt->close();
+          }
+      } 
+      if ($hasfilter) { 
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber < ?  order by g.fullname ASC ";
+         $comma = '';
+         if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param('sii',$term,$highernode,$higherhighestchildnode);
+            $stmt->execute();
+            $stmt->bind_result($id, $label,$value);
+            while ($stmt->fetch()) {
+               $label = trim($label);
+               if ($label!='') {
+                     $label = str_replace('"','&quot;',$label);
+                     $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                     $comma = ',';
+               }
+            }
+            $stmt->close();
+         }
+
+      } else { 
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+         $comma = '';
+         if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param('s',$term);
+            $stmt->execute();
+            $stmt->bind_result($id, $label,$value);
+            while ($stmt->fetch()) {
+               $label = trim($label);
+               if ($label!='') {
+                     $label = str_replace('"','&quot;',$label);
+                     $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                     $comma = ',';
+               }
+            }
+            $stmt->close();
+         }
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
+
+   public function keySelectGeoGeoIDJSONHigher($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID = 1  order by g.fullname ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
@@ -1021,7 +1076,6 @@ class huh_geography_custom extends huh_geography {
       $returnvalue .= ']';
       return $returnvalue;
    }
-
 
 
    public function selectDistinctJSONCountry() {

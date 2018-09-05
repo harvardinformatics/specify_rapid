@@ -451,6 +451,8 @@ herbarium
 format
 prepmethod
 project
+[geographyfilter]
+[geographyfilterid]
 highergeography
 highergeographyid
 filedundername
@@ -581,9 +583,13 @@ habitat
    if ($cleardefaultgeography==1) {
        $defaultcountry = "";
        $defaultprimary = "";
+       $geographyfilter= "";
+       $geographyfilterid= "";
    } else { 
         @$defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
         @$defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
+        @$geographyfilter= $_GET['geographyfilter'];
+        @$geographyfilterid= $_GET['geographyfilter'];
    }
    @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
    if ($defaultherbarium=='') { $herbarium = "GH"; }
@@ -727,7 +733,8 @@ habitat
        *date collected
        */
         // @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false'); 
-        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
+        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true'); 
+        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
         @field ("habitat","Habitat",$habitat); 
@@ -768,7 +775,8 @@ habitat
         @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true'); 
         @selectQualifier("currentqualifier","ID Qualifier",$filedunderqualifier); 
 
-        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
+        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true'); 
+        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true'); 
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true'); 
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false'); 
@@ -1124,16 +1132,45 @@ function staticvalueid($label,$default,$id) {
 	echo $returnvalue;
 }
 
-function geographyselect($name,$label,$default,$required,$rank) {
-	// $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='store$name$rank'
-	$returnvalue .= "<label for=\"$name\">$label</label></td><td>
-	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
-	store='store$name$rank' required='$required'
-	searchAttr='name' value='$default' ></td></tr>";
-	echo $returnvalue;
+function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry='', $defaultprimary='',$required='true',$carryforward='false') { 
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   if ($field=='geographyfilter') { $style = " background-color: lightgrey; "; } else { $style = ""; }
+   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; } 
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; $style ' $carryforward  >
+    <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
+    </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 4,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "geoidgeojson",
+                       term: request.term,
+                       field: "'.$field.'"
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
+   echo $returnvalue;
 }
 
-function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry='', $defaultprimary='',$required='true') { 
+function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultcountry='', $defaultprimary='',$required='true') { 
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
@@ -1144,14 +1181,15 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 3,
+               minLength: 4,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
                     dataType: "json",
                     data: {
                        druid_action: "geoidgeojson",
-                       term: request.term
+                       term: request.term,
+                       within: $("#geographyfilter").val() 
                     },
                     success: function( data ) {
                        response( data );
