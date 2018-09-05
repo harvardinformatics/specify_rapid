@@ -626,7 +626,8 @@ habitat
 
    echo '<script>
      $(document).ready(function() {
-         channel.postMessage( { x:"355", y:"569", oh:"5616", ow:"3744", h:"700", w:"467", id:"'.$target->imagesetid.'" }  );
+          //channel.postMessage( { x:"355", y:"569", oh:"5616", ow:"3744", h:"700", w:"467", id:"'.$target->imagesetid.'" }  );
+          channel.postMessage( { x:"353", y:"614", oh:"5616", ow:"3744", h:"700", w:"467", id:"'.$target->imagesetid.'" }  );
      });
    </script>
    ';
@@ -991,7 +992,8 @@ habitat
                   logEvent('image_loaded',$('#batch_info').html())
                   $('#feedback').html( 'Loaded');
                   // trigger zoom onto loaded image. 
-                  channel.postMessage( { x:'355', y:'569', oh:'5616', ow:'3744', h:'700', w:'467', id:'' }  );
+                  // channel.postMessage( { x:'355', y:'569', oh:'5616', ow:'3744', h:'700', w:'467', id:'' }  );
+                  channel.postMessage( { x:'353', y:'614', oh:'5616', ow:'3744', h:'700', w:'467', id:'' }  );
                } else { 
                   logEvent('message',e.data)
                }
