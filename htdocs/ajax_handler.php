@@ -347,18 +347,22 @@ if ($connection && $authenticated) {
          break;
     case 'geoidgeojson': 
          $ok = false;
-         $table = '';
+         $within = "";
+         @$within = $_GET['within'];
          $key = '';
-         $field = '';
+         @$field = $_GET['field'];
          $value = '';
          $uniqueid = '';
          $controltype = '';
          $term = $_GET['term'];
-         $table="taxon";
          $t = new huh_geography_custom();
          if (strlen($term)>0) {
             try {
-               $values = $t->keySelectGeoGeoIDJSON("%$term%");
+               if ($field=='geographyfilter') { 
+                   $values = $t->keySelectGeoGeoIDJSONHigher("%$term%");
+               } else { 
+                   $values = $t->keySelectGeoGeoIDJSON("%$term%",$within);
+               }
                $ok = true;
             } catch (Exception $e) {
                $ok = false;
