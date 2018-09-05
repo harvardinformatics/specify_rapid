@@ -1338,7 +1338,8 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 3,
+               minLength: 4,
+               delay: 400,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
