@@ -313,6 +313,178 @@ if ($connection && $authenticated) {
             $response = '{ }';
          }
          break;
+    case 'taxonidtaxonjsonp': 
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_taxon_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectTaxonTaxonIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            //echo '{ "identifier":"value", "label":"name",';
+            //echo '"items": [ ';
+            echo $values;
+            //echo ' ] }';
+         } else {
+            $response = '{ }';
+         }
+         break;
+    case 'geoidgeojson': 
+         $ok = false;
+         $within = "";
+         @$within = $_GET['within'];
+         $key = '';
+         @$field = $_GET['field'];
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $t = new huh_geography_custom();
+         if (strlen($term)>0) {
+            try {
+               if ($field=='geographyfilter') { 
+                   $values = $t->keySelectGeoGeoIDJSONHigher("%$term%");
+               } else { 
+                   $values = $t->keySelectGeoGeoIDJSON("%$term%",$within);
+               }
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            echo $values;
+         } else {
+            $response = '{ }';
+         }
+         break;
+    case 'collagentidjson':
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_collector_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectCollectorAgentIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            echo $values;
+         } else {
+            $response = '[]';
+         }
+         break;
+
+    case 'colltripidcolltripjson':
+         $ok = false;
+         $table = '';
+         $key = '';
+         $field = '';
+         $value = '';
+         $uniqueid = '';
+         $controltype = '';
+         $term = $_GET['term'];
+         $table="taxon";
+         $t = new huh_collectingtrip_custom();
+         if (strlen($term)>0) {
+            try {
+               $values = $t->keySelectCollectingTripIDJSON("%$term%");
+               $ok = true;
+            } catch (Exception $e) {
+               $ok = false;
+            }
+         } else {
+            $values = "[]";
+         }
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            $response = '';
+            echo $values;
+         } else {
+            $response = '[]';
+         }
+         break;
+
+    case 'returndistinctjqapreptype': 
+         $ok = false;
+         $table = 'huh_preptype';
+         $key = '';
+         $field = 'Name';
+         $value = '';
+         @$term = $_GET['term']; 
+         $term = "$term%";
+         $uniqueid = '';
+         $controltype = '';
+
+         if ($debug) {
+            echo "[$table][$field]";
+         }
+         // check that table is on allowed list
+         $schema = new database_schema();
+         $error = '';
+         if ($schema->hasTable($table)) {
+            // we know table is an allowed target
+            if ($table=='huh_preptype') {
+               $t = new huh_preptype_custom();
+            } else {
+               $t = $schema->getClass($table);
+            }
+            if ($t->hasField($field)) {
+               try {
+                  $values = $t->keySelectDistinctJSONFiltered($field,$term);
+                  $ok = true;
+               } catch (Exception $e) {
+                  $ok = false;
+               }
+            } else {
+               if ($debug) {
+                  echo "[$field not found in $table]";
+               }
+            }
+         }
+         //header("Content-type application/json");
+         header("Content-type text/json-comment-filtered");
+         if ($ok) {
+            echo '[ ';
+            echo $values;
+            echo ' ]';
+         } else {
+            echo '[]';
+         }
+         break;
 
       case 'returndistinctjsonpicklist':
          // test call: druid_handler.php?action=returndistinctjsonpicklist&field=value&picklistid=55
@@ -432,6 +604,14 @@ if ($connection && $authenticated) {
             $uniqueid = '';
             $controltype = '';
             @$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
+            if (@isset($_GET['term']) && strlen($_GET['term'])>0) {
+               $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['term']),0,60);  // value to limit
+               if (strlen($limit)==0) {
+                  $limit = "%";
+               } else {
+                  $limit = "%$limit%";
+               }
+            }
 
             if (strlen($limit)>0) {
                 $t = new huh_project_custom();
@@ -454,6 +634,46 @@ if ($connection && $authenticated) {
                 $response = '{ }';
             }
             break;         
+
+
+         // to back jquery autocomplete
+         case 'returndistinctjqaproject':
+            $ok = false;
+            $table = '';
+            $key = '';
+            $field = '';
+            $value = '';
+            $uniqueid = '';
+            $controltype = '';
+            if (@isset($_GET['term']) && strlen($_GET['term'])>0) {
+               $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['term']),0,60);  // value to limit
+               if (strlen($limit)==0) {
+                  $limit = "%";
+               } else {
+                  $limit = "%$limit%";
+               }
+            }
+
+            if (strlen($limit)>0) {
+                $t = new huh_project_custom();
+                try {
+                    $values = $t->keySelectDistinctJSONname($limit,TRUE);
+                    $ok = true;
+                } catch (Exception $e) {
+                    $ok = false;
+                }
+            }
+            //header("Content-type application/json");
+            header("Content-type text/json-comment-filtered");
+            if ($ok) {
+                $response = '';
+                echo '[';
+                echo $values;
+                echo ']';
+            } else {
+                $response = '[]';
+            }
+            break;
 
 
       case 'returndistinctjsoncollector':

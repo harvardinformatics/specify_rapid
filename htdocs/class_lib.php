@@ -7,7 +7,13 @@
 include_once("connection_library.php");
 include_once("druid_classes.php");
 
-
+/** Data structure to describe information about images **/
+class ImageReturn { 
+   public $image_set_id;
+   public $url ;
+   public $pixel_width ;
+   public $pixel_height ;
+}
 
 class UUID {
   // ** from http://www.php.net/manual/en/function.uniqid.php#94959
@@ -553,7 +559,7 @@ class huh_preptype_custom extends huh_preptype {
             $order = 'ASC';
          } else { $order = 'DESC';
          }
-         $field = mysql_escape_string($field);
+         $field = $connection->real_escape_string($field);
          $preparemysql = "SELECT DISTINCT $field FROM preptype order by $field $order ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
@@ -572,9 +578,66 @@ class huh_preptype_custom extends huh_preptype {
       }
       return $returnvalue;
    }
+   public function keySelectDistinctJSONFiltered($field,$filter,$orderby='ASC') {
+      // ******* Note: $connection must be a mysqli object.
+      global $connection;
+      $returnvalue = '';
+      if ($this->hasField($field)) {
+         $order = '';
+         if ($orderby=='ASC') {
+            $order = 'ASC';
+         } else { $order = 'DESC';
+         }
+         $field = $connection->real_escape_string($field);
+         $preparemysql = "SELECT DISTINCT $field FROM preptype where $field like ? order by $field $order ";
+         $comma = '';
+         if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param("s",$filter);
+            $stmt->execute();
+            $stmt->bind_result($val);
+            while ($stmt->fetch()) {
+               $val = trim($val);
+               if ($val!='') {
+                  $val = str_replace('"','&quot;',$val);
+                  $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$val.'" } ';
+                  $comma = ', ';
+               }
+            }
+            $stmt->close();
+         }
+      }
+      return $returnvalue;
+   }
 }
 
 class huh_taxon_CUSTOM extends huh_taxon {
+   /** Backing support for autocomplete, given a query term returns json containing taxonid as id  along with concatenated fullname and author as label and value.
+    *
+    *  @param term query term for like search on taxon.fullname.
+    *  @return json array of results.
+    */
+   public function keySelectTaxonTaxonIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT taxonid, concat(fullname,' ',ifnull(author,'')) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$label.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
 
    public function keySelectDistinctJSONLimit($field,$limit,$orderby='ASC') {
       global $connection;
@@ -592,7 +655,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          if ($field=="FullName") {
             $preparemysql = "SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,'')) FROM taxon where FullName like ? and FullName <> '' order by $fielde $order ";
          }
-         echo $preparemysql;
+         // echo $preparemysql;
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s",$limit);
@@ -745,7 +808,66 @@ class huh_container_custom extends huh_container {
 
 }
 
+class huh_collector_custom extends huh_collectingtrip {
+
+   /** Given a search term, obtain a list of matching agent names and agent ids for use as collectors.
+    *
+    *  @param term search term for like agentvariant.name.
+    *  @return json string with agentid as id, agentvariant.name and agent type as label, and agentvariant.name as value.
+    */
+   public function keySelectCollectorAgentIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT agentvariant.agentid, concat(name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ']') as label, name as value FROM agentvariant left join agent on agentvariant.agentid = agent.agentid where name like ? and vartype = 4 order by name ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label,$value);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $value = str_replace('"','&quot;',$value);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
+
+}
+
+
 class huh_collectingtrip_custom extends huh_collectingtrip {
+
+
+   public function keySelectCollectingTripIDJSON($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT collectingtripid, collectingtripname as label, collectingtripname as value FROM collectingtrip where collectingtripname like ? order by collectingtripname ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label,$value);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $value = str_replace('"','&quot;',$value);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
 
 	public function keySelectDistinctJSONname($term) {
 		global $connection;
@@ -807,7 +929,7 @@ class huh_storage_custom extends huh_storage {
 
 class huh_project_custom extends huh_project {
 
-    public function keySelectDistinctJSONname($term) {
+    public function keySelectDistinctJSONname($term, $withid=FALSE) {
         global $connection;
         $returnvalue = '';
         $preparemysql = "select distinct projectid, projectname from project where projectname like ? order by projectname asc ";
@@ -818,13 +940,23 @@ class huh_project_custom extends huh_project {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
-            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-            $comma = ', ';
+            if ($withid) {
+               // $returnvalue .= $comma . ' { "id":"", "value":"", "name":"[no project]" } ';    // include blank as an option
+               $comma = '';
+            } else {
+               $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
+               $comma = ', ';
+            }
             while ($stmt->fetch()) {
                 $name = trim($name);
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
-                    $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+                    if ($withid) {
+                        $returnvalue .= $comma . ' { "id":"'.$name.'", "value":"'.$name.'", "name":"'.$name.'" } ';
+                    } else {
+                        $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+                    }
+                    $comma = ', ';
                 }
             }
             $stmt->close();
@@ -833,11 +965,117 @@ class huh_project_custom extends huh_project {
 
     }
 
+   public function getFirstProjectForCollectionObject($collectionobjectid) {
+
+        global $connection;
+        $returnvalue = '';
+        $preparemysql = " select projectname from project_colobj pco left join project on pco.projectid = project.projectid where collectionobjectid = ? limit 1  ";
+        $comma = '';
+        if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param("i", $collectionobjectid);
+            $stmt->execute();
+            $stmt->bind_result($name);
+            while ($stmt->fetch()) {
+                $name = trim($name);
+                if ($name!='') {
+                    $name = str_replace('"','&quot;',$name);
+                    $returnvalue = $name;
+                }
+            }
+            $stmt->close();
+        }
+        return $returnvalue;
+   }
+
+
 }
 
 
 
 class huh_geography_custom extends huh_geography {
+
+   /** Backing support for autocomplete, given a query term returns json containing taxonid as id  along with concatenated fullname and author as label and value.
+    *
+    *  @param term query term for like search on taxon.fullname.
+    *  @return json array of results.
+    */
+   public function keySelectGeoGeoIDJSON($term,$within="") {
+      global $connection;
+      $returnvalue = '[';
+      $hasfilter = FALSE;
+      if (strlen(trim($within))>0) { 
+          $sql = "select nodenumber, highestchildnodenumber from geography where name = ? order by rankid asc";
+          if ($stmt = $connection->prepare($sql)) {
+            $stmt->bind_param('s',$within);
+            $stmt->execute();
+            $stmt->bind_result($highernode, $higherhighestchildnode);
+            $stmt->fetch();
+            if (strlen($highernode)>0) {  $hasfilter=TRUE; } 
+            $stmt->close();
+          }
+      } 
+      if ($hasfilter) { 
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber < ?  order by g.fullname ASC ";
+         $comma = '';
+         if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param('sii',$term,$highernode,$higherhighestchildnode);
+            $stmt->execute();
+            $stmt->bind_result($id, $label,$value);
+            while ($stmt->fetch()) {
+               $label = trim($label);
+               if ($label!='') {
+                     $label = str_replace('"','&quot;',$label);
+                     $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                     $comma = ',';
+               }
+            }
+            $stmt->close();
+         }
+
+      } else { 
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+         $comma = '';
+         if ($stmt = $connection->prepare($preparemysql)) {
+            $stmt->bind_param('s',$term);
+            $stmt->execute();
+            $stmt->bind_result($id, $label,$value);
+            while ($stmt->fetch()) {
+               $label = trim($label);
+               if ($label!='') {
+                     $label = str_replace('"','&quot;',$label);
+                     $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                     $comma = ',';
+               }
+            }
+            $stmt->close();
+         }
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
+
+   public function keySelectGeoGeoIDJSONHigher($term) {
+      global $connection;
+      $returnvalue = '[';
+      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID = 1  order by g.fullname ASC ";
+      $comma = '';
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('s',$term);
+         $stmt->execute();
+         $stmt->bind_result($id, $label,$value);
+         while ($stmt->fetch()) {
+            $label = trim($label);
+            if ($label!='') {
+                  $label = str_replace('"','&quot;',$label);
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
+                  $comma = ',';
+            }
+         }
+         $stmt->close();
+      }
+      $returnvalue .= ']';
+      return $returnvalue;
+   }
 
 
    public function selectDistinctJSONCountry() {
