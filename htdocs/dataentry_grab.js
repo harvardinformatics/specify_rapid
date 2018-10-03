@@ -1,5 +1,5 @@
 dojo.require("dojo.io.script");
-dojo.io.script.get({url: "http://140.247.98.183:8086/js/fp-data-entry-plugin.js"});
+// dojo.io.script.get({url: "http://140.247.98.183:8086/js/fp-data-entry-plugin.js"});
 
 function on_grab_lichen_click() {
 	fp_data_entry_plugin({
