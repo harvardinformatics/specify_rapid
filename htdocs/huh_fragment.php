@@ -1225,12 +1225,12 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
         // change to a like search if a wildcard character is present
         if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
         if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
-        $sql = "SELECT FragmentID FROM fragment WHERE Identifier $operator '$searchTerm'";
         $preparedsql = "SELECT FragmentID FROM fragment WHERE Identifier $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
             $statement->bind_param("s", $searchTerm);
             $statement->execute();
             $statement->bind_result($id);
+            $statement->store_result();
             while ($statement->fetch()) { ;
                 $obj = new huh_fragment();
                 $obj->load($id);
@@ -1254,6 +1254,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
             $statement->bind_param("s", $searchTerm);
             $statement->execute();
             $statement->bind_result($id);
+            $statement->store_result();
             while ($statement->fetch()) { ;
                 $obj = new huh_fragment();
                 $obj->load($id);

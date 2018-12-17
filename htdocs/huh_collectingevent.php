@@ -1029,8 +1029,24 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
       $t = new collectionobject();
   } 
   public function loadLinkedFromcollector() { 
+      global $connection;
       // ForeignKey in: collector
-      $t = new collector();
+      $obj = new huh_collector(); 
+
+      $sql = "SELECT collectorid FROM collector where collectingeventid = ?";
+      $statement = $connection->prepare($sql);
+      $statement->bind_param('i',$this->CollectingEventID);
+      $statement->execute();
+      $statement->bind_result($id);
+      $ids = array();
+      while ($statement->fetch()) {
+              $ids[] = $id;
+      } // double loop to allow all data to be retrieved before preparing a new statement. 
+      $statement->close();
+      if(count($ids)>0) { 
+          $obj->load($ids[0]);
+      }
+      return $obj;
   } 
 
    //---------------------------------------------------------------------------

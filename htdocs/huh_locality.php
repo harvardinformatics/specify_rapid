@@ -1374,24 +1374,24 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
   public function loadLinkedTo() { 
      $returnvalue = array(); 
        // fk: DisciplineID
-      $t = new discipline();
-      $t->load(getDisciplineID());
+      $t = new huh_discipline();
+      $t->load($this->getDisciplineID());
       $returnvalue[DisciplineID] = $t;
        // fk: ModifiedByAgentID
-      $t = new agent();
-      $t->load(getModifiedByAgentID());
+      $t = new huh_agent();
+      $t->load($this->getModifiedByAgentID());
       $returnvalue[ModifiedByAgentID] = $t;
        // fk: VisibilitySetByID
-      $t = new specifyuser();
-      $t->load(getVisibilitySetByID());
+      $t = new huh_specifyuser();
+      $t->load($this->getVisibilitySetByID());
       $returnvalue[VisibilitySetByID] = $t;
        // fk: CreatedByAgentID
-      $t = new agent();
-      $t->load(getCreatedByAgentID());
+      $t = new huh_agent();
+      $t->load($this->getCreatedByAgentID());
       $returnvalue[CreatedByAgentID] = $t;
        // fk: GeographyID
-      $t = new geography();
-      $t->load(getGeographyID());
+      $t = new huh_geography();
+      $t->load($this->getGeographyID());
       $returnvalue[GeographyID] = $t;
      return $returnvalue;
   } 

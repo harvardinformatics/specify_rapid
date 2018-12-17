@@ -208,8 +208,16 @@ function imagefile($path,$filename) {
            } 
         </script>
     ";
-   $mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
-   $mediauri = BASE_IMAGE_URI.$path."/".$filename;
+   //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
+   //$mediauri = BASE_IMAGE_URI.$path."/".$filename;
+   if (substr($path,-1)=="/") {
+       $localpathfile = "$path$filename";
+   } else {
+       $localpathfile = "$path/$filename";
+   }
+   $pathfile = BASE_IMAGE_PATH.'/'.$localpathfile;
+
+   $mediauri = BASE_IMAGE_URI.$localpathfile;
    
    if ($filename!="") { 
        // TODO: Lookup values from IMAGE_LOCAL_FILE
@@ -218,9 +226,12 @@ function imagefile($path,$filename) {
        //$mediaid = $media->image_set_id;
        //$h = $media->pixel_height;
        //$w = $media->pixel_width;
-       $h = 5616;
-       $w = 3744;
-//echo @"[$barcode][$mediauri][$h]";
+       list($width,$height) = getimagesize($pathfile);
+       $h=$height;
+       $w=$width;
+       //$h = 5616;
+       //$w = 3744;
+       //echo @"[$barcode][$mediauri][$h]";
    }
    echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
    echo "<script>

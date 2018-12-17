@@ -1290,44 +1290,44 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
   public function loadLinkedTo() { 
      $returnvalue = array(); 
        // fk: PreparationAttributeID
-      $t = new preparationattribute();
-      $t->load(getPreparationAttributeID());
+      $t = new huh_preparationattribute();
+      $t->load($this->getPreparationAttributeID());
       $returnvalue[PreparationAttributeID] = $t;
        // fk: GeographyID
-      $t = new geography();
-      $t->load(getGeographyID());
+      $t = new huh_geography();
+      $t->load($this->getGeographyID());
       $returnvalue[GeographyID] = $t;
        // fk: ModifiedByAgentID
-      $t = new agent();
-      $t->load(getModifiedByAgentID());
+      $t = new huh_agent();
+      $t->load($this->getModifiedByAgentID());
       $returnvalue[ModifiedByAgentID] = $t;
        // fk: PreparedByID
-      $t = new agent();
-      $t->load(getPreparedByID());
+      $t = new huh_agent();
+      $t->load($this->getPreparedByID());
       $returnvalue[PreparedByID] = $t;
        // fk: PrepTypeID
-      $t = new preptype();
-      $t->load(getPrepTypeID());
+      $t = new huh_preptype();
+      $t->load($this->getPrepTypeID());
       $returnvalue[PrepTypeID] = $t;
        // fk: ParentID
-      $t = new preparation();
-      $t->load(getParentID());
+      $t = new huh_preparation();
+      $t->load($this->getParentID());
       $returnvalue[ParentID] = $t;
        // fk: TaxonID
-      $t = new taxon();
-      $t->load(getTaxonID());
+      $t = new huh_taxon();
+      $t->load($this->getTaxonID());
       $returnvalue[TaxonID] = $t;
        // fk: CreatedByAgentID
-      $t = new agent();
-      $t->load(getCreatedByAgentID());
+      $t = new huh_agent();
+      $t->load($this->getCreatedByAgentID());
       $returnvalue[CreatedByAgentID] = $t;
        // fk: AppraisalID
-      $t = new appraisal();
-      $t->load(getAppraisalID());
+      $t = new huh_appraisal();
+      $t->load($this->getAppraisalID());
       $returnvalue[AppraisalID] = $t;
        // fk: StorageID
-      $t = new storage();
-      $t->load(getStorageID());
+      $t = new huh_storage();
+      $t->load($this->getStorageID());
       $returnvalue[StorageID] = $t;
      return $returnvalue;
   } 

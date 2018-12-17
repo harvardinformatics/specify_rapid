@@ -438,6 +438,25 @@ if ($connection && $authenticated) {
          }
          break;
 
+    case 'returndistinctjqaprepmethod': 
+         @$term = $_GET['term']; 
+         $values = array( "DNAsample", "Drawing", "Dried", "Fossil", "Glycerine", "Other", "Photograph", "Pressed", "Protolog", "SpiritMedium", "Wood" );
+         header("Content-type text/json-comment-filtered");
+         if ($term==null || $term=='') {
+            echo json_encode($values);
+         } elseif (strlen($term)>0) { 
+             $retval = array();
+             foreach ($values as $val){ 
+                if(strpos($val,$term)!== false) { 
+                   array_push($retval,$val);
+                }
+             }
+             echo json_encode($retval);
+         } else {
+            echo '[]';
+         }
+         break;
+
     case 'returndistinctjqapreptype': 
          $ok = false;
          $table = 'huh_preptype';

@@ -548,6 +548,150 @@ class DateRangeWithPrecision {
 
 }
 
+class huh_determination_custom extends huh_determination {
+
+   /**
+    * Is an array of values returned by lookupCurrentDetermination/lookupFiledUnderDetermination 
+    * consistent with data entry through the transcription application (should transcribe do update or insert).
+    * 
+    * @param det an array of key/value pairs as returned by lookupCurrentDetermination.
+    * @return boolean, true if not a type, and data not caputured as the determiner, false otherwise.
+    */
+   public static function consistentWithTranscribeCapture($det) { 
+      $result = false;
+      if (strlen($det["typestatusname"])==0 
+          && ($det["determinertext"]=="[data not captured]" || $det["determinertext"]=="") 
+          && strlen($det["determineddate"])==0
+         ) { 
+         $result = true;
+      }
+      return $result;
+   }
+
+   public static function countDeterminations($fragmentid) { 
+      global $connection;
+      $result = 0;
+
+      $sql = "select count(*) from determination where fragmentid = ? ";
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param("i",$fragmentid);
+         $statement->execute();
+         $statement->bind_result($count);
+         $statement->store_result();
+         if ($statement->fetch()) { 
+             $result = $count;
+         } else { 
+             throw new Exception('Error: no records in count(*) query.');
+         }
+         $statement->free_result();
+         $statement->close();
+      } else { 
+         throw new Exception('Error preparing statement' . $connection->error);
+      }
+      return $result;
+   }
+
+   public static function lookupCurrentDetermination($fragmentid) { 
+      global $connection;
+      $result = array();
+      $result["status"]="NotRun";
+      $result["errormessage"]="";
+      $result["records"]=0;
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param("i",$fragmentid);
+         $statement->execute();
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks);
+         $statement->store_result();
+         $result["records"]=$statement->num_rows;
+         if ($statement->num_rows>0) {
+            if ($statement->fetch()) {
+               $result["typestatusname"]=$typestatusname;
+               $result["determinationid"]=$determinationid;
+               $result["taxonid"]=$taxonid;
+               $result["isfiledunder"]=$isfiledunder;
+               $result["iscurrent"]=$iscurrent;
+               $result["determinertext"]=$determinertext;
+               $result["determinerid"]=$determinerid;
+               $result["taxonname"]=$taxonname;
+               $result["qualifier"]=$qualifier;
+               $result["determineddate"]=$determineddate;
+               $result["remarks"]=$remarks;
+               $result["status"]="Success";
+               if ($statement->num_rows>1) {
+                  $result["status"]="Error";
+                  $result["errormessage"] = "More than one current identification found for this specimen, returned first.";
+               }
+            } else {
+               $result["status"]="Error";
+               $result["errormessage"]="Query Error " . $connection->error;
+            }
+         } else {
+            $result["status"]="NotFound";
+         }
+         $statement->free_result();
+         $statement->close();
+      } else {
+         $result["status"]="Error";
+         $result["errormessage"] = "Query error: " . $connection->error . " " . $sql;
+      }
+      return $result;
+   }
+
+   public static function lookupFiledUnderDetermination($fragmentid) {
+      global $connection;
+      $result = array();
+      $result["status"]="NotRun";
+      $result["errormessage"]="";
+      $result["records"]=0;
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.yesno3=1 order by d.timestampcreated asc ";
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param("i",$fragmentid);
+         $statement->execute();
+         $statement->bind_result($typestatusname, $determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determinedddate,$remarks);
+         $statement->store_result();
+         $result["records"]=$statement->num_rows;
+         if ($statement->num_rows>0) {
+            if ($statement->fetch()) {
+               $result["typestatusname"]=$typestatusname;
+               $result["determinationid"]=$determinationid;
+               $result["taxonid"]=$taxonid;
+               $result["isfiledunder"]=$isfiledunder;
+               $result["iscurrent"]=$iscurrent;
+               $result["determinertext"]=$determinertext;
+               $result["determinerid"]=$determinerid;
+               $result["taxonname"]=$taxonname;
+               $result["qualifier"]=$qualifier;
+               $result["determineddate"]=$determineddate;
+               $result["remarks"]=$remarks;
+               $result["status"]="Success";
+               if ($statement->num_rows>1) {
+                  $result["status"]="Error";
+                  $result["errormessage"] = "More than one filed under determination found for this specimen, returned first.";
+               }
+            } else {
+               $result["status"]="Error";
+               $result["errormessage"]="Query Error " . $connection->error;
+            }
+         } else {
+            $result["status"]="NotFound";
+         }
+         $statement->free_result();
+         $statement->close();
+      } else {
+         $result["status"]="Error";
+         $result["errormessage"] = "Query error: " . $connection->error . " " . $sql;
+      }
+      return $result;
+   }
+
+
+
+}
+
 class huh_preptype_custom extends huh_preptype {
    public function keySelectDistinctJSON($field,$orderby='ASC') {
       // ******* Note: $connection must be a mysqli object.
@@ -611,6 +755,46 @@ class huh_preptype_custom extends huh_preptype {
 }
 
 class huh_taxon_CUSTOM extends huh_taxon {
+
+
+    /* Given the fullname for a taxon, lookup the taxonid.
+     *
+     * @param fullname to lookup
+     * @return taxonid, null if no exact matches
+     * @throw exception on a query error.
+     */
+    public static function lookupTaxonIdForName($fullname) { 
+       $taxonid = null;
+       $sql = "select taxonid from taxon where fullname = ? ";
+       $statement = $connection->prepare($sql);
+       if ($statement) {
+          $statement->bind_param("s",$filedundername);
+          $statement->execute();
+          $statement->bind_result($taxonid);
+          $statement->store_result();
+          if ($statement->num_rows==1) {
+              if ($statement->fetch()) {
+                 // retrieves taxonid
+              } else {
+                 $fail = true;
+                 $feedback.= "Query Error " . $connection->error;
+              }
+          } else {
+             $fail = true;
+             $feedback.= "No Match for taxon: " . $filedundername;
+          }
+          $statement->free_result();
+          $statement->close();
+       } else {
+          $fail = true;
+          $feedback.= "Query error: " . $connection->error . " " . $sql;
+       }
+       if ($fail===true) {
+           throw new Exception($feedback);
+       }
+       return $taxonid;
+    }
+
    /** Backing support for autocomplete, given a query term returns json containing taxonid as id  along with concatenated fullname and author as label and value.
     *
     *  @param term query term for like search on taxon.fullname.
@@ -808,7 +992,7 @@ class huh_container_custom extends huh_container {
 
 }
 
-class huh_collector_custom extends huh_collectingtrip {
+class huh_collector_custom extends huh_collector {
 
    /** Given a search term, obtain a list of matching agent names and agent ids for use as collectors.
     *
@@ -836,6 +1020,22 @@ class huh_collector_custom extends huh_collectingtrip {
          $stmt->close();
       }
       $returnvalue .= ']';
+      return $returnvalue;
+   }
+
+   public static function getCollectorVariantName($collectoragentid) { 
+      global $connection;
+      $returnvalue = "";
+      $sql = "select name from agentvariant where agentid = ? and vartype = 4 limit 1 ";
+      if ($statement = $connection->prepare($sql)) {
+         $statement->bind_param("i", $collectoragentid);
+         $statement->execute();
+         $statement->bind_result($name);
+         while ($statement->fetch()) { ;
+             $returnvalue = $name;
+         }
+         $statement->close();
+      }
       return $returnvalue;
    }
 
@@ -897,6 +1097,17 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 
 }
 
+/**
+ * Callback function for array_reduce to produce a string containing a
+ *  comma separated list of array elements from an array.  
+ *
+ * @see array_reduce in PHP documentation.
+ */
+function arrConcat($result,$item) { 
+   $result = "$result,$item";
+   return $result;
+}
+
 class huh_storage_custom extends huh_storage {
 
     public function keySelectDistinctJSONName($term) {
@@ -926,6 +1137,395 @@ class huh_storage_custom extends huh_storage {
 }
 
 
+class huh_image_set_custom extends huh_IMAGE_SET {
+
+    /**
+     * Given an image file, check to see if it contains a barcode, and if so
+     * create all needed IMAGE_BATCH, IMAGE_SET, IMAGE_OBJECT, IMAGE_LOCALFILE,
+     * and IMAGE_SET_collectionobject records to represent the file and link it
+     * to the relevant collection objects.
+     *
+     * @param filename the name of the file for which to create an image set.
+     * @param pathbelowbase path from BASE_IMAGE_PATH to the directory containing $filename
+     * @throws Exception 
+     */
+    public static function createImageSetFromLocalFile($pathbelowbase, $filename,$knownbarcode) { 
+       global $connection;  
+
+       $path = trim($pathbelowbase);
+       // IMAGE_LOCAL_FILE.path is expected to end with a /
+       if (substr($path,-1,1)!="/") {
+          $path = "$path/";
+       }
+       // IMAGE_LOCAL_FILE.path is expected to not start with a /
+       if (substr($path,0,1)=="/") {
+          $path = substr($path,1);
+       }
+       $imagelocalfileexists==false;
+       $sql = "select id, extension, mimetype, barcode from IMAGE_LOCAL_FILE where path = ? and filename = ? ";
+       $statement = $connection->prepare($sql);
+       if ($statement) {
+          $statement->bind_param("ss",$path,$filename);
+          $statement->execute();
+          $statement->store_result();
+          $statement->bind_result($imagelocalfileid, $extension,$mimetype,$barcode);
+          if ($statement->fetch()) {
+              $imagelocalfileexists=true;
+          }
+          $statement->free_result();
+          $statement->close();
+       } else {
+          $result.= "Query Error: " . $connection->error  . " ";
+          $error = true;
+       }
+
+       $pathfile = BASE_IMAGE_PATH.$path.$filename;
+       if (!$imagelocalfileexists) { 
+          $mimetype = mime_content_type($pathfile);
+          $extension = pathinfo($pathfile, PATHINFO_EXTENSION);
+          $imagefilesize = filesize($pathfile);
+       }
+       $bits = explode(".",$filename);
+       if ($bits && count($bits)>1) { 
+           //$extension = $bits[count($bits)];
+           $basefilename = substr($filename,0,strlen($filename)-strlen($extension));
+           $sizeArray = getimagesize($pathfile,$info);
+           $imageWidth = $sizeArray[0];
+           $imageHeight = $sizeArray[1];
+           $imageBits = $sizeArray['bits'];
+           $imagemimetype = image_type_to_mime_type($sizeArray[2]);
+           $iptc_creation_date = null;
+           if (isset($info["APP13"])) {
+               $iptc = iptcparse($info["APP13"]);
+               if (is_array($iptc)) {
+                  $iptc_creation_date = $iptc["2#055"][0]; 
+               }
+           }
+       } else { 
+           throw new Exception("Provided filename does not have an extension." . $filename);
+       }
+       $date=null;
+       $ok = FALSE;
+       $errormessage = "";
+       if (file_exists($pathfile)) { 
+          $imagetype = exif_imagetype($pathfile);
+          $exif = exif_read_data($pathfile,"FILE");
+          if ($exif!==FALSE) {  
+             // obtain the exif file creation of the file to use at the batch production date
+             $dateraw = $exif['FILE']['FileDateTime'];
+             $date = date_create_from_format("U",$dateraw);
+          }
+          if ($date==null) { 
+             if ($iptc_creation_date!=null) { 
+                 $date = $iptc_creation_date;
+             } else {
+                 // failover to the inode change time of the file to use as the batch production date if no available exif date.
+                 $date = date_create_from_format("U",filectime($pathfile));
+             }
+          }
+          $barcodes = array();
+          if ($knownbarcode!=null && strlen(trim($knownbarcode))>0) { 
+             $barcodes[] = $knownbarcode;
+             $ok = TRUE;
+          } else { 
+             // check for barcode(s)
+             $barcodes = ImageHandler::checkFileForBarcodes($pathfile);
+          }
+   
+          // look up collection objects associated with barcodes found
+          if (count($barcodes)==0) { 
+               $errormessage = "No Barcodes found in image";
+          } else { 
+               $ok = TRUE;
+               // array where key is a barcode number and value is an array of catalognumberid values associated with that barcode.
+               $barcodemapping = array();
+               foreach($barcodes as $barcode) { 
+                   $barcode = trim($barcode);
+                   $cid = array();
+                   $sql = "select distinct collectionobjectid from fragment left join preparation on fragment.preparationid = preparation.preparationid where fragment.identifier = ? or preparation.identifier = ?";
+                   if ($stmt = $connection->prepare($sql)) {
+                        $ibarcode = intval($barcode);
+                        $stmt->bind_param("ii",$ibarcode,$ibarcode);
+                        $stmt->execute();
+                        $stmt->bind_result($collectionobjectid);
+                        while ($stmt->fetch()) {
+                             $cid[]=$collectionobjectid;
+                        }
+                        $stmt->close();
+                   } else {  
+                       throw new Exception("Error Preparing SQL statement." . $connection->error);
+                   }
+                   $barcodemapping[$barcode]=$cid;
+               }
+          }
+         
+       } else { 
+          $errormessage .= "File Not Found";
+       }
+       
+       if ($ok) { 
+          // check to see if an image batch exists for the path
+          // IMAGE_BATCH.batch_name is the path to the file from base with : as separators.
+          // except for cases of NEVP ingest where the batch is a uuid, or orchids where it is a DRS identifier.
+          if (!substr($path,0)=='/') { $path = "/$path"; } 
+          if (!substr($path,-1)=='/') { $path = "$path/"; } 
+          $batch = str_replace("/",":",$path);
+     
+          $batchExists = null;
+          $sql = "select id from IMAGE_BATCH where batch_name = ? ";
+          if ($stmt = $connection->prepare($sql)) {
+               $stmt->bind_param("s", $batch);
+               $stmt->execute();
+               $stmt->bind_result($id);
+               if ($stmt->num_rows==1) {
+                  if ($stmt->fetch()) {
+                     $batchid = $id; 
+                     $batchExists=TRUE;
+                  }
+               } elseif ($stmt->num_rows==0) {
+                  $batchExists = FALSE;
+               }
+               $stmt->close();
+          } else {  
+              throw new Exception("Error Preparing SQL statement." . $connection->error);
+          }
+          if ($batchExists===null) { 
+              throw new Exception("Error looking up unique IMAGE_BATCH.batch_name: " . $batch);
+          } 
+          if ($batchExists===FALSE) { 
+             $sql = "insert into IMAGE_BATCH (LAB_ID, PRODUCTION_DATE, BATCH_NAME) values (?, ?, ?)";
+             $lab_id = 2; // HUH Imaging Lab, could use 4=unknown.
+             $production_date = date_format($date,"Y-m-d");
+             if ($stmt = $connection->prepare($sql)) {
+                 $stmt->bind_param("iss", $lab_id, $production_date, $batch);
+                 $stmt->execute();
+                 $batchid = $stmt->insert_id;
+                 $stmt->close();
+             } else {  
+                 throw new Exception("Error Preparing SQL statement." . $connection->error);
+             }
+          }
+   
+          // check to see if an image local file exists with the path and filename
+
+          $imagelocalfileExists=null;
+          $sql = "select id, barcode, fragmentid from IMAGE_LOCAL_FILE where path = ? and filename = ? ";
+          if ($stmt = $connection->prepare($sql)) {
+               $stmt->bind_param("ss", $path, $filename);
+               $stmt->execute();
+               $stmt->bind_result($imagelocalfileid,$imagelocalfilebarcode,$fragmentid); 
+               $stmt->store_result();
+               if ($stmt->fetch()) {
+                  $imagelocalfileExists=TRUE;
+               }
+               if ($stmt->num_rows==0) {
+                  $imagelocalfileExists = FALSE;
+               } elseif ($stmt->num_rows > 1) {
+                   throw new Exception("More than one matching IMAGE_LOCAL_FILE found for $path$filename");
+               }  
+               $stmt->close();
+          } else {
+              throw new Exception("Error Preparing SQL statement." . $connection->error);
+          }
+          if ($imagelocalfileExists===FALSE)  {
+              $sql = "insert into IMAGE_LOCAL_FILE (base, path, filename, extension, barcode, mimetype, fragmentid) values (?,?,?,?,?,?,?)";
+              if ($stmt = $connection->prepare($sql)) {
+                  $bc = array_reduce($barcodes,"arrConcat");
+                  $stmt->bind_param("ssssssi", BASE_IMAGE_PATH, $path, $filename, $extension, $bc,$mimetype,null);
+                  $stmt->execute();
+                  $imagelocalfileid = $stmt->insert_id;
+                  $stmt->close();     
+               } else {
+                  throw new Exception("Error Preparing SQL statement." . $connection->error);
+              }
+          }
+
+
+   
+          // look for derivative files in the same (or sub) directory.
+          // TODO: Possibly? 
+   
+          $image_object_id = null;
+          $image_set_id = null;
+          // check for image objects matching files
+          $sql = "select id, object_name, image_local_file_id, object_type_id, image_set_id from IMAGE_OBJECT where object_name = ? ";
+          if ($stmt = $connection->prepare($sql)) {
+              $localpathfile = "$path$filename";
+              $stmt->bind_param("s",$localpathfile);
+              $stmt->execute();
+              $stmt->bind_result($image_object_id, $object_name, $image_local_file_id, $object_type_id, $image_set_id);
+              $stmt->store_result();
+              if ($stmt->num_rows==0) { 
+                 // no matches found, will need to add an image object, but image set might exist.  Remove extension and check if tiff, png, dng, etc exists.
+                 $sql = "select distinct image_set_id from IMAGE_OBJECT where object_name like ? ";
+                 if ($stmt2 = $connection->prepare($sql)) {
+                    $objectpathfile = "$path$filename";
+                    $objectpathfile = substr($objectpathfile,0,strrpos($objectpathfile,".")); 
+                    $stmt2->bind_param("s",$objectpathfile);
+                    $stmt2->execute();
+                    $stmt2->bind_result($image_set_id);
+                    $stmt2->store_result();
+                    if ($stmt2->num_rows==0) { 
+                        // create image set, as we didn't find an image object that let us find the image set.
+                        $owner = "Harvard University Herbaria";
+                        $year = date("Y");
+                        $access_type_id = "114301";
+                        $source_type_id = "114101";
+                        $copyright = "Copyright © $year President and Fellows of Harvard College";
+                        $sql = "insert into IMAGE_SET (batch_id,access_type_id,source_type_id,active_flag,owner, copyright) values (?,?,?,1,?,?) ";
+                        if ($stmt3 = $connection->prepare($sql)) { 
+                            $stmt3->bind_param("iiiss",$batchid, $access_type_id,$source_type_id,$owner,$copyright);
+                            $stmt3->execute();
+                            $image_set_id = $stmt3->insert_id;
+                            $stmt3->close();
+                        } else { 
+                            throw new Exception("Error Preparing SQL statement." . $connection->error);
+                        }
+                    } else { 
+                       while ($stmt2->fetch()) { 
+                          // report more than one image set? 
+                       }
+                    }
+                    $stmt2->free_result();
+                    $stmt2->close();
+                 } else { 
+                    throw new Exception("Error Preparing SQL statement." . $connection->error);
+                 }
+                 // add image object record  
+                 if ($image_object_id ==null) { 
+                    $sql = "insert into IMAGE_OBJECT (image_set_id, object_type_id,repository_id,compression_id,mime_type_id,bits_per_sample_id,photo_interp_id,active_flag,altered_flag,in_process_flag,pixel_width,pixel_height,create_date,file_size,object_name,color_target_id,barcodes,image_local_file_id,hidden_flag) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    if ($stmt2 = $connection->prepare($sql)) {
+                       $object_type_id = 4;
+                       // 1 tiff
+                       // 2 thumb jpeg
+                       // 3 half jpeg
+                       // 4 full jpeg
+                       // 5 Page turned object
+                       // 6 jpeg2000
+                       // 7 digital negative
+                       $repository_id = 5;
+                       $compression_id = 114801; 
+                       if ($imagemimetype=='image/jpeg') { 
+                          $mime_type_id = 114601;
+                          $compression_id = 114802;  // jpeg compression  
+                       }
+                       if ($imagemimetype=='image/tiff') { $mime_type_id = 114602; }
+                       if ($imagemimetype=='image/jpeg2000') { $mime_type_id = 114603; }
+                       if ($imagemimetype=='image/x-adobe-dng') { $mime_type_id = 114604; }
+                       $bits_per_sample_id = 114704 ;  // failover, guess as RGB
+                       if ($imageBits==24) { $bits_per_sample_id = 114704; }
+                       if ($imageBits==32) { $bits_per_sample_id = 114705; }
+                       if ($imageBits==48) { $bits_per_sample_id = 114706; } 
+
+                       $photo_interp_id = 114101; // specimen photo
+                       $active_flag = 1;
+                       $altered_flag = 0;
+                       $in_process_flag = 0;
+                       $pixel_width = $imageWidth;
+                       $pixel_height = $imageHeight;
+                       if ($date instanceof DateTime) { 
+                           $create_date = $date->format("Y-m-d");
+                       } else { 
+                           $create_date = "$date";
+                       }
+                       $file_size = $imagefilesize;
+                       $object_name = "$path$filename";
+                       $color_target_id = 116101;
+                       $barcodes = $barcodes;
+                       $image_local_file_id = #imagelocalfileid;
+                       $hidden_flag = 0;
+
+                       $stmt2->bind_param("iiiiiiiiiiiisssisii",$image_set_id,$object_type_id,$repository_id,$compression_id,$mime_type_id,$bits_per_sample_id,$photo_interp_id,$active_flag,$altered_flag,$in_process_flag,$pixel_width,$pixel_height,$create_date,$file_size,$object_name,$color_target_id,$barcodes,$image_local_file_id,$hidden_flag);
+                       $stmt2->execute();
+                       $image_object_id = $stmt2->insert_id;
+                       $stmt2->close();
+                    } else { 
+                       throw new Exception("Error Preparing SQL statement." . $connection->error);
+                    }
+                 }
+              }
+              while($stmt->fetch()) { 
+                 if ($image_local_file_id==null || $image_local_file_id=="") { 
+                    $sql = "update IMAGE_OBJECT set image_local_file_id = ? where id = ? and image_local_file_id is null ";
+                    if($stmt1 = $connection->prepare($sql)) { 
+                        $stmt1->bind_param("ii",$imagelocalfileid,$image_object_id);
+                        $stmt1->execute();
+                        $stmt1->close();
+                    } else {
+                       throw new Exception("Error Preparing SQL statement." . $connection->error);
+                    }
+                 }
+              }
+              $stmt->free_result();
+              $stmt->close();
+          } else {
+             throw new Exception("Error Preparing SQL statement." . $connection->error);
+          }
+
+   
+   
+          // check for image set collection object relations 
+          // create image set collection object relations from barcodes
+          foreach ($barcodemapping as $barcode => $collobjids) { 
+              foreach ($collobjids as $collobjectid) { 
+                  $foundFragment = false;
+                  $sql = "select collectionobjectid from fragment where identifier = ?";
+                  if ($stmt = $connection->prepare($sql)) { 
+                      $stmt->bind_param('s', $barcode);
+                      $stmt->execute();
+                      $stmt->bind_result($collectionobjectid);
+                      $stmt->store_result();
+                      if ($stmt->fetch) { 
+                         $foundFragment = true;
+                      }
+                      $stmt->free_result;
+                      $stmt->close(); 
+                  } else {
+                     throw new Exception("Error Preparing SQL statement." . $connection->error);
+                  }
+                  $foundrelation = false;
+                  $sql = "select count(*) from IMAGE_SET_collectionobject where collectionobjectid = ? and imagesetid = ? ";
+                  if ($foundFragment===true) { 
+                     if ($stmt = $connection->prepare($sql)) { 
+                         $stmt->bind_param('ii', $collectionobjectid,$image_set_id);
+                         $stmt->execute();
+                         $stmt->bind_result($relct);
+                         $stmt->store_result();
+                         if ($stmt->fetch) { 
+                            if ($relct>0) { 
+                               $foundrelation = true;
+                            }
+                         } else { 
+                            throw new Exception("Error fetching count." . $connection->error);
+                         }
+                         $stmt->free_result;
+                         $stmt->close(); 
+                     } else {
+                        throw new Exception("Error Preparing SQL statement." . $connection->error);
+                     }
+                  }
+                  $sql = "insert into IMAGE_SET_collectionobject (collectionobjectid, imagesetid) values (?,?) ";
+                  if ($foundFragment===true && $foundrelation===false) { 
+                     if ($stmt = $connection->prepare($sql)) { 
+                         $stmt->bind_param('ii', $collectionobjectid,$image_set_id);
+                         $stmt->execute();
+                         $stmt->free_result;
+                         $stmt->close(); 
+                     } else {
+                        throw new Exception("Error Preparing SQL statement." . $connection->error);
+                     }
+                  }
+              }
+          }
+
+   
+       } else { 
+            throw new Exception("Error: " . $errormessage);
+       }
+
+    } // end function
+
+} // end class
 
 class huh_project_custom extends huh_project {
 
@@ -2281,7 +2881,7 @@ function ingestCollectionObject() {
             $sql = "select distinct agentid from agent where agentid = ? ";
             $param = "i";
          } else {
-            $sql = "select distinct agentid from agentvariant where fullname = ? and vartype = 4 ";
+            $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
             $param = "s";
          }
          $statement = $connection->prepare($sql);
