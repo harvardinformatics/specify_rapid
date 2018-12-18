@@ -322,7 +322,7 @@ function doSetup() {
    echo "<h3>The Barcode field has unexpected properties.</h3><ul>";
    echo "<li>When a barcode is known for an image, the barcode field will be disabled.</li>";
    echo "<li>When no barcode is known for an image, the barcode field will be enabled and empty.</li>";
-   echo "<li>When the enabled barcode field looses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
+   echo "<li>When the enabled barcode field loses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
    echo "<li>When multiple barcodes are present in an image, you can save one record, click the delta button next to the barcode field to make it editable, and enter another barcode that is present on the sheet, along with its data.</li>";
    echo "</ul></div>";
 }

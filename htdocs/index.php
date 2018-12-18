@@ -7,6 +7,7 @@
 <ul>
 <li><a href='rapid.php?display=logout'>Login</a> to Rapid data entry </li>
 <li><a href='utility.php?display=logout'>Login</a> to Utilities (show relationships, merge preparations)</li>
+<li><a href='transcribe.php?display=logout'>Login</a> to Transcription application </li>
 </ul>
 </body>
 </html>
