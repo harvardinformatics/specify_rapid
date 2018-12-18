@@ -4,8 +4,12 @@
 // and password to fit local configuration.
 
 
-define("BASE_IMAGE_PATH","/var/www/");
-define("BASE_IMAGE_URI","http://localhost/");
+define("BASE_IMAGE_PATH","/var/www/");  // base for retrieving image files, substitute for base_image_uri on local filesystem, must end with /
+define("BASE_IMAGE_URI","http://localhost/");  // IRI for retrieving image files, substitute for base_image_path for web access
+
+define("PHPINCPATH","/var/www/phpincludes/");  // include location for php zxing library
+
+define("BATCHPATH","");  // path below BASE_IMAGE in which batches can be found, if left as "" then batches may be anywhere under BASE_IMAGE_PATH, must end with /
 
 $debug = false;
 

@@ -1,9 +1,8 @@
 <?php
 
-define("BASE_IMAGE_PATH","/var/www/htdocs/");
-// define("PHPINCPATH","/var/phpincludes/");
-define("PHPINCPATH","/var/www/phpincludes/");
-
+include_once("connection_library.php");
+// PHPINCPATH must be defined in connnection_libary.php.
+// PHPZxing library must be installed at the PHPINCPATH
 
 include_once(PHPINCPATH."php-zxing/src/PHPZxing/PHPZxingBase.php");
 include_once(PHPINCPATH."php-zxing/src/PHPZxing/PHPZxingDecoder.php");
@@ -42,6 +41,7 @@ class ImageHandler {
           $path = substr($path,1);
       }
 
+      // BASE_IMAGE_PATH must be defined in connection_library.php
       $dir = BASE_IMAGE_PATH.$path;
       if (file_exists($dir)) { 
          try { 

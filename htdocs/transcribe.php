@@ -10,7 +10,6 @@ include_once("imagehandler.php");
 define("ENABLE_DUPLICATE_FINDING",TRUE);
 define("BASEWIDTH",21);  // em for width of form fields
 
-
 $error = "";
 $targethostdb = "Not Set";
 if (!function_exists('specify_connect')) {
@@ -120,8 +119,26 @@ function fileCount($dir) {
    }
    return $filecount;
 } 
+function jpgCount($dir) { 
+   $files = scandir($dir,SCANDIR_SORT_ASCENDING);
+   $filecount = 0;
+   foreach ($files as $file) { 
+         if (substr($dir,-1,1)=="/") { 
+             $pathfile = $dir.$file;
+         } else {
+             $pathfile = $dir.'/'.$file;
+         }
+         if (is_file($pathfile) && substr($file,0,1)!=".") { 
+            if ( (substr(strtoupper($file), -strlen('JPEG')) === 'JPEG') || (substr(strtoupper($file), -strlen('JPG')) === 'JPG')   ) {
+                $filecount++;
+            }
+         }
+   }
+   return $filecount;
+} 
 function dirList($dir,$depth) { 
-   if ($depth>4) { return; } 
+   global$connection;
+   if ($depth>5) { return; } 
    echo "<ul>";
    $files = scandir($dir,SCANDIR_SORT_ASCENDING);
    foreach ($files as $file) { 
@@ -131,8 +148,31 @@ function dirList($dir,$depth) {
              $pathfile = $dir.'/'.$file;
          }
          if (is_dir($pathfile) && substr($file,0,1)!=".") { 
-            $filecount = fileCount($pathfile);
-            echo "<li>$file ($filecount) <input type='button' class='processButton ui-button' type='button' onclick=' processBatch(\"$pathfile\"); ' value='Process' /></li>";
+            $pathbelowbase = substr($pathfile,strlen(BASE_IMAGE_PATH))."/";
+            $sql = "select isnull(completed_date) notdone, completed_date, tr_batch_id from TR_BATCH where path = ? ";
+            $stmt = $connection->prepare($sql);
+            $stmt->bind_param("s",$pathbelowbase);
+            $stmt->execute();
+            $stmt->bind_result($notdone,$completed_date,$tr_batch_id);
+            $stmt->store_result();
+            if ($stmt->fetch()) { 
+                $exists = true;
+            } 
+            if ($stmt->num_rows()==0) { 
+                $exists = false;
+            }
+            $filecount = jpgCount($pathfile);
+            echo "<li>$file ($filecount jpegs) ";
+            if ($exists===false) { 
+                if ($filecount>0) { 
+                   echo " <input type='button' class='processButton ui-button' type='button' onclick=' processBatch(\"$pathfile\"); ' value='Process' />";
+                }
+            } else { 
+                if ($notdone==1) { echo " Batch prepared for transcription. "; } else { echo " completed $completed_date "; } 
+            }
+            echo "</li>";
+            $stmt->free_result();
+            $stmt->close();
             dirList("$pathfile/",$depth+1);
          }
    }
@@ -176,7 +216,7 @@ function doPrepareBatch() {
    echo "<div id='directorytree'>";
    // TODO: Setup for production
    // dirList(BASE_IMAGE_PATH."/",1);   
-   dirList(BASE_IMAGE_PATH."huh_images/",1);  // for testing
+   dirList(BASE_IMAGE_PATH.BATCHPATH,1);  // for testing
    echo "</div>";
 }
 
@@ -194,12 +234,16 @@ function doSetup() {
    $position = $targetBatch->position + 1;
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
-   echo " <strong>Batch: [$targetBatch->path]</strong>";
-   echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
-   if ($position > 1) { 
-        echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+   if ($targetBatch->path ==null || strlen($targetBatch->path)==0) { 
+       echo " <strong>No Current Batch.</strong>";
+   } else { 
+      echo " <strong>Batch: [$targetBatch->path]</strong>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+      if ($position > 1) { 
+           echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+      }
+      echo " First File: [$targetBatch->filename]";
    }
-   echo " First File: [$targetBatch->filename]";
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
@@ -253,6 +297,34 @@ function doSetup() {
    echo "<input type='hidden' id='display' name='display' value='preparebatch'>";
    echo "<button type='submit' value='Pick Batch' class='ui-button'>Prepare New Batch</button>";
    echo "</form></div>";
+   echo "<div>";
+   if (!defined("BASE_IMAGE_PATH")) { 
+       echo "<h3>Error: BASE_IMAGE_PATH must be defined in connection_library.php</h3>";
+   }
+   if (!defined("BATCHPATH")) { 
+       echo "<h3>Error: BATCHPATH must be defined in connection_library.php</h3>";
+   }
+   if (!defined("PHPINCPATH")) { 
+       echo "<h3>Error: PHPINCPATH must be defined in connection_library.php</h3>";
+   }
+   echo "<h3>Some design Assumptions of this application:</h3><ul>";
+   echo "<li>Data is being transcribed into database fields off of labels in herbarium sheet images.</li>";
+   echo "<li>Users have dual monitors and are using Firefox.</li>";
+   echo "<li>Barcodes identify items, barcoded preparations are not supported.</li>";
+   echo "<li>Database records for specimens and images may or may not exist prior to transcription.</li>";
+   echo "<li>Not all images are of herbarium sheets (some are of covers)</li>";
+   echo "<li>When image files are sorted in by their filename, this sort produces the correct sequence of images for transcription.</li>";
+   echo "<li>One directory contains one batch of work, and can be pre-processed to check image files for barcodes.</li>";
+   echo "<li>Saving a record saves both specimen and image records into the database.</li>";
+   echo "<li>Taxon and higher geography records exist or will be entered by users through Specify-HUH.</li>";
+   echo "<li>Saving identifications when identifications already exist in the database will add new identifications unless the existing identifications appear to have been entered through this application.</li>";
+   echo "</ul>";
+   echo "<h3>The Barcode field has unexpected properties.</h3><ul>";
+   echo "<li>When a barcode is known for an image, the barcode field will be disabled.</li>";
+   echo "<li>When no barcode is known for an image, the barcode field will be enabled and empty.</li>";
+   echo "<li>When the enabled barcode field looses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
+   echo "<li>When multiple barcodes are present in an image, you can save one record, click the delta button next to the barcode field to make it editable, and enter another barcode that is present on the sheet, along with its data.</li>";
+   echo "</ul></div>";
 }
 
 function target() {
@@ -277,7 +349,6 @@ function target() {
        while ($statement->fetch()) {
          $result->barcode = $barcode;
          $media = imageDataForBarcode($barcode);
-echo "[$media->image_set_id]";
          $mediauri = $media->url;
          $mediaid = $media->image_set_id;
          $height = $media->pixel_height;
