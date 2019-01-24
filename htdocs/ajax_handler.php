@@ -137,7 +137,7 @@ if ($connection && $authenticated) {
             $truncation = false;
             $truncated = "";
         	@$collectors= substr(preg_replace('/[^0-9]/','',$_GET['collectors']),0,huh_agentvariant::NAME_SIZE);
-        	@$etal= substr(preg_replace('/[^A-Za-z&\, \.0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
+        	@$etal= substr(preg_replace('/[^A-Za-z&\, \.\[\]0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
         	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
         	@$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
         	@$verbatimdate= substr(preg_replace('/[^A-Za-z:\- \/\.\,\:\;0-9\[\]\&\']/','',$_GET['verbatimdate']),0,huh_collectingevent::VERBATIMDATE_SIZE);
