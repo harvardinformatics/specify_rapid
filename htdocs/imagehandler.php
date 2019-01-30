@@ -62,9 +62,9 @@ class ImageHandler {
       $decoder = new PHPZxingDecoder($config);
       $decoder->setJavaPath(JAVA_EXE);
 
-      if (!$error) {
       $addedfilecount = 0;
       $updatedfilecount = 0;
+      if (!$error) {
       foreach ($files as $file) {
          $pathfile = $dir.$file;
          if (is_file($pathfile)) {
