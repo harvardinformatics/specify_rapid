@@ -22,9 +22,16 @@
     </Directory>
 
     ErrorLog /dev/stderr
-    SetEnv ENCRYPTION_JAR=/var/php/includes/Encryption.jar
-    SetEnv BASE_IMAGE_PATH=/var/base_image_path/
-    SetEnv BATCHPATH=/var/batch_path/
+    PassEnv BASE_IMAGE_PATH
+    PassEnv BASE_IMAGE_URI
+    PassEnv ENCRYPTION_JAR
+    PassEnv JAVA_EXE
+    PassEnv BATCHPATH
+    PassEnv PHPINCPATH
+    PassEnv SPECIFY_USERNAME
+    PassEnv SPECIFY_PASSWORD
+    PassEnv SPECIFY_DATABASE
+    PassEnv SPECIFY_HOSTNAME
 
     # Possible values include: debug, info, notice, warn, error, crit,
     # alert, emerg.
