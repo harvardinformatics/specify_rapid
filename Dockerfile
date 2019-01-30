@@ -4,8 +4,11 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN echo 'America/New_York' > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata && apt-get update && apt-get install default-jre git unzip -y
 
+RUN groupadd -g 402623 huh && useradd -u 12807 huhimageproc -g huh
 RUN a2enmod php5 && \
     sed -i -e 's?ErrorLog.*?ErrorLog /dev/stderr?' /etc/apache2/apache2.conf && \
+    sed -i -e 's?export APACHE_RUN_USER=.*?export APACHE_RUN_USER=huhimageproc?' /etc/apache2/envvars && \
+    sed -i -e 's?export APACHE_RUN_GROUP=.*?export APACHE_RUN_GROUP=huh?' /etc/apache2/envvars && \
     printf "display_error = stderr\nerror_log = /dev/stderr\n" > /etc/php5/apache2/conf.d/20-logging.ini && \
     sed -i -e 's?;include_path = ".:/usr/share/php"?include_path = ".:/var/php/includes:/var/php/includes/specify_web:/usr/share/php"?' /etc/php5/apache2/php.ini && \
     printf "date.timezone = \"America/New_York\"\n" >> /etc/php5/apache2/php.ini && \
