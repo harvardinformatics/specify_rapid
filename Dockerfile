@@ -19,7 +19,7 @@ ADD dojo /var/www/dojo
 ADD jquery /var/www/jquery
 
 EXPOSE 80
-ENV PHPINCPATH=/var/php/includes \
+ENV PHPINCPATH=/var/php/includes/ \
     JAVA_EXE=/usr/bin/java \
     ENCRYPTION_JAR=/var/php/includes/Encryption.jar \
     BASE_IMAGE_PATH=/var/www/images/ \
