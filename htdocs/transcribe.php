@@ -406,7 +406,7 @@ function targetfile($path,$filename) {
    $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
    $result->medialink = $medialink;
 
-   $barcode = ImageHandler::checkFilenameForBarcode($path,$filename,$false);
+   $barcode = ImageHandler::checkFilenameForBarcode($path,$filename,false);
    $result->barcode = $barcode;
 
    // TODO: Lookup barcode image height, image width from path and filename.
