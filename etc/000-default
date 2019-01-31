@@ -1,0 +1,43 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+
+    DocumentRoot /var/www
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+    <Directory /var/www/>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+    <Directory "/usr/lib/cgi-bin">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ErrorLog /dev/stderr
+    PassEnv BASE_IMAGE_PATH
+    PassEnv BASE_IMAGE_URI
+    PassEnv ENCRYPTION_JAR
+    PassEnv JAVA_EXE
+    PassEnv BATCHPATH
+    PassEnv PHPINCPATH
+    PassEnv SPECIFY_USERNAME
+    PassEnv SPECIFY_PASSWORD
+    PassEnv SPECIFY_DATABASE
+    PassEnv SPECIFY_HOSTNAME
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    AddHandler php5-script .html
+
+</VirtualHost>

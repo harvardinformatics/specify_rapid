@@ -8,7 +8,7 @@ include_once("connection_library.php");
 include_once("druid_classes.php");
 
 /** Data structure to describe information about images **/
-class ImageReturn { 
+class ImageReturn {
    public $image_set_id;
    public $url ;
    public $pixel_width ;
@@ -227,6 +227,7 @@ class User {
 
                $decryptedPassword = shell_exec($exec);
                if (trim($decryptedPassword)==trim($this->password)) {
+
                   $preparesql = 'SELECT  specifyuser.timestampcreated,   specifyuser.TimestampModified,
      		    	     	concat(agent.firstname, \' \', agent.lastname),
      		    	     	specifyuser.LoginOutTime, specifyuser.UserType, agent.agentid
@@ -551,24 +552,24 @@ class DateRangeWithPrecision {
 class huh_determination_custom extends huh_determination {
 
    /**
-    * Is an array of values returned by lookupCurrentDetermination/lookupFiledUnderDetermination 
+    * Is an array of values returned by lookupCurrentDetermination/lookupFiledUnderDetermination
     * consistent with data entry through the transcription application (should transcribe do update or insert).
-    * 
+    *
     * @param det an array of key/value pairs as returned by lookupCurrentDetermination.
     * @return boolean, true if not a type, and data not caputured as the determiner, false otherwise.
     */
-   public static function consistentWithTranscribeCapture($det) { 
+   public static function consistentWithTranscribeCapture($det) {
       $result = false;
-      if (strlen($det["typestatusname"])==0 
-          && ($det["determinertext"]=="[data not captured]" || $det["determinertext"]=="") 
+      if (strlen($det["typestatusname"])==0
+          && ($det["determinertext"]=="[data not captured]" || $det["determinertext"]=="")
           && strlen($det["determineddate"])==0
-         ) { 
+         ) {
          $result = true;
       }
       return $result;
    }
 
-   public static function countDeterminations($fragmentid) { 
+   public static function countDeterminations($fragmentid) {
       global $connection;
       $result = 0;
 
@@ -579,20 +580,20 @@ class huh_determination_custom extends huh_determination {
          $statement->execute();
          $statement->bind_result($count);
          $statement->store_result();
-         if ($statement->fetch()) { 
+         if ($statement->fetch()) {
              $result = $count;
-         } else { 
+         } else {
              throw new Exception('Error: no records in count(*) query.');
          }
          $statement->free_result();
          $statement->close();
-      } else { 
+      } else {
          throw new Exception('Error preparing statement' . $connection->error);
       }
       return $result;
    }
 
-   public static function lookupCurrentDetermination($fragmentid) { 
+   public static function lookupCurrentDetermination($fragmentid) {
       global $connection;
       $result = array();
       $result["status"]="NotRun";
@@ -763,7 +764,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
      * @return taxonid, null if no exact matches
      * @throw exception on a query error.
      */
-    public static function lookupTaxonIdForName($fullname) { 
+    public static function lookupTaxonIdForName($fullname) {
        $taxonid = null;
        $sql = "select taxonid from taxon where fullname = ? ";
        $statement = $connection->prepare($sql);
@@ -1023,7 +1024,7 @@ class huh_collector_custom extends huh_collector {
       return $returnvalue;
    }
 
-   public static function getCollectorVariantName($collectoragentid) { 
+   public static function getCollectorVariantName($collectoragentid) {
       global $connection;
       $returnvalue = "";
       $sql = "select name from agentvariant where agentid = ? and vartype = 4 limit 1 ";
@@ -1099,11 +1100,11 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 
 /**
  * Callback function for array_reduce to produce a string containing a
- *  comma separated list of array elements from an array.  
+ *  comma separated list of array elements from an array.
  *
  * @see array_reduce in PHP documentation.
  */
-function arrConcat($result,$item) { 
+function arrConcat($result,$item) {
    $result = "$result,$item";
    return $result;
 }
@@ -1147,10 +1148,10 @@ class huh_image_set_custom extends huh_IMAGE_SET {
      *
      * @param filename the name of the file for which to create an image set.
      * @param pathbelowbase path from BASE_IMAGE_PATH to the directory containing $filename
-     * @throws Exception 
+     * @throws Exception
      */
-    public static function createImageSetFromLocalFile($pathbelowbase, $filename,$knownbarcode) { 
-       global $connection;  
+    public static function createImageSetFromLocalFile($pathbelowbase, $filename,$knownbarcode) {
+       global $connection;
 
        $path = trim($pathbelowbase);
        // IMAGE_LOCAL_FILE.path is expected to end with a /
@@ -1180,13 +1181,13 @@ class huh_image_set_custom extends huh_IMAGE_SET {
        }
 
        $pathfile = BASE_IMAGE_PATH.$path.$filename;
-       if (!$imagelocalfileexists) { 
+       if (!$imagelocalfileexists) {
           $mimetype = mime_content_type($pathfile);
           $extension = pathinfo($pathfile, PATHINFO_EXTENSION);
           $imagefilesize = filesize($pathfile);
        }
        $bits = explode(".",$filename);
-       if ($bits && count($bits)>1) { 
+       if ($bits && count($bits)>1) {
            //$extension = $bits[count($bits)];
            $basefilename = substr($filename,0,strlen($filename)-strlen($extension));
            $sizeArray = getimagesize($pathfile,$info);
@@ -1198,25 +1199,25 @@ class huh_image_set_custom extends huh_IMAGE_SET {
            if (isset($info["APP13"])) {
                $iptc = iptcparse($info["APP13"]);
                if (is_array($iptc)) {
-                  $iptc_creation_date = $iptc["2#055"][0]; 
+                  $iptc_creation_date = $iptc["2#055"][0];
                }
            }
-       } else { 
+       } else {
            throw new Exception("Provided filename does not have an extension." . $filename);
        }
        $date=null;
        $ok = FALSE;
        $errormessage = "";
-       if (file_exists($pathfile)) { 
+       if (file_exists($pathfile)) {
           $imagetype = exif_imagetype($pathfile);
           $exif = exif_read_data($pathfile,"FILE");
-          if ($exif!==FALSE) {  
+          if ($exif!==FALSE) {
              // obtain the exif file creation of the file to use at the batch production date
              $dateraw = $exif['FILE']['FileDateTime'];
              $date = date_create_from_format("U",$dateraw);
           }
-          if ($date==null) { 
-             if ($iptc_creation_date!=null) { 
+          if ($date==null) {
+             if ($iptc_creation_date!=null) {
                  $date = $iptc_creation_date;
              } else {
                  // failover to the inode change time of the file to use as the batch production date if no available exif date.
@@ -1224,22 +1225,22 @@ class huh_image_set_custom extends huh_IMAGE_SET {
              }
           }
           $barcodes = array();
-          if ($knownbarcode!=null && strlen(trim($knownbarcode))>0) { 
+          if ($knownbarcode!=null && strlen(trim($knownbarcode))>0) {
              $barcodes[] = $knownbarcode;
              $ok = TRUE;
-          } else { 
+          } else {
              // check for barcode(s)
              $barcodes = ImageHandler::checkFileForBarcodes($pathfile);
           }
-   
+
           // look up collection objects associated with barcodes found
-          if (count($barcodes)==0) { 
+          if (count($barcodes)==0) {
                $errormessage = "No Barcodes found in image";
-          } else { 
+          } else {
                $ok = TRUE;
                // array where key is a barcode number and value is an array of catalognumberid values associated with that barcode.
                $barcodemapping = array();
-               foreach($barcodes as $barcode) { 
+               foreach($barcodes as $barcode) {
                    $barcode = trim($barcode);
                    $cid = array();
                    $sql = "select distinct collectionobjectid from fragment left join preparation on fragment.preparationid = preparation.preparationid where fragment.identifier = ? or preparation.identifier = ?";
@@ -1252,25 +1253,25 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                              $cid[]=$collectionobjectid;
                         }
                         $stmt->close();
-                   } else {  
+                   } else {
                        throw new Exception("Error Preparing SQL statement." . $connection->error);
                    }
                    $barcodemapping[$barcode]=$cid;
                }
           }
-         
-       } else { 
+
+       } else {
           $errormessage .= "File Not Found";
        }
-       
-       if ($ok) { 
+
+       if ($ok) {
           // check to see if an image batch exists for the path
           // IMAGE_BATCH.batch_name is the path to the file from base with : as separators.
           // except for cases of NEVP ingest where the batch is a uuid, or orchids where it is a DRS identifier.
-          if (!substr($path,0)=='/') { $path = "/$path"; } 
-          if (!substr($path,-1)=='/') { $path = "$path/"; } 
+          if (!substr($path,0)=='/') { $path = "/$path"; }
+          if (!substr($path,-1)=='/') { $path = "$path/"; }
           $batch = str_replace("/",":",$path);
-     
+
           $batchExists = null;
           $sql = "select id from IMAGE_BATCH where batch_name = ? ";
           if ($stmt = $connection->prepare($sql)) {
@@ -1279,20 +1280,20 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                $stmt->bind_result($id);
                if ($stmt->num_rows==1) {
                   if ($stmt->fetch()) {
-                     $batchid = $id; 
+                     $batchid = $id;
                      $batchExists=TRUE;
                   }
                } elseif ($stmt->num_rows==0) {
                   $batchExists = FALSE;
                }
                $stmt->close();
-          } else {  
+          } else {
               throw new Exception("Error Preparing SQL statement." . $connection->error);
           }
-          if ($batchExists===null) { 
+          if ($batchExists===null) {
               throw new Exception("Error looking up unique IMAGE_BATCH.batch_name: " . $batch);
-          } 
-          if ($batchExists===FALSE) { 
+          }
+          if ($batchExists===FALSE) {
              $sql = "insert into IMAGE_BATCH (LAB_ID, PRODUCTION_DATE, BATCH_NAME) values (?, ?, ?)";
              $lab_id = 2; // HUH Imaging Lab, could use 4=unknown.
              $production_date = date_format($date,"Y-m-d");
@@ -1301,11 +1302,11 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                  $stmt->execute();
                  $batchid = $stmt->insert_id;
                  $stmt->close();
-             } else {  
+             } else {
                  throw new Exception("Error Preparing SQL statement." . $connection->error);
              }
           }
-   
+
           // check to see if an image local file exists with the path and filename
 
           $imagelocalfileExists=null;
@@ -1313,7 +1314,7 @@ class huh_image_set_custom extends huh_IMAGE_SET {
           if ($stmt = $connection->prepare($sql)) {
                $stmt->bind_param("ss", $path, $filename);
                $stmt->execute();
-               $stmt->bind_result($imagelocalfileid,$imagelocalfilebarcode,$fragmentid); 
+               $stmt->bind_result($imagelocalfileid,$imagelocalfilebarcode,$fragmentid);
                $stmt->store_result();
                if ($stmt->fetch()) {
                   $imagelocalfileExists=TRUE;
@@ -1322,7 +1323,7 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                   $imagelocalfileExists = FALSE;
                } elseif ($stmt->num_rows > 1) {
                    throw new Exception("More than one matching IMAGE_LOCAL_FILE found for $path$filename");
-               }  
+               }
                $stmt->close();
           } else {
               throw new Exception("Error Preparing SQL statement." . $connection->error);
@@ -1334,17 +1335,17 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                   $stmt->bind_param("ssssssi", BASE_IMAGE_PATH, $path, $filename, $extension, $bc,$mimetype,null);
                   $stmt->execute();
                   $imagelocalfileid = $stmt->insert_id;
-                  $stmt->close();     
+                  $stmt->close();
                } else {
                   throw new Exception("Error Preparing SQL statement." . $connection->error);
               }
           }
 
 
-   
+
           // look for derivative files in the same (or sub) directory.
-          // TODO: Possibly? 
-   
+          // TODO: Possibly?
+
           $image_object_id = null;
           $image_set_id = null;
           // check for image objects matching files
@@ -1355,17 +1356,17 @@ class huh_image_set_custom extends huh_IMAGE_SET {
               $stmt->execute();
               $stmt->bind_result($image_object_id, $object_name, $image_local_file_id, $object_type_id, $image_set_id);
               $stmt->store_result();
-              if ($stmt->num_rows==0) { 
+              if ($stmt->num_rows==0) {
                  // no matches found, will need to add an image object, but image set might exist.  Remove extension and check if tiff, png, dng, etc exists.
                  $sql = "select distinct image_set_id from IMAGE_OBJECT where object_name like ? ";
                  if ($stmt2 = $connection->prepare($sql)) {
                     $objectpathfile = "$path$filename";
-                    $objectpathfile = substr($objectpathfile,0,strrpos($objectpathfile,".")); 
+                    $objectpathfile = substr($objectpathfile,0,strrpos($objectpathfile,"."));
                     $stmt2->bind_param("s",$objectpathfile);
                     $stmt2->execute();
                     $stmt2->bind_result($image_set_id);
                     $stmt2->store_result();
-                    if ($stmt2->num_rows==0) { 
+                    if ($stmt2->num_rows==0) {
                         // create image set, as we didn't find an image object that let us find the image set.
                         $owner = "Harvard University Herbaria";
                         $year = date("Y");
@@ -1373,26 +1374,26 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                         $source_type_id = "114101";
                         $copyright = "Copyright © $year President and Fellows of Harvard College";
                         $sql = "insert into IMAGE_SET (batch_id,access_type_id,source_type_id,active_flag,owner, copyright) values (?,?,?,1,?,?) ";
-                        if ($stmt3 = $connection->prepare($sql)) { 
+                        if ($stmt3 = $connection->prepare($sql)) {
                             $stmt3->bind_param("iiiss",$batchid, $access_type_id,$source_type_id,$owner,$copyright);
                             $stmt3->execute();
                             $image_set_id = $stmt3->insert_id;
                             $stmt3->close();
-                        } else { 
+                        } else {
                             throw new Exception("Error Preparing SQL statement." . $connection->error);
                         }
-                    } else { 
-                       while ($stmt2->fetch()) { 
-                          // report more than one image set? 
+                    } else {
+                       while ($stmt2->fetch()) {
+                          // report more than one image set?
                        }
                     }
                     $stmt2->free_result();
                     $stmt2->close();
-                 } else { 
+                 } else {
                     throw new Exception("Error Preparing SQL statement." . $connection->error);
                  }
-                 // add image object record  
-                 if ($image_object_id ==null) { 
+                 // add image object record
+                 if ($image_object_id ==null) {
                     $sql = "insert into IMAGE_OBJECT (image_set_id, object_type_id,repository_id,compression_id,mime_type_id,bits_per_sample_id,photo_interp_id,active_flag,altered_flag,in_process_flag,pixel_width,pixel_height,create_date,file_size,object_name,color_target_id,barcodes,image_local_file_id,hidden_flag) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     if ($stmt2 = $connection->prepare($sql)) {
                        $object_type_id = 4;
@@ -1404,10 +1405,10 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                        // 6 jpeg2000
                        // 7 digital negative
                        $repository_id = 5;
-                       $compression_id = 114801; 
-                       if ($imagemimetype=='image/jpeg') { 
+                       $compression_id = 114801;
+                       if ($imagemimetype=='image/jpeg') {
                           $mime_type_id = 114601;
-                          $compression_id = 114802;  // jpeg compression  
+                          $compression_id = 114802;  // jpeg compression
                        }
                        if ($imagemimetype=='image/tiff') { $mime_type_id = 114602; }
                        if ($imagemimetype=='image/jpeg2000') { $mime_type_id = 114603; }
@@ -1415,7 +1416,7 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                        $bits_per_sample_id = 114704 ;  // failover, guess as RGB
                        if ($imageBits==24) { $bits_per_sample_id = 114704; }
                        if ($imageBits==32) { $bits_per_sample_id = 114705; }
-                       if ($imageBits==48) { $bits_per_sample_id = 114706; } 
+                       if ($imageBits==48) { $bits_per_sample_id = 114706; }
 
                        $photo_interp_id = 114101; // specimen photo
                        $active_flag = 1;
@@ -1423,9 +1424,9 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                        $in_process_flag = 0;
                        $pixel_width = $imageWidth;
                        $pixel_height = $imageHeight;
-                       if ($date instanceof DateTime) { 
+                       if ($date instanceof DateTime) {
                            $create_date = $date->format("Y-m-d");
-                       } else { 
+                       } else {
                            $create_date = "$date";
                        }
                        $file_size = $imagefilesize;
@@ -1439,15 +1440,15 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                        $stmt2->execute();
                        $image_object_id = $stmt2->insert_id;
                        $stmt2->close();
-                    } else { 
+                    } else {
                        throw new Exception("Error Preparing SQL statement." . $connection->error);
                     }
                  }
               }
-              while($stmt->fetch()) { 
-                 if ($image_local_file_id==null || $image_local_file_id=="") { 
+              while($stmt->fetch()) {
+                 if ($image_local_file_id==null || $image_local_file_id=="") {
                     $sql = "update IMAGE_OBJECT set image_local_file_id = ? where id = ? and image_local_file_id is null ";
-                    if($stmt1 = $connection->prepare($sql)) { 
+                    if($stmt1 = $connection->prepare($sql)) {
                         $stmt1->bind_param("ii",$imagelocalfileid,$image_object_id);
                         $stmt1->execute();
                         $stmt1->close();
@@ -1462,55 +1463,55 @@ class huh_image_set_custom extends huh_IMAGE_SET {
              throw new Exception("Error Preparing SQL statement." . $connection->error);
           }
 
-   
-   
-          // check for image set collection object relations 
+
+
+          // check for image set collection object relations
           // create image set collection object relations from barcodes
-          foreach ($barcodemapping as $barcode => $collobjids) { 
-              foreach ($collobjids as $collobjectid) { 
+          foreach ($barcodemapping as $barcode => $collobjids) {
+              foreach ($collobjids as $collobjectid) {
                   $foundFragment = false;
                   $sql = "select collectionobjectid from fragment where identifier = ?";
-                  if ($stmt = $connection->prepare($sql)) { 
+                  if ($stmt = $connection->prepare($sql)) {
                       $stmt->bind_param('s', $barcode);
                       $stmt->execute();
                       $stmt->bind_result($collectionobjectid);
                       $stmt->store_result();
-                      if ($stmt->fetch) { 
+                      if ($stmt->fetch) {
                          $foundFragment = true;
                       }
                       $stmt->free_result;
-                      $stmt->close(); 
+                      $stmt->close();
                   } else {
                      throw new Exception("Error Preparing SQL statement." . $connection->error);
                   }
                   $foundrelation = false;
                   $sql = "select count(*) from IMAGE_SET_collectionobject where collectionobjectid = ? and imagesetid = ? ";
-                  if ($foundFragment===true) { 
-                     if ($stmt = $connection->prepare($sql)) { 
+                  if ($foundFragment===true) {
+                     if ($stmt = $connection->prepare($sql)) {
                          $stmt->bind_param('ii', $collectionobjectid,$image_set_id);
                          $stmt->execute();
                          $stmt->bind_result($relct);
                          $stmt->store_result();
-                         if ($stmt->fetch) { 
-                            if ($relct>0) { 
+                         if ($stmt->fetch) {
+                            if ($relct>0) {
                                $foundrelation = true;
                             }
-                         } else { 
+                         } else {
                             throw new Exception("Error fetching count." . $connection->error);
                          }
                          $stmt->free_result;
-                         $stmt->close(); 
+                         $stmt->close();
                      } else {
                         throw new Exception("Error Preparing SQL statement." . $connection->error);
                      }
                   }
                   $sql = "insert into IMAGE_SET_collectionobject (collectionobjectid, imagesetid) values (?,?) ";
-                  if ($foundFragment===true && $foundrelation===false) { 
-                     if ($stmt = $connection->prepare($sql)) { 
+                  if ($foundFragment===true && $foundrelation===false) {
+                     if ($stmt = $connection->prepare($sql)) {
                          $stmt->bind_param('ii', $collectionobjectid,$image_set_id);
                          $stmt->execute();
                          $stmt->free_result;
-                         $stmt->close(); 
+                         $stmt->close();
                      } else {
                         throw new Exception("Error Preparing SQL statement." . $connection->error);
                      }
@@ -1518,8 +1519,8 @@ class huh_image_set_custom extends huh_IMAGE_SET {
               }
           }
 
-   
-       } else { 
+
+       } else {
             throw new Exception("Error: " . $errormessage);
        }
 
@@ -1603,18 +1604,18 @@ class huh_geography_custom extends huh_geography {
       global $connection;
       $returnvalue = '[';
       $hasfilter = FALSE;
-      if (strlen(trim($within))>0) { 
+      if (strlen(trim($within))>0) {
           $sql = "select nodenumber, highestchildnodenumber from geography where name = ? order by rankid asc";
           if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param('s',$within);
             $stmt->execute();
             $stmt->bind_result($highernode, $higherhighestchildnode);
             $stmt->fetch();
-            if (strlen($highernode)>0) {  $hasfilter=TRUE; } 
+            if (strlen($highernode)>0) {  $hasfilter=TRUE; }
             $stmt->close();
           }
-      } 
-      if ($hasfilter) { 
+      }
+      if ($hasfilter) {
          $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber < ?  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
@@ -1632,7 +1633,7 @@ class huh_geography_custom extends huh_geography {
             $stmt->close();
          }
 
-      } else { 
+      } else {
          $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber > g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
