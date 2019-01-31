@@ -75,7 +75,7 @@ function imageDataForBarcode($barcode) {
 </script>
 <style>
 #cover {
-    background: url('ajaxloader.gif') no-repeat scroll center center #FFF;
+    background: url('ajax-loader.gif') no-repeat scroll center center #FFF;
     position: absolute;
     height: 100%;
     width: 100%;
