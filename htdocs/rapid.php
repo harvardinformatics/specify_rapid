@@ -622,7 +622,7 @@ function selectCurrentID($field,$label,$required='false') {
    $width = BASEWIDTH - 3;
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
+	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false' 
     style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
@@ -637,7 +637,7 @@ function selectBasionymID($field,$label,$required='false') {
 	$width = BASEWIDTH - 3;
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='taxonStore$field' required='$required' searchDelay='300' hasDownArrow='false'
+	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
 	style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
@@ -652,7 +652,7 @@ function selectCollectorsID($field,$label,$required='false') {
    $width = BASEWIDTH - 3;
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id='$field' dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' 
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' 
     style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
@@ -672,7 +672,7 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
    }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;' 
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;' 
 	searchAttr='name' value='' >
    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -684,7 +684,7 @@ function selectStorageID($field,$label,$required='false') {
 	      url='ajax_handler.php?druid_action=returndistinctjsonstorage' > </div>";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;' 
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;' 
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -696,7 +696,7 @@ function selectContainerID($field,$label,$required='false') {
 	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -708,7 +708,7 @@ function selectCollectingTripID($field,$label,$required='false') {
 	url='ajax_handler.php?druid_action=returndistinctjsoncollectingtrip' > </div>";
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='collectingTripStore$field' required='$required' searchDelay='300' hasDownArrow='false' style='border-color: blue;'
+	store='collectingTripStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
