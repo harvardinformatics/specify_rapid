@@ -132,6 +132,19 @@ if ($connection && $authenticated) {
          // lookup the barcode for this filename
          $barcode = getBarcodeForFilename($path,$filename);
 
+         if($barcode==null || strlen(trim($barcode))==0) {
+             $toencode['barcode']='NOTFOUND';
+             $toencode['path']=$path;
+             $toencode['filename']=$filename;
+         } else {
+             $toencode['barcode']=$barcode;
+         }
+         $values = json_encode($toencode);
+         $ok = true;
+         break;
+
+         // obsolete code, looking up the data is done in a separate ajax call.
+/* 
          // lookup the data for this barcode.
          $dataarray = getDataForBarcode($barcode);
          $values = "";
@@ -156,6 +169,7 @@ if ($connection && $authenticated) {
             default:
               break;
          }
+*/
 
          header("Content-type: application/json");
          if ($ok) {

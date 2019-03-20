@@ -182,15 +182,18 @@ function getBarcodeForFilename($pathbelowbase, $filename) {
 
 /**
  * Given a barcode number, find data for the transcription form associated with that barcode.
+ * Not used, superceeded by transcribe_handler.php lookupDataForBarcode().
+ * returns only an array one element of which is status:NOTFOUND, the rese of the key value pairs are all blank.
  * 
  * @param barcode the barcode number to look up, can be zero padded or not.
  * @return an associative array of key value pairs of data for the transcription form, including 
  *   key status with values NOTFOUND, ERROR, FOUND, and key error containing any error message.
+ * @deprecated 
  */
 function getDataForBarcode($barcode) { 
    $result = array( "status"=> "NOTFOUND", "error"=> "", "barcode"=> "", "created"=> "", "herbarium"=> "", "format"=> "", "prepmethod"=> "", "project"=> "", "highergeography"=> "", "highergeographyid"=> "", "filedundername"=> "", "filedundernameid"=> "", "filedunderqualifier"=> "", "currentname"=> "", "currentnameid"=> "", "currentqualifier"=> "", "collectingtrip"=> "", "collectors"=> "", "etal"=> "", "specificlocality"=> "", "stationfieldnumber"=> "", "verbatimdate"=> "", "datecollected"=> "", "namedplace"=> "", "verbatimelevation"=> "", "habitat"=> "" );
 
-   // TODO: Implement.
+   // Deprecated, not implemented.
 
    return $result;
 }
