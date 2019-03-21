@@ -98,10 +98,11 @@ class ImageHandler {
 //                         } else {
 //                             // file with known barcode
 //                         }
-//                    } else {
-//                        $result.= "Query Error: " . $connection->error  . " ";
-//                        $error = true;
-//                    }
+                   } else {
+                   	   error_log("Query Error: " . $connection->error  . " ");
+                       $result.= "Query Error: " . $connection->error  . " ";
+                       $error = true;
+                   }
                 } else {
                    // no record for file exists
                    $barcode = "";
@@ -305,7 +306,7 @@ class ImageHandler {
                         $retval[] = $barcode;
                      }
                    } else {
-                   	  error_log();
+                   	  error_log("Error querying IMAGE_LOCAL_FILE: " . $connection->error);
                       throw new Exception("Error querying IMAGE_LOCAL_FILE: " . $connection->error );
                    }
                 }
