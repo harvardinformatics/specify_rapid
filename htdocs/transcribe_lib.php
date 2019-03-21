@@ -173,8 +173,8 @@ function getFirstFileInBatch($batchpath) {
 function getBarcodeForFilename($pathbelowbase, $filename) { 
     global $connection;
     $result = "";
-    $barcode = ImageHandler::checkFilenameForBarcodes($pathbelowbase,$filename,false);
-    if ($barcode!=null && count($barcodes)>0){ 
+    $barcodes = ImageHandler::checkFilenameForBarcodes($pathbelowbase,$filename,false);
+    if ($barcodes!=null && count($barcodes)>0){ 
        $result = $barcodes[0];
     }
     return $result;
