@@ -381,7 +381,7 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
    * @return a PathFile object containing the next file and it's path, empty if no next file found.
    */
   function incrementFile() { 
-  	return movePosition(1);
+  	return $this->movePosition(1);
   }
   
   /** Find the previous file in this batch for the current user and move to it.
@@ -389,7 +389,7 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
    * @return a PathFile object containing the previous file and it's path, empty if no previous file found.
    */  
   function decrementFile() {
-  	return movePosition(-1);
+  	return $this->movePosition(-1);
   }
 
   /** Find the file at a specified position in this batch without moving to it.
