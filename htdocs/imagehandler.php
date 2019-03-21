@@ -47,11 +47,13 @@ class ImageHandler {
          try {
             @$files = scandir($dir,SCANDIR_SORT_ASCENDING);
          } catch (Exception $e) {
+         	error_log($e->getMessage());
             $result.="Error" + $e->getMessage();
             $error = true;
          }
       } else {
-         $result.="Error: file not found.";
+      	 error_log("Error: file not found: $dir");
+         $result.="Error: file not found: $dir";
          $error = true;
       }
 
@@ -79,26 +81,27 @@ class ImageHandler {
                 if ($statement->num_rows>0) {
                    // record for file exists
                    if ($statement->fetch()) {
-                        if ($barcode=="") {
-
-                            if (preg_match("/(A|GH|FH|NEBC|ECON)([0-9]{8}).*/",$file,$matches)===true) {
-                               $barcode=$matches[2];
-                            } else {
-
-                               $barcodes = self::checkFileForBarcodes($pathfile);
-                               if (is_array($barcodes)) {
-                                   $sql = "update IMAGE_LOCAL_FILE set barcode = ? ";
-
-                                   $updatedfilecount++;
-                               }
-                            }
-                        } else {
-                            // file with known barcode
-                        }
-                   } else {
-                       $result.= "Query Error: " . $connection->error  . " ";
-                       $error = true;
-                   }
+// If record exists, assume it has been scanned
+//                         if ($barcode=="") {
+// 
+//                             if (preg_match("/(A|GH|FH|NEBC|ECON)([0-9]{8}).*/",$file,$matches)===true) {
+//                                $barcode=$matches[2];
+//                             } else {
+// 
+//                                $barcodes = self::checkFileForBarcodes($pathfile);
+//                                if (is_array($barcodes)) {
+//                                    $sql = "update IMAGE_LOCAL_FILE set barcode = ? ";
+// 
+//                                    $updatedfilecount++;
+//                                }
+//                             }
+//                         } else {
+//                             // file with known barcode
+//                         }
+//                    } else {
+//                        $result.= "Query Error: " . $connection->error  . " ";
+//                        $error = true;
+//                    }
                 } else {
                    // no record for file exists
                    $barcode = "";
@@ -117,6 +120,7 @@ class ImageHandler {
                        $rows = $connection->affected_rows;
                        if ($rows==1) { $addedfilecount++; }
                    } else {
+                   	   error_log("Insert Error: " . $connection->error  . " ");
                        $result.= "Insert Error: " . $connection->error  . " ";
                        $error = true;
                    }
@@ -126,6 +130,7 @@ class ImageHandler {
                 $statement->free_result();
                 $statement->close();
             } else {
+               error_log("Query Error: " . $connection->error  . " ");
                $result.= "Query Error: " . $connection->error  . " ";
                $error = true;
             }
@@ -152,6 +157,7 @@ class ImageHandler {
              $statement->free_result();
              $statement->close();
          } else {
+         	error_log("Query Error: " . $connection->error  . " ");
              $result.= "Query Error: " . $connection->error  . " ";
              $error = true;
          }
@@ -165,6 +171,7 @@ class ImageHandler {
                 if ($rows==1) { $result .= "Batch Added. "; }
                 $statement1->close();
             } else {
+            	error_log("Insert Error: " . $connection->error  . " ");
                 $result.= "Insert Error: " . $connection->error  . " ";
                 $error = true;
             }
@@ -179,6 +186,7 @@ class ImageHandler {
       if (!$error) {
           $result .= "Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.";
       } else {
+      	  errorl_log("Error: Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.");
           $result .= "<strong>Error</strong> Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.";
       }
       return $result;
@@ -297,12 +305,14 @@ class ImageHandler {
                         $retval[] = $barcode;
                      }
                    } else {
+                   	  error_log();
                       throw new Exception("Error querying IMAGE_LOCAL_FILE: " . $connection->error );
                    }
                 }
                 $statement->free_result();
                 $statement->close();
           } else {
+          	 error_log("Error preparing query on IMAGE_LOCAL_FILE: " . $connection->error );
              throw new Exception("Error preparing query on IMAGE_LOCAL_FILE: " . $connection->error );
           }
           // Also check IMAGE_OBJECT.
@@ -325,12 +335,14 @@ class ImageHandler {
                           }
                       }
                    } else {
+                      error_log("Error querying IMAGE_OBJECT: " . $connection->error );
                       throw new Exception("Error querying IMAGE_OBJECT: " . $connection->error );
                    }
                 }
                 $statement->free_result();
                 $statement->close();
           } else {
+             error_log("Error preparing query on IMAGE_OBJECT: " . $connection->error );
              throw new Exception("Error preparing query on IMAGE_OBJECT: " . $connection->error );
           }
 
