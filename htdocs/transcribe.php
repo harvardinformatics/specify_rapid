@@ -1091,6 +1091,9 @@ habitat
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                         $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                      }
+                     if(position1 > 1) {
+                    	$('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
+                     }
                      // load data for this record.
                      loadNextData(position1,".$currentBatch->getBatchID().");
                    },
@@ -1101,6 +1104,54 @@ habitat
                });
                event.preventDefault();
           });
+          
+          
+         $('#previousButton').click(function(event){
+               $('#feedback').html( 'Loading next...');
+               logEvent('previous_button_click',$('#batch_info').html())
+               // clear fields
+               $('#transcribeForm  input:not(.carryforward)').val('');
+
+               // load next image
+               $.ajax({
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   dataType: 'json',
+                   data: {
+                       action: 'getpreviousimage',
+                       batch_id: ".$currentBatch->getBatchID()."
+                   },
+                   success: function(data) {
+                     console.log(data.src);
+                     $('#image_div').attr('src',data.src);
+                     var imagesource = data.src;
+                     var imagepath = data.path;
+                     var imagefilename = data.filename;
+                     var position1 = data.position1;
+                     $('#current_position').html(data.position1);
+                     var filecount = data.filecount;
+                     channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position1 +' of $filecount.');
+                     if (position1==filecount) {
+                        // end of batch, disable next button, enable done button.
+                        $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
+                     }
+                     if(position1 > 1) {
+                    	$('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
+                     } else {
+                        $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
+                     }
+                     // load data for this record.
+                     loadNextData(position1,".$currentBatch->getBatchID().");
+                   },
+                   error: function() {
+                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       //$('#nextButton').prop('disabled',true)
+                   }
+               });
+               event.preventDefault();
+          });
+
 
           $('#doneButton').click(function(event){
                $('#feedback').html( 'Completing batch...');

@@ -190,6 +190,31 @@ if ($connection && $authenticated) {
          }
          echo $response;
          break;
+         
+      case 'getpreviousimage':
+         $ok = false;
+         @$id = $_GET['batch_id'];
+         $currentBatch = new TR_Batch();
+         $currentBatch->setID($id);
+         $path = $currentBatch->getPath();
+         //$pathfile = $currentBatch->getNextFile();
+         $pathfile = $currentBatch->decrementFile();
+         $position1 = $pathfile->position +1;  // convert zero based file array position to 1 based file x of y position.
+         $filecount = $currentBatch->getFileCount();
+         $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         $path= $pathfile->path;
+         $filename = $pathfile->filename;
+         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
+         if (strlen($pathfile->filename)>0) { $ok=true; }
+
+         header("Content-type: application/json");
+         if ($ok) {
+            $response = $values;
+         } else {
+            $response = '{}';
+         }
+         echo $response;
+         break;
 
       case 'getdataforbarcode':
          @$barcode = $_GET['barcode'];

@@ -321,6 +321,18 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
    * @return a PathFile object containing the next file and it's path, empty if no next file found.
    */
   function incrementFile() { 
+  	return movePosition(1);
+  }
+  
+  /** Find the previous file in this batch for the current user and move to it.
+   * 
+   * @return a PathFile object containing the previous file and it's path, empty if no previous file found.
+   */  
+  function decrementFile() {
+  	return movePosition(-1);
+  }
+  
+  function movePosition($i) {
      global $connection, $user;
      $result = new PathFile();
      // find the current batch
@@ -345,10 +357,10 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
         // does next file exist: 
         if (array_key_exists($result->position + 2 + 1,$files)) { 
            // move to next file in batch
-           $result->position = $result->position + 1; // increment position to the next file.
+           $result->position = $result->position + $i; // increment position to the next file.
            $result->filename = $files[$result->position + 2]; 
            // persist
-           $sql = "update TR_USER_BATCH set position = position + 1 where username = ? and tr_batch_id = ?";
+           $sql = "update TR_USER_BATCH set position = position + $i where username = ? and tr_batch_id = ?";
            if ($statement = $connection->prepare($sql)) {
               $statement->bind_param("si",$_SESSION["username"],$batch_id);
               $statement->execute();
@@ -379,6 +391,7 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
      }
      return $result;
   }
+
 
 
   /** Find the file at a specified position in this batch without moving to it.
