@@ -186,7 +186,7 @@ class ImageHandler {
       if (!$error) {
           $result .= "Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.";
       } else {
-      	  errorl_log("Error: Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.");
+      	  error_log("Error: Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.");
           $result .= "<strong>Error</strong> Added $addedfilecount IMAGE_LOCAL_FILE records.  Updated $updatedfilecount records.";
       }
       return $result;
