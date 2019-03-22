@@ -292,39 +292,39 @@ function doSetup() {
            });
       });
    </script>";
-   echo "<div id='pickbatch' style='padding: 0.5em;' >";
-   echo "<form method='GET' action='transcribe.php?display=preparebatch' >";
-   echo "<input type='hidden' id='display' name='display' value='preparebatch'>";
-   echo "<button type='submit' value='Pick Batch' class='ui-button'>Prepare New Batch</button>";
-   echo "</form></div>";
-   echo "<div>";
-   if (!defined("BASE_IMAGE_PATH")) {
-       echo "<h3>Error: BASE_IMAGE_PATH must be defined in connection_library.php</h3>";
-   }
-   if (!defined("BATCHPATH")) {
-       echo "<h3>Error: BATCHPATH must be defined in connection_library.php</h3>";
-   }
-   if (!defined("PHPINCPATH")) {
-       echo "<h3>Error: PHPINCPATH must be defined in connection_library.php</h3>";
-   }
-   echo "<h3>Some design Assumptions of this application:</h3><ul>";
-   echo "<li>Data is being transcribed into database fields off of labels in herbarium sheet images.</li>";
-   echo "<li>Users have dual monitors and are using Firefox.</li>";
-   echo "<li>Barcodes identify items, barcoded preparations are not supported.</li>";
-   echo "<li>Database records for specimens and images may or may not exist prior to transcription.</li>";
-   echo "<li>Not all images are of herbarium sheets (some are of covers)</li>";
-   echo "<li>When image files are sorted in by their filename, this sort produces the correct sequence of images for transcription.</li>";
-   echo "<li>One directory contains one batch of work, and can be pre-processed to check image files for barcodes.</li>";
-   echo "<li>Saving a record saves both specimen and image records into the database.</li>";
-   echo "<li>Taxon and higher geography records exist or will be entered by users through Specify-HUH.</li>";
-   echo "<li>Saving identifications when identifications already exist in the database will add new identifications unless the existing identifications appear to have been entered through this application.</li>";
-   echo "</ul>";
-   echo "<h3>The Barcode field has unexpected properties.</h3><ul>";
-   echo "<li>When a barcode is known for an image, the barcode field will be disabled.</li>";
-   echo "<li>When no barcode is known for an image, the barcode field will be enabled and empty.</li>";
-   echo "<li>When the enabled barcode field loses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
-   echo "<li>When multiple barcodes are present in an image, you can save one record, click the delta button next to the barcode field to make it editable, and enter another barcode that is present on the sheet, along with its data.</li>";
-   echo "</ul></div>";
+//    echo "<div id='pickbatch' style='padding: 0.5em;' >";
+//    echo "<form method='GET' action='transcribe.php?display=preparebatch' >";
+//    echo "<input type='hidden' id='display' name='display' value='preparebatch'>";
+//    echo "<button type='submit' value='Pick Batch' class='ui-button'>Prepare New Batch</button>";
+//    echo "</form></div>";
+//    echo "<div>";
+//    if (!defined("BASE_IMAGE_PATH")) {
+//        echo "<h3>Error: BASE_IMAGE_PATH must be defined in connection_library.php</h3>";
+//    }
+//    if (!defined("BATCHPATH")) {
+//        echo "<h3>Error: BATCHPATH must be defined in connection_library.php</h3>";
+//    }
+//    if (!defined("PHPINCPATH")) {
+//        echo "<h3>Error: PHPINCPATH must be defined in connection_library.php</h3>";
+//    }
+//    echo "<h3>Some design Assumptions of this application:</h3><ul>";
+//    echo "<li>Data is being transcribed into database fields off of labels in herbarium sheet images.</li>";
+//    echo "<li>Users have dual monitors and are using Firefox.</li>";
+//    echo "<li>Barcodes identify items, barcoded preparations are not supported.</li>";
+//    echo "<li>Database records for specimens and images may or may not exist prior to transcription.</li>";
+//    echo "<li>Not all images are of herbarium sheets (some are of covers)</li>";
+//    echo "<li>When image files are sorted in by their filename, this sort produces the correct sequence of images for transcription.</li>";
+//    echo "<li>One directory contains one batch of work, and can be pre-processed to check image files for barcodes.</li>";
+//    echo "<li>Saving a record saves both specimen and image records into the database.</li>";
+//    echo "<li>Taxon and higher geography records exist or will be entered by users through Specify-HUH.</li>";
+//    echo "<li>Saving identifications when identifications already exist in the database will add new identifications unless the existing identifications appear to have been entered through this application.</li>";
+//    echo "</ul>";
+//    echo "<h3>The Barcode field has unexpected properties.</h3><ul>";
+//    echo "<li>When a barcode is known for an image, the barcode field will be disabled.</li>";
+//    echo "<li>When no barcode is known for an image, the barcode field will be enabled and empty.</li>";
+//    echo "<li>When the enabled barcode field loses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
+//    echo "<li>When multiple barcodes are present in an image, you can save one record, click the delta button next to the barcode field to make it editable, and enter another barcode that is present on the sheet, along with its data.</li>";
+//    echo "</ul></div>";
 }
 
 function target() {
