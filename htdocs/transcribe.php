@@ -249,7 +249,7 @@ function doSetup() {
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
    echo " <strong>Work on another batch:</strong>";
    echo "<select id='targetBatch' name='targetBatch'>";
-   $sql = "select path, completed_date from TR_BATCH order by completed_date asc";
+   $sql = "select path, completed_date from TR_BATCH order by completed_date, path asc";
    if ($statement = $connection->prepare($sql)) {
        $statement->execute();
        $statement->bind_result($path,$completed_date);
@@ -260,11 +260,11 @@ function doSetup() {
              $complete = "";
              if ($selected=="") { $selected = "selected"; } else { $selected = ""; }
           } else {
-             $complete="($completed_date)";
+             $complete="Done: ($completed_date) ";
              $selected = "";
           }
           $upath = urlencode($path);
-          echo "<option value='$path' $selected >$path $complete</option>";
+          echo "<option value='$path' $selected >$complete$path</option>";
        }
        $statement->free_result();
        $statement->close();
@@ -1047,7 +1047,7 @@ habitat
    }
 
    echo "<tr><td colspan=2>";
-   echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."'>";
+   echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
    echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
