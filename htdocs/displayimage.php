@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 
 include_once("connection_library.php");
@@ -16,8 +16,8 @@ $mode= '';
 function imageDataForBarcode($barcode) {
    global $connection;
    $result = new ImageReturn();
-   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width 
-            from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id 
+   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width
+            from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
             where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
@@ -65,7 +65,7 @@ function imageDataForBarcode($barcode) {
    const channel = new BroadcastChannel('imageclicks');
    const pingchannel = new BroadcastChannel('ping');
 
-   function ping() { 
+   function ping() {
       pingchannel.postMessage('ping');
    }
 
@@ -87,57 +87,57 @@ function imageDataForBarcode($barcode) {
 <div id="cover"></div>
 <?php
 
-switch ($mode) { 
-    case 'image': 
+switch ($mode) {
+    case 'image':
        $startbarcode = '';
        @$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['startbarcode']),0,20);
        image($startbarcode);
        break;
-    case 'imagefile': 
+    case 'imagefile':
        $path= '';
        @$path = urldecode($_GET['path']);
        $filename= '';
        @$filename = urldecode($_GET['filename']);
        imagefile($path,$filename);
        break;
-    default: 
+    default:
        error();
-} 
+}
 
-function error() { 
+function error() {
     echo "<strong>Window is not initialized properly.</strong>";
 
-} 
+}
 
-function image($barcode) { 
+function image($barcode) {
     echo "$barcode <div id='info'>imageclicks</div>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
            channel.onmessage = function(e) {
                console.log(e);
-               if (e.data=='close') { 
+               if (e.data=='close') {
                   window.close();
                } else {
-                  if (e.data.action=='load') { 
+                  if (e.data.action=='load') {
                      setupCanvas(e.data.uri,e.data.origheight,ed.data.origwidth);
-                  } else {  
+                  } else {
                      document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
                      doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
                   }
               }
            };
 
-           pingchannel.onmessage = function(e) { 
+           pingchannel.onmessage = function(e) {
                console.log(e);
-               if (e.data=='ping') { 
+               if (e.data=='ping') {
                   pingchannel.postMessage('pong');
                }
-           } 
+           }
         </script>
     ";
    $mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
-   if ($barcode!="") { 
+   if ($barcode!="") {
        $media = imageDataForBarcode($barcode);
        $mediauri = $media->url;
        $mediaid = $media->image_set_id;
@@ -157,7 +157,7 @@ echo "[$barcode][$mediauri][$h]";
      function setupCanvas(uri,h,w) {
          base_image = new Image();
          base_image.src = uri;
-         base_image.onload = function() { 
+         base_image.onload = function() {
              context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
          }
      }
@@ -165,47 +165,77 @@ echo "[$barcode][$mediauri][$h]";
      function doZoom(x,y,h,w,oh,ow) {
          xnew =  (ow/w) * x;
          ynew =  (oh/h) * y;
-         xnew = xnew - 600;  if (xnew < 1) { xnew = 1; } 
-         ynew = ynew - 400;  if (ynew < 1) { ynew = 1; } 
+
          context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
-         context.drawImage(base_image,xnew,ynew,1500,1200,1,1,1200,1000);
+
+         //var canvas = document.getElementById('viewport');
+         //context = canvas.getContext('2d')
+         context.canvas.width = window.innerWidth;
+         context.canvas.style.width = window.innerWidth;
+         context.canvas.height = window.innerHeight;
+         context.canvas.style.height = window.innerHeight;
+
+         // calculate factor to rescale image to ~150ppi
+         scalefactor = 1800/base_image.naturalWidth;
+
+         // based on 150ppi image, apply magnification level
+         magnification=1.5;
+
+         startx = xnew-(window.innerWidth/2);  if (startx < 1) { startx = 1; }
+         starty = ynew-(window.innerHeight/2);  if (starty < 1) { starty = 1; }
+
+         context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
+
+         var xy = \"\" + x + \",\" + y;
+         logEvent('zoom',xy);
+     }
+
+     // unused for now, might be useful for scaling images for different screens
+     function getDocumentPPI() {
+       var devicePixelRatio = window.devicePixelRatio || 1;
+       var elem = document.createElement('div');
+       elem.style.width = '1in';
+       document.body.appendChild(elem);
+       var ppi = elem.offsetWidth * devicePixelRatio;
+       document.body.removeChild(elem);
+       return ppi;
      }
 
    </script>";
-}   
+}
 
 /** Given a path and a filename, load an image and echo html and javascript to display the image with zoom on click via channel.
- *  
+ *
  *  @param path the path relative to BASE_IMAGE_PATH and BASE_IMAGE_URI
  *  @param filename the filename below the path.
  */
-function imagefile($path,$filename) { 
+function imagefile($path,$filename) {
     echo "<span id='info'>imageclicks</span> <span id='path'>$path</span> <span id='filename'>$filename</span>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
            channel.onmessage = function(e) {
                console.log(e);
-               if (e.data=='close') { 
+               if (e.data=='close') {
                   window.close();
                } else {
-                  if (e.data.action=='load') { 
+                  if (e.data.action=='load') {
                      $('#path').html(e.data.path);
                      $('#filename').html(e.data.filename);
                      setupCanvas(e.data.uri,e.data.origheight,e.data.origwidth);
-                  } else {  
+                  } else {
                      document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
                      doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
                   }
               }
            };
 
-           pingchannel.onmessage = function(e) { 
+           pingchannel.onmessage = function(e) {
                console.log(e);
-               if (e.data=='ping') { 
+               if (e.data=='ping') {
                   pingchannel.postMessage('pong');
                }
-           } 
+           }
         </script>
     ";
    //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
@@ -218,8 +248,8 @@ function imagefile($path,$filename) {
    $pathfile = BASE_IMAGE_PATH.'/'.$localpathfile;
 
    $mediauri = BASE_IMAGE_URI.$localpathfile;
-   
-   if ($filename!="") { 
+
+   if ($filename!="") {
        // TODO: Lookup values from IMAGE_LOCAL_FILE
        //$media = imageDataForBarcode($barcode);
        //$mediauri = $media->url;
@@ -245,7 +275,7 @@ function imagefile($path,$filename) {
      function setupCanvas(uri,h,w) {
          base_image = new Image();
          base_image.src = uri;
-         base_image.onload = function() { 
+         base_image.onload = function() {
              context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
              channel.postMessage('loaded');
          }
@@ -253,32 +283,49 @@ function imagefile($path,$filename) {
      }
 
      function doZoom(x,y,h,w,oh,ow) {
-         xnew =  (ow/w) * x;
-         ynew =  (oh/h) * y;
-         xnew = xnew - 600;  if (xnew < 1) { xnew = 1; } 
-         ynew = ynew - 400;  if (ynew < 1) { ynew = 1; } 
-         context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
-         context.drawImage(base_image,xnew,ynew,1500,1200,1,1,1200,1000);
-         var xy = \"\" + x + \",\" + y;
-         logEvent('zoom',xy)
+       xnew =  (ow/w) * x;
+       ynew =  (oh/h) * y;
+
+       context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
+
+       //var canvas = document.getElementById('viewport');
+       //context = canvas.getContext('2d')
+       context.canvas.width = window.innerWidth;
+       context.canvas.style.width = window.innerWidth;
+       context.canvas.height = window.innerHeight;
+       context.canvas.style.height = window.innerHeight;
+
+       // calculate factor to rescale image to ~150ppi
+       scalefactor = 1800/base_image.naturalWidth;
+
+       // based on 150ppi image, apply magnification level
+       magnification=1.5;
+
+       startx = xnew-(window.innerWidth/2);  if (startx < 1) { startx = 1; }
+       starty = ynew-(window.innerHeight/2);  if (starty < 1) { starty = 1; }
+
+       context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
+
+       var xy = \"\" + x + \",\" + y;
+       logEvent('zoom',xy);
      }
 
      function logEvent(eventaction,eventdetails){
-         if(eventdetails=='') { eventdetails = 'event'; } 
-         $.ajax({ 
+         if(eventdetails=='') { eventdetails = 'event'; }
+         $.ajax({
              type: 'POST',
              url: 'transcribe_logger.php',
-             data: { 
+             data: {
                   action: eventaction,
                   username: '".$_SESSION["username"]."',
                   path: $('#path').html(),
                   filename: $('#filename').html(),
                   details: eventdetails
              },
-             success: function(data) { 
+             success: function(data) {
                  console.log( data );
              },
-             error: function() { 
+             error: function() {
                  console.log( 'logEvent Failed.  Ajax Error.');
              }
          });
@@ -286,7 +333,7 @@ function imagefile($path,$filename) {
 
 
    </script>";
-}   
+}
 
 ?>
 
