@@ -168,8 +168,8 @@ echo "[$barcode][$mediauri][$h]";
 
          context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
 
-         //var canvas = document.getElementById('viewport');
-         //context = canvas.getContext('2d')
+         var canvas = document.getElementById('viewport');
+         context = canvas.getContext('2d')
          context.canvas.width = window.innerWidth;
          context.canvas.style.width = window.innerWidth;
          context.canvas.height = window.innerHeight;
@@ -288,8 +288,8 @@ function imagefile($path,$filename) {
 
        context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
 
-       //var canvas = document.getElementById('viewport');
-       //context = canvas.getContext('2d')
+       var canvas = document.getElementById('viewport');
+       context = canvas.getContext('2d')
        context.canvas.width = window.innerWidth;
        context.canvas.style.width = window.innerWidth;
        context.canvas.height = window.innerHeight;
