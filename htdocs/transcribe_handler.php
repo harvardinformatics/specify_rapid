@@ -149,7 +149,7 @@ if ($connection && $authenticated) {
               break;
 
             case "FOUND":
-              $values = json_encode(dataarray);
+              $values = json_encode($dataarray);
               $ok = true;
               break;
             case "ERROR":
