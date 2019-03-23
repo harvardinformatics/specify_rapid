@@ -1334,7 +1334,7 @@ habitat
                var position0 = position1 - 1; // change one based position count to zero based position count.
 
                if (nextdata && new Date().valueOf() - nextdata_ts.valueOf() < 180000) { // 3 minute cache
-                 console.log("Using data from nextdata cache");
+                 console.log('Using data from nextdata cache');
                  console.log(nextdata);
                  loadFormData(nextdata);
                } else {
