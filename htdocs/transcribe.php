@@ -1104,8 +1104,8 @@ habitat
                });
                event.preventDefault();
           });
-          
-          
+
+
          $('#previousButton').click(function(event){
                $('#feedback').html( 'Loading next...');
                logEvent('previous_button_click',$('#batch_info').html())
@@ -1137,9 +1137,9 @@ habitat
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                      }
                      if(position1 > 1) {
-                    	$('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
+                         $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
                      } else {
-                        $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
+                         $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
                      }
                      // load data for this record.
                      loadNextData(position1,".$currentBatch->getBatchID().");
@@ -1212,6 +1212,64 @@ habitat
               }
           }
 
+          function loadFormData(data) {
+              setLoadedValue('defaultproject',data.project);
+              setLoadedValue('prepmethod',data.prepmethod);
+              setLoadedValue('preptype',data.format);
+              setLoadedValue('filedundername',data.filedundername);
+              setLoadedValue('filedundernameid',data.filedundernameid);
+              setLoadedValue('filedunderqualifier',data.filedunderqualifier);
+              setLoadedValue('currentname',data.currentname);
+              setLoadedValue('currentnameid',data.currentnameid);
+              setLoadedValue('currentqualifier',data.currentqualifier);
+              setLoadedValue('specificlocality',data.specificLocality);
+              setLoadedValue('habitat',data.habitat);
+              setLoadedValue('highergeography',data.geography);
+              setLoadedValue('geographyid',data.geographyid);
+              setLoadedValue('collectors',data.collectors);
+              setLoadedValue('collectorsid',data.collectorsid);
+              setLoadedValue('etal',data.etal);
+              setLoadedValue('stationfieldnumber',data.stationfieldnumber);
+              setLoadedValue('verbatimdate',data.verbatimdate);
+              setLoadedValue('datecollected',data.datecollected);
+              setLoadedValue('herbariumacronym',data.herbariumacronym);
+
+            /*
+            num_matches
+            prepmethod
+            filedundername
+            filedundernameid
+            filedunderqualifier
+            currentname
+            currentnameid
+            currentqualifier
+            formatid
+            format
+            created
+            project
+            stationfieldnumber
+            datecollected
+            verbatimdate
+            habitat
+            collectoragentid
+            collectors
+            etal
+            namedPlace
+            verbatimElevation
+            specificLocality
+            geographyid
+            geography
+            error
+            */
+          // find the corresponding input (input id = data key) in transcribeForm
+
+          // if the input value is empty, replace it with the value from data.
+
+          // if the input value is not empty, and the input is not in class carry_forward, set the value from the data.
+          // (if the input value is not empty, and the input is in class carry_forward, leave unchanged).
+
+          }
+
           function loadDataForBarcode(barcodevalue) {
                console.log('called loadDataForBarcode() with ' + barcodevalue);
                $.ajax({
@@ -1242,61 +1300,7 @@ habitat
                          $('#feedback').html( '<strong>Warning:</strong> more than one match for Barcode: ' + $('#barcode').val() + ' Enter in Specify. '  );
                      } else {
                          $('#recordcreated').html(data.created);
-                         setLoadedValue('defaultproject',data.project);
-                         setLoadedValue('prepmethod',data.prepmethod);
-                         setLoadedValue('preptype',data.format);
-                         setLoadedValue('filedundername',data.filedundername);
-                         setLoadedValue('filedundernameid',data.filedundernameid);
-                         setLoadedValue('filedunderqualifier',data.filedunderqualifier);
-                         setLoadedValue('currentname',data.currentname);
-                         setLoadedValue('currentnameid',data.currentnameid);
-                         setLoadedValue('currentqualifier',data.currentqualifier);
-                         setLoadedValue('specificlocality',data.specificLocality);
-                         setLoadedValue('habitat',data.habitat);
-                         setLoadedValue('highergeography',data.geography);
-                         setLoadedValue('geographyid',data.geographyid);
-                         setLoadedValue('collectors',data.collectors);
-                         setLoadedValue('collectorsid',data.collectorsid);
-                         setLoadedValue('etal',data.etal);
-                         setLoadedValue('stationfieldnumber',data.stationfieldnumber);
-                         setLoadedValue('verbatimdate',data.verbatimdate);
-                         setLoadedValue('datecollected',data.datecollected);
-                         setLoadedValue('herbariumacronym',data.herbariumacronym);
-
-/*
-       num_matches
-       prepmethod
-       filedundername
-       filedundernameid
-       filedunderqualifier
-       currentname
-       currentnameid
-       currentqualifier
-       formatid
-       format
-       created
-       project
-       stationfieldnumber
-       datecollected
-       verbatimdate
-       habitat
-       collectoragentid
-       collectors
-       etal
-       namedPlace
-       verbatimElevation
-       specificLocality
-       geographyid
-       geography
-       error
-*/
-                     // find the corresponding input (input id = data key) in transcribeForm
-
-                     // if the input value is empty, replace it with the value from data.
-
-                     // if the input value is not empty, and the input is not in class carry_forward, set the value from the data.
-                     // (if the input value is not empty, and the input is in class carry_forward, leave unchanged).
-
+                         loadFormData(data);
                          $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
                      }
 
@@ -1334,7 +1338,7 @@ habitat
                          $('#feedback').html( 'Ready.');
                      } else {
                         $('#barcode').prop('disabled', true);
-                        loadDataForBarcode(barcodeval);
+                        loadFormData(data);
                      }
 
 
