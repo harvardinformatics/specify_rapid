@@ -1057,8 +1057,11 @@ habitat
    echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
    echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
    echo "</td></tr>";
-// TODO: Implement previous button.
+
    echo "<script>
+
+         var nextdata = null;
+         var nextdata_ts = null;
 
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
@@ -1213,26 +1216,41 @@ habitat
           }
 
           function loadFormData(data) {
-              setLoadedValue('defaultproject',data.project);
-              setLoadedValue('prepmethod',data.prepmethod);
-              setLoadedValue('preptype',data.format);
-              setLoadedValue('filedundername',data.filedundername);
-              setLoadedValue('filedundernameid',data.filedundernameid);
-              setLoadedValue('filedunderqualifier',data.filedunderqualifier);
-              setLoadedValue('currentname',data.currentname);
-              setLoadedValue('currentnameid',data.currentnameid);
-              setLoadedValue('currentqualifier',data.currentqualifier);
-              setLoadedValue('specificlocality',data.specificLocality);
-              setLoadedValue('habitat',data.habitat);
-              setLoadedValue('highergeography',data.geography);
-              setLoadedValue('geographyid',data.geographyid);
-              setLoadedValue('collectors',data.collectors);
-              setLoadedValue('collectorsid',data.collectorsid);
-              setLoadedValue('etal',data.etal);
-              setLoadedValue('stationfieldnumber',data.stationfieldnumber);
-              setLoadedValue('verbatimdate',data.verbatimdate);
-              setLoadedValue('datecollected',data.datecollected);
-              setLoadedValue('herbariumacronym',data.herbariumacronym);
+              var barcodeval = data.barcode;
+              if (data.barcode==null || data.barcode=='NOTFOUND') {
+                  barcodeval = '';
+              }
+
+              $('#barcode').val(barcodeval);
+              if ($('#barcode').val().length==0) {
+                  $('#barcode').prop('disabled', null);
+                  $('#recordcreated').html('New Record');
+                  $('#feedback').html( 'Ready.');
+              } else {
+                  $('#barcode').prop('disabled', true);
+                  setLoadedValue('defaultproject',data.project);
+                  setLoadedValue('prepmethod',data.prepmethod);
+                  setLoadedValue('preptype',data.format);
+                  setLoadedValue('filedundername',data.filedundername);
+                  setLoadedValue('filedundernameid',data.filedundernameid);
+                  setLoadedValue('filedunderqualifier',data.filedunderqualifier);
+                  setLoadedValue('currentname',data.currentname);
+                  setLoadedValue('currentnameid',data.currentnameid);
+                  setLoadedValue('currentqualifier',data.currentqualifier);
+                  setLoadedValue('specificlocality',data.specificLocality);
+                  setLoadedValue('habitat',data.habitat);
+                  setLoadedValue('highergeography',data.geography);
+                  setLoadedValue('geographyid',data.geographyid);
+                  setLoadedValue('collectors',data.collectors);
+                  setLoadedValue('collectorsid',data.collectorsid);
+                  setLoadedValue('etal',data.etal);
+                  setLoadedValue('stationfieldnumber',data.stationfieldnumber);
+                  setLoadedValue('verbatimdate',data.verbatimdate);
+                  setLoadedValue('datecollected',data.datecollected);
+                  setLoadedValue('herbariumacronym',data.herbariumacronym);
+
+                  $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
+              }
 
             /*
             num_matches
@@ -1314,39 +1332,31 @@ habitat
           function loadNextData(position1,batch_id) {
                console.log('called loadNextData() with ' + position1 + ',' +batch_id);
                var position0 = position1 - 1; // change one based position count to zero based position count.
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   dataType: 'json',
-                   data: {
-                       action: 'getnextrecord',
-                       batch_id: batch_id,
-                       position: position0
-                   },
-                   success: function(data) {
-                     console.log(data);
-                     var barcodeval = data.barcode;
-                     if (data.barcode==null || data.barcode=='NOTFOUND') {
-                         barcodeval = '';
+
+               if (nextdata && new Date().valueOf() - nextdata_ts.valueOf() < 180000) { // 3 minute cache
+                 console.log("Using data from nextdata cache");
+                 console.log(nextdata);
+                 loadFormData(nextdata);
+               } else {
+                  $.ajax({
+                     type: 'GET',
+                     url: 'transcribe_handler.php',
+                     dataType: 'json',
+                     data: {
+                         action: 'getnextrecord',
+                         batch_id: batch_id,
+                         position: position0
+                     },
+                     success: function(data) {
+                       console.log(data);
+                       loadFormData(data);
+                     },
+                     error: function() {
+                        console.log('ajax call to transcribe_handler.php/action=getnextrecord failed');
+                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
                      }
-
-                     $('#barcode').val(barcodeval);
-                     if ($('#barcode').val().length==0) {
-                         $('#barcode').prop('disabled', null);
-                         $('#recordcreated').html('New Record');
-                         $('#feedback').html( 'Ready.');
-                     } else {
-                        $('#barcode').prop('disabled', true);
-                        loadFormData(data);
-                     }
-
-
-                   },
-                   error: function() {
-                      console.log('ajax call to transcribe_handler.php/action=getnextrecord failed');
-                      $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                   }
-               });
+                 });
+               }
 
                // async cache next record data
                nextpos = position0 + 1;
@@ -1362,6 +1372,8 @@ habitat
                    },
                    success: function(data) {
                      console.log(data);
+                     nextdata = data;
+                     nextdata_ts = new Date();
                    }
               });
           }
