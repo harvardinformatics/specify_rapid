@@ -190,7 +190,7 @@ if ($connection && $authenticated) {
          }
          echo $response;
          break;
-         
+
       case 'getpreviousimage':
          $ok = false;
          @$id = $_GET['batch_id'];
@@ -377,7 +377,11 @@ if ($connection && $authenticated) {
 
          echo ingest();
 
-         echo storeImageObject($batchid,$barcode);
+         // Commenting out the call to save images.
+         // At this time, all images should be preprocessed and exist in the database
+         // If this call is ever re-enabled, the function createImageSetFromLocalFile
+         // will need to be revisited so that paths and names are handled the same as the ingest process
+         //echo storeImageObject($batchid,$barcode);
 
        break;
        default:
