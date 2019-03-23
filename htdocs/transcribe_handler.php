@@ -133,7 +133,7 @@ if ($connection && $authenticated) {
          $barcode = getBarcodeForFilename($path,$filename);
 
          // lookup the data for this barcode.
-         $dataarray = getDataForBarcode($barcode);
+         $dataarray = lookupDataForBarcode($barcode);
          $values = "";
          switch ($dataarray['status']) {
             case "NOTFOUND":
@@ -1321,6 +1321,7 @@ function lookupDataForBarcode($barcode) {
    $num_matches = count($matches);
    $result['num_matches'] = $num_matches;
    if ($num_matches==1) {
+       $result['status'] = "FOUND";
        $match = $matches[0];
        $match->load($match->getFragmentID());
        $result['prepmethod'] = $match->getPrepMethod();
@@ -1373,6 +1374,7 @@ function lookupDataForBarcode($barcode) {
        $result['geography'] = $rgeography->getFullName();
        $result['error']="";
    } else {
+       $result['status'] = "ERROR";
        $result['error']="Item Not Found for [$barcode], matches=$num_matches. ";
    }
 
