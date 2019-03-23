@@ -1325,7 +1325,6 @@ habitat
                    },
                    success: function(data) {
                      console.log(data);
-                     console.log('barcode:' + data.barcode);
                      var barcodeval = data.barcode;
                      if (data.barcode==null || data.barcode=='NOTFOUND') {
                          barcodeval = '';
@@ -1348,6 +1347,23 @@ habitat
                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
                    }
                });
+
+               // async cache next record data
+               nextpos = position0 + 1;
+               $.ajax({
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   dataType: 'json',
+                   cache: true,
+                   data: {
+                       action: 'getnextrecord',
+                       batch_id: batch_id,
+                       position: nextpos
+                   },
+                   success: function(data) {
+                     console.log(data);
+                   }
+              });
           }
 
 
