@@ -171,9 +171,9 @@ function image($barcode) {
          var canvas = document.getElementById('viewport');
          context = canvas.getContext('2d')
          context.canvas.width = window.innerWidth;
-         context.canvas.style.width = `${window.innerWidth}px`;
+         context.canvas.style.width = `\${window.innerWidth}px`;
          context.canvas.height = window.innerHeight;
-         context.canvas.style.height = `${window.innerHeight}px`;
+         context.canvas.style.height = `\${window.innerHeight}px`;
 
          // calculate factor to rescale image to ~150ppi
          scalefactor = 1800/base_image.naturalWidth;
@@ -291,9 +291,9 @@ function imagefile($path,$filename) {
        var canvas = document.getElementById('viewport');
        context = canvas.getContext('2d')
        context.canvas.width = window.innerWidth;
-       context.canvas.style.width = `${window.innerWidth}px`;
+       context.canvas.style.width = `\${window.innerWidth}px`;
        context.canvas.height = window.innerHeight;
-       context.canvas.style.height = `${window.innerHeight}px`;
+       context.canvas.style.height = `\${window.innerHeight}px`;
 
        // calculate factor to rescale image to ~150ppi
        scalefactor = 1800/base_image.naturalWidth;
