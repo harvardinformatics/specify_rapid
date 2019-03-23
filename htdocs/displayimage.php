@@ -143,7 +143,7 @@ function image($barcode) {
        $mediaid = $media->image_set_id;
        $h = $media->pixel_height;
        $w = $media->pixel_width;
-echo "[$barcode][$mediauri][$h]";
+       echo "[$barcode][$mediauri][$h]";
    }
    echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
    echo "<script>
@@ -171,9 +171,9 @@ echo "[$barcode][$mediauri][$h]";
          var canvas = document.getElementById('viewport');
          context = canvas.getContext('2d')
          context.canvas.width = window.innerWidth;
-         context.canvas.style.width = window.innerWidth;
+         context.canvas.style.width = '${window.innerWidth}px';
          context.canvas.height = window.innerHeight;
-         context.canvas.style.height = window.innerHeight;
+         context.canvas.style.height = '${window.innerHeight}px';
 
          // calculate factor to rescale image to ~150ppi
          scalefactor = 1800/base_image.naturalWidth;
@@ -291,9 +291,9 @@ function imagefile($path,$filename) {
        var canvas = document.getElementById('viewport');
        context = canvas.getContext('2d')
        context.canvas.width = window.innerWidth;
-       context.canvas.style.width = window.innerWidth;
+       context.canvas.style.width = '${window.innerWidth}px';
        context.canvas.height = window.innerHeight;
-       context.canvas.style.height = window.innerHeight;
+       context.canvas.style.height = '${window.innerHeight}px';
 
        // calculate factor to rescale image to ~150ppi
        scalefactor = 1800/base_image.naturalWidth;
