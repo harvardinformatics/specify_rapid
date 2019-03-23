@@ -1110,6 +1110,9 @@ habitat
 
 
          $('#previousButton').click(function(event){
+               nextdata = null;
+               nextdata_ts = null;
+
                $('#feedback').html( 'Loading next...');
                logEvent('previous_button_click',$('#batch_info').html())
                // clear fields
