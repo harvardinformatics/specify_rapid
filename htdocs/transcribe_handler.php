@@ -756,8 +756,28 @@ function ingest() {
                                }
                            }
 
-                           // TODO:  Update fragment record
+                           // Update fragment record
+                           if ($fragmentid!=null) {
+                               $statement1 = $connection->stmt_init();
 
+                               $sql = "update fragment set text1=?, prepmethod=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where fragmentid = ? ";
+                               $statement1 = $connection->prepare($sql);
+                               if ($statement1) {
+                                   $statement1->bind_param("ssii", $herbariumacronym, $prepmethod, $currentuserid, $fragmentid);
+                                   $statement1->execute();
+                                   $rows = $connection->affected_rows;
+                                   if ($rows==1) { $feedback = $feedback . " Updated Fragment. "; }
+                                   if ($rows==0) { $feedback = $feedback . " Fragment unchanged. "; }
+                               } else {
+                                   $fail = true;
+                                   $feedback.= "Query Error modifying fragment. " . $connection->error  . " ";
+                               }
+
+                               $statement1->close();
+                           } else {
+                             $fail = true;
+                             $feedback.= "Failed to lookup fragment (item) record.";
+                           }
 
 
                            if ($collectingeventid!=null) {
