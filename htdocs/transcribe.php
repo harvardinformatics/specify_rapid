@@ -1213,7 +1213,7 @@ habitat
                  // update value from provided value.
                  if (!$('.carryforward[id][name='+field+']').length) {
                      // if field contains a value only populate if not a carryforward field (carryforward trumps lookup).
-                     $('.carryforward[id][name='+field+']').val(value);
+                     $('#'+field).val(value);
                  }
               }
           }
