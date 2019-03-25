@@ -230,7 +230,7 @@ if ($connection && $authenticated) {
          $truncated = "";
          @$collectors= $_POST['collectors'];
          @$collectorsid= substr(preg_replace('/[^0-9]/','',$_POST['collectorsid']),0,huh_agentvariant::AGENTID_SIZE);
-         @$etal= substr(preg_replace('/[^A-Za-z&\[\]\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
+         @$etal= substr(preg_replace('/[^A-Za-z&\[\]\-\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
