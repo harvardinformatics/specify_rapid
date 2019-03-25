@@ -1792,7 +1792,7 @@ function selectAcronym($field,$default) {
    if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; }
    if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; }
    if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; }
-   echo "<select name=\"$field\" >
+   echo "<select id=\"$field\" name=\"$field\" >
 	<option value=\"GH\" $ghs>GH</option>
 	<option value=\"A\" $as>A</option>
 	<option value=\"NEBC\" $nebcs>NEBC</option>
