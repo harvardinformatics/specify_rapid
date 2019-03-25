@@ -766,10 +766,10 @@ function ingest() {
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
 
-                                  $sql = "update collectingevent set stationfieldnumber=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
+                                  $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                   $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("ssisisii", $stationfieldnumber, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $collectingeventid);
+                                      $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $collectingeventid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -799,10 +799,10 @@ function ingest() {
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectionobject. "; }
-                                          $sql = "update collectingevent set stationfieldnumber=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
+                                          $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                           $statement1 = $connection->prepare($sql);
                                           if ($statement1) {
-                                              $statement1->bind_param("ssisisii", $stationfieldnumber, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $newcollectingeventid);
+                                              $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $newcollectingeventid);
                                               $statement1->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -899,7 +899,7 @@ function ingest() {
                                       $feedback.= "Query Error looking up collector. " . $connection->error . " ";
                                   }
                                }
-                           } // has collecting event
+                           } // has collector
 
                            if ($localityid!=null) {
                                $countco = countCollectionObjectsForLocality($localityid);
@@ -912,7 +912,7 @@ function ingest() {
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
                                   $sql = "update locality set localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
-                		  $statement1 = $connection->prepare($sql);
+                		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
                                       $statement1->bind_param("sssii", $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
@@ -926,7 +926,7 @@ function ingest() {
                                } else {
                                   // more than one collection object, need to create new locality
                                   $sql = "insert into locality (TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID) select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
-                		          $statement = $connection->prepare($sql);
+                		              $statement = $connection->prepare($sql);
                                   if ($statement) {
                                       $statement->bind_param("i", $localityid);
                                       $statement->execute();
@@ -963,25 +963,8 @@ function ingest() {
                                    }
                                }
                            } // end localityid
-                           // if ($collectionobjectid!=null) {
-                           //    if ($habitat!=null && $habitat!="") {
-                           //        $sql = "update collectionobject set text2 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectionobjectid = ? ";
-                		       //    $statement = $connection->prepare($sql);
-                           //        if ($statement) {
-                           //            $statement->bind_param("sii", $habitat, $currentuserid, $collectionobjectid);
-                           //            $statement->execute();
-                           //            $rows = $connection->affected_rows;
-                           //            if ($rows==1) { $feedback = $feedback . " Updated CollObject. "; }
-                           //            if ($rows==0) { $feedback = $feedback . " CollObject unchanged. "; }
-                           //        } else {
-                           //            $fail = true;
-                           //            $feedback.= "Query Error modifying locality. " . $connection->error . " ";
-                           //        }
-                           //    }
-                           // }
 
                            // look up/update determinations.
-
                            // are the determinations the same
                            $namesidentical = FALSE;
                            if ($filedundername==$currentdetermination) {
