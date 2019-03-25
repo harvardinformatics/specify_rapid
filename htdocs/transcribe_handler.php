@@ -965,7 +965,7 @@ function ingest() {
                            } // end localityid
                            if ($collectionobjectid!=null) {
                               if ($habitat!=null && $habitat!="") {
-                                  $sql = "update collectionobject set text1 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectionobjectid = ? ";
+                                  $sql = "update collectionobject set text2 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectionobjectid = ? ";
                 		          $statement = $connection->prepare($sql);
                                   if ($statement) {
                                       $statement->bind_param("sii", $habitat, $currentuserid, $collectionobjectid);
