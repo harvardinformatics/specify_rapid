@@ -755,6 +755,11 @@ function ingest() {
                                    $feedback.= "Query Error looking up project. " . $connection->error  . " ";
                                }
                            }
+
+                           // TODO:  Update fragment record
+
+
+
                            if ($collectingeventid!=null) {
                                $countco = countCollectionObjectsForEvent($collectingeventid);
                                if ($countco < 0) {
@@ -1308,6 +1313,7 @@ function lookupDataForBarcode($barcode) {
        $match = $matches[0];
        $match->load($match->getFragmentID());
        $result['prepmethod'] = $match->getPrepMethod();
+       $result['herbariumacronym'] = $match->getText1();
 
        // get filedundername, currentname, filedunderqualifier, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
