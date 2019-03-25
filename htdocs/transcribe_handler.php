@@ -963,22 +963,22 @@ function ingest() {
                                    }
                                }
                            } // end localityid
-                           if ($collectionobjectid!=null) {
-                              if ($habitat!=null && $habitat!="") {
-                                  $sql = "update collectionobject set text2 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectionobjectid = ? ";
-                		          $statement = $connection->prepare($sql);
-                                  if ($statement) {
-                                      $statement->bind_param("sii", $habitat, $currentuserid, $collectionobjectid);
-                                      $statement->execute();
-                                      $rows = $connection->affected_rows;
-                                      if ($rows==1) { $feedback = $feedback . " Updated CollObject. "; }
-                                      if ($rows==0) { $feedback = $feedback . " CollObject unchanged. "; }
-                                  } else {
-                                      $fail = true;
-                                      $feedback.= "Query Error modifying locality. " . $connection->error . " ";
-                                  }
-                              }
-                           }
+                           // if ($collectionobjectid!=null) {
+                           //    if ($habitat!=null && $habitat!="") {
+                           //        $sql = "update collectionobject set text2 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectionobjectid = ? ";
+                		       //    $statement = $connection->prepare($sql);
+                           //        if ($statement) {
+                           //            $statement->bind_param("sii", $habitat, $currentuserid, $collectionobjectid);
+                           //            $statement->execute();
+                           //            $rows = $connection->affected_rows;
+                           //            if ($rows==1) { $feedback = $feedback . " Updated CollObject. "; }
+                           //            if ($rows==0) { $feedback = $feedback . " CollObject unchanged. "; }
+                           //        } else {
+                           //            $fail = true;
+                           //            $feedback.= "Query Error modifying locality. " . $connection->error . " ";
+                           //        }
+                           //    }
+                           // }
 
                            // look up/update determinations.
 
