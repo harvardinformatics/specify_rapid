@@ -230,7 +230,7 @@ if ($connection && $authenticated) {
          $truncated = "";
          @$collectors= $_POST['collectors'];
          @$collectorsid= substr(preg_replace('/[^0-9]/','',$_POST['collectorsid']),0,huh_agentvariant::AGENTID_SIZE);
-         @$etal= substr(preg_replace('/[^A-Za-z&\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
+         @$etal= substr(preg_replace('/[^A-Za-z&\[\]\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
@@ -247,7 +247,7 @@ if ($connection && $authenticated) {
          @$currentname= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['currentname']),0,huh_taxon::FULLNAME_SIZE);
          @$currentnameid= substr(preg_replace('/[^0-9]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
          @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
-         @$identifiedby=      substr(preg_replace('/[^0-9]/','',$_POST['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
+         @$identifiedby= substr(preg_replace('/[^0-9]/','',$_POST['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
          @$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_POST['determinertext']),0,huh_determination::TEXT1_SIZE);
          @$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_POST['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
          @$highergeography= $_POST['highergeography'];
@@ -288,7 +288,7 @@ if ($connection && $authenticated) {
          @$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
          @$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
          @$container= substr(preg_replace('/[^0-9]/','',$_POST['container']),0,huh_collectionobject::CONTAINERID_SIZE);
- 		@$collectingtrip = substr(preg_replace('/[^0-9]/','',$_POST['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
+ 		     @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_POST['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_POST['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
          @$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_POST['project']),0,huh_project::PROJECTNAME_SIZE);
          @$storage= substr(preg_replace('/[^0-9]/','',$_POST['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
