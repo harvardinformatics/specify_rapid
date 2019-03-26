@@ -652,7 +652,7 @@ class huh_determination_custom extends huh_determination {
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname, $determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determinedddate,$remarks);
+         $statement->bind_result($typestatusname, $determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
