@@ -756,19 +756,19 @@ habitat
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
        $rprep = $related['PreparationID'];
-       $rcolobj->load($rcolobj->getCollectionObjectID());
-       $rprep->load($rprep->getPreparationID());
+       //$rcolobj->load($rcolobj->getCollectionObjectID()); // already loaded
+       //$rprep->load($rprep->getPreparationID()); // already loaded
        $formatid = $rprep->getPrepTypeID();
        $related = $rprep->loadLinkedTo();
        $rpreptype = $related['PrepTypeID'];
-       $rpreptype->load($rpreptype->getPrepTypeID());
+       //$rpreptype->load($rpreptype->getPrepTypeID()); // already loaded
        $format = $rpreptype->getName();
        $created = $rcolobj->getTimestampCreated();
        $related = $rcolobj->loadLinkedTo();
        $proj = new huh_project_custom();
        $project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
-       $rcoleve->load($rcoleve->getCollectingEventID());
+       //$rcoleve->load($rcoleve->getCollectingEventID()); // already loaded
        $stationfieldnumber = $rcoleve->getStationFieldNumber();
        $datecollected = dateBitsToString($rcoleve->getStartDate(), $rcoleve->getStartDatePrecision(), $rcoleve->getEndDate(), $rcoleve->getEndDatePrecision());
        $verbatimdate = $rcoleve->getVerbatimDate();
@@ -779,13 +779,13 @@ habitat
        $collectors = huh_collector_custom::getCollectorVariantName($collectoragentid);
        $etal = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
-       $rlocality->load($rlocality->getLocalityID());
+       //$rlocality->load($rlocality->getLocalityID()); // already loaded
        $namedPlace = $rlocality->getNamedPlace();
        $verbatimElevation = $rlocality->getVerbatimElevation();
        $specificLocality = $rlocality->getLocalityName();
        $related = $rlocality->loadLinkedTo();
        $rgeography = $related['GeographyID'];
-       $rgeography->load($rgeography->getGeographyID());
+       //$rgeography->load($rgeography->getGeographyID()); // already loaded
        $geographyid = $rgeography->getGeographyID();
        $geography = $rgeography->getFullName();
 
@@ -1231,6 +1231,7 @@ habitat
                   $('#feedback').html( 'Ready.');
               } else {
                   $('#barcode').prop('disabled', true);
+                  $('#recordcreated').html(data.created);
                   setLoadedValue('defaultproject',data.project);
                   setLoadedValue('prepmethod',data.prepmethod);
                   setLoadedValue('preptype',data.format);
