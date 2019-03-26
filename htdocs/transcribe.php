@@ -1246,7 +1246,7 @@ habitat
                   setLoadedValue('highergeography',data.geography);
                   setLoadedValue('geographyid',data.geographyid);
                   setLoadedValue('collectors',data.collectors);
-                  setLoadedValue('collectorsid',data.collectorsid);
+                  setLoadedValue('collectorsid',data.collectoragentid);
                   setLoadedValue('etal',data.etal);
                   setLoadedValue('stationfieldnumber',data.stationfieldnumber);
                   setLoadedValue('verbatimdate',data.verbatimdate);
