@@ -880,7 +880,7 @@ function ingest() {
 
                                // add/update collector
                                if ($collectingeventid!=null) {
-                                  $sql = "select collectorid from collector where collectingeventid = ? ";
+                                  $sql = "select agentid from collector where collectingeventid = ? ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
                                         $statement->bind_param("i", $collectingeventid);
