@@ -891,7 +891,7 @@ function ingest() {
                                             if ($statement->fetch()) {
                                                $sql = "update collector set etal = ?, agentid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectorid = ? ";
                                                $s2 = $connection->prepare($sql);
-                                               $s2->bind_param("siii",$etal,$collectorsid,$currentuserid,$collectorid);
+                                               $s2->bind_param("siii",$etal,$collectorid,$currentuserid,$collectorid);
                                                $s2->execute();
                                                $rows = $connection->affected_rows;
                                                if ($rows==1) {
