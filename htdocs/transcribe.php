@@ -832,7 +832,7 @@ habitat
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";
 
-   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' >\n";
+   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
    echo "<input type=hidden name='operator' value='".$user->getAgentId()."' class='carryforward'>";
    if ($test=="true") {
