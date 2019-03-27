@@ -880,7 +880,7 @@ function ingest() {
 
                                // add/update collector
                                if ($collectingeventid!=null) {
-                                  $sql = "select agentid from collector where collectingeventid = ? ";
+                                  $sql = "select collectorid from collector where collectingeventid = ? ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
                                         $statement->bind_param("i", $collectingeventid);
@@ -891,7 +891,7 @@ function ingest() {
                                             if ($statement->fetch()) {
                                                $sql = "update collector set etal = ?, agentid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectorid = ? ";
                                                $s2 = $connection->prepare($sql);
-                                               $s2->bind_param("siii",$etal,$collectorid,$currentuserid,$collectorid);
+                                               $s2->bind_param("siii",$etal,$collectorsid,$currentuserid,$collectorid);
                                                $s2->execute();
                                                $rows = $connection->affected_rows;
                                                if ($rows==1) {
@@ -950,7 +950,11 @@ function ingest() {
                                   }
                                } else {
                                   // more than one collection object, need to create new locality
-                                  $sql = "insert into locality (TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID) select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
+                                  $query = <<<EOD
+insert into locality
+(TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID)
+select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
+EOD;
                 		              $statement = $connection->prepare($sql);
                                   if ($statement) {
                                       $statement->bind_param("i", $localityid);
