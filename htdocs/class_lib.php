@@ -1027,7 +1027,8 @@ class huh_collector_custom extends huh_collector {
    public static function getCollectorVariantName($collectoragentid) {
       global $connection;
       $returnvalue = "";
-      $sql = "select name from agentvariant where agentid = ? and vartype = 4 limit 1 ";
+      //$sql = "select name from agentvariant where agentid = ? and vartype = 4 limit 1 ";
+      $sql = "select concat(av.name, ' [', coalesce(year(a.dateofbirth), '?'), '-', coalesce(year(a.dateofdeath), '?'), ']') as name from agentvariant av left join agent a on av.agentid = a.agentid where agentid = ? and vartype = 4 limit 1 ";
       if ($statement = $connection->prepare($sql)) {
          $statement->bind_param("i", $collectoragentid);
          $statement->execute();
