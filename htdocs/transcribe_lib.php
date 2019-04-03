@@ -24,7 +24,7 @@ function getNextBatch() {
      global $connection, $user;
      // find the next batch to be worked on
      // TODO: db should be improved to record the last batch the user worked on
-     $sql = 'select position, tr_batch_id from TR_USER_BATCH where username = ? and completed_date is null order by position desc limit 1';
+     $sql = 'select trub.position, trub.tr_batch_id from TR_USER_BATCH trub, TR_BATCH trb where trub.tr_batch_id = trb.tr_batch_id and trub.username = ? and trb.completed_date is null order by trub.position desc limit 1';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("s",$_SESSION["username"]);
         $statement->execute();
