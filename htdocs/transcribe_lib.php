@@ -312,7 +312,7 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
 
-     $sql = "select imlf.path, imlf.filename from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf where tbi.IMAGE_OBJECT_ID = imo.ID and imo.IMAGE_LOCAL_FILE_ID = imlf.ID and tbi.TR_BATCH_ID = ? and tbi.POSITION = ? ;"
+     $sql = "select imlf.path, imlf.filename from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf where tbi.IMAGE_OBJECT_ID = imo.ID and imo.IMAGE_LOCAL_FILE_ID = imlf.ID and tbi.TR_BATCH_ID = ? and tbi.POSITION = ? ;";
 
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("ii", $this->getBatchID(), $position);
