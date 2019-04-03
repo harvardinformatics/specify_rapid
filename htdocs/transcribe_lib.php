@@ -186,6 +186,7 @@ class TR_Batch {
   }
 
   function getFileCount() {
+    global $connection;
 
     if (! isset($this->filecount)) {
 
@@ -351,6 +352,8 @@ class TR_Batch {
           $position = 1;
         }
         $statement->close();
+     } else {
+       throw new Exception("Connection to the database failed");
      }
      return $this->getFile($position);
   }
