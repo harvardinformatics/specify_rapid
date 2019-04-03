@@ -98,7 +98,7 @@ if ($connection && $authenticated) {
          }
          $targetBatchCurrent = $targetBatch->getCurrentFile();
          $targetBatchFirst = $targetBatch->getFile(1);
-         $position = $targetBatch->position;
+         $position = $targetBatchCurrent->position;
          echo " <strong>Batch: [$targetBatchCurrent->path]</strong>";
          echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
          if ($position > 1) {
