@@ -238,12 +238,12 @@ function doSetup() {
    if ($targetBatchCurrent->path ==null || strlen($targetBatchCurrent->path)==0) {
        echo " <strong>No Current Batch.</strong>";
    } else {
-      echo " <strong>Batch: [$targetBatchCurrent->path]</strong>";
+      echo " <strong>Batch: [{$targetBatch->getPath()}]</strong>";
       echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       if ($position > 1) {
            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
       }
-      echo " First File: [$targetBatchFirst->filename]";
+      //echo " First File: [$targetBatchFirst->filename]";
    }
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";
