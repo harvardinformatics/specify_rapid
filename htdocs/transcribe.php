@@ -230,8 +230,8 @@ function doSetup() {
    } else {
       $targetBatch = getBatch($targetBatchDir);
    }
-   $targetBatchFirst = getFirstFileInNextBatch();
-   $position = $targetBatch->position + 1;
+   $targetBatchFirst = $targetBatch->getFile(1);
+   $position = $targetBatch->position;
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
    if ($targetBatch->path ==null || strlen($targetBatch->path)==0) {
@@ -673,9 +673,9 @@ habitat
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$path = urldecode($_GET['path']);
-   $position = 0;
+   $position = 1;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
-   if ($position==null || $position=="") { $position = 0;  }
+   if ($position==null || $position=="") { $position = 1;  }
 
    switch ($config) {
       case 'minimal':
@@ -1084,21 +1084,21 @@ habitat
                      var imagesource = data.src;
                      var imagepath = data.path;
                      var imagefilename = data.filename;
-                     var position1 = data.position1;
-                     $('#current_position').html(data.position1);
+                     var position = data.position;
+                     $('#current_position').html(data.position);
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position1 +' of $filecount.');
-                     if (position1==filecount) {
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
+                     if (position==filecount) {
                         // end of batch, disable next button, enable done button.
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                         $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                      }
-                     if(position1 > 1) {
+                     if(position > 1) {
                     	$('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
                      }
                      // load data for this record.
-                     loadNextData(position1,".$currentBatch->getBatchID().");
+                     loadNextData(position,".$currentBatch->getBatchID().");
                    },
                    error: function() {
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
@@ -1133,22 +1133,22 @@ habitat
                      var imagesource = data.src;
                      var imagepath = data.path;
                      var imagefilename = data.filename;
-                     var position1 = data.position1;
-                     $('#current_position').html(data.position1);
+                     var position = data.position;
+                     $('#current_position').html(data.position);
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position1 +' of $filecount.');
-                     if (position1==filecount) {
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
+                     if (position==filecount) {
                         // end of batch, disable next button, enable done button.
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                      }
-                     if(position1 > 1) {
+                     if(position > 1) {
                          $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
                      } else {
                          $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
                      }
                      // load data for this record.
-                     loadNextData(position1,".$currentBatch->getBatchID().");
+                     loadNextData(position,".$currentBatch->getBatchID().");
                    },
                    error: function() {
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
@@ -1333,9 +1333,8 @@ habitat
                });
           }
 
-          function loadNextData(position1,batch_id) {
-               console.log('called loadNextData() with ' + position1 + ',' +batch_id);
-               var position0 = position1 - 1; // change one based position count to zero based position count.
+          function loadNextData(position,batch_id) {
+               console.log('called loadNextData() with ' + position + ',' +batch_id);
 
                if (nextdata && new Date().valueOf() - nextdata_ts.valueOf() < 180000) { // 3 minute cache
                  console.log('Using data from nextdata cache');
@@ -1349,7 +1348,7 @@ habitat
                      data: {
                          action: 'getnextrecord',
                          batch_id: batch_id,
-                         position: position0
+                         position: position
                      },
                      success: function(data) {
                        console.log(data);
@@ -1363,7 +1362,7 @@ habitat
                }
 
                // async cache next record data
-               nextpos = position0 + 1;
+               nextpos = position + 1;
                $.ajax({
                    type: 'GET',
                    url: 'transcribe_handler.php',

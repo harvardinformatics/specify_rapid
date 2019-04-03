@@ -96,8 +96,8 @@ if ($connection && $authenticated) {
          } else {
             $targetBatch = getBatch($targetBatchDir);
          }
-         $targetBatchFirst = getFirstFileInBatch($targetBatchDir);
-         $position = $targetBatch->position + 1;
+         $targetBatchFirst = $targetBatch->getFile(1);
+         $position = $targetBatch->position;
          echo " <strong>Batch: [$targetBatch->path]</strong>";
          echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
          if ($position > 1) {
@@ -109,7 +109,7 @@ if ($connection && $authenticated) {
       case 'getnextrecord':
          $ok = false;
          @$id = $_GET['batch_id'];
-         @$position = $_GET['position'];  // zero based position in file array
+         @$position = $_GET['position'];
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
@@ -172,14 +172,13 @@ if ($connection && $authenticated) {
          $currentBatch = new TR_Batch();
          $currentBatch->setID($id);
          $path = $currentBatch->getPath();
-         //$pathfile = $currentBatch->getNextFile();
          $pathfile = $currentBatch->incrementFile();
-         $position1 = $pathfile->position +1;  // convert zero based file array position to 1 based file x of y position.
+         $position = $pathfile->position;
          $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
          $path= $pathfile->path;
          $filename = $pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
+         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; }
 
          header("Content-type: application/json");
@@ -197,14 +196,13 @@ if ($connection && $authenticated) {
          $currentBatch = new TR_Batch();
          $currentBatch->setID($id);
          $path = $currentBatch->getPath();
-         //$pathfile = $currentBatch->getNextFile();
          $pathfile = $currentBatch->decrementFile();
-         $position1 = $pathfile->position +1;  // convert zero based file array position to 1 based file x of y position.
+         $position = $pathfile->position;
          $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
          $path= $pathfile->path;
          $filename = $pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
+         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; }
 
          header("Content-type: application/json");

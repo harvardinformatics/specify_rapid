@@ -5,72 +5,52 @@ include_once("connection_library.php");
 
 # Data Structures  *********************************
 
-class PathFile { 
+class PathFile {
    public $path;  // path to batch
    public $filename;  // next file in batch
    public $position; // numeric position of filename in batch
    public $batch_id; // ID of the batch
    public $filecount; // total files in the batch
-} 
+}
 
 # Supporting functions *****************************
 
 /** Find out what the next batch is for the current user, and return the file at the current position from that batch as a PathFile object.
- * 
- *  @return a PathFile containing the path for the first batch for the current user and the current file for the current user in that batch, 
+ *
+ *  @return a PathFile containing the path for the first batch for the current user and the current file for the current user in that batch,
  *     empty if no batch or no next file.
  */
 function getNextBatch() {
      global $connection, $user;
-     $result = new PathFile();
      // find the next batch to be worked on
-     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_BATCH b left join TR_USER_BATCH ub on b.tr_batch_id = ub.tr_batch_id  where (username = ? and b.completed_date is null ) or ub.tr_batch_id is null order by username, b.path limit 1';
+     // TODO: db should be improved to record the last batch the user worked on
+     $sql = 'select position, tr_batch_id from TR_USER_BATCH where username = ? and completed_date is null order by position desc limit 1';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("s",$_SESSION["username"]);
         $statement->execute();
-        $statement->bind_result($path, $position,$batch_id);
+        $statement->bind_result($position,$batch_id);
         $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            $result->position = $position;
-            $result->batch_id= $batch_id;
+        if ($statement->fetch()) {
+          // nothing
+        } else {
+          $position = 1;
+          $batch_id = 1;
         }
-     }
-     // find the first file to work on in the batch 
-     if (strlen($result->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and ..
-        $result->filecount = count($files) - 2;
+     } else {
+       throw new Exception("Connection to database failed");
      }
 
-     return $result;
+     $batch = new TR_BATCH();
+     $batch->setID($batch_id);
+
+     return $batch->getFile($position);
 }
 
 function getBatch($path) {
-     global $connection, $user;
-     $result = new PathFile();
-     // find the batch with the provided path.
-     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_BATCH b left join TR_USER_BATCH ub on b.tr_batch_id = ub.tr_batch_id where path = ? limit 1';
-     if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("s",$path);
-        $statement->execute();
-        $statement->bind_result($path, $position,$batch_id);
-        $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            if($position=="") { $position=1; } 
-            $result->position = $position;
-            $result->batch_id= $batch_id;
-        }
-     }
-     // find the first file to work on in the batch 
-     if (strlen($result->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and ..
-        $result->filecount = count($files) - 2;
-     }
 
-     return $result;
+    $batch = new TR_BATCH();
+    $batch->setPath($path);
+    return $batch->getCurrentFile();
 }
 
 /**
@@ -82,86 +62,28 @@ function getBatch($path) {
  *
  * @return a string representing the provided date or date range in ISO format
  */
-function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecision) { 
+function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecision) {
    $result = "";
-   if ($startDate!="") { 
+   if ($startDate!="") {
      $result = $startDate;
-     if ($startDatePrecision==3) { 
+     if ($startDatePrecision==3) {
         $result = substr($startDate,0,4);
      }
-     if ($startDatePrecision==2) { 
+     if ($startDatePrecision==2) {
         $result = substr($startDate,0,7);
      }
-   } 
-   if ($endDate!="") { 
-     if ($result!="") { $result = "$result/"; } 
-     if ($endDatePrecision==3) { 
+   }
+   if ($endDate!="") {
+     if ($result!="") { $result = "$result/"; }
+     if ($endDatePrecision==3) {
         $endDate = substr($endDate,0,4);
      }
-     if ($endDatePrecision==2) { 
+     if ($endDatePrecision==2) {
         $endDate = substr($endDate,0,7);
      }
      $result = "$result$endDate";
-   } 
+   }
    return $result;
-}
-/** Find out what the next batch is for the current user, and return the first file from that batch as a PathFile object.
- * 
- *  @return a PathFile containing the path for the first batch for the current user and the first file for the current user in that batch, 
- *     empty if no batch or no first file.
- * 
- */
-function getFirstFileInNextBatch() {
-     global $connection, $user;
-     $result = new PathFile();
-     // find the next batch to be worked on
-     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where username = ? and b.completed_date is null limit 1';
-     if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("s",$_SESSION["username"]);
-        $statement->execute();
-        $statement->bind_result($path, $position,$batch_id);
-        $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            $result->position = $position;
-            $result->batch_id= $batch_id;
-        }
-     }
-     // find the first file in this batch 
-     if (strlen($result->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[0 + 2]; // position + 2 to account for the directory entries . and ..
-        $result->filecount = count($files) - 2;
-     }
-
-     return $result;
-}
-
-function getFirstFileInBatch($batchpath) {
-     global $connection;
-     $result = new PathFile();
-     // find the next batch to be worked on
-     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_BATCH b left join TR_USER_BATCH ub on b.tr_batch_id = ub.tr_batch_id  where username = ? and b.path = ? limit 1';
-     if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("ss",$_SESSION["username"],$batchpath);
-        $statement->execute();
-        $statement->bind_result($path, $position,$batch_id);
-        $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            if($position==null||$position=="") { $position=0; }
-            $result->position = $position;
-            $result->batch_id= $batch_id;
-        }
-     }
-     // find the first file in this batch 
-     if (strlen($result->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[0 + 2]; // position + 2 to account for the directory entries . and ..
-        $result->filecount = count($files) - 2;
-     }
-
-     return $result;
 }
 
 /** Return one barcode known for a file, or an empty string if none is known.
@@ -170,34 +92,19 @@ function getFirstFileInBatch($batchpath) {
   * @param filename to check for barcodes (database lookup only)
   * @return a string containing a barcode, or an empty string if none was known.
   */
-function getBarcodeForFilename($pathbelowbase, $filename) { 
+function getBarcodeForFilename($pathbelowbase, $filename) {
     global $connection;
     $result = "";
     $barcodes = ImageHandler::checkFilenameForBarcodes($pathbelowbase,$filename,false);
-    if ($barcodes!=null && count($barcodes)>0){ 
+    if ($barcodes!=null && count($barcodes)>0){
        $result = $barcodes[0];
     }
     return $result;
-} 
-
-/**
- * Given a barcode number, find data for the transcription form associated with that barcode.
- * 
- * @param barcode the barcode number to look up, can be zero padded or not.
- * @return an associative array of key value pairs of data for the transcription form, including 
- *   key status with values NOTFOUND, ERROR, FOUND, and key error containing any error message.
- */
-function getDataForBarcode($barcode) { 
-   $result = array( "status"=> "NOTFOUND", "error"=> "", "barcode"=> "", "created"=> "", "herbarium"=> "", "format"=> "", "prepmethod"=> "", "project"=> "", "highergeography"=> "", "highergeographyid"=> "", "filedundername"=> "", "filedundernameid"=> "", "filedunderqualifier"=> "", "currentname"=> "", "currentnameid"=> "", "currentqualifier"=> "", "collectingtrip"=> "", "collectors"=> "", "etal"=> "", "specificlocality"=> "", "stationfieldnumber"=> "", "verbatimdate"=> "", "datecollected"=> "", "namedplace"=> "", "verbatimelevation"=> "", "habitat"=> "" );
-
-   // TODO: Implement.
-
-   return $result;
 }
 
 # Classes *******************************************
 
-class TR_Batch { 
+class TR_Batch {
 
   private $batch_id;
   private $path;
@@ -206,9 +113,9 @@ class TR_Batch {
   private $filecount;
 
   // construct a new tr_batch, then call setPath(path) to initialize the tr_batch object from path.
-  function setPath($a_path) { 
+  function setPath($a_path) {
      global $connection;
-     if (strlen($a_path)>0) { 
+     if (strlen($a_path)>0) {
         $this->path = $a_path;
         $sql = 'select tr_batch_id, image_batch_id, completed_date from TR_BATCH where path = ?';
         if ($statement = $connection->prepare($sql)) {
@@ -223,18 +130,14 @@ class TR_Batch {
                // make sure there is a TR_USER_BATCH entry for this batch for the current user.
                $this->selectOrCreateUserForBatch();
            }
-           if (strlen($this->path)>0) {
-                $files = scandir(BASE_IMAGE_PATH.$this->path,SCANDIR_SORT_ASCENDING);
-                $this->filecount = count($files) - 2;
-           }
            $statement->close();
-           if (strlen($this->batch_id)==0) { 
+           if (strlen($this->batch_id)==0) {
                throw new Exception('Batch not found for path '. $path);
            }
-        } else { 
+        } else {
             throw new Exception('Unable to connect to database.');
-        } 
-     } else { 
+        }
+     } else {
          throw new Exception('No path provided for batch.');
      }
   }
@@ -258,10 +161,6 @@ class TR_Batch {
                // make sure there is a TR_USER_BATCH entry for this batch for the current user.
                $this->selectOrCreateUserForBatch();
            }
-           if (strlen($this->path)>0) {
-                $files = scandir(BASE_IMAGE_PATH.$this->path,SCANDIR_SORT_ASCENDING);
-                $this->filecount = count($files) - 2;
-           }
            $statement->close();
            if (strlen($this->batch_id)==0) {
                throw new Exception('Batch not found for path '. $path);
@@ -274,24 +173,45 @@ class TR_Batch {
      }
   }
 
-  function getBatchID() { 
+  function getBatchID() {
      return $this->batch_id;
   }
-  function getPath() { 
+  function getPath() {
      return $this->path;
   }
-  function getImageBatchID() { 
+  function getImageBatchID() {
      return $this->image_batch_id;
   }
-  function getCompletedDate() { 
+  function getCompletedDate() {
      return $this->completed_date;
   }
-  function getFileCount() { 
-     return $this->filecount;
+
+  function getFileCount() {
+
+    if (! isset($this->filecount)) {
+
+      $sql = "select count(*) from TR_BATCH_IMAGE where tr_batch_id = ?";
+      if ($statement = $connection->prepare($sql)) {
+         $statement->bind_param("i", $this->getBatchID());
+         $statement->execute();
+         $statement->bind_result($count);
+         $statement->store_result();
+         if ($statement->fetch()) {
+           $this->filecount = $count;
+         } else {
+           throw new Exception("Could not find images for batch id ".$this->getBatchId());
+         }
+      } else {
+        throw new Exception("Database connection failed");
+      }
+
+    }
+
+    return $this->filecount;
   }
 
-  
-  function selectOrCreateUserForBatch() { 
+
+  function selectOrCreateUserForBatch() {
      global $connection, $user;
      $sql = 'select count(*) from TR_USER_BATCH where tr_batch_id = ? and username = ? ';
      if ($statement = $connection->prepare($sql)) {
@@ -300,12 +220,11 @@ class TR_Batch {
         $statement->bind_result($usercount);
         $statement->store_result();
         if ($statement->fetch()) {
-           if ($usercount==0) { 
+           if ($usercount==0) {
                $sql = 'insert into TR_USER_BATCH (tr_batch_id,username) values (?,?) ';
                if ($statement1 = $connection->prepare($sql)) {
                    $statement1->bind_param("is",$this->batch_id,$_SESSION["username"]);
                    $statement1->execute();
-echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
                    $statement1->close();
                }
            }
@@ -313,163 +232,135 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
         $statement->free_result();
         $statement->close();
      }
-     
+
   }
-  
+
   function movePosition($i) {
      global $connection, $user;
-     $result = new PathFile();
-     // find the current batch
-     $sql = 'select b.path, ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ? and b.completed_date is null order by path limit 1';
+
+     // Look up current position
+     $sql = 'select ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ?';
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("is",$this->batch_id,$_SESSION["username"]);
+        $statement->bind_param("is",$this->getBatchId(),$_SESSION["username"]);
         $statement->execute();
-        $statement->bind_result($path, $position,$batch_id);
+        $statement->bind_result($position, $batch_id);
         $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            $result->position = $position;
+        if ($statement->fetch()) {
+          // nothing
+        } else {
+          throw new Exception("Could not find current batch/position for tr_batch_id [{$this->getBatchId()}]");
         }
         $statement->close();
+     } else {
+       throw new Exception("Database connection failed");
      }
-     // find the current file in the batch 
-     if (strlen($result->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and .. 
-        $result->filecount = count($files) - 2;
-        
-        // does next file exist: 
-        if (array_key_exists($result->position + 2 + 1,$files)) { 
-           // move to next file in batch
-           $result->position = $result->position + $i; // increment position to the next file.
-           $result->filename = $files[$result->position + 2]; 
-           // persist
-           $sql = "update TR_USER_BATCH set position = position + $i where username = ? and tr_batch_id = ?";
-           if ($statement = $connection->prepare($sql)) {
-              $statement->bind_param("si",$_SESSION["username"],$batch_id);
-              $statement->execute();
-              $statement->close();
-           }
-        } else { 
-           // Done with batch
-           $result = new PathFile();
-           //TODO: enable when not in test mode.
-           if (0==1) { 
-               // mark batch as done
-               $sql = "update TR_BATCH set completed_date = now() where tr_batch_id = ?";
-               if ($statement = $connection->prepare($sql)) {
-                  $statement->bind_param("i",$batch_id);
-                  $statement->execute();
-                  $statement->close();
-               }
-           } else { 
-              // reset batch for user.
-              $sql = "update TR_USER_BATCH set position = 0 where username = ? and tr_batch_id = ?";
-              if ($statement = $connection->prepare($sql)) {
-                 $statement->bind_param("si",$_SESSION["username"],$batch_id);
-                 $statement->execute();
-                 $statement->close();
-              }
-           }
+
+     // Check if there is a file at the new position
+     $nextposition = $position + $i;
+     $sql = 'select position from TR_BATCH_IMAGE where tr_batch_id = ? and position = ?';
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("ii",$this->getBatchId(),$nextposition);
+        $statement->execute();
+        $statement->bind_result($position2);
+        $statement->store_result();
+        if ($statement->fetch()) {
+          // nothing
+        } else {
+          // No such position, go back to beginning, set position to 1
+          $nextposition = 1;
         }
+        $statement->close();
+     } else {
+       throw new Exception("Database connection failed");
      }
-     return $result;
+
+     // Update position
+     $sql = "update TR_USER_BATCH set position = ? where username = ? and tr_batch_id = ?";
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("isi",$nextposition,$_SESSION["username"],$batch_id);
+        $statement->execute();
+        $statement->close();
+     } else {
+       throw new Exception("Database connection failed");
+     }
+
+     return $this->getFile($nextposition);
   }
 
   /** Find the next file in this batch for the current user and move to it.
-   * 
+   *
    * @return a PathFile object containing the next file and it's path, empty if no next file found.
    */
-  function incrementFile() { 
+  function incrementFile() {
   	return $this->movePosition(1);
   }
-  
+
   /** Find the previous file in this batch for the current user and move to it.
-   * 
+   *
    * @return a PathFile object containing the previous file and it's path, empty if no previous file found.
-   */  
+   */
   function decrementFile() {
   	return $this->movePosition(-1);
   }
 
   /** Find the file at a specified position in this batch without moving to it.
-   * 
-   * @param position0 zero based position of the file to return.
-   * @return a PathFile object containing the file and it's path, empty if no file found at the provided position.
+   *
+   * @param position position of the file to return (starts at 1).
+   * @return a PathFile object containing the file and it's path, null if no file found at the provided position.
    */
-  function getFile($position0) {
+  function getFile($position) {
      global $connection, $user;
      $result = new PathFile();
-     // find the current file in the batch 
-     if (strlen($this->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$this->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[$position0 + 2]; // position0 + 2 to account for the directory entries . and .. 
-        $result->filecount = count($files) - 2;
-        $result->position = $position0;
-     }
-     return $result;
-  }
 
+     $sql = "select imlf.path, imlf.filename from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf where tbi.IMAGE_OBJECT_ID = imo.ID and imo.IMAGE_LOCAL_FILE_ID = imlf.ID and tbi.TR_BATCH_ID = ? and tbi.POSITION = ? ;"
 
-  function getCurrentFile() { 
-     global $connection, $user;
-     $targetposition = 0;
-     // find the current batch and the position in it for this user
-     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ? and b.completed_date is null order by path limit 1';
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("is",$this->batch_id,$_SESSION["username"]);
+        $statement->bind_param("ii", $this->getBatchID(), $position);
         $statement->execute();
-        $statement->bind_result($path, $position);
+        $statement->bind_result($path, $filename);
         $statement->store_result();
         if ($statement->fetch()) {
-            $targetposition = $position;
+            $result->path = rtrim($path, '/') . '/';
+            $result->filename = $filename;
+            $result->position = $position;
+            $result->batch_id = $this->getBatchID();
+            $result->filecount = $this->getFileCount();
+        } else {
+          return null;
         }
-        $statement->close();
+     } else {
+       throw new Exception("Connection to database failed");
      }
-     return $this->getFile($targetposition);
+
+     return $result;
   }
 
-  /** Find the next file in this batch for the current user without moving to it.
-   * 
-   * @return a PathFile object containing the next file and it's path, empty if no next file found.
-   */
-  function getNextFile() { 
+
+  function getCurrentFile() {
      global $connection, $user;
-     $result = new PathFile();
-     // find the current batch
-     $sql = 'select b.path, ub.position from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ? and b.completed_date is null order by path limit 1';
+
+     // find the current batch and the position in it for this user
+     $sql = 'select position from TR_USER_BATCH where tr_batch_id = ? and username = ?';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("is",$this->batch_id,$_SESSION["username"]);
         $statement->execute();
-        $statement->bind_result($path, $position);
+        $statement->bind_result($position);
         $statement->store_result();
-        while ($statement->fetch()) {
-            $result->path = $path;
-            $result->position = $position;
+        if ($statement->fetch()) {
+            // nothing
+        } else {
+          $position = 1;
         }
         $statement->close();
      }
-     // find the current file in the batch 
-     if (strlen($result->path)>0) {
-        $files = scandir(BASE_IMAGE_PATH.$result->path,SCANDIR_SORT_ASCENDING);
-        $result->filename = $files[$result->position + 2]; // position + 2 to account for the directory entries . and .. 
-        $result->filecount = count($files) - 2;
-
-        // does next file exist: 
-        if (array_key_exists($result->position + 2 + 1,$files)) {
-           // move to next file in batch
-           $result->position = $result->position + 1; // increment position to the next file.
-           $result->filename = $files[$result->position + 2];
-        }
-     }
-     return $result;
+     return $this->getFile($position);
   }
 
   /** Reset the position in this batch for the current user to the specified position.
-   * 
+   *
    * @param position the position to move to.
    */
-  function moveTo($position) { 
+  function moveTo($position) {
      global $connection, $user;
      $result = new PathFile();
      // find the current batch
@@ -477,16 +368,16 @@ echo "Adding TR_USER_BATCH ["+$this->batch_id+"]["+$_SESSION['username']+"]";
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("iis",$position, $this->batch_id,$_SESSION["username"]);
         $statement->execute();
-     } 
+     }
   }
 
 
 
-} 
+}
 
-class TPage extends Page { 
+class TPage extends Page {
 
-   function __construct() { 
+   function __construct() {
       parent::__construct();
       $this->targetPage = "transcribe.php";
    }
@@ -506,7 +397,7 @@ class TPage extends Page {
       if ($error!="") {
       	$returnvalue .= "<h2>$error</h2>";
       }
-      if ($user!=null) { 
+      if ($user!=null) {
          if ($user->getAuthenticationState()==true) {
       	     $returnvalue .= $user->getUserHtml($this->targetPage);
              $returnvalue .= "
@@ -515,45 +406,45 @@ class TPage extends Page {
    const channel = new BroadcastChannel('imageclicks');
    const pingchannel = new BroadcastChannel('ping');
 
-   function dosetup(barcode) { 
-   
+   function dosetup(barcode) {
+
       window.open('displayimage.php?mode=image&startbarcode='+barcode ,'_blank','modal=yes');
 
       window.location.href = 'transcribe.php?display=mainform&barcode='+barcode;
 
    }
 
-   function dosetuppath(path,filename,position,mode) { 
+   function dosetuppath(path,filename,position,mode) {
 
       window.open('displayimage.php?mode=imagefile&path='+path+'&filename='+filename ,'_blank','modal=yes');
- 
+
       var added = '';
-      if (mode=='test') { added = '&test=true'; }  
-      if (mode=='testminimal') { added = '&test=true&config=minimal'; }  
+      if (mode=='test') { added = '&test=true'; }
+      if (mode=='testminimal') { added = '&test=true&config=minimal'; }
       window.location.href = 'transcribe.php?display=mainform&path='+path+'&filename='+filename+'&position='+position+added;
-   } 
-   function doclear() { 
+   }
+   function doclear() {
       channel.postMessage('close');
       window.location.href = 'transcribe.php?display=setup';
 
    }
-   function ping() { 
+   function ping() {
       pingchannel.postMessage('ping');
    }
 
-   function goNext() { 
+   function goNext() {
       alert(\"TODO: Go next, load next image.\");
    }
 
-   pingchannel.onmessage = function(e) { 
+   pingchannel.onmessage = function(e) {
       console.log(e);
-      if (e.data=='ping') { 
+      if (e.data=='ping') {
          pingchannel.postMessage('pong');
       }
-      if (e.data=='pong') { 
+      if (e.data=='pong') {
          alert('pong');
       }
-   } 
+   }
 
 
 </script>
@@ -587,7 +478,7 @@ class TPage extends Page {
    return $returnvalue;
    }
 
-   public function getJQueryPageHead() { 
+   public function getJQueryPageHead() {
      $returnvalue = "
        <script src='/jquery/jquery-3.2.1.min.js'></script>
        <script src='/jquery/zoom-master/jquery.zoom.js'></script>
@@ -599,18 +490,18 @@ class TPage extends Page {
      ";
      return $returnvalue;
    }
-   public function getHeadStyle() { 
+   public function getHeadStyle() {
      $returnvalue = "
        <style>
-html, body { 
+html, body {
    height: 100%;
 }
-body { 
+body {
    display: flex;
    flex-direction: column;
 }
-.flex-main { 
-    display: flex; 
+.flex-main {
+    display: flex;
     flex-direction: row;
     align-items: stretch;
     flex-grow: 10;
