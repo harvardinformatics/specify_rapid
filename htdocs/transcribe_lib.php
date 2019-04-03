@@ -17,8 +17,7 @@ class PathFile {
 
 /** Find out what the next batch is for the current user, and return the file at the current position from that batch as a PathFile object.
  *
- *  @return a PathFile containing the path for the first batch for the current user and the current file for the current user in that batch,
- *     empty if no batch or no next file.
+ *  @return a TR_BATCH object.
  */
 function getNextBatch() {
      global $connection, $user;
@@ -43,14 +42,14 @@ function getNextBatch() {
      $batch = new TR_BATCH();
      $batch->setID($batch_id);
 
-     return $batch->getFile($position);
+     return $batch;
 }
 
 function getBatch($path) {
 
     $batch = new TR_BATCH();
     $batch->setPath($path);
-    return $batch->getCurrentFile();
+    return $batch;
 }
 
 /**

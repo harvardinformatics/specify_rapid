@@ -230,19 +230,20 @@ function doSetup() {
    } else {
       $targetBatch = getBatch($targetBatchDir);
    }
+   $targetBatchCurrent = $targetBatch->getCurrentFile();
    $targetBatchFirst = $targetBatch->getFile(1);
-   $position = $targetBatch->position;
+   $position = $targetBatchCurrent->position;
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
-   if ($targetBatch->path ==null || strlen($targetBatch->path)==0) {
+   if ($targetBatchCurrent->path ==null || strlen($targetBatchCurrent->path)==0) {
        echo " <strong>No Current Batch.</strong>";
    } else {
-      echo " <strong>Batch: [$targetBatch->path]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+      echo " <strong>Batch: [$targetBatchCurrent->path]</strong>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       if ($position > 1) {
-           echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+           echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
       }
-      echo " First File: [$targetBatch->filename]";
+      echo " First File: [$targetBatchFirst->filename]";
    }
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";

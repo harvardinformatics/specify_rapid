@@ -96,14 +96,15 @@ if ($connection && $authenticated) {
          } else {
             $targetBatch = getBatch($targetBatchDir);
          }
+         $targetBatchCurrent = $targetBatch->getCurrentFile();
          $targetBatchFirst = $targetBatch->getFile(1);
          $position = $targetBatch->position;
-         echo " <strong>Batch: [$targetBatch->path]</strong>";
-         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+         echo " <strong>Batch: [$targetBatchCurrent->path]</strong>";
+         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
          if ($position > 1) {
-              echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+              echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
          }
-         echo " First File: [$targetBatch->filename]";
+         echo " First File: [$targetBatchFirst->filename]";
          break;
 
       case 'getnextrecord':
