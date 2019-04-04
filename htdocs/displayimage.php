@@ -20,7 +20,7 @@ function imageDataForBarcode($barcode) {
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
-            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            where identifier = ? and object_type_id = 3 and hidden_flag = 0 and active_flag = 1
             limit 1 ";
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
@@ -210,7 +210,7 @@ function image($barcode) {
  *  @param filename the filename below the path.
  */
 function imagefile($path,$filename) {
-    echo "<span id='info'>imageclicks</span> <span id='path'>$path</span> <span id='filename'>$filename</span>";
+    //echo "<span id='info'>imageclicks</span> <span id='path'>$path</span> <span id='filename'>$filename</span>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>

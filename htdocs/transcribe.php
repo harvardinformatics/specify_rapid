@@ -241,9 +241,9 @@ function doSetup() {
        echo " <strong>No Current Batch.</strong>";
    } else {
       echo " <strong>Batch: [$batchPath]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
-            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       }
       //echo " First File: [$targetBatchFirst->filename]";
    }
@@ -467,7 +467,7 @@ function imageForBarcode($barcode) {
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
-            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            where identifier = ? and object_type_id = 3 and hidden_flag = 0 and active_flag = 1
             limit 1 ";
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
@@ -492,7 +492,7 @@ function imageDataForBarcode($barcode) {
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
-            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            where identifier = ? and object_type_id = 3 and hidden_flag = 0 and active_flag = 1
             limit 1 ";
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);

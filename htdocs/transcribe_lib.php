@@ -113,32 +113,28 @@ class TR_Batch {
 
   // construct a new tr_batch, then call setPath(path) to initialize the tr_batch object from path.
   function setPath($a_path) {
-     global $connection;
-     if (strlen($a_path)>0) {
-        $this->path = $a_path;
-        $sql = 'select tr_batch_id, image_batch_id, completed_date from TR_BATCH where path = ?';
-        if ($statement = $connection->prepare($sql)) {
-           $statement->bind_param("s",$this->path);
-           $statement->execute();
-           $statement->bind_result($batch_id, $image_batch_id, $completed_date);
-           $statement->store_result();
-           while ($statement->fetch()) {
-               $this->batch_id = $batch_id;
-               $this->image_batch_id = $image_batch_id;
-               $this->completed_date = $completed_date;
-               // make sure there is a TR_USER_BATCH entry for this batch for the current user.
-               $this->selectOrCreateUserForBatch();
-           }
-           $statement->close();
-           if (strlen($this->batch_id)==0) {
-               throw new Exception('Batch not found for path '. $path);
-           }
-        } else {
-            throw new Exception('Unable to connect to database.');
-        }
-     } else {
-         throw new Exception('No path provided for batch.');
-     }
+    global $connection;
+
+    $this->path = $a_path;
+    $sql = 'select tr_batch_id, image_batch_id, completed_date from TR_BATCH where path = ?';
+    if ($statement = $connection->prepare($sql)) {
+       $statement->bind_param("s",$this->path);
+       $statement->execute();
+       $statement->bind_result($batch_id, $image_batch_id, $completed_date);
+       $statement->store_result();
+       if ($statement->fetch()) {
+           $this->batch_id = $batch_id;
+           $this->image_batch_id = $image_batch_id;
+           $this->completed_date = $completed_date;
+           // make sure there is a TR_USER_BATCH entry for this batch for the current user.
+           $this->selectOrCreateUserForBatch();
+       } else {
+         throw new Exception('Batch not found for path '. $path);
+       }
+       $statement->close();
+    } else {
+        throw new Exception('Database connection failed.');
+    }
   }
 
   // construct a new tr_batch, then call setID(id) to initialize the tr_batch object from a tr_batch_id.
