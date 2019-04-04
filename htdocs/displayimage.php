@@ -110,7 +110,6 @@ function error() {
 }
 
 function image($barcode) {
-    echo "$barcode <div id='info'>imageclicks</div>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
@@ -122,7 +121,7 @@ function image($barcode) {
                   if (e.data.action=='load') {
                      setupCanvas(e.data.uri,e.data.origheight,ed.data.origwidth);
                   } else {
-                     document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
+                     console.log('Click on: ' + e.data.x + ':' + e.data.y);
                      doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
                   }
               }
@@ -210,7 +209,6 @@ function image($barcode) {
  *  @param filename the filename below the path.
  */
 function imagefile($path,$filename) {
-    //echo "<span id='info'>imageclicks</span> <span id='path'>$path</span> <span id='filename'>$filename</span>";
     // channel.postMessage( { x:xpos, y:ypos, h:height, w:width, oh:origheight, ow:origwidth, id:imagesetid } )
     echo "
         <script>
@@ -224,7 +222,7 @@ function imagefile($path,$filename) {
                      $('#filename').html(e.data.filename);
                      setupCanvas(e.data.uri,e.data.origheight,e.data.origwidth);
                   } else {
-                     document.getElementById('info').innerHTML = 'Click on: ' + e.data.x + ':' + e.data.y;
+                     console.log('Click on: ' + e.data.x + ':' + e.data.y);
                      doZoom(e.data.x,e.data.y,e.data.h,e.data.w,e.data.oh,e.data.ow);
                   }
               }
