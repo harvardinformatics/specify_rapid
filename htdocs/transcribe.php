@@ -230,18 +230,21 @@ function doSetup() {
    } else {
       $targetBatch = getBatch($targetBatchDir);
    }
+
+   $batchPath = $targetBatch->getPath();
+
    $targetBatchCurrent = $targetBatch->getCurrentFile();
    $targetBatchFirst = $targetBatch->getFile(1);
    $position = $targetBatchCurrent->position;
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
-   if ($targetBatchCurrent->path ==null || strlen($targetBatchCurrent->path)==0) {
+   if ($batchPath==null || strlen($batchPath)==0) {
        echo " <strong>No Current Batch.</strong>";
    } else {
-      echo " <strong>Batch: [{$targetBatch->getPath()}]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+      echo " <strong>Batch: [$batchPath]</strong>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
-           echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       }
       //echo " First File: [$targetBatchFirst->filename]";
    }
