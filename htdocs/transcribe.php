@@ -690,7 +690,7 @@ habitat
 
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($path);
-   $path = $currentBatch->getPath();
+   $filepath = $currentBatch->getPath();
    $filecount = $currentBatch->getFileCount();
    $currentBatch->moveTo($position);
    $file = $currentBatch->getFile($position);
@@ -702,7 +702,7 @@ habitat
    if (strlen($filename)==0) {
       $target = target();
    } else {
-      $target = targetfile($path,$filename);
+      $target = targetfile($filepath,$filename);
    }
    $targetbarcode = $target->barcode;
    $targetheight = $target->height;
@@ -729,7 +729,7 @@ habitat
               });
          };
 
-      $(document).ready(logEvent('start_transcription','$path, $filename, $position'));
+      $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
    </script>";
 
 
