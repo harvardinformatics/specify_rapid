@@ -1082,7 +1082,7 @@ habitat
                        batch_id: ".$currentBatch->getBatchID()."
                    },
                    success: function(data) {
-                     console.log(data.src);
+                     console.log(data);
                      $('#image_div').attr('src',data.src);
                      var imagesource = data.src;
                      var imagepath = data.path;
