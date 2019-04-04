@@ -241,9 +241,9 @@ function doSetup() {
        echo " <strong>No Current Batch.</strong>";
    } else {
       echo " <strong>Batch: [$batchPath]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
-            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       }
       //echo " First File: [$targetBatchFirst->filename]";
    }
@@ -675,7 +675,7 @@ habitat
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
    @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
-   @$path = urldecode($_GET['path']);
+   @$batchpath = urldecode($_GET['batch']);
    $position = 1;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
    if ($position==null || $position=="") { $position = 1;  }
@@ -691,7 +691,7 @@ habitat
 
 
    $currentBatch = new TR_Batch();
-   $currentBatch->setPath($path);
+   $currentBatch->setPath($batchpath);
    $filecount = $currentBatch->getFileCount();
    $currentBatch->moveTo($position);
    $file = $currentBatch->getFile($position);
@@ -830,7 +830,7 @@ habitat
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
+   echo "&nbsp;<span id='batch_info'>Starting batch $batchpath with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
    echo "</div>";
    echo "</div>";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";
