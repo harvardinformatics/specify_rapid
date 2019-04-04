@@ -232,7 +232,6 @@ function doSetup() {
    }
 
    $batchPath = $targetBatch->getPath();
-
    $targetBatchCurrent = $targetBatch->getCurrentFile();
    $targetBatchFirst = $targetBatch->getFile(1);
    $position = $targetBatchCurrent->position;
