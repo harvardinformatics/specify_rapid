@@ -9,6 +9,7 @@ class PathFile {
    public $path;  // path to batch
    public $filename;  // next file in batch
    public $position; // numeric position of filename in batch
+   public $barcode; // barcode for this position, null if none
    public $batch_id; // ID of the batch
    public $filecount; // total files in the batch
 }
@@ -312,17 +313,18 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
 
-     $sql = "select imlf.path, imlf.filename from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf where tbi.IMAGE_OBJECT_ID = imo.ID and imo.IMAGE_LOCAL_FILE_ID = imlf.ID and tbi.TR_BATCH_ID = ? and tbi.POSITION = ? ;";
+     $sql = "select imlf.path, imlf.filename, tbi.barcode from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf where tbi.IMAGE_OBJECT_ID = imo.ID and imo.IMAGE_LOCAL_FILE_ID = imlf.ID and tbi.TR_BATCH_ID = ? and tbi.POSITION = ? ;";
 
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("ii", $this->getBatchID(), $position);
         $statement->execute();
-        $statement->bind_result($path, $filename);
+        $statement->bind_result($path, $filename, $barcode);
         $statement->store_result();
         if ($statement->fetch()) {
             $result->path = rtrim($path, '/') . '/';
             $result->filename = $filename;
             $result->position = $position;
+            $result->barcode = $barcode;
             $result->batch_id = $this->getBatchID();
             $result->filecount = $this->getFileCount();
         } else {
@@ -364,7 +366,6 @@ class TR_Batch {
    */
   function moveTo($position) {
      global $connection, $user;
-     $result = new PathFile();
      // find the current batch
      $sql = 'update TR_USER_BATCH set position = ? where tr_batch_id = ? and username = ?';
      if ($statement = $connection->prepare($sql)) {

@@ -119,6 +119,7 @@ if ($connection && $authenticated) {
          $path = $batch->getPath();
          $ir = $batch->getFile($position);
          $filename = $ir->filename;
+         $barcode = $ir->barcode;
 
          // IMAGE_LOCAL_FILE.path is expected to end with a /
          if (substr($path,-1,1)!="/") {
@@ -131,9 +132,6 @@ if ($connection && $authenticated) {
          $toencode=array();
          $toencode['path']=$path;
          $toencode['filename']=$filename;
-
-         // lookup the barcode for this filename
-         $barcode = getBarcodeForFilename($path,$filename);
 
          // lookup the data for this barcode.
          $dataarray = lookupDataForBarcode($barcode);
