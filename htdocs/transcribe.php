@@ -1063,9 +1063,6 @@ habitat
 
    echo "<script>
 
-         var nextdata = null;
-         var nextdata_ts = null;
-
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
                logEvent('next_button_click',$('#batch_info').html())
@@ -1113,8 +1110,6 @@ habitat
 
 
          $('#previousButton').click(function(event){
-               nextdata = null;
-               nextdata_ts = null;
 
                $('#feedback').html( 'Loading next...');
                logEvent('previous_button_click',$('#batch_info').html())
@@ -1339,49 +1334,24 @@ habitat
           function loadNextData(position,batch_id) {
                console.log('called loadNextData() with ' + position + ',' +batch_id);
 
-               if (nextdata && new Date().valueOf() - nextdata_ts.valueOf() < 180000) { // 3 minute cache
-                 console.log('Using data from nextdata cache');
-                 console.log(nextdata);
-                 loadFormData(nextdata);
-               } else {
-                  $.ajax({
-                     type: 'GET',
-                     url: 'transcribe_handler.php',
-                     dataType: 'json',
-                     data: {
-                         action: 'getnextrecord',
-                         batch_id: batch_id,
-                         position: position
-                     },
-                     success: function(data) {
-                       console.log(data);
-                       loadFormData(data);
-                     },
-                     error: function() {
-                        console.log('ajax call to transcribe_handler.php/action=getnextrecord failed');
-                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                     }
-                 });
-               }
-
-               // async cache next record data
-               nextpos = position + 1;
-               $.ajax({
+                $.ajax({
                    type: 'GET',
                    url: 'transcribe_handler.php',
                    dataType: 'json',
-                   cache: true,
                    data: {
                        action: 'getnextrecord',
                        batch_id: batch_id,
-                       position: nextpos
+                       position: position
                    },
                    success: function(data) {
                      console.log(data);
-                     nextdata = data;
-                     nextdata_ts = new Date();
+                     loadFormData(data);
+                   },
+                   error: function() {
+                      console.log('ajax call to transcribe_handler.php/action=getnextrecord failed');
+                      $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
                    }
-              });
+               });
           }
 
 
