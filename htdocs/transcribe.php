@@ -241,7 +241,7 @@ function doSetup() {
        echo " <strong>No Current Batch.</strong>";
    } else {
       echo " <strong>Batch: [$batchPath]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
             echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       }
@@ -409,8 +409,8 @@ function targetfile($path,$filename) {
    $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
    $result->medialink = $medialink;
 
-   $barcode = ImageHandler::checkFilenameForBarcode($path,$filename,false);
-   $result->barcode = $barcode;
+   //$barcode = ImageHandler::checkFilenameForBarcode($path,$filename,false);
+   //$result->barcode = $barcode;
 
    // TODO: Lookup barcode image height, image width from path and filename.
    /*
@@ -692,10 +692,10 @@ habitat
 
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($path);
-   $filepath = $currentBatch->getPath();
    $filecount = $currentBatch->getFileCount();
    $currentBatch->moveTo($position);
    $file = $currentBatch->getFile($position);
+   $filepath = $file->path;
    $filename = $file->filename;
 
    $currentBatch->selectOrCreateUserForBatch();
@@ -706,7 +706,7 @@ habitat
    } else {
       $target = targetfile($filepath,$filename);
    }
-   $targetbarcode = $target->barcode;
+   $targetbarcode = $file->barcode;
    $targetheight = $target->height;
    $targetwidth = $target->width;
    echo "

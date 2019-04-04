@@ -16,7 +16,7 @@ class PathFile {
 
 # Supporting functions *****************************
 
-/** Find out what the next batch is for the current user, and return the file at the current position from that batch as a PathFile object.
+/** Find out what the next batch is for the current user
  *
  *  @return a TR_BATCH object.
  */
@@ -24,16 +24,15 @@ function getNextBatch() {
      global $connection, $user;
      // find the next batch to be worked on
      // TODO: db should be improved to record the last batch the user worked on
-     $sql = 'select trub.position, trub.tr_batch_id from TR_USER_BATCH trub, TR_BATCH trb where trub.tr_batch_id = trb.tr_batch_id and trub.username = ? and trb.completed_date is null order by trub.position desc limit 1';
+     $sql = 'select trub.tr_batch_id from TR_USER_BATCH trub, TR_BATCH trb where trub.tr_batch_id = trb.tr_batch_id and trub.username = ? and trb.completed_date is null order by trub.position desc limit 1';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("s",$_SESSION["username"]);
         $statement->execute();
-        $statement->bind_result($position,$batch_id);
+        $statement->bind_result($batch_id);
         $statement->store_result();
         if ($statement->fetch()) {
           // nothing
         } else {
-          $position = 1;
           $batch_id = 1;
         }
      } else {
