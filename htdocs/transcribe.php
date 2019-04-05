@@ -673,7 +673,6 @@ habitat
 */
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
-   @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$batchpath = urldecode($_GET['batch']);
    $position = 1;
@@ -838,11 +837,6 @@ habitat
    echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
    echo "<input type=hidden name='operator' value='".$user->getAgentId()."' class='carryforward'>";
-   if ($test=="true") {
-      echo "<input type=hidden name='test' value='true' class='carryforward'>";
-   } else {
-      echo "<input type=hidden name='test' value='false' class='carryforward'>";
-   }
    echo '<script>
          $( function(){
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
@@ -862,13 +856,12 @@ habitat
    </script>
    ';
 
-   @staticvalueid("Record Created:",$created,"recordcreated");
-   if ($test=="true") {
-      @staticvalue("Project",$defaultproject);
-      echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
-   } else {
-      selectProject("defaultproject","Project",$defaultproject);
-   }
+   //if ($test=="true") {
+      //@staticvalue("Project",$defaultproject);
+      //echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
+   //} else {
+   selectProject("defaultproject","Project",$defaultproject);
+
    if (strlen($targetbarcode==0)) {
        $enabled = 'true';
    } else {
@@ -892,15 +885,6 @@ habitat
    });
    </script>
    ';
-   if ($test=="true") {
-      @staticvalue("Prep Method",$prepmethod);
-      echo "<input type='hidden' name='prepmethod' id='prepmethod' value='$prepmethod' class='carryforward'>";
-      @staticvalue("Format:",$defaultformat);
-      echo "<input type='hidden' name='preptype' id='preptype' value='$defaultformat' class='carryforward'>";
-   } else {
-      selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
-      selectPrepType("preptype","Format:",$defaultformat,'true','true');
-   }
 
    if ($config=="minimal") {
        /*
@@ -1056,10 +1040,10 @@ habitat
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button'>";
    echo "</td></tr>";
-   echo "<tr><td colspan=2 style=' font-size: 0.9em;'>";
-   echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
-   echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
-   echo "</td></tr>";
+   //echo "<tr><td colspan=2 style=' font-size: 0.9em;'>";
+   //echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
+   //echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
+   //echo "</td></tr>";
 
    echo "<script>
 
@@ -1357,31 +1341,31 @@ habitat
 
    </script>";
 
-   if ($test=="true") {
+   //if ($test=="true") {
        // in test mode, only log data capture rate
-   echo "<script>
-         $('#transcribeForm').submit(function(event){
-               $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
-               // handle disabled fields, copy data to val fields.
-               $('#barcodeval').val($('#barcode').val());
-               $('#datecollectedval').val($('#datecollected').val());
-               $.ajax({
-                   type: 'POST',
-                   url: 'transcribe_logger.php',
-                   data: $('#transcribeForm').serialize(),
-                   success: function(data) {
-                       $('#feedback').html( data ) ;
-                       //$('#nextButton').prop('disabled',false)
-                       //$('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
-                   },
-                   error: function() {
-                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                   }
-               });
-               event.preventDefault();
-          });
-   </script>";
-   } else {
+   // echo "<script>
+   //       $('#transcribeForm').submit(function(event){
+   //             $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
+   //             // handle disabled fields, copy data to val fields.
+   //             $('#barcodeval').val($('#barcode').val());
+   //             $('#datecollectedval').val($('#datecollected').val());
+   //             $.ajax({
+   //                 type: 'POST',
+   //                 url: 'transcribe_logger.php',
+   //                 data: $('#transcribeForm').serialize(),
+   //                 success: function(data) {
+   //                     $('#feedback').html( data ) ;
+   //                     //$('#nextButton').prop('disabled',false)
+   //                     //$('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
+   //                 },
+   //                 error: function() {
+   //                     $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+   //                 }
+   //             });
+   //             event.preventDefault();
+   //        });
+   // </script>";
+   // } else {
        // otherwise, save the changes
    echo "<script>
          $('#transcribeForm').submit(function(event){
@@ -1403,8 +1387,6 @@ habitat
                event.preventDefault();
           });
    </script>";
-   }
-
 
    echo "</table>";
    echo '</div>';  // end of accordion
@@ -1457,6 +1439,10 @@ habitat
     echo "$medialink";
    echo '</div>';
 
+   // TODO: insert reacord created, prep method, format
+   @staticvalueid("Record Created:",$created,"recordcreated");
+   selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
+   selectPrepType("preptype","Format:",$defaultformat,'true','true');
 
    echo '</div>';
 

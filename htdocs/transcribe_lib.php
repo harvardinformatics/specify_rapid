@@ -397,7 +397,6 @@ class TPage extends Page {
       }
       if ($user!=null) {
          if ($user->getAuthenticationState()==true) {
-      	     $returnvalue .= $user->getUserHtml($this->targetPage);
              $returnvalue .= "
 <script>
 
@@ -461,16 +460,21 @@ class TPage extends Page {
 
    public function getFooter() {
    global $targethostdb;
+//	<footer class="hfbox">Database: ' . $targethostdb . '</footer>
    $returnvalue = '
 	</div><!-- flex-main -->
         <div class="hfbox"><span id="loading"><img src="ui-anim_basic_16x16.gif">&nbsp;</span><span id="feedback">Status</span></div>
-	<footer class="hfbox">Database: ' . $targethostdb . '</footer>
     <script>
        $(document).ready( function(){ $("#loading").hide(); } );
        $(document).ajaxStart(function(){ $("#loading").show(); });
        $(document).ajaxStop(function(){ $("#loading").hide(); });
     </script>
 	';
+   if ($user->getAuthenticationState()==true) {
+     $returnvalue .= "<div class='hfbox'>"
+     $returnvalue .= $user->getUserHtml($this->targetPage);
+     $returnvalue .= "</div>"
+   }
    $returnvalue .= "</body>\n";
    $returnvalue .= "</html>";
    return $returnvalue;
