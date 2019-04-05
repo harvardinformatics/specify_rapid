@@ -135,7 +135,7 @@ if ($connection && $authenticated) {
 
          // lookup the data for this barcode.
          $dataarray = lookupDataForBarcode($barcode);
-         $values = "";
+         $response = "{}";
          switch ($dataarray['status']) {
             case "NOTFOUND":
               if($barcode==null || strlen(trim($barcode))==0) {
@@ -145,15 +145,15 @@ if ($connection && $authenticated) {
               } else {
                    $toencode['barcode']=$barcode;
               }
-              $values = json_encode($toencode);
+              $response = json_encode($toencode);
               break;
 
             case "FOUND":
-              $values = json_encode($dataarray);
+              $response = json_encode($dataarray);
               break;
             case "ERROR":
             default:
-              $values = json_encode($dataarray);
+              $response = json_encode($dataarray);
               break;
          }
 
