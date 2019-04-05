@@ -401,7 +401,7 @@ function targetfile($path,$filename) {
 
    //$height = 5616;
    //$width = 3744;
-   $s = 700/$height; // scale factor
+   $s = 400/$height; // scale factor
    $h = round($height*$s);
    $w = round($width*$s);
 
