@@ -458,7 +458,7 @@ class TPage extends Page {
       return $returnvalue;
    }
 
-   public function getFooter() {
+   public function getFooter($user=null) {
    global $targethostdb;
 //	<footer class="hfbox">Database: ' . $targethostdb . '</footer>
    $returnvalue = '
@@ -470,7 +470,7 @@ class TPage extends Page {
        $(document).ajaxStop(function(){ $("#loading").hide(); });
     </script>
 	';
-   if ($user->getAuthenticationState()==true) {
+   if (isset($user) && $user->getAuthenticationState()==true) {
      $returnvalue .= "<div class='hfbox'>";
      $returnvalue .= $user->getUserHtml($this->targetPage);
      $returnvalue .= "</div>";

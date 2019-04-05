@@ -581,7 +581,7 @@ switch ($display) {
       break;
 }
 
-echo $apage->getFooter();
+echo $apage->getFooter($user);
 
 
 // ********************************************************************************
