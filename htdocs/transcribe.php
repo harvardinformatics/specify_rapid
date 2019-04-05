@@ -833,8 +833,8 @@ habitat
    echo "</div>";
    echo "</div>";
 
-   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
    echo "<div class='flex-main hfbox' style='padding: 0em;'>";
+   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
 
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
    echo "<input type=hidden name='operator' value='".$user->getAgentId()."' class='carryforward'>";
@@ -1441,10 +1441,10 @@ habitat
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
    echo '</div>';
+   echo "</form>\n";
 
    echo '</div>';
 
-  echo "</form>\n";
 
    /*
    echo '<div class="flexbox"><div id="testimage"><img src="'.$mediauri.'" width="360"></div><div class="flexbox"><div id="imgtarget" style="width: 680px;"></div></div></div>';
