@@ -843,7 +843,7 @@ habitat
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
           });
    </script>';
-   echo '<div style="float: left;" id="leftside">';
+   echo '<div style="float: left; margin-right: 5px;" id="leftside">';
    echo '<div style="width: 34em;" id="transcribediv" >';
    echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
@@ -1442,9 +1442,11 @@ habitat
 
 
    echo '<div>';
+   echo '<table>';
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
+   echo '</table>';
    echo '</div>';
    echo "</form>\n";
 
