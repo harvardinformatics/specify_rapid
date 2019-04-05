@@ -391,7 +391,7 @@ class TPage extends Page {
       $returnvalue .= $this->getHeadStyle();
       $returnvalue .= "</head>\n";
       $returnvalue .= "<body>\n";
-      $returnvalue .= '<header class="hfbox">';
+      $returnvalue .= '<header>';
       if ($error!="") {
       	$returnvalue .= "<h2>$error</h2>";
       }
