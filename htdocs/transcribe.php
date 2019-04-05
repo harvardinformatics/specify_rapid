@@ -843,7 +843,7 @@ habitat
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
           });
    </script>';
-   echo '<div style="width: 34em;" id="transcribediv" >';
+   echo '<div style="width: 34em; float: left;" id="transcribediv" >';
    echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
 
