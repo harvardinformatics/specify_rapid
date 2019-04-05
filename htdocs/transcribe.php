@@ -833,7 +833,7 @@ habitat
    echo "</div>";
    echo "</div>";
 
-   echo "<div class='flex-main hfbox' style='padding: 0em;'>";
+   echo "<div class='flex-main hfbox' style='padding: 0em; overflow: hidden;'>";
    echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
 
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
@@ -843,7 +843,8 @@ habitat
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
           });
    </script>';
-   echo '<div style="width: 34em; float: left;" id="transcribediv" >';
+   echo '<div style="float: left;" id="leftside">';
+   echo '<div style="width: 34em;" id="transcribediv" >';
    echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
 
@@ -1392,8 +1393,10 @@ habitat
    echo "</table>";
    echo '</div>';  // end of accordion
 
-
    echo '</div>';
+   echo '</div>'; //end leftside
+
+   echo '<div id="rightside">';
 
    echo '<script>
          $( function(){
@@ -1444,6 +1447,8 @@ habitat
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
    echo '</div>';
    echo "</form>\n";
+
+   echo '</div>'; //end rightside
 
    echo '</div>';
 
