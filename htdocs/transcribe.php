@@ -1439,10 +1439,11 @@ habitat
     echo "$medialink";
    echo '</div>';
 
-   // TODO: insert reacord created, prep method, format
+   echo '<div>';
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
+   echo '</div>';
 
    echo '</div>';
 
