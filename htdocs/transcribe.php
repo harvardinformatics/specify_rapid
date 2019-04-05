@@ -827,6 +827,7 @@ habitat
    if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = 'US and Canada - Mass Digitization'; }
    if ($project==null || strlen($project)==0) { $project = $defaultproject; }
 
+   echo "<div class='flex-main' style='min-width: 1000;'>"; // start everything
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
    echo "&nbsp;<span id='batch_info'>Starting batch $batchpath with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
@@ -1436,7 +1437,7 @@ habitat
 
         </script>
     ";
-    echo "$medialink";
+   echo "$medialink";
    echo '</div>';
    echo '</div>';
 
@@ -1454,6 +1455,8 @@ habitat
 
    echo '</div>';
 
+
+   echo '</div>'; //end everything
 
    /*
    echo '<div class="flexbox"><div id="testimage"><img src="'.$mediauri.'" width="360"></div><div class="flexbox"><div id="imgtarget" style="width: 680px;"></div></div></div>';
@@ -1567,7 +1570,7 @@ function selectPrepMethod($field,$label,$default,$required='true',$carryforward=
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: ".BASEWIDTH."em; ' $carryforward >
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' $carryforward >
      </div>
   </td></tr>
    ";
@@ -1592,7 +1595,7 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: ".BASEWIDTH."em; ' $carryforward >
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' $carryforward >
      </div>
   </td></tr>
    ";
