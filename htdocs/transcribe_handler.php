@@ -146,24 +146,19 @@ if ($connection && $authenticated) {
                    $toencode['barcode']=$barcode;
               }
               $values = json_encode($toencode);
-              $ok = true;
               break;
 
             case "FOUND":
               $values = json_encode($dataarray);
-              $ok = true;
               break;
             case "ERROR":
             default:
+              $values = json_encode($dataarray);
               break;
          }
 
          header("Content-type: application/json");
-         if ($ok) {
-            $response = $values;
-         } else {
-            $response = '{}';
-         }
+
          echo $response;
          break;
 
@@ -1388,6 +1383,7 @@ function lookupDataForBarcode($barcode) {
    } else {
        $result['status'] = "ERROR";
        $result['error']="Item Not Found for [$barcode], matches=$num_matches. ";
+       error_log($result['error']);
    }
 
    return $result;
