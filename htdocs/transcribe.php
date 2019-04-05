@@ -833,7 +833,7 @@ habitat
    echo "</div>";
    echo "</div>";
 
-   echo "<div class='flex-main hfbox' style='padding: 0em;'>";
+   echo "<div class='flex-main hfbox' style='min-width: 1000px; padding: 0em;'>";
    echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
 
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
@@ -928,7 +928,6 @@ habitat
 
 
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
-       @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier);
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
 
@@ -993,7 +992,6 @@ habitat
    } else {
 
         @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');
-        @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier);
         @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true');
         @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
 
@@ -1401,6 +1399,7 @@ habitat
    echo '<script>
          $( function(){
             $("#imagezoomdiv").accordion( { heightStyle: "content" } ) ;
+            $("#extrafieldsdiv").accordion( { heightStyle: "content" } ) ;
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
@@ -1441,7 +1440,7 @@ habitat
    echo '</div>';
 
 
-   echo '<div class="flexbox">';
+   echo '<div id="extrafieldsdiv" style="margin-top: 5px;">';
    echo '<table>';
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
