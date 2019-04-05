@@ -471,9 +471,9 @@ class TPage extends Page {
     </script>
 	';
    if ($user->getAuthenticationState()==true) {
-     $returnvalue .= "<div class='hfbox'>"
+     $returnvalue .= "<div class='hfbox'>";
      $returnvalue .= $user->getUserHtml($this->targetPage);
-     $returnvalue .= "</div>"
+     $returnvalue .= "</div>";
    }
    $returnvalue .= "</body>\n";
    $returnvalue .= "</html>";
