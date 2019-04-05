@@ -1435,6 +1435,8 @@ habitat
     ";
     echo "$medialink";
    echo '</div>';
+   echo '</div>';
+
 
    echo '<div>';
    @staticvalueid("Record Created:",$created,"recordcreated");
