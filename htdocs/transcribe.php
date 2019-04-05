@@ -1441,7 +1441,7 @@ habitat
 
 
    echo '<div id="extrafieldsdiv" style="margin-top: 5px;">';
-   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Additional fields</h3>';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Additional fields</h3>';
    echo '<div>';
    echo '<table>';
    @staticvalueid("Record Created:",$created,"recordcreated");
