@@ -1396,7 +1396,7 @@ habitat
    echo '</div>';
    echo '</div>'; //end leftside
 
-   echo '<div id="rightside">';
+   echo '<div style="float: right;" id="rightside">';
 
    echo '<script>
          $( function(){
