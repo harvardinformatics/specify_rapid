@@ -1394,8 +1394,6 @@ habitat
 
    echo '</div>';
 
-   echo "</form>\n";
-
    echo '<script>
          $( function(){
             $("#imagezoomdiv").accordion( { heightStyle: "content" } ) ;
@@ -1408,8 +1406,6 @@ habitat
    #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
    #$mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
    #$mediauri = imageForBarcode($targetbarcode);
-
-
 
    echo '<div class=flexbox>';
     $medialink = $target->medialink;
@@ -1445,7 +1441,10 @@ habitat
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
    echo '</div>';
 
+   echo "</form>\n";
+
    echo '</div>';
+
 
    /*
    echo '<div class="flexbox"><div id="testimage"><img src="'.$mediauri.'" width="360"></div><div class="flexbox"><div id="imgtarget" style="width: 680px;"></div></div></div>';
