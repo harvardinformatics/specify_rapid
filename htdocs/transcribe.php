@@ -833,7 +833,7 @@ habitat
    echo "</div>";
    echo "</div>";
 
-   echo "<div class='flex-main hfbox' style='padding: 0em; overflow: hidden;'>";
+   echo "<div class='flex-main hfbox' style='padding: 0em;'>";
    echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
 
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
@@ -843,7 +843,7 @@ habitat
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
           });
    </script>';
-   echo '<div style="float: left; margin-right: 5px;" id="leftside">';
+   echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
    echo '<div style="width: 34em;" id="transcribediv" >';
    echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
@@ -1396,7 +1396,7 @@ habitat
    echo '</div>';
    echo '</div>'; //end leftside
 
-   echo '<div style="float: right;" id="rightside">';
+   echo '<div style="display: inline-block; float: right;" id="rightside">';
 
    echo '<script>
          $( function(){
@@ -1441,7 +1441,7 @@ habitat
    echo '</div>';
 
 
-   echo '<div>';
+   echo '<div class="flexbox">';
    echo '<table>';
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
