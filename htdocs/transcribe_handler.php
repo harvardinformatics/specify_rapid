@@ -358,7 +358,6 @@ if ($connection && $authenticated) {
 
          // transcribe doesn't capture the determiner, provide a value.
          if ($determinertext=='') { $determinertext = '[data not captured]'; }
-         if ($identifiedby=='') { $identifiedby = '[data not captured]'; }
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
          if ($barcode=='' && strlen($barcodeval)>0 ) { $barcode = $barcodeval; }
          // same for date collected, field is normall disabled
@@ -1005,31 +1004,34 @@ EOD;
                            if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
                                $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
                            }
-                           // look up the agentid for data not captured agent.
-                           $determinerid = null;
-                           $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
-                           $statement = $connection->prepare($sql);
-                           if ($statement) {
-                              $statement->execute();
-                              $statement->bind_result($determinerid);
-                              $statement->store_result();
-                              if ($statement->num_rows==1) {
-                                 if ($statement->fetch()) {
-                                    // retrieves determiner agentid
-                                 } else {
-                                    $fail = true;
-                                    $feedback.= "Query Error " . $connection->error;
-                                 }
-                              } else {
-                                 $fail = true;
-                                 $feedback.= "No Match for agent: '[data not captured]' " . $identifiedby;
-                              }
-                              $statement->free_result();
-                              $statement->close();
-                           } else {
-                              $fail = true;
-                              $feedback.= "Error preparing lookup agent query " . $connection->error;
-                           }
+
+                          // lookup agentid for determiner
+                          if (strlen(trim($identifiedby))==0) {
+                             $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                                $statement->execute();
+                                $statement->bind_result($agentid);
+                                $statement->store_result();
+                                if ($statement->num_rows==1) {
+                                   if ($statement->fetch()) {
+                                      // retrieves collector.agentid
+                                      $identifiedby = $agentid;
+                                   } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error " . $connection->error;
+                                   }
+                                } else {
+                                   $fail = true;
+                                   $feedback.= "No Match for collector agent: [data not captured]";
+                                }
+                                $statement->free_result();
+                                $statement->close();
+                             } else {
+                                $fail = true;
+                                $feedback.= "Query error: " . $connection->error . " " . $sql;
+                             }
+                          }
 
                            // what is the number of determinations in the database now for this fragment?
                            $detcount = huh_determination_custom::countDeterminations($fragmentid);
@@ -1081,7 +1083,7 @@ EOD;
                                                     " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedby, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
                                       if ($statement->execute()) {
                                          $determinationid = $statement->insert_id;
                                          $adds .= "det=[$determinationid]";
@@ -1225,7 +1227,7 @@ EOD;
                                                     " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedby, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
                                       if ($statement->execute()) {
                                          $determinationid = $statement->insert_id;
                                          $adds .= "det=[$determinationid]";
