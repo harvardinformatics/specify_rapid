@@ -932,7 +932,7 @@ habitat
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
-       @selectCollectorsID("identifiedby","Determiner",$identifiedby,$identifiedbyid,'true','false');
+       @selectCollectorsID("identifiedby","Determiner",$identifiedby,$identifiedbyid,'false','false');
 
        /*
        Longer list (12 fields, for comparison)
