@@ -1226,8 +1226,8 @@ habitat
                   setLoadedValue('currentname',data.currentname);
                   setLoadedValue('currentnameid',data.currentnameid);
                   setLoadedValue('currentqualifier',data.currentqualifier);
-                  setLoadedValue('identifiedby',data.collectors);
-                  setLoadedValue('identifiedbyid',data.collectoragentid);
+                  setLoadedValue('identifiedby',data.identifiedby);
+                  setLoadedValue('identifiedbyid',data.identifiedbyid);
                   setLoadedValue('specificlocality',data.specificLocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('highergeography',data.geography);
