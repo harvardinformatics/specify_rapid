@@ -1345,6 +1345,9 @@ function lookupDataForBarcode($barcode) {
        $result['currentname'] = $current["taxonname"];
        $result['currentnameid'] = $current["taxonid"];
        $result['currentqualifier'] = $current["qualifier"];
+       $result['identifiedbyid'] = $current["determinerid"];
+       $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
+
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];

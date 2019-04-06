@@ -755,7 +755,7 @@ habitat
        $currentnameid = $current["taxonid"];
        $currentqualifier = $current["qualifier"];
        $identifiedbyid = $current["determinerid"];
-       $identifiedby = $collectors = huh_collector_custom::getCollectorVariantName($identifiedbyid);
+       $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
@@ -1226,6 +1226,8 @@ habitat
                   setLoadedValue('currentname',data.currentname);
                   setLoadedValue('currentnameid',data.currentnameid);
                   setLoadedValue('currentqualifier',data.currentqualifier);
+                  setLoadedValue('identifiedby',data.collectors);
+                  setLoadedValue('identifiedbyid',data.collectoragentid);
                   setLoadedValue('specificlocality',data.specificLocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('highergeography',data.geography);
