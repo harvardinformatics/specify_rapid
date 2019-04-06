@@ -1127,6 +1127,7 @@ EOD;
                                     $existingcurrentnameid = $current["taxonid"];
                                     $existingidentificationqualifier = $current["qualifier"];
                                     $existingcurrentdetermination = $current["determinationid"];
+                                    $existingdeterminerid = $current["determinerid"];
                                     $updatecurrent = true;
                                }
 
@@ -1187,7 +1188,10 @@ EOD;
                                }
                                if ($updatecurrent && !$fail) {
                                    // Update current determination
-                                   if ($existingcurrentnameid!=$currentdeterminationid && $existingidentificationqualifier!=$identificationqualifier) {
+                                   if ($existingcurrentnameid!=$currentdeterminationid
+                                       && $existingidentificationqualifier!=$identificationqualifier
+                                       && $existingdeterminerid!=$identifiedbyid) {
+
                                       $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                       $statement = $connection->prepare($sql);
                                       if ($statement) {
