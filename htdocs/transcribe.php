@@ -754,7 +754,7 @@ habitat
        $currentname = $current["taxonname"];
        $currentnameid = $current["taxonid"];
        $currentqualifier = $current["qualifier"];
-       $identifiedbyid = $current["DeterminerID"];
+       $identifiedbyid = $current["determinerid"];
        $identifiedby = $collectors = huh_collector_custom::getCollectorVariantName($identifiedbyid);
 
        $related = $match->loadLinkedTo();
