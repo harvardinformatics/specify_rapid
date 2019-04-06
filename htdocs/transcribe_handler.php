@@ -1134,7 +1134,8 @@ EOD;
                                // Insert/update determinations.
                                if ($updatefiledunder && !$fail) {
                                    // Update filedunder determination
-                                   if ($existingfiledundernameid!=$filedundernameid && $existingfiledunderqualifier!=$fiidentificationqualifier) {
+                                   if ($existingfiledundernameid!=$filedundernameid
+                                       || $existingfiledunderqualifier!=$fiidentificationqualifier) {
                                       $sql = "update determination set taxonid = ?, qualifier = ?, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? ";
                                       $statement = $connection->prepare($sql);
                                       if ($statement) {
@@ -1189,8 +1190,8 @@ EOD;
                                if ($updatecurrent && !$fail) {
                                    // Update current determination
                                    if ($existingcurrentnameid!=$currentdeterminationid
-                                       && $existingidentificationqualifier!=$identificationqualifier
-                                       && $existingdeterminerid!=$identifiedbyid) {
+                                       || $existingidentificationqualifier!=$identificationqualifier
+                                       || $existingdeterminerid!=$identifiedbyid) {
 
                                       $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                       $statement = $connection->prepare($sql);
