@@ -754,6 +754,8 @@ habitat
        $currentname = $current["taxonname"];
        $currentnameid = $current["taxonid"];
        $currentqualifier = $current["qualifier"];
+       $determinersagentid = $current["DeterminerID"];
+       $determiners = $collectors = huh_collector_custom::getCollectorVariantName($determinersagentid);
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
@@ -930,6 +932,7 @@ habitat
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
+       @selectCollectorsID("determiners","Determiners",$determiners,$determinersagentid,'true','false');
 
        /*
        Longer list (12 fields, for comparison)
