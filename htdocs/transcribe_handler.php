@@ -241,7 +241,8 @@ if ($connection && $authenticated) {
          @$currentname= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['currentname']),0,huh_taxon::FULLNAME_SIZE);
          @$currentnameid= substr(preg_replace('/[^0-9]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
          @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
-         @$identifiedby= substr(preg_replace('/[^0-9]/','',$_POST['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
+         @$identifiedby= $_POST['identifiedby'];
+         @$identifiedbyid= substr(preg_replace('/[^0-9]/','',$_POST['identifiedbyid']),0,huh_determination::DETERMINERID_SIZE);
          @$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_POST['determinertext']),0,huh_determination::TEXT1_SIZE);
          @$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_POST['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
          @$highergeography= $_POST['highergeography'];
@@ -311,7 +312,7 @@ if ($connection && $authenticated) {
          if ( @($currentname!=$_POST['currentname']) ) { $truncation = true; $truncated .= "currentname : [$currentname] "; }
          if ( @($currentnameid!=$_POST['currentnameid']) ) { $truncation = true; $truncated .= "currentnameid : [$currentnameid] "; }
          if ( @($currentqualifier!=$_POST['currentqualifier']) ) { $truncation = true; $truncated .= "currentqualifier : [$currentqualifier] "; }
-         if ( @($identifiedby!=$_POST['identifiedby']) ) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
+         if ( @($identifiedbyid!=$_POST['identifiedbyid']) ) { $truncation = true; $truncated .= "identifiedbyid : [$identifiedbyid] "; }
          if ( @($determinertext!=$_POST['determinertext']) ) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
          if ( @($dateidentified!=$_POST['dateidentified']) ) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
          if ( @($highergeography!=$_POST['highergeography']) ) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
@@ -406,7 +407,7 @@ function ingest() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, $namedplace,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -583,6 +584,7 @@ function ingest() {
       $df.= "minelevation=[$minelevation] ";
       $df.= "maxelevation=[$maxelevation] ";
       $df.= "identifiedby=[$identifiedby] ";
+      $df.= "identifiedbyid=[$identifiedbyid] ";
       $df.= "determinertext=[$determinertext] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";
@@ -1005,8 +1007,7 @@ EOD;
                                $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
                            }
 
-                          // lookup agentid for determiner
-                          if (strlen(trim($identifiedby))==0) {
+                          if (strlen(trim($identifiedbyid))==0) {
                              $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
                              $statement = $connection->prepare($sql);
                              if ($statement) {
@@ -1016,7 +1017,7 @@ EOD;
                                 if ($statement->num_rows==1) {
                                    if ($statement->fetch()) {
                                       // retrieves collector.agentid
-                                      $identifiedby = $agentid;
+                                      $identifiedbyid = $agentid;
                                    } else {
                                       $fail = true;
                                       $feedback.= "Query Error " . $connection->error;
@@ -1083,7 +1084,7 @@ EOD;
                                                     " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedby, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
                                       if ($statement->execute()) {
                                          $determinationid = $statement->insert_id;
                                          $adds .= "det=[$determinationid]";
@@ -1227,7 +1228,7 @@ EOD;
                                                     " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedby, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
                                       if ($statement->execute()) {
                                          $determinationid = $statement->insert_id;
                                          $adds .= "det=[$determinationid]";
