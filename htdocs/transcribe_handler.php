@@ -1188,10 +1188,10 @@ EOD;
                                if ($updatecurrent && !$fail) {
                                    // Update current determination
                                    if ($existingcurrentnameid!=$currentdeterminationid && $existingidentificationqualifier!=$identificationqualifier) {
-                                      $sql = "update determination set taxonid = ?, qualifier = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
+                                      $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                       $statement = $connection->prepare($sql);
                                       if ($statement) {
-                                         $statement->bind_param("isii",$currentdeterminationid,$identificationqualifier,$currentuserid,$existingcurrentdetermination);
+                                         $statement->bind_param("isiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$currentuserid,$existingcurrentdetermination);
                                          $statement->execute();
                                          $statement->close();
                                       } else {
