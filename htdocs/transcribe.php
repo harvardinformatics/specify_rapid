@@ -905,7 +905,7 @@ habitat
         echo "
         <script>
            $('#verbatimdate').blur(function() {
-              if (!this.val().trim()) {
+              if (!$(this).val().trim()) {
                 $('#datecollected').val('');
               } else {
 
@@ -949,7 +949,7 @@ habitat
        echo "
         <script>
            $('#verbatimdate').blur(function() {
-             if (!this.val().trim()) {
+             if (!$(this).val().trim()) {
                $('#datecollected').val('');
              } else {
                $('#datecollected').prop('disabled', true);
@@ -999,7 +999,7 @@ habitat
         echo "
         <script>
            $('#verbatimdate').blur(function() {
-             if (!this.val().trim()) {
+             if (!$(this).val().trim()) {
                $('#datecollected').val('');
              } else {
                $('#datecollected').prop('disabled', true);
