@@ -864,7 +864,6 @@ habitat
       //@staticvalue("Project",$defaultproject);
       //echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
    //} else {
-   selectProject("defaultproject","Project",$defaultproject);
 
    if (strlen($targetbarcode==0)) {
        $enabled = 'true';
@@ -925,7 +924,7 @@ habitat
         </script>
         ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
-       selectAcronym("herbariumacronym",$herbarium);
+        selectAcronym("herbariumacronym",$herbarium);
    } elseif ($config=="standard") {
 
 
@@ -1432,6 +1431,7 @@ habitat
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
+   selectProject("defaultproject","Project",$defaultproject);
    echo '</table>';
    echo '</div>';
    echo "</form>\n";
