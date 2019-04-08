@@ -230,7 +230,6 @@ if ($connection && $authenticated) {
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
-         @$datecollectedval= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollectedval']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
          @$barcode= substr(preg_replace('/[^0-9]/','',$_POST['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
          @$barcodeval= substr(preg_replace('/[^0-9]/','',$_POST['barcodeval']),0,huh_fragment::IDENTIFIER_SIZE);
@@ -302,7 +301,6 @@ if ($connection && $authenticated) {
          if ( @($accessionnumber!=$_POST['accessionnumber']) ) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
          if ( @($verbatimdate!=$_POST['verbatimdate']) ) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
          if ( @($datecollected!=$_POST['datecollected']) ) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
-         if ( @($datecollectedval!=$_POST['datecollectedval']) ) { $truncation = true; $truncated .= "datecollectedval : [$datecollectedval] "; }
          if ( @($herbariumacronym!=$_POST['herbariumacronym']) ) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
          if ( @($barcode!=$_POST['barcode']) ) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
          if ( @($provenance!=$_POST['provenance']) ) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
@@ -361,8 +359,7 @@ if ($connection && $authenticated) {
          if ($determinertext=='') { $determinertext = '[data not captured]'; }
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
          if ($barcode=='' && strlen($barcodeval)>0 ) { $barcode = $barcodeval; }
-         // same for date collected, field is normall disabled
-         if ($datecollected=='' && strlen($datecollectedval)>0 ) { $datecollected = $datecollectedval; }
+
          // more clearly named fields
          $currentdetermination = $currentname;
          $currentdeterminationid = $currentnameid;

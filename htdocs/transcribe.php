@@ -905,6 +905,7 @@ habitat
         echo "
         <script>
            $('#verbatimdate').blur(function() {
+               $('#datecollected').prop('disabled', true);
                var verbatim = $('#verbatimdate').val();
                $.ajax({
                    type: 'GET',
@@ -916,6 +917,7 @@ habitat
                    success: function(data) {
                        if (data!='') {
                          $('#datecollected').val(data);
+                         $('#datecollected').prop('disabled', field);
                        }
                    }
                });
@@ -942,6 +944,7 @@ habitat
        echo "
         <script>
            $('#verbatimdate').blur(function() {
+               $('#datecollected').prop('disabled', true);
                var verbatim = $('#verbatimdate').val();
                $.ajax({
                    type: 'GET',
@@ -953,6 +956,7 @@ habitat
                    success: function(data) {
                        if (data!='') {
                          $('#datecollected').val(data);
+                         $('#datecollected').prop('disabled', false);
                        }
                    }
                });
@@ -961,7 +965,6 @@ habitat
         </script>
         ";
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
-       echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
 
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
@@ -988,6 +991,7 @@ habitat
         echo "
         <script>
            $('#verbatimdate').blur(function() {
+               $('#datecollected').prop('disabled', true);
                var verbatim = $('#verbatimdate').val();
                $.ajax({
                    type: 'GET',
@@ -999,7 +1003,7 @@ habitat
                    success: function(data) {
                        if (data!='') {
                          $('#datecollected').val(data);
-                         $('#datecollectedval').val(data);
+                         $('#datecollected').prop('disabled', true);
                        }
                    }
                });
@@ -1008,7 +1012,6 @@ habitat
         </script>
         ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-        echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
 
         @field ("habitat","Habitat",$habitat);
         @field ("namedplace","Named place",$namedPlace);
@@ -1328,37 +1331,10 @@ habitat
 
    </script>";
 
-   //if ($test=="true") {
-       // in test mode, only log data capture rate
-   // echo "<script>
-   //       $('#transcribeForm').submit(function(event){
-   //             $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
-   //             // handle disabled fields, copy data to val fields.
-   //             $('#barcodeval').val($('#barcode').val());
-   //             $('#datecollectedval').val($('#datecollected').val());
-   //             $.ajax({
-   //                 type: 'POST',
-   //                 url: 'transcribe_logger.php',
-   //                 data: $('#transcribeForm').serialize(),
-   //                 success: function(data) {
-   //                     $('#feedback').html( data ) ;
-   //                     //$('#nextButton').prop('disabled',false)
-   //                     //$('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
-   //                 },
-   //                 error: function() {
-   //                     $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-   //                 }
-   //             });
-   //             event.preventDefault();
-   //        });
-   // </script>";
-   // } else {
-       // otherwise, save the changes
    echo "<script>
          $('#transcribeForm').submit(function(event){
                // handle disabled fields, copy data to val fields.
                $('#barcodeval').val($('#barcode').val());
-               $('#datecollectedval').val($('#datecollected').val());
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
                $.ajax({
                    type: 'POST',
