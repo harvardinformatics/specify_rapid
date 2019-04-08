@@ -1379,9 +1379,9 @@ function lookupDataForBarcode($barcode) {
        $result['etal'] = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
        //$rlocality->load($rlocality->getLocalityID());
-       $result['namedPlace'] = $rlocality->getNamedPlace();
-       $result['verbatimElevation'] = $rlocality->getVerbatimElevation();
-       $result['specificLocality'] = $rlocality->getLocalityName();
+       $result['namedplace'] = $rlocality->getNamedPlace();
+       $result['verbatimelevation'] = $rlocality->getVerbatimElevation();
+       $result['specificlocality'] = $rlocality->getLocalityName();
        $related = $rlocality->loadLinkedTo();
        $rgeography = $related['GeographyID'];
        //$rgeography->load($rgeography->getGeographyID());

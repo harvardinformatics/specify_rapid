@@ -1208,9 +1208,10 @@ habitat
                   setLoadedValue('currentqualifier',data.currentqualifier);
                   setLoadedValue('identifiedby',data.identifiedby);
                   setLoadedValue('identifiedbyid',data.identifiedbyid);
-                  setLoadedValue('specificlocality',data.specificLocality);
+                  setLoadedValue('specificlocality',data.specificlocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('highergeography',data.geography);
+                  setLoadedValue('verbatimdate',data.verbatimelevation);
                   setLoadedValue('geographyid',data.geographyid);
                   setLoadedValue('collectors',data.collectors);
                   setLoadedValue('collectorsid',data.collectoragentid);
