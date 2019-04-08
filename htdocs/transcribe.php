@@ -1063,9 +1063,7 @@ habitat
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                         $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                      }
-                     if(position > 1) {
-                    	$('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
-                     }
+
                      // load data for this record.
                      loadNextData(position,".$currentBatch->getBatchID().");
                    },
@@ -1109,11 +1107,7 @@ habitat
                         // end of batch, disable next button, enable done button.
                         $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                      }
-                     if(position > 1) {
-                         $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
-                     } else {
-                         $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
-                     }
+
                      // load data for this record.
                      loadNextData(position,".$currentBatch->getBatchID().");
                    },
@@ -1304,6 +1298,18 @@ habitat
 
           function loadNextData(position,batch_id) {
                console.log('called loadNextData() with ' + position + ',' +batch_id);
+
+               if(position > 1) {
+                   $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
+               } else {
+                   $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
+               }
+
+               if(position < $filecount) {
+                   $('#nextbuttonButton').attr('disabled', false).removeClass('ui-state-disabled');
+               } else {
+                   $('#nextbuttonButton').attr('disabled', true).addClass('ui-state-disabled');
+               }
 
                 $.ajax({
                    type: 'GET',
