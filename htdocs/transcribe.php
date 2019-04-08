@@ -923,7 +923,7 @@ habitat
            });
         </script>
         ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
+        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
         selectAcronym("herbariumacronym",$herbarium);
         selectProject("defaultproject","Project",$defaultproject);
    } elseif ($config=="standard") {
@@ -968,7 +968,7 @@ habitat
 
        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
        @field ("habitat","Habitat",$habitat);
-       @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false');
+       @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
        selectAcronym("herbariumacronym",$herbarium);
        selectProject("defaultproject","Project",$defaultproject);
@@ -1012,7 +1012,7 @@ habitat
 
         @field ("habitat","Habitat",$habitat);
         @field ("namedplace","Named place",$namedPlace);
-        @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false');
+        @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
         selectAcronym("herbariumacronym",$herbarium);
         selectProject("defaultproject","Project",$defaultproject);
