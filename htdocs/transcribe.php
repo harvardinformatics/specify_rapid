@@ -1207,7 +1207,7 @@ habitat
                   setLoadedValue('etal',data.etal);
                   setLoadedValue('stationfieldnumber',data.stationfieldnumber);
                   setLoadedValue('verbatimdate',data.verbatimdate);
-                  setLoadedValue('datecollected',data.
+                  setLoadedValue('datecollected',data.datecollected);
                 );
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
 
