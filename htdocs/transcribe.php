@@ -934,40 +934,12 @@ habitat
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
        @selectCollectorsID("identifiedby","Determiner",$identifiedby,$identifiedbyid,'false','false');
 
-       /*
-       Longer list (12 fields, for comparison)
-       project - default US and Canada, show
-       barcode - known, not editable - on save, go to next in list.
-       format - default sheet, show
-       preparation method - pressed default, show
-       scientific name -
-          filed under  -   carry forward
-          plus qualifier - carry forward
-       scientific name -
-          current -- carry forward
-          qualifier
-       collectioncode - likely (GH, A, NEBC)
-       collecting trip - pick
-       highergeography - pick
-       *verbatim locality
-       collectors, et al
-       *collector number
-       *verbatim date collected
-       *date collected
-       */
-        // @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
-        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
-        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
-
-        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
-        @field ("habitat","Habitat",$habitat);
-
-        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
-        @field ("etal","Et al.",$etal,'false');
-
-        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        echo "
+       @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
+       @field ("etal","Et al.",$etal,'false');
+       @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
+       @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
+       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+       echo "
         <script>
            $('#verbatimdate').blur(function() {
                var verbatim = $('#verbatimdate').val();
@@ -988,8 +960,16 @@ habitat
            });
         </script>
         ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
-        echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
+       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
+       echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
+
+       @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
+       @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
+
+       @field ("specificlocality","Verbatim locality",$specificLocality,'true');
+       @field ("habitat","Habitat",$habitat);
+       @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false');
+
        selectAcronym("herbariumacronym",$herbarium);
 
    } else {
