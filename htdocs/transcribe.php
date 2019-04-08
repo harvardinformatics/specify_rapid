@@ -1519,7 +1519,8 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
    } else {
       $disabled = '';
    }
-   $width = BASEWIDTH - 2;
+   //$width = BASEWIDTH - 2;
+   $width = BASEWIDTH;
    if ($required=='false') {
       echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
