@@ -905,6 +905,10 @@ habitat
         echo "
         <script>
            $('#verbatimdate').blur(function() {
+              if (!this.val().trim()) {
+                $('#datecollected').val('');
+              } else {
+
                $('#datecollected').prop('disabled', true);
                var verbatim = $('#verbatimdate').val();
                $.ajax({
@@ -922,6 +926,7 @@ habitat
                    }
                });
 
+             }
            });
         </script>
         ";
