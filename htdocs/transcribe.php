@@ -960,7 +960,7 @@ habitat
            });
         </script>
         ";
-       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
+       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
 
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
@@ -1008,7 +1008,7 @@ habitat
         </script>
         ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-        echo "<input type='hidden' name='datecollectedval' id='datacollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
+        echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
 
         @field ("habitat","Habitat",$habitat);
         @field ("namedplace","Named place",$namedPlace);
@@ -1204,7 +1204,8 @@ habitat
                   setLoadedValue('etal',data.etal);
                   setLoadedValue('stationfieldnumber',data.stationfieldnumber);
                   setLoadedValue('verbatimdate',data.verbatimdate);
-                  setLoadedValue('datecollected',data.datecollected);
+                  setLoadedValue('datecollected',data.
+                );
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
