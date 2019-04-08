@@ -1622,7 +1622,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
    if ($field=='geographyfilter') { $style = " background-color: lightgrey; "; } else { $style = ""; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 25em; $style ' $carryforward  >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; $style ' $carryforward  >
     <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
