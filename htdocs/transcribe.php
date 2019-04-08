@@ -1208,7 +1208,6 @@ habitat
                   setLoadedValue('stationfieldnumber',data.stationfieldnumber);
                   setLoadedValue('verbatimdate',data.verbatimdate);
                   setLoadedValue('datecollected',data.datecollected);
-                );
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
