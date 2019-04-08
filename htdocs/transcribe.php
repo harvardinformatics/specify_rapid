@@ -1023,7 +1023,7 @@ habitat
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
-   echo "<input type='button' onclick='$('#transcribeForm').trigger( "submit" );' value='Save' id='saveButton' class='carryforward ui-button'> ";
+   echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button'>";
@@ -1330,7 +1330,7 @@ habitat
    </script>";
 
    echo "<script>
-         $('#transcribeForm').submit(function(event){
+         $('#saveButton').click(function(event){
                // handle disabled fields, copy data to val fields.
                $('#barcodeval').val($('#barcode').val());
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
