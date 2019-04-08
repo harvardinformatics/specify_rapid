@@ -8,7 +8,7 @@ include_once("transcribe_lib.php");
 include_once("imagehandler.php");
 
 define("ENABLE_DUPLICATE_FINDING",TRUE);
-define("BASEWIDTH",21);  // em for width of form fields
+define("BASEWIDTH",20);  // em for width of form fields
 
 $error = "";
 $targethostdb = "Not Set";
@@ -846,7 +846,7 @@ habitat
           });
    </script>';
    echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
-   echo '<div style="width: 34em;" id="transcribediv" >';
+   echo '<div style="width: 30em;" id="transcribediv" >';
    echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
 
@@ -1659,7 +1659,7 @@ function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultco
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 25em; ' >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' >
     <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -1764,7 +1764,7 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field $req  value='$value' style=' width: 25em; ' $carryforward >
+	<input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' $carryforward >
 	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1817,7 +1817,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 25em; ' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' $carryforward >
     <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1898,7 +1898,7 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field  value='$value' style=' width: 25em; ' >
+    <input type=text name=$field id=$field  value='$value' style=' width: 20em; ' >
     <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
     </td></tr>";
    $returnvalue .= '
