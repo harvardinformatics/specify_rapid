@@ -1020,7 +1020,7 @@ habitat
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
-   echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
+   echo "<input type='button' onclick='this.form.submit();' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button'>";
@@ -1058,11 +1058,6 @@ habitat
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
                      $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
-                     if (position==filecount) {
-                        // end of batch, disable next button, enable done button.
-                        $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
-                        $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
-                     }
 
                      // load data for this record.
                      loadNextData(position,".$currentBatch->getBatchID().");
@@ -1103,10 +1098,6 @@ habitat
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
                      $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
-                     if (position==filecount) {
-                        // end of batch, disable next button, enable done button.
-                        $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
-                     }
 
                      // load data for this record.
                      loadNextData(position,".$currentBatch->getBatchID().");
@@ -1307,8 +1298,10 @@ habitat
 
                if(position < $filecount) {
                    $('#nextbuttonButton').attr('disabled', false).removeClass('ui-state-disabled');
+                   $('#doneButton').attr('disabled', true).addClass('ui-state-disabled');
                } else {
                    $('#nextbuttonButton').attr('disabled', true).addClass('ui-state-disabled');
+                   $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                }
 
                 $.ajax({
