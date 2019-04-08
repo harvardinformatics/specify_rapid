@@ -1677,8 +1677,9 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
 function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultcountry='', $defaultprimary='',$required='true') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: 25em; ' >
     <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -1780,10 +1781,11 @@ function selectAcronym($field,$default) {
 function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforward='false') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' $carryforward >
-	<input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
+	<input type=text name=$field id=$field $req  value='$value' style=' width: 25em; ' $carryforward >
+	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1814,12 +1816,13 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
 }
 
 function selectBasionymID($field,$label,$required='false') {
+  if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
 	$width = BASEWIDTH - 3;
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
+	store='taxonStore$field' $req searchDelay='900' hasDownArrow='false'
 	style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
@@ -1831,10 +1834,11 @@ function selectBasionymID($field,$label,$required='false') {
 function selectCollectorsID($field,$label,$value,$valueid,$required='false',$carryforward='false') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' $carryforward >
-    <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: 25em; ' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1867,6 +1871,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
 
 
 function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($exsiccati=='true') {
        $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonexsiccati' > </div>";
@@ -1876,7 +1881,7 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
    }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -1884,11 +1889,12 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
 }
 
 function selectStorageID($field,$label,$required='false') {
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonstorage' > </div>";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -1896,11 +1902,12 @@ function selectStorageID($field,$label,$required='false') {
 }
 
 function selectContainerID($field,$label,$required='false') {
+  if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -1943,6 +1950,7 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
 }
 
 function selectProject($field,$label,$default,$required='false') {
+    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
     $returnvalue = "
   <script>
   $( function() {
@@ -1959,7 +1967,7 @@ function selectProject($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' value='$default'  style='width: ".BASEWIDTH."em; ' class='carryforward' >
+        <input id='$field' value='$default' $req style='width: ".BASEWIDTH."em; ' class='carryforward' >
      </div>
   </td></tr>
     ";
