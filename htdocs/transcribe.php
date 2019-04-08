@@ -925,6 +925,7 @@ habitat
         ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
         selectAcronym("herbariumacronym",$herbarium);
+        selectProject("defaultproject","Project",$defaultproject);
    } elseif ($config=="standard") {
 
 
@@ -970,6 +971,7 @@ habitat
        @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false');
 
        selectAcronym("herbariumacronym",$herbarium);
+       selectProject("defaultproject","Project",$defaultproject);
 
    } else {
 
@@ -1013,6 +1015,7 @@ habitat
         @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false');
 
         selectAcronym("herbariumacronym",$herbarium);
+        selectProject("defaultproject","Project",$defaultproject);
    }
 
    echo "<tr><td colspan=2>";
@@ -1431,7 +1434,6 @@ habitat
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
-   selectProject("defaultproject","Project",$defaultproject);
    echo '</table>';
    echo '</div>';
    echo "</form>\n";
@@ -1526,7 +1528,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       }
       echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    }
-   echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
+   //echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
    echo "<script>
          function doEnable$name(){
             $('#$name').prop('disabled', null);
