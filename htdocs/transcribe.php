@@ -1023,7 +1023,7 @@ habitat
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
-   echo "<input type='button' onclick='this.form.submit();' value='Save' id='saveButton' class='carryforward ui-button'> ";
+   echo "<input type='button' onclick='$('#transcribeForm').trigger( "submit" );' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button'>";
@@ -1037,7 +1037,7 @@ habitat
 
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
-               logEvent('next_button_click',$('#batch_info').html())
+               logEvent('next_button_click',$('#batch_info').html());
                // clear fields
                $('#transcribeForm  input:not(.carryforward)').val('');
 
@@ -1077,7 +1077,7 @@ habitat
          $('#previousButton').click(function(event){
 
                $('#feedback').html( 'Loading next...');
-               logEvent('previous_button_click',$('#batch_info').html())
+               logEvent('previous_button_click',$('#batch_info').html());
                // clear fields
                $('#transcribeForm  input:not(.carryforward)').val('');
 
@@ -1107,7 +1107,6 @@ habitat
                    },
                    error: function() {
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       //$('#nextButton').prop('disabled',true)
                    }
                });
                event.preventDefault();
@@ -1116,7 +1115,7 @@ habitat
 
           $('#doneButton').click(function(event){
                $('#feedback').html( 'Completing batch...');
-               logEvent('done',$('#batch_info').html())
+               logEvent('done',$('#batch_info').html());
                // move position to mark batch as done
                $.ajax({
                    type: 'GET',
