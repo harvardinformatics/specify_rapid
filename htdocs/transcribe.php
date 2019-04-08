@@ -1211,7 +1211,7 @@ habitat
                   setLoadedValue('specificlocality',data.specificlocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('highergeography',data.geography);
-                  setLoadedValue('verbatimdate',data.verbatimelevation);
+                  setLoadedValue('verbatimelevation',data.verbatimelevation);
                   setLoadedValue('geographyid',data.geographyid);
                   setLoadedValue('collectors',data.collectors);
                   setLoadedValue('collectorsid',data.collectoragentid);
