@@ -980,15 +980,9 @@ EOD;
                                }
                            } // end localityid
 
-                           // make sure that we have taxonid values.
-                           if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
-                               $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
-                           }
-                           if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
-                               $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
-                           }
 
 
+                          // Deal with determinations (current and filed under)
                           if (strlen(trim($identifiedbyid))==0) {
                              $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
                              $statement = $connection->prepare($sql);
@@ -1016,6 +1010,15 @@ EOD;
                              }
                           }
 
+                          // make sure that we have taxonid values.
+                          if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
+                              $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
+                          }
+                          if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
+                              $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
+                          }
+
+                          // Check if current and filed under are the same, in most cases we only want one det with both flags
                           if ($currentdeterminationid==$filedundernameid) {
                              $filedundercurrent = 1;
                           } else {
@@ -1070,26 +1073,28 @@ EOD;
                                  }
 
                               }
-                          } else {
-                            // update existing record
+                          } else { // update existing record
+
                             $existingcurrentname = $current["taxonname"];
                             $existingcurrentnameid = $current["taxonid"];
                             $existingidentificationqualifier = $current["qualifier"];
                             $existingcurrentdetermination = $current["determinationid"];
                             $existingdeterminerid = $current["determinerid"];
                             $existingdetermineddate = $current["determineddate"];
+                            $existingisfiledunder = $current["isfiledunder"];
 
                             if (!$fail) {
                                 // Update current determination
                                 if ($existingcurrentnameid!=$currentdeterminationid
                                     || $existingidentificationqualifier!=$identificationqualifier
                                     || $existingdeterminerid!=$identifiedbyid
-                                    || $existingdetermineddate!=$dateidentified) {
+                                    || $existingdetermineddate!=$dateidentified
+                                    || $existingisfiledunder!=$filedundercurrent) {
 
-                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
+                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param("isisiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentified,$dateidentifiedprecision,$currentuserid,$existingcurrentdetermination);
+                                      $statement->bind_param("isisiiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentified,$dateidentifiedprecision,$filedundercurrent,$currentuserid,$existingcurrentdetermination);
                                       $statement->execute();
                                       $statement->close();
                                    } else {
