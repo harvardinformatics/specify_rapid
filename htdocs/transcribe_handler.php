@@ -1016,14 +1016,11 @@ EOD;
                              }
                           }
 
-
-
                           if ($currentdeterminationid==$filedundernameid) {
-                             $fileundercurrent = 1;
+                             $filedundercurrent = 1;
                           } else {
-                             $fileundercurrent = 0;
+                             $filedundercurrent = 0;
                           }
-
 
                           $adds = "";
 
