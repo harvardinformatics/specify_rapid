@@ -1157,6 +1157,13 @@ EOD;
                             if ($debug) {  $feedback.=" $adds "; }
                         }
 
+
+                     } else {
+                        //  statement.fetch to retrieve fragmentid, collectionobjectid, collectingeventid, localityid failed.
+                        $fail = true;
+                        $feedback.= "Query Error " . $connection->error . " " .  $sql;
+                     }
+
                        // done one and only one fragment
                    } elseif ($statement->num_rows==0) {
                        // zero rows matching provided barcode (on fragment.identifier).
