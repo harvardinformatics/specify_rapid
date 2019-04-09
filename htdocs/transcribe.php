@@ -756,6 +756,7 @@ habitat
        $currentqualifier = $current["qualifier"];
        $identifiedbyid = $current["determinerid"];
        $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
+       $dateidentified = $current["determineddate"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
@@ -939,7 +940,8 @@ habitat
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
-       @selectCollectorsID("identifiedby","Determiner",$identifiedby,$identifiedbyid,'false','false');
+       @selectCollectorsID("identifiedby","Identified By",$identifiedby,$identifiedbyid,'false','false');
+       @field ("dateidentified","Date Identified",$dateidentified,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
 
        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
        @field ("etal","Et al.",$etal,'false');
@@ -1208,6 +1210,7 @@ habitat
                   setLoadedValue('currentqualifier',data.currentqualifier);
                   setLoadedValue('identifiedby',data.identifiedby);
                   setLoadedValue('identifiedbyid',data.identifiedbyid);
+                  setLoadedValue('dateidentified',data.dateidentified);
                   setLoadedValue('specificlocality',data.specificlocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('highergeography',data.geography);

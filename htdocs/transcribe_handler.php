@@ -1349,7 +1349,7 @@ function lookupDataForBarcode($barcode) {
        $result['currentqualifier'] = $current["qualifier"];
        $result['identifiedbyid'] = $current["determinerid"];
        $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
-
+       $result['dateidentified'] = $current["determineddate"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
