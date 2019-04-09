@@ -902,36 +902,37 @@ habitat
        */
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
+       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        echo "
-        <script>
-           $('#verbatimdate').blur(function() {
-              if (!$(this).val().trim()) {
-                $('#datecollected').val('');
-              } else {
-
-               $('#datecollected').prop('disabled', true);
-               var verbatim = $('#verbatimdate').val();
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   data: {
-                       action: 'interpretdate',
-                       verbatimdate: verbatim
-                   },
-                   success: function(data) {
-                       if (data!='') {
-                         $('#datecollected').val(data);
-                         $('#datecollected').prop('disabled', field);
-                       }
-                   }
-               });
-
-             }
-           });
-        </script>
-        ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
+        // Verbatim date auto-parsing disabled for now, not deemed useful to workflow and some edge cases would need to be resolved
+        // echo "
+        // <script>
+        //    $('#verbatimdate').blur(function() {
+        //       if (!$(this).val().trim()) {
+        //         $('#datecollected').val('');
+        //       } else {
+        //
+        //        $('#datecollected').prop('disabled', true);
+        //        var verbatim = $('#verbatimdate').val();
+        //        $.ajax({
+        //            type: 'GET',
+        //            url: 'transcribe_handler.php',
+        //            data: {
+        //                action: 'interpretdate',
+        //                verbatimdate: verbatim
+        //            },
+        //            success: function(data) {
+        //                if (data!='') {
+        //                  $('#datecollected').val(data);
+        //                  $('#datecollected').prop('disabled', field);
+        //                }
+        //            }
+        //        });
+        //
+        //      }
+        //    });
+        // </script>
+        // ";
         selectAcronym("herbariumacronym",$herbarium);
         selectProject("defaultproject","Project",$defaultproject);
    } elseif ($config=="standard") {
@@ -947,35 +948,34 @@ habitat
        @field ("etal","Et al.",$etal,'false');
        @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-       echo "
-        <script>
-           $('#verbatimdate').blur(function() {
-             if (!$(this).val().trim()) {
-               $('#datecollected').val('');
-             } else {
-               $('#datecollected').prop('disabled', true);
-               var verbatim = $('#verbatimdate').val();
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   data: {
-                       action: 'interpretdate',
-                       verbatimdate: verbatim
-                   },
-                   success: function(data) {
-                       if (data!='') {
-                         $('#datecollected').val(data);
-                         $('#datecollected').prop('disabled', false);
-                       }
-                   }
-               });
-             }
-           });
-        </script>
-        ";
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
-
+       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+       // echo "
+       //  <script>
+       //     $('#verbatimdate').blur(function() {
+       //       if (!$(this).val().trim()) {
+       //         $('#datecollected').val('');
+       //       } else {
+       //         $('#datecollected').prop('disabled', true);
+       //         var verbatim = $('#verbatimdate').val();
+       //         $.ajax({
+       //             type: 'GET',
+       //             url: 'transcribe_handler.php',
+       //             data: {
+       //                 action: 'interpretdate',
+       //                 verbatimdate: verbatim
+       //             },
+       //             success: function(data) {
+       //                 if (data!='') {
+       //                   $('#datecollected').val(data);
+       //                   $('#datecollected').prop('disabled', false);
+       //                 }
+       //             }
+       //         });
+       //       }
+       //     });
+       //  </script>
+       //  ";
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
 
@@ -997,34 +997,34 @@ habitat
 
         @field ("specificlocality","Verbatim locality",$specificLocality,'true');
         @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        echo "
-        <script>
-           $('#verbatimdate').blur(function() {
-             if (!$(this).val().trim()) {
-               $('#datecollected').val('');
-             } else {
-               $('#datecollected').prop('disabled', true);
-               var verbatim = $('#verbatimdate').val();
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   data: {
-                       action: 'interpretdate',
-                       verbatimdate: verbatim
-                   },
-                   success: function(data) {
-                       if (data!='') {
-                         $('#datecollected').val(data);
-                         $('#datecollected').prop('disabled', true);
-                       }
-                   }
-               });
-             }
-           });
-        </script>
-        ";
         @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+        // echo "
+        // <script>
+        //    $('#verbatimdate').blur(function() {
+        //      if (!$(this).val().trim()) {
+        //        $('#datecollected').val('');
+        //      } else {
+        //        $('#datecollected').prop('disabled', true);
+        //        var verbatim = $('#verbatimdate').val();
+        //        $.ajax({
+        //            type: 'GET',
+        //            url: 'transcribe_handler.php',
+        //            data: {
+        //                action: 'interpretdate',
+        //                verbatimdate: verbatim
+        //            },
+        //            success: function(data) {
+        //                if (data!='') {
+        //                  $('#datecollected').val(data);
+        //                  $('#datecollected').prop('disabled', true);
+        //                }
+        //            }
+        //        });
+        //      }
+        //    });
+        // </script>
+        // ";
 
         @field ("habitat","Habitat",$habitat);
         @field ("namedplace","Named place",$namedPlace);
@@ -1154,29 +1154,29 @@ habitat
            * @param value the new value to set (unless the field is a carryforward with an existing value).
            */
           function setLoadedValue(field,value) {
-              if (!field=='datecollected') {
-                 if ($('select[name='+field+']').length) {
-                     $('#'+field).css({'color':'black'});
-                 } else {
-                     $('#'+field).css({'background-color':'#FFFFFF'});
-                 }
-              }
+              //if (!field=='datecollected') {
+               if ($('select[name='+field+']').length) {
+                   $('#'+field).css({'color':'black'});
+               } else {
+                   $('#'+field).css({'background-color':'#FFFFFF'});
+               }
+              //}
               if($('#'+field).val()=='') {
                  // if field is empty, populate from provided value.
                  $('#'+field).val(value);
               } else {
                  // field contains a value
-                 if (!field=='datecollected') {
+                 //if (!field=='datecollected') {
                     // set color to indicate changed data
-                    if ($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
-                       // if carryforward field and values are different, set background color
-                       if ($('select[name='+field+']').length) {
-                          $('#'+field).css({'color':'darksalmon'});
-                       } else {
-                         $('#'+field).css({'background-color':'#FFFAA2'});
-                       }
-                    }
-                 }
+                  if ($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
+                     // if carryforward field and values are different, set background color
+                     if ($('select[name='+field+']').length) {
+                        $('#'+field).css({'color':'darksalmon'});
+                     } else {
+                       $('#'+field).css({'background-color':'#FFFAA2'});
+                     }
+                  }
+                 //}
                  // update value from provided value.
                  // if (!$('.carryforward[id][name='+field+']').length) {
                  //     // if field contains a value only populate if not a carryforward field (carryforward trumps lookup).
