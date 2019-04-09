@@ -1110,7 +1110,7 @@ EOD;
                           if (($filedunder["status"]=="NotFound" || $filedunder["taxonid"] != $filedundernameid)) {
                             // clear filed under flag on previous record
                             if (!$fail && isset($filedunder['determinationid'])) { // existing record exists
-                              $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent = true ";
+                              $sql = "update determination set yesno3 = 0, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ?";
                               $statement = $connection->prepare($sql);
                               if ($statement) {
                                  $statement->bind_param("ii",$currentuserid, $filedunder['determinationid']);
