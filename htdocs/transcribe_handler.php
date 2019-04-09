@@ -1131,7 +1131,7 @@ EOD;
                                // iscurrent = isCurrent (no)
                                $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, " .
                                        " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                                       " values (?,?,?,?,0,0,1,0,now(),0,4) ";
+                                       " values (?,?,?,0,0,1,0,now(),0,4) ";
                                $statement = $connection->prepare($sql);
                                if ($statement) {
                                   $statement->bind_param('iii', $filedundernameid,$fragmentid,$currentuserid);
