@@ -551,24 +551,6 @@ class DateRangeWithPrecision {
 
 class huh_determination_custom extends huh_determination {
 
-   /**
-    * Is an array of values returned by lookupCurrentDetermination/lookupFiledUnderDetermination
-    * consistent with data entry through the transcription application (should transcribe do update or insert).
-    *
-    * @param det an array of key/value pairs as returned by lookupCurrentDetermination.
-    * @return boolean, true if not a type, and data not caputured as the determiner, false otherwise.
-    */
-   public static function consistentWithTranscribeCapture($det) {
-      $result = false;
-      if (strlen($det["typestatusname"])==0
-          && ($det["determinertext"]=="[data not captured]" || $det["determinertext"]=="")
-          && strlen($det["determineddate"])==0
-         ) {
-         $result = true;
-      }
-      return $result;
-   }
-
    public static function countDeterminations($fragmentid) {
       global $connection;
       $result = 0;

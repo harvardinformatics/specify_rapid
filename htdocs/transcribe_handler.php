@@ -236,7 +236,6 @@ if ($connection && $authenticated) {
          @$provenance= substr(preg_replace('/^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_POST['provenance']),0,huh_fragment::PROVENANCE_SIZE);
          @$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['filedundername']),0,huh_taxon::FULLNAME_SIZE);
          @$filedundernameid= substr(preg_replace('/[^0-9]/','',$_POST['filedundernameid']),0,huh_taxon::TAXONID_SIZE);
-         @$filedunderqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['filedunderqualifier']),0,huh_determination::QUALIFIER_SIZE);
          @$currentname= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['currentname']),0,huh_taxon::FULLNAME_SIZE);
          @$currentnameid= substr(preg_replace('/[^0-9]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
          @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
@@ -306,7 +305,6 @@ if ($connection && $authenticated) {
          if ( @($provenance!=$_POST['provenance']) ) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
          if ( @($filedundername!=$_POST['filedundername']) ) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
          if ( @($filedundernameid!=$_POST['filedundernameid']) ) { $truncation = true; $truncated .= "filedundernameid : [$filedundernameid] "; }
-         if ( @($filedunderqualifier!=$_POST['filedunderqualifier']) ) { $truncation = true; $truncated .= "filedunderqualifier : [$filedunderqualifier] "; }
          if ( @($currentname!=$_POST['currentname']) ) { $truncation = true; $truncated .= "currentname : [$currentname] "; }
          if ( @($currentnameid!=$_POST['currentnameid']) ) { $truncation = true; $truncated .= "currentnameid : [$currentnameid] "; }
          if ( @($currentqualifier!=$_POST['currentqualifier']) ) { $truncation = true; $truncated .= "currentqualifier : [$currentqualifier] "; }
@@ -363,7 +361,6 @@ if ($connection && $authenticated) {
          // more clearly named fields
          $currentdetermination = $currentname;
          $currentdeterminationid = $currentnameid;
-         $fiidentificationqualifier = $filedunderqualifier;
          $identificationqualifier = $currentqualifier;
 
          echo ingest();
@@ -398,7 +395,7 @@ function ingest() {
    global $connection, $debug,
    $truncation, $truncated, $collectorsid,
    $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
-   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,
+   $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
    $highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
@@ -452,7 +449,6 @@ function ingest() {
       }
    }
    if ($herbariumacronym=='') { $herbariumacronym = null; }
-   if ($fiidentificationqualifier=='') { $fiidentificationqualifier = null; }
    if ($currentdetermination=='') { $currentdetermination = null; }
    if ($identificationqualifier=='') { $identificationqualifier = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
@@ -551,7 +547,6 @@ function ingest() {
       $df.= "barcode=[$barcode] ";  // required
       $df.= "provenance=[$provenance] ";
       $df.= "filedundername=[$filedundername] ";  // required
-      $df.= "fiidentificationqualifier=[$fiidentificationqualifier] ";
       $df.= "currentdetermination=[$currentdetermination] ";
       $df.= "identificationqualifier=[$identificationqualifier] ";
       $df.= "highergeography=[$highergeography] ";  // required
@@ -985,17 +980,6 @@ EOD;
                                }
                            } // end localityid
 
-                           // look up/update determinations.
-                           // are the determinations the same
-                           $namesidentical = FALSE;
-                           if ($filedundername==$currentdetermination) {
-                              // See BugID: 588 if both names are the same, only add filed under, and mark it as current.
-                              $namesidentical = TRUE;
-                              // Consequences:  If the names are the same: One determination record with both filed under and current flags set.
-                              // If the names are different, two records, one filed under name without
-                              // a determiner, and one current name (if creating here, both lack determiner and date determined)
-                           }
-
                            // make sure that we have taxonid values.
                            if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
                                $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
@@ -1003,6 +987,7 @@ EOD;
                            if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
                                $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
                            }
+
 
                           if (strlen(trim($identifiedbyid))==0) {
                              $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
@@ -1031,236 +1016,146 @@ EOD;
                              }
                           }
 
-                           // what is the number of determinations in the database now for this fragment?
-                           $detcount = huh_determination_custom::countDeterminations($fragmentid);
-                           if ($detcount==0) {
-                              // Insert the determination(s) provided.
-                              if ($namesidentical===FALSE) {
-                                 // only add the filed under name if the names are different.
-                                 // add the filed under name as a separate determination from the current determination.
 
-                                 // yesno1 = isLabel (no)
+
+                          if ($currentdeterminationid==$filedundernameid) {
+                             $fileundercurrent = 1;
+                          } else {
+                             $fileundercurrent = 0;
+                          }
+
+
+                          $adds = "";
+
+                          // insert or update the current det
+                          $current = huh_determination_custom::lookupCurrentDetermination($fragmentid);
+                          if ($current["status"]=="NotFound" || $current["taxonid"] != $currentdeterminationid) {
+                              // insert new determination
+
+                              // clear old iscurrent flag
+                              if (!$fail && isset($current["determinationid"])) {
+                                // insert new current
+                                $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent=true ";
+                                $statement = $connection->prepare($sql);
+                                if ($statement) {
+                                   $statement->bind_param("ii",$currentuserid,$current["determinationid"]);
+                                   $statement->execute();
+                                   $statement->close();
+                                } else {
+                                   $fail = true;
+                                   $feedback.= "Error preparing update determination query " . $connection->error;
+                                }
+                              }
+
+                              if (!$fail) {
+                                 // yesno1 = isLabel (yes)
+                                 $islabel = 1;  // we are capturing it in transcription, so must be label name
                                  // yesno2 = isFragment (of type) (no)
-                                 // yesno3 = isFiledUnder (yes)
-                                 // iscurrent = isCurrent (no)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
-                                           " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                                           " values (?,?,?,?,0,0,1,0,now(),0,4) ";
+                                 // yesno3 = isFiledUnder
+                                 // iscurrent = isCurrent (yes)
+                                 $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
+                                        " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
+                                        " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
+                                 $statement = $connection->prepare($sql);
+                                 if ($statement) {
+                                    $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $islabel, $filedundercurrent, $determinertext);
+                                    if ($statement->execute()) {
+                                       $determinationid = $statement->insert_id;
+                                       $adds .= "det=[$determinationid]";
+                                    } else {
+                                       $fail = true;
+                                       $feedback.= "Unable to save current determination: " . $connection->error;
+                                    }
+                                    $statement->free_result();
+                                 } else {
+                                    $fail = true;
+                                    $feedback.= "Query error: " . $connection->error . " " . $sql;
+                                 }
+
+                              }
+                          } else {
+                            // update existing record
+                            $existingcurrentname = $current["taxonname"];
+                            $existingcurrentnameid = $current["taxonid"];
+                            $existingidentificationqualifier = $current["qualifier"];
+                            $existingcurrentdetermination = $current["determinationid"];
+                            $existingdeterminerid = $current["determinerid"];
+                            $existingdetermineddate = $current["determineddate"];
+
+                            if (!$fail) {
+                                // Update current determination
+                                if ($existingcurrentnameid!=$currentdeterminationid
+                                    || $existingidentificationqualifier!=$identificationqualifier
+                                    || $existingdeterminerid!=$identifiedbyid
+                                    || $existingdetermineddate!=$dateidentified) {
+
+                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param('iiis', $filedundernameid,$fragmentid,$currentuserid,$fiidentificationqualifier);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                         $pluraldet = "s";  // for output, added more than one determination.
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save filed under name: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-                                }
-                                if (!$fail) {
-                                   // Current determination
-                                   // Always add.  May also be filed under name.
-
-                                   // yesno1 = isLabel (yes)
-                                   $islabel = 1;  // we are capturing it in transcription, so must be label name
-                                   // yesno2 = isFragment (of type) (no)
-                                   // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-                                   $isfiledunder = 0;
-                                   if ($namesidentical===TRUE) {
-                                      $isfiledunder = 1;
-                                   }
-                                   // iscurrent = isCurrent (yes)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                                                    " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                                                    " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save current determination: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-
-                                }
-                                if (!$fail) {
-                                    $feedback.= "Added Determination$pluraldet";
-                                    if ($debug) {  $feedback.=" $adds "; }
-                                }
-                                // end no determinations currently in the database.
-                           } else {
-                               // one or more determinations currently exist in the database, check if we should insert or update.
-                               // is the currentdetermination consistent with rapid entry?
-                               // is the filedunderdetermination consistent with rapid entry?
-                               $adds = "";
-                               $filedunder = huh_determination_custom::lookupFiledUnderDetermination($fragmentid);
-                               $updatefiledunder = false;
-                               if ( huh_determination_custom::consistentWithTranscribeCapture($filedunder)) {
-                                    // ok to update
-                                    $existingfiledundername = $filedunder["taxonname"];
-                                    $existingfiledundernameid = $filedunder["taxonid"];
-                                    $existingfiledunderqualifier = $filedunder["qualifier"];
-                                    $existingfiledunderdetermination = $filedunder["determinationid"];
-                                    $updatefiledunder = true;
-                               }
-                               $current = huh_determination_custom::lookupCurrentDetermination($fragmentid);
-                               $updatecurrent = false;
-                               if ( huh_determination_custom::consistentWithTranscribeCapture($current)) {
-                                    // ok to update
-                                    $existingcurrentname = $current["taxonname"];
-                                    $existingcurrentnameid = $current["taxonid"];
-                                    $existingidentificationqualifier = $current["qualifier"];
-                                    $existingcurrentdetermination = $current["determinationid"];
-                                    $existingdeterminerid = $current["determinerid"];
-                                    $existingdetermineddate = $current["determineddate"];
-                                    $updatecurrent = true;
-                               }
-
-                               // Insert/update determinations.
-                               if ($updatefiledunder && !$fail) {
-                                   // Update filedunder determination
-                                   if ($existingfiledundernameid!=$filedundernameid
-                                       || $existingfiledunderqualifier!=$fiidentificationqualifier) {
-                                      $sql = "update determination set taxonid = ?, qualifier = ?, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? ";
-                                      $statement = $connection->prepare($sql);
-                                      if ($statement) {
-                                         $statement->bind_param("isii",$filedundernameid,$fiidentificationqualifier,$currentuserid,$existingfiledunderdetermination);
-                                         $statement->execute();
-                                         $statement->close();
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Error preparing update determination query " . $connection->error;
-                                      }
-                                   } else {
-                                      $feedback.= "Filed Under unchanged. ";
-                                   }
-                               } else {
-                                   if ($namesidentical===FALSE) {
-                                      // insert new filedunder
-                                      $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent = true ";
-                                      $statement = $connection->prepare($sql);
-                                      if ($statement) {
-                                         $statement->bind_param("ii",$currentuserid, $existingfiledunderdetermination);
-                                         $statement->execute();
-                                         $statement->close();
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Error preparing update determination query " . $connection->error;
-                                      }
-                                   }
-                                   // yesno1 = isLabel (no)
-                                   // yesno2 = isFragment (of type) (no)
-                                   // yesno3 = isFiledUnder (yes)
-                                   // iscurrent = isCurrent (no)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
-                                           " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                                           " values (?,?,?,?,0,0,1,0,now(),0,4) ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param('iiis', $filedundernameid,$fragmentid,$currentuserid,$fiidentificationqualifier);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                         $pluraldet = "s";  // for output, added more than one determination.
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save filed under name: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-                               }
-                               if ($updatecurrent && !$fail) {
-                                   // Update current determination
-                                   if ($existingcurrentnameid!=$currentdeterminationid
-                                       || $existingidentificationqualifier!=$identificationqualifier
-                                       || $existingdeterminerid!=$identifiedbyid
-                                       || $existingdetermineddate!= $dateidentified) {
-
-                                      $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?,version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
-                                      $statement = $connection->prepare($sql);
-                                      if ($statement) {
-                                         $statement->bind_param("isisii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentified,$currentuserid,$existingcurrentdetermination);
-                                         $statement->execute();
-                                         $statement->close();
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Error preparing update determination query " . $connection->error;
-                                      }
-                                   } else {
-                                      $feedback.= "Current unchanged. ";
-                                   }
-                               } else {
-                                   // insert new current
-                                   $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent=true ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param("ii",$currentuserid,$existingcurrentdetermination);
+                                      $statement->bind_param("isisiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentified,$dateidentifiedprecision,$currentuserid,$existingcurrentdetermination);
                                       $statement->execute();
                                       $statement->close();
                                    } else {
                                       $fail = true;
                                       $feedback.= "Error preparing update determination query " . $connection->error;
                                    }
-
-                                   // yesno1 = isLabel (yes)
-                                   $islabel = 1;  // we are capturing it in transcription, so must be label name
-                                   // yesno2 = isFragment (of type) (no)
-                                   // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-                                   $isfiledunder = 0;
-                                   if ($namesidentical===TRUE) {
-                                      $isfiledunder = 1;
-                                   }
-                                   // iscurrent = isCurrent (yes)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                                                    " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                                                    " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save current determination: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-
+                                } else {
+                                   $feedback.= "Current unchanged. ";
                                 }
-                                if (!$fail) {
-                                    if ($adds!="") {
-                                       $feedback.= "Added Determination$pluraldet";
-                                       if ($debug) {  $feedback.=" $adds "; }
-                                    }
-                                }
-                           } // end handle existing determinations
+                            }
+                          }
 
+                          // insert filed under det if needed
+                          $filedunder = huh_determination_custom::lookupFiledUnderDetermination($fragmentid);
+                          if (($filedunder["status"]=="NotFound" || $filedunder["taxonid"] != $filedundernameid)) {
+                            // clear filed under flag on previous record
+                            if (!$fail && isset($filedunder['determinationid'])) { // existing record exists
+                              $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent = true ";
+                              $statement = $connection->prepare($sql);
+                              if ($statement) {
+                                 $statement->bind_param("ii",$currentuserid, $filedunder['determinationid']);
+                                 $statement->execute();
+                                 $statement->close();
+                              } else {
+                                 $fail = true;
+                                 $feedback.= "Error preparing update determination query " . $connection->error;
+                              }
+                            }
 
-                       } else {
-                          //  statement.fetch to retrieve fragmentid, collectionobjectid, collectingeventid, localityid failed.
-                          $fail = true;
-                          $feedback.= "Query Error " . $connection->error . " " .  $sql;
-                       }
+                            if (!$fail && !$filedundercurrent) {
+                              // need to create a new record for just the filed under
+
+                               // yesno1 = isLabel (no)
+                               // yesno2 = isFragment (of type) (no)
+                               // yesno3 = isFiledUnder (yes)
+                               // iscurrent = isCurrent (no)
+                               $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, " .
+                                       " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
+                                       " values (?,?,?,?,0,0,1,0,now(),0,4) ";
+                               $statement = $connection->prepare($sql);
+                               if ($statement) {
+                                  $statement->bind_param('iii', $filedundernameid,$fragmentid,$currentuserid);
+                                  if ($statement->execute()) {
+                                     $determinationid = $statement->insert_id;
+                                     $adds .= "det=[$determinationid]";
+                                  } else {
+                                     $fail = true;
+                                     $feedback.= "Unable to save filed under name: " . $connection->error;
+                                  }
+                                  $statement->free_result();
+                               } else {
+                                  $fail = true;
+                                  $feedback.= "Query error: " . $connection->error . " " . $sql;
+                               }
+                            }
+                        } else {
+                           $feedback.= "Filed Under unchanged. ";
+                        }
+
+                        if (!$fail && $adds) {
+                            $feedback.= "Added Determination(s)";
+                            if ($debug) {  $feedback.=" $adds "; }
+                        }
 
                        // done one and only one fragment
                    } elseif ($statement->num_rows==0) {
@@ -1340,11 +1235,10 @@ function lookupDataForBarcode($barcode) {
        $result['prepmethod'] = $match->getPrepMethod();
        $result['herbariumacronym'] = $match->getText1();
 
-       // get filedundername, currentname, filedunderqualifier, currentqualifier
+       // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
        $result['filedundername'] = $filedunder["taxonname"];
        $result['filedundernameid'] = $filedunder["taxonid"];
-       $result['filedunderqualifier'] = $filedunder["qualifier"];
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
        $result['currentname'] = $current["taxonname"];
        $result['currentnameid'] = $current["taxonid"];
