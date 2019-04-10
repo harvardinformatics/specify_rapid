@@ -282,7 +282,8 @@ if ($connection && $authenticated) {
          @$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
          @$container= substr($_POST['container'],0,huh_container::NAME_SIZE);
          @$containerid= substr(preg_replace('/[^0-9]/','',$_POST['containerid']),0,huh_container::CONTAINERID_SIZE);
- 		     @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_POST['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
+ 		     @$collectingtrip = substr($_POST['collectingtrip'],0,huh_collectingevent::COLLECTINGTRIPNAME_SIZE);
+         @$collectingtripid = substr(preg_replace('/[^0-9]/','',$_POST['collectingtripid']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_POST['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
          @$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_POST['project']),0,huh_project::PROJECTNAME_SIZE);
          @$storage= substr(preg_replace('/[^0-9]/','',$_POST['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
@@ -351,6 +352,7 @@ if ($connection && $authenticated) {
          if ( @($container!=$_POST['container']) ) { $truncation = true; $truncated .= "container : [$container] "; }
          if ( @($containerid!=$_POST['containerid']) ) { $truncation = true; $truncated .= "containerid : [$containerid] "; }
          if ( @($collectingtrip!=$_POST['collectingtrip']) ) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
+         if ( @($collectingtripid!=$_POST['collectingtripid']) ) { $truncation = true; $truncated .= "collectingtripid : [$collectingtripid] "; }
          if ( @($storagelocation!=$_POST['storagelocation']) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
          if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
          if ( @($storage!=$_POST['storage']) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
@@ -403,7 +405,7 @@ function ingest() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, $namedplace,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -497,7 +499,7 @@ function ingest() {
    if ($determinertext=='') { $determinertext = null; }
    if ($container=='') { $container = null; }
    if ($containerid=='') { $containerid = null; }
-   if ($collectingtrip=='') { $collectingtrip = null; }
+   if ($collectingtrip=='') { $collectingtrip = null; $collectingtripid = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
    if ($storage=='') { $storage = null; }  // subcollection
@@ -585,6 +587,7 @@ function ingest() {
       $df.= "container=[$container] ";
       $df.= "containerid=[$containerid] ";
       $df.= "collectingtrip=[$collectingtrip] ";
+      $df.= "collectingtripid=[$collectingtripid] ";
       $df.= "storagelocation=[$storagelocation] ";
       $df.= "project=[$project] ";
       $df.= "host=[$host] ";
@@ -773,6 +776,51 @@ function ingest() {
                            }
 
 
+                           // check for existing collectingtrip if just name is supplied
+                           if (!$fail && strlen(trim($collectingtripid))==0 && strlen(trim($collectingtrip))>0) { // new record
+                             $sql = "select collectingtripid from collectingtrip where collectingtripname = ? limit 1";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                                $statement->bind_param("s",$collectingtrip);
+                                $statement->execute();
+                                $statement->bind_result($cid);
+                                $statement->store_result();
+                                if ($statement->num_rows==1) {
+                                   if ($statement->fetch()) {
+                                      // Found an existing container record for the name
+                                      $collectingtripid = $cid;
+                                   } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error " . $connection->error;
+                                   }
+                                } else {
+                                  // create container record
+                                  $sql = "insert into collectingtrip (timestampcreated, version, collectingtripname, discipline, createdbyagentid)
+                                          values (now(), 1, ?, 3, ?)";
+                                  $statement1 = $connection->prepare($sql);
+                                  if ($statement1) {
+                                     $statement1->bind_param("si", $collectingtrip, $currentuserid);
+                                     $statement1->execute();
+                                     $rows = $connection->affected_rows;
+                                     if ($rows==1) {
+                                       $collectingtripid = $statement1->insert_id;
+                                       $feedback = $feedback . " Added CollectingTrip. ";
+                                     }
+                                  } else {
+                                     $fail = true;
+                                     $feedback.= "Query Error inserting collectingtrip: " . $connection->error  . " ";
+                                  }
+                                  $statement1->close();
+                                }
+                                $statement->free_result();
+                                $statement->close();
+                             } else {
+                                $fail = true;
+                                $feedback.= "Query error: " . $connection->error . " " . $sql;
+                             }
+                          }
+
+
                            if ($collectingeventid!=null) {
                                $countco = countCollectionObjectsForEvent($collectingeventid);
                                if ($countco < 0) {
@@ -784,10 +832,10 @@ function ingest() {
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
 
-                                  $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
+                                  $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, collectingtripid=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                   $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $collectingeventid);
+                                      $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $collectingeventid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -817,10 +865,10 @@ function ingest() {
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectionobject. "; }
-                                          $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
+                                          $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, collectingtripid=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                           $statement1 = $connection->prepare($sql);
                                           if ($statement1) {
-                                              $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $newcollectingeventid);
+                                              $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $newcollectingeventid);
                                               $statement1->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -847,7 +895,7 @@ function ingest() {
                                }
 
                                // check for existing container if just name is supplied
-                               if (!$fail && strlen(trim($containerid))==0 && strlen($container)>0) { // new record
+                               if (!$fail && strlen(trim($containerid))==0 && strlen(trim($container))>0) { // new record
                                  $sql = "select containerid from container where name = ? limit 1";
                                  $statement = $connection->prepare($sql);
                                  if ($statement) {
@@ -906,7 +954,7 @@ function ingest() {
                               }
 
                                // lookup agentid for collector
-                               if (strlen(trim($collectorsid))==0 && strlen($collectors)>0) {
+                               if (strlen(trim($collectorsid))==0 && strlen(trim($collectors))>0) {
                                   $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -981,6 +1029,7 @@ function ingest() {
                                   }
                                }
                            } // has collector
+
 
                            if ($localityid!=null) {
                                $countco = countCollectionObjectsForLocality($localityid);
@@ -1357,6 +1406,9 @@ function lookupDataForBarcode($barcode) {
        $result['collectors'] = huh_collector_custom::getCollectorVariantName($collectoragentid);
        $result['etal'] = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
+       $rcollectingtrip = $related['CollectingTripID'];
+       $result['collectingtrip'] = $rcollectingtrip['CollectingTripName'];
+       $result['collectingtripid'] = $rcollectingtrip['CollectingTripID'];
        //$rlocality->load($rlocality->getLocalityID());
        $result['namedplace'] = $rlocality->getNamedPlace();
        $result['verbatimelevation'] = $rlocality->getVerbatimElevation();

@@ -790,6 +790,9 @@ habitat
        $collectors = huh_collector_custom::getCollectorVariantName($collectoragentid);
        $etal = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
+       $rcollectingtrip = $related['CollectingTripID'];
+       $collectingtrip = $rcollectingtrip['CollectingTripName'];
+       $collectingtripid = $rcollectingtrip['CollectingTripID'];
        //$rlocality->load($rlocality->getLocalityID()); // already loaded
        $namedPlace = $rlocality->getNamedPlace();
        $verbatimElevation = $rlocality->getVerbatimElevation();
@@ -953,7 +956,7 @@ habitat
 
        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
        @field ("etal","Et al.",$etal,'false');
-       @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
+       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
@@ -1190,6 +1193,8 @@ habitat
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
                   setLoadedValue('provenance',data.provenance);
                   setLoadedValue('specimendescription',data.specimendescription);
+                  setLoadedValue('collectingtrip',data.collectingtrip);
+                  setLoadedValue('collectingtripid',data.collectingtripid);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
