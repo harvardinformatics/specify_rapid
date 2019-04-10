@@ -282,8 +282,8 @@ if ($connection && $authenticated) {
          @$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
          @$container= substr($_POST['container'],0,huh_container::NAME_SIZE);
          @$containerid= substr(preg_replace('/[^0-9]/','',$_POST['containerid']),0,huh_container::CONTAINERID_SIZE);
- 		     @$collectingtrip = substr($_POST['collectingtrip'],0,huh_collectingevent::COLLECTINGTRIPNAME_SIZE);
-         @$collectingtripid = substr(preg_replace('/[^0-9]/','',$_POST['collectingtripid']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
+ 		     @$collectingtrip = substr($_POST['collectingtrip'],0,huh_collectingtrip::COLLECTINGTRIPNAME_SIZE);
+         @$collectingtripid = substr(preg_replace('/[^0-9]/','',$_POST['collectingtripid']),0,huh_collectingtrip::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_POST['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
          @$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_POST['project']),0,huh_project::PROJECTNAME_SIZE);
          @$storage= substr(preg_replace('/[^0-9]/','',$_POST['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
@@ -777,7 +777,49 @@ function ingest() {
                            }
 
 
-
+                           // check for existing collectingtrip if just name is supplied
+                           if (!$fail && strlen(trim($collectingtripid))==0 && strlen(trim($collectingtrip))>0) { // new record
+                             $sql = "select collectingtripid from collectingtrip where collectingtripname = ? limit 1";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                                $statement->bind_param("s",$collectingtrip);
+                                $statement->execute();
+                                $statement->bind_result($cid);
+                                $statement->store_result();
+                                if ($statement->num_rows==1) {
+                                   if ($statement->fetch()) {
+                                      // Found an existing collectingtrip record for the name
+                                      $collectingtripid = $cid;
+                                   } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error " . $connection->error;
+                                   }
+                                } else {
+                                  // create collectingtrip record
+                                  $sql = "insert into collectingtrip (timestampcreated, version, collectingtripname, discipline, createdbyagentid)
+                                          values (now(), 1, ?, 3, ?)";
+                                  $statement1 = $connection->prepare($sql);
+                                  if ($statement1) {
+                                     $statement1->bind_param("si", $collectingtrip, $currentuserid);
+                                     $statement1->execute();
+                                     $rows = $connection->affected_rows;
+                                     if ($rows==1) {
+                                       $collectingtripid = $statement1->insert_id;
+                                       $feedback = $feedback . " Added CollectingTrip. ";
+                                     }
+                                  } else {
+                                     $fail = true;
+                                     $feedback.= "Query Error inserting collectingtrip: " . $connection->error  . " ";
+                                  }
+                                  $statement1->close();
+                                }
+                                $statement->free_result();
+                                $statement->close();
+                             } else {
+                                $fail = true;
+                                $feedback.= "Query error: " . $connection->error . " " . $sql;
+                             }
+                          }
 
 
                            if ($collectingeventid!=null) {
