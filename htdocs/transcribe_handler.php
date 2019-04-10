@@ -841,6 +841,11 @@ function ingest() {
                                    $feedback.= "Error: No collectingevent found/created.";
                                }
 
+                              // containerid should not be submitted without string
+                               if (strlen($container)==0) {
+                                 $containerid = null;
+                               }
+
                                // check for existing container if just name is supplied
                                if (!$fail && strlen(trim($containerid))==0 && strlen($container)>0) { // new record
                                  $sql = "select containerid, name from container where name = ? limit 1";
