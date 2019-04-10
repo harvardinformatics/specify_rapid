@@ -842,7 +842,7 @@ function ingest() {
                                }
 
                               // containerid should not be submitted without string
-                               if (strlen($container)==0) {
+                               if (strlen(trim($container))==0) {
                                  $containerid = null;
                                }
 

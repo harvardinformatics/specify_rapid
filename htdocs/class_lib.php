@@ -958,13 +958,12 @@ class huh_container_custom extends huh_container {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
-			$returnvalue .= $comma . ' { "id":"", "label":"", "value":"" } ';    // include blank as an option
-			$comma = ', ';
 			while ($stmt->fetch()) {
 				$name = trim($name);
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "id":"'.$id.'", "label":"'.$name.'", "value":"'.$name.'" } ';
+          $comma = ', ';
 				}
 			}
 			$stmt->close();
