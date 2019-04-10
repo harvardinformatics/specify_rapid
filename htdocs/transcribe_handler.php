@@ -890,12 +890,12 @@ function ingest() {
                                  }
                               }
 
-                              // if container name and id are null, remove reference from collection object
+                              // update Collectionobject, includes container and description fields
                               if (!$fail) {
-                                $sql = "update collectionobject set containerid = ?, version=version+1, timestampmodified=now(), modifiedbyagentid = ? where collectionobjectid = ?";
+                                $sql = "update collectionobject set description=?, containerid = ?, version=version+1, timestampmodified=now(), modifiedbyagentid = ? where collectionobjectid = ?";
                                 $statement = $connection->prepare($sql);
                                 if ($statement) {
-                                    $statement->bind_param("iii",$containerid,$currentuserid,$collectionobjectid);
+                                    $statement->bind_param("siii",$specimendescription, $containerid,$currentuserid,$collectionobjectid);
                                     $statement->execute();
                                     $rows = $connection->affected_rows;
                                     if ($rows==1) { $feedback = $feedback . " Updated container. "; }
@@ -1328,6 +1328,7 @@ function lookupDataForBarcode($barcode) {
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
+       $result['specimendescription'] = $rcolobj->getDescription();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID());
        //$rprep->load($rprep->getPreparationID());

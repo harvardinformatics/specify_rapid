@@ -746,6 +746,7 @@ habitat
        $prepmethod = $match->getPrepMethod();
 
        $provenance = $match->getProvenance();
+       $created = $match->getTimestampCreated();
 
        // get filedundername, currentname, filedunderqualifier, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
@@ -762,6 +763,7 @@ habitat
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
+       $specimendescription = $rcolobj->getDescription();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID()); // already loaded
        //$rprep->load($rprep->getPreparationID()); // already loaded
@@ -770,7 +772,6 @@ habitat
        $rpreptype = $related['PrepTypeID'];
        //$rpreptype->load($rpreptype->getPrepTypeID()); // already loaded
        $format = $rpreptype->getName();
-       $created = $rcolobj->getTimestampCreated();
        $related = $rcolobj->loadLinkedTo();
        $rcontainer = $related['ContainerID'];
        $container = $rcontainer->getName();
@@ -990,6 +991,7 @@ habitat
        @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
        @field ("provenance","Provenance",$provenance,'false');
+       @field ("specimendescription","Description",$specimendescription,'false');
        @selectProject("defaultproject","Project",$defaultproject);
 
    }
@@ -1187,6 +1189,7 @@ habitat
                   setLoadedValue('datecollected',data.datecollected);
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
                   setLoadedValue('provenance',data.provenance);
+                  setLoadedValue('specimendescription',data.specimendescription);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
