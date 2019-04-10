@@ -949,7 +949,7 @@ class huh_container_custom extends huh_container {
 
 	public function keySelectDistinctJSONname($term) {
 		global $connection;
-    $returnvalue = '[';
+		$returnvalue = '';
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
 		$comma = '';
 		$term = str_replace("*", "%", $term);
