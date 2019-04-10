@@ -770,6 +770,9 @@ habitat
        $format = $rpreptype->getName();
        $created = $rcolobj->getTimestampCreated();
        $related = $rcolobj->loadLinkedTo();
+       $rcontainer = $related['ContainerID'];
+       $container = $rcontainer->getName();
+       $containerid = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
        $project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
@@ -937,7 +940,7 @@ habitat
         selectProject("defaultproject","Project",$defaultproject);
    } elseif ($config=="standard") {
 
-
+       @selectContainerID("container","Container",$container,$containerid,'false');
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
@@ -1201,6 +1204,8 @@ habitat
                   $('#barcode').prop('disabled', true);
                   $('#recordcreated').html(data.created);
                   setLoadedValue('defaultproject',data.project);
+                  setLoadedValue('container',data.container);
+                  setLoadedValue('containerid',data.containerid);
                   setLoadedValue('prepmethod',data.prepmethod);
                   setLoadedValue('preptype',data.format);
                   setLoadedValue('filedundername',data.filedundername);

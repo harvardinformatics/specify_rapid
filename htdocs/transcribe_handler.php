@@ -280,7 +280,8 @@ if ($connection && $authenticated) {
          @$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
          @$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
          @$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
-         @$container= substr(preg_replace('/[^0-9]/','',$_POST['container']),0,huh_collectionobject::CONTAINERID_SIZE);
+         @$container= substr(preg_replace('/[^0-9]/','',$_POST['container']),0,huh_container::NAME_SIZE);
+         @$containerid= substr(preg_replace('/[^0-9]/','',$_POST['containerid']),0,huh_container::CONTAINERID_SIZE);
  		     @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_POST['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_POST['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
          @$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_POST['project']),0,huh_project::PROJECTNAME_SIZE);
@@ -348,6 +349,7 @@ if ($connection && $authenticated) {
          if ( @($specimendescription!=$_POST['specimendescription']) ) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
          if ( @($itemdescription!=$_POST['itemdescription']) ) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
          if ( @($container!=$_POST['container']) ) { $truncation = true; $truncated .= "container : [$container] "; }
+         if ( @($containerid!=$_POST['containerid']) ) { $truncation = true; $truncated .= "containerid : [$containerid] "; }
          if ( @($collectingtrip!=$_POST['collectingtrip']) ) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
          if ( @($storagelocation!=$_POST['storagelocation']) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
          if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
@@ -401,7 +403,7 @@ function ingest() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, $namedplace,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -494,6 +496,7 @@ function ingest() {
    if ($identifiedby=='') { $identifiedby = null; }
    if ($determinertext=='') { $determinertext = null; }
    if ($container=='') { $container = null; }
+   if ($containerid=='') { $containerid = null; }
    if ($collectingtrip=='') { $collectingtrip = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
@@ -580,6 +583,7 @@ function ingest() {
       $df.= "determinertext=[$determinertext] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";
+      $df.= "containerid=[$containerid] ";
       $df.= "collectingtrip=[$collectingtrip] ";
       $df.= "storagelocation=[$storagelocation] ";
       $df.= "project=[$project] ";
@@ -705,6 +709,8 @@ function ingest() {
                     $statement->store_result();
                     if ($statement->num_rows==1) {
                        if ($statement->fetch()) {
+                           // update database record peice by peice:
+
                            // set project if it isn't set.
                            if($project!="") {
                                $sql = "select count(*) as projectcount from project_colobj where projectid in (select projectid from project where projectname = ?) and collectionobjectid = ? ";
@@ -835,13 +841,71 @@ function ingest() {
                                    $feedback.= "Error: No collectingevent found/created.";
                                }
 
+                               // check for existing container if just name is supplied
+                               if (!$fail && strlen(trim($containerid))==0 && strlen($container)>0) { // new record
+                                 $sql = "select containerid, name from container where name = ? limit 1";
+                                 $statement = $connection->prepare($sql);
+                                 if ($statement) {
+                                    $statement->bind_param("s",$container);
+                                    $statement->execute();
+                                    $statement->bind_result($cid);
+                                    $statement->store_result();
+                                    if ($statement->num_rows==1) {
+                                       if ($statement->fetch()) {
+                                          // retrieves collector.agentid
+                                          $containerid = $cid;
+                                       } else {
+                                          $fail = true;
+                                          $feedback.= "Query Error " . $connection->error;
+                                       }
+                                    } else {
+                                      // create container record
+                                      $sql = "insert into container (timestampcreated, version, collectionmemberid, name, type, createdbyagentid)
+                                              values (now(), 1, 4, ?, 9, ?)";
+                                      $statement1 = $connection->prepare($sql);
+                                      if ($statement1) {
+                                         $statement1->bind_param("si", $container, $containerid);
+                                         $statement1->execute();
+                                         $rows = $connection->affected_rows;
+                                         if ($rows==1) {
+                                           $containerid = $statement->insert_id;
+                                           $feedback = $feedback . " Added Container. ";
+                                         }
+                                      } else {
+                                         $fail = true;
+                                         $feedback.= "Query Error inserting container: " . $connection->error  . " ";
+                                      }
+                                      $statement1->close();
+                                    }
+                                    $statement->free_result();
+                                    $statement->close();
+                                 } else {
+                                    $fail = true;
+                                    $feedback.= "Query error: " . $connection->error . " " . $sql;
+                                 }
+                              }
+
+                              // if container name and id are null, remove reference from collection object
+                              if (!$fail) {
+                                $sql = "update collectionobject set containerid = ?, version=version+1 where collectionobjectid = ?";
+                                $statement = $connection->prepare($sql);
+                                if ($statement) {
+                                    $statement->bind_param("ii",$containerid,$collectionobjectid);
+                                    $statement->execute();
+                                    $rows = $connection->affected_rows;
+                                    if ($rows==1) { $feedback = $feedback . " Updated container. "; }
+                                } else {
+                                    $fail = true;
+                                    $feedback.= "Query Error updating container. " . $connection->error . " ";
+                                }
+                              }
+
                                // lookup agentid for collector
                                if (strlen(trim($collectorsid))==0 && strlen($collectors)>0) {
                                   $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
-                                  $param = "s";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
-                                     $statement->bind_param($param,$collectors);
+                                     $statement->bind_param("s",$collectors);
                                      $statement->execute();
                                      $statement->bind_result($agentid);
                                      $statement->store_result();
@@ -1268,6 +1332,9 @@ function lookupDataForBarcode($barcode) {
        $result['format'] = $rpreptype->getName();
        $result['created'] = $rcolobj->getTimestampCreated();
        $related = $rcolobj->loadLinkedTo();
+       $rcontainer = $related['ContainerID'];
+       $result['container'] = $rcontainer->getName();
+       $result['containerid'] = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
        $result['project'] = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
