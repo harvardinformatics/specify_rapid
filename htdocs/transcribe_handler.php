@@ -280,7 +280,7 @@ if ($connection && $authenticated) {
          @$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
          @$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
          @$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
-         @$container= substr(preg_replace('/[^0-9]/','',$_POST['container']),0,huh_container::NAME_SIZE);
+         @$container= substr($_POST['container'],0,huh_container::NAME_SIZE);
          @$containerid= substr(preg_replace('/[^0-9]/','',$_POST['containerid']),0,huh_container::CONTAINERID_SIZE);
  		     @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_POST['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_POST['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
