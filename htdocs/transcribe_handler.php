@@ -848,7 +848,7 @@ function ingest() {
 
                                // check for existing container if just name is supplied
                                if (!$fail && strlen(trim($containerid))==0 && strlen($container)>0) { // new record
-                                 $sql = "select containerid, name from container where name = ? limit 1";
+                                 $sql = "select containerid from container where name = ? limit 1";
                                  $statement = $connection->prepare($sql);
                                  if ($statement) {
                                     $statement->bind_param("s",$container);
@@ -857,7 +857,7 @@ function ingest() {
                                     $statement->store_result();
                                     if ($statement->num_rows==1) {
                                        if ($statement->fetch()) {
-                                          // retrieves collector.agentid
+                                          // Found an existing container record for the name
                                           $containerid = $cid;
                                        } else {
                                           $fail = true;
