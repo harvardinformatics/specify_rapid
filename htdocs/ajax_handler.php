@@ -573,9 +573,9 @@ if ($connection && $authenticated) {
          	header("Content-type text/json-comment-filtered");
          	if ($ok) {
          		$response = '';
-         		echo '{ [ ';
+         		echo '[ ';
          		echo $values;
-         		echo ' ] }';
+         		echo ' ]';
          	} else {
          		$response = '{ }';
          	}
