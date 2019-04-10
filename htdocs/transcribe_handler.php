@@ -1407,8 +1407,8 @@ function lookupDataForBarcode($barcode) {
        $result['etal'] = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
        $rcollectingtrip = $related['CollectingTripID'];
-       $result['collectingtrip'] = $rcollectingtrip['CollectingTripName'];
-       $result['collectingtripid'] = $rcollectingtrip['CollectingTripID'];
+       $result['collectingtrip'] = $rcollectingtrip->getCollectingTripID();
+       $result['collectingtripid'] = $rcollectingtrip->getCollectingTripName();
        //$rlocality->load($rlocality->getLocalityID());
        $result['namedplace'] = $rlocality->getNamedPlace();
        $result['verbatimelevation'] = $rlocality->getVerbatimElevation();
