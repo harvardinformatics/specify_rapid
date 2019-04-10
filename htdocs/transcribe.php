@@ -940,7 +940,7 @@ habitat
         selectProject("defaultproject","Project",$defaultproject);
    } elseif ($config=="standard") {
 
-       @selectContainerID("container","Container",$container,$containerid,'false');
+       @selectContainerID("container","Container",$container,$containerid);
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
@@ -1879,17 +1879,52 @@ function selectStorageID($field,$label,$required='false') {
    echo $returnvalue;
 }
 
-function selectContainerID($field,$label,$required='false') {
-  if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
-	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
-	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
-	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
-	searchAttr='name' value='' >
-	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
-    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
-	echo $returnvalue;
+// function selectContainerID($field,$label,$required='false') {
+//   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
+// 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
+// 	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
+// 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
+// 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+// 	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+// 	searchAttr='name' value='' >
+// 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
+//     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
+// 	echo $returnvalue;
+// }
+
+function selectContainerID($field,$label,$value,$valueid) {
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+    <input type=text name=$field id=$field  value='$value' style=' width: 20em; ' >
+    <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
+    </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 5,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "returndistinctjsoncontainer",
+                       term: request.term
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
+   echo $returnvalue;
 }
 
 function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='false') {
