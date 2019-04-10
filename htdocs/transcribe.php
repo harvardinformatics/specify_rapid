@@ -1912,7 +1912,7 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
                     url: "ajax_handler.php",
                     dataType: "json",
                     data: {
-                       druid_action: "collagentidjson",
+                       druid_action: "returndistinctjsoncontainer",
                        term: request.term
                     },
                     success: function( data ) {
