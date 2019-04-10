@@ -558,12 +558,12 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['term']),0,60);  // value to limit
+         	@$limit= $_GET['term'];  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_container_custom();
          		try {
-         			$values = $t->keySelectDistinctJSONname($limit);
+         			$values = $t->keySelectDistinctJSONname("%$limit%");
          			$ok = true;
          		} catch (Exception $e) {
          			$ok = false;

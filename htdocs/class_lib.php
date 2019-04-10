@@ -968,7 +968,9 @@ class huh_container_custom extends huh_container {
 				}
 			}
 			$stmt->close();
-		}
+		} else {
+      error_log("Query failed for $preparemysql [$term]");
+    }
 		return $returnvalue;
 
 	}
