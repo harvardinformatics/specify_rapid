@@ -1892,24 +1892,27 @@ function selectStorageID($field,$label,$required='false') {
 // 	echo $returnvalue;
 // }
 
-function selectContainerID($field,$label,$value,$valueid) {
+function selectContainerID($field,$label,$value,$valueid,$required='false',$carryforward='false') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
+   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field  value='$value' style=' width: 20em; ' >
-    <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
                minLength: 5,
+               delay: 400,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
                     dataType: "json",
                     data: {
-                       druid_action: "returndistinctjsoncontainer",
+                       druid_action: "collagentidjson",
                        term: request.term
                     },
                     success: function( data ) {
