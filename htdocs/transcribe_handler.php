@@ -796,7 +796,7 @@ function ingest() {
                                    }
                                 } else {
                                   // create collectingtrip record
-                                  $sql = "insert into collectingtrip (timestampcreated, version, collectingtripname, discipline, createdbyagentid)
+                                  $sql = "insert into collectingtrip (timestampcreated, version, collectingtripname, disciplineid, createdbyagentid)
                                           values (now(), 1, ?, 3, ?)";
                                   $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
