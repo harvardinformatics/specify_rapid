@@ -869,11 +869,11 @@ function ingest() {
                                               values (now(), 1, 4, ?, 9, ?)";
                                       $statement1 = $connection->prepare($sql);
                                       if ($statement1) {
-                                         $statement1->bind_param("si", $container, $containerid);
+                                         $statement1->bind_param("si", $container, $currentuserid);
                                          $statement1->execute();
                                          $rows = $connection->affected_rows;
                                          if ($rows==1) {
-                                           $containerid = $statement->insert_id;
+                                           $containerid = $statement1->insert_id;
                                            $feedback = $feedback . " Added Container. ";
                                          }
                                       } else {
@@ -892,10 +892,10 @@ function ingest() {
 
                               // if container name and id are null, remove reference from collection object
                               if (!$fail) {
-                                $sql = "update collectionobject set containerid = ?, version=version+1 where collectionobjectid = ?";
+                                $sql = "update collectionobject set containerid = ?, version=version+1, timestampmodified=now(), modifiedbyagentid = ? where collectionobjectid = ?";
                                 $statement = $connection->prepare($sql);
                                 if ($statement) {
-                                    $statement->bind_param("ii",$containerid,$collectionobjectid);
+                                    $statement->bind_param("iii",$containerid,$currentuserid,$collectionobjectid);
                                     $statement->execute();
                                     $rows = $connection->affected_rows;
                                     if ($rows==1) { $feedback = $feedback . " Updated container. "; }
