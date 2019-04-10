@@ -836,7 +836,7 @@ function ingest() {
                                   $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, collectingtripid=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                   $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $collectingeventid);
+                                      $statement1->bind_param("sssisisiii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $collectingeventid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -869,7 +869,7 @@ function ingest() {
                                           $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, collectingtripid=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                           $statement1 = $connection->prepare($sql);
                                           if ($statement1) {
-                                              $statement1->bind_param("sssisisii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $newcollectingeventid);
+                                              $statement1->bind_param("sssisisiii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $newcollectingeventid);
                                               $statement1->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
