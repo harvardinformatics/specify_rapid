@@ -497,9 +497,10 @@ function ingest() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($determinertext=='') { $determinertext = null; }
-   if ($container=='') { $container = null; }
+   if ($container=='') { $container = null; $containerid = null; }
    if ($containerid=='') { $containerid = null; }
    if ($collectingtrip=='') { $collectingtrip = null; $collectingtripid = null; }
+   if ($collectingtripid=='') { $collectingtripid = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
    if ($storage=='') { $storage = null; }  // subcollection
@@ -776,49 +777,7 @@ function ingest() {
                            }
 
 
-                           // check for existing collectingtrip if just name is supplied
-                           if (!$fail && strlen(trim($collectingtripid))==0 && strlen(trim($collectingtrip))>0) { // new record
-                             $sql = "select collectingtripid from collectingtrip where collectingtripname = ? limit 1";
-                             $statement = $connection->prepare($sql);
-                             if ($statement) {
-                                $statement->bind_param("s",$collectingtrip);
-                                $statement->execute();
-                                $statement->bind_result($cid);
-                                $statement->store_result();
-                                if ($statement->num_rows==1) {
-                                   if ($statement->fetch()) {
-                                      // Found an existing container record for the name
-                                      $collectingtripid = $cid;
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query Error " . $connection->error;
-                                   }
-                                } else {
-                                  // create container record
-                                  $sql = "insert into collectingtrip (timestampcreated, version, collectingtripname, discipline, createdbyagentid)
-                                          values (now(), 1, ?, 3, ?)";
-                                  $statement1 = $connection->prepare($sql);
-                                  if ($statement1) {
-                                     $statement1->bind_param("si", $collectingtrip, $currentuserid);
-                                     $statement1->execute();
-                                     $rows = $connection->affected_rows;
-                                     if ($rows==1) {
-                                       $collectingtripid = $statement1->insert_id;
-                                       $feedback = $feedback . " Added CollectingTrip. ";
-                                     }
-                                  } else {
-                                     $fail = true;
-                                     $feedback.= "Query Error inserting collectingtrip: " . $connection->error  . " ";
-                                  }
-                                  $statement1->close();
-                                }
-                                $statement->free_result();
-                                $statement->close();
-                             } else {
-                                $fail = true;
-                                $feedback.= "Query error: " . $connection->error . " " . $sql;
-                             }
-                          }
+
 
 
                            if ($collectingeventid!=null) {
