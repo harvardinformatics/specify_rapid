@@ -745,6 +745,8 @@ habitat
        $match->load($match->getFragmentID());
        $prepmethod = $match->getPrepMethod();
 
+       $provenance = $match->getProvenance();
+
        // get filedundername, currentname, filedunderqualifier, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
        $filedundername = $filedunder["taxonname"];
@@ -903,6 +905,7 @@ habitat
        highergeography - pick
        scientific name - filed under, plus qualifier - carry forward
        */
+       @selectAcronym("herbariumacronym",$herbarium);
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
@@ -936,10 +939,10 @@ habitat
         //    });
         // </script>
         // ";
-        selectAcronym("herbariumacronym",$herbarium);
-        selectProject("defaultproject","Project",$defaultproject);
-   } elseif ($config=="standard") {
+        @selectProject("defaultproject","Project",$defaultproject);
+   } else { //if ($config=="standard") {
 
+       @selectAcronym("herbariumacronym",$herbarium);
        @selectContainerID("container","Container",$container,$containerid);
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
@@ -986,55 +989,9 @@ habitat
        @field ("habitat","Habitat",$habitat);
        @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
-       selectAcronym("herbariumacronym",$herbarium);
-       selectProject("defaultproject","Project",$defaultproject);
+       @field ("provenance","Provenance",$provenance,'false');
+       @selectProject("defaultproject","Project",$defaultproject);
 
-   } else {
-
-        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');
-        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true');
-        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
-
-        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
-        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
-
-        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
-        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        // echo "
-        // <script>
-        //    $('#verbatimdate').blur(function() {
-        //      if (!$(this).val().trim()) {
-        //        $('#datecollected').val('');
-        //      } else {
-        //        $('#datecollected').prop('disabled', true);
-        //        var verbatim = $('#verbatimdate').val();
-        //        $.ajax({
-        //            type: 'GET',
-        //            url: 'transcribe_handler.php',
-        //            data: {
-        //                action: 'interpretdate',
-        //                verbatimdate: verbatim
-        //            },
-        //            success: function(data) {
-        //                if (data!='') {
-        //                  $('#datecollected').val(data);
-        //                  $('#datecollected').prop('disabled', true);
-        //                }
-        //            }
-        //        });
-        //      }
-        //    });
-        // </script>
-        // ";
-
-        @field ("habitat","Habitat",$habitat);
-        @field ("namedplace","Named place",$namedPlace);
-        @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
-
-        selectAcronym("herbariumacronym",$herbarium);
-        selectProject("defaultproject","Project",$defaultproject);
    }
 
    echo "<tr><td colspan=2>";
@@ -1229,6 +1186,7 @@ habitat
                   setLoadedValue('verbatimdate',data.verbatimdate);
                   setLoadedValue('datecollected',data.datecollected);
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
+                  setLoadedValue('provenance',data.provenance);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }

@@ -753,10 +753,10 @@ function ingest() {
                            if ($fragmentid!=null) {
                                $statement1 = $connection->stmt_init();
 
-                               $sql = "update fragment set text1=?, prepmethod=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where fragmentid = ? ";
+                               $sql = "update fragment set text1=?, prepmethod=?, provenance=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where fragmentid = ? ";
                                $statement1 = $connection->prepare($sql);
                                if ($statement1) {
-                                   $statement1->bind_param("ssii", $herbariumacronym, $prepmethod, $currentuserid, $fragmentid);
+                                   $statement1->bind_param("sssii", $herbariumacronym, $prepmethod, $provenance, $currentuserid, $fragmentid);
                                    $statement1->execute();
                                    $rows = $connection->affected_rows;
                                    if ($rows==1) { $feedback = $feedback . " Updated Fragment. "; }
@@ -1312,6 +1312,7 @@ function lookupDataForBarcode($barcode) {
        $match->load($match->getFragmentID());
        $result['prepmethod'] = $match->getPrepMethod();
        $result['herbariumacronym'] = $match->getText1();
+       $result['provenance'] = $match->getProvenance();
 
        // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
