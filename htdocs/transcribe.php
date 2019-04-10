@@ -791,8 +791,8 @@ habitat
        $etal = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
        $rcollectingtrip = $related['CollectingTripID'];
-       $collectingtrip = $rcollectingtrip->getCollectingTripID();
-       $collectingtripid = $rcollectingtrip->getCollectingTripName();
+       $collectingtrip = $rcollectingtrip->getCollectingTripName();
+       $collectingtripid = $rcollectingtrip->getCollectingTripID();
        //$rlocality->load($rlocality->getLocalityID()); // already loaded
        $namedPlace = $rlocality->getNamedPlace();
        $verbatimElevation = $rlocality->getVerbatimElevation();
