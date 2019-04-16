@@ -181,6 +181,23 @@ class TR_Batch {
      return $this->completed_date;
   }
 
+  /**
+   * Mark batch as complete
+   */
+   function setCompleted() {
+     global $connection, $user;
+
+     $this->moveTo(1);
+
+     $sql = 'update TR_BATCH set completed_date = now() where tr_batch_id = ?';
+     if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("i", $this->batch_id);
+        $statement->execute();
+     } else {
+       throw new Exception("Database connection failed");
+     }
+   }
+
   function getFileCount() {
     global $connection;
 
@@ -368,8 +385,6 @@ class TR_Batch {
         $statement->execute();
      }
   }
-
-
 
 }
 

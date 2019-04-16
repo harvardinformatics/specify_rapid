@@ -764,6 +764,7 @@ habitat
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
        $specimendescription = $rcolobj->getDescription();
+       $frequency = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID()); // already loaded
        //$rprep->load($rprep->getPreparationID()); // already loaded
@@ -947,7 +948,6 @@ habitat
    } else { //if ($config=="standard") {
 
        @selectAcronym("herbariumacronym",$herbarium);
-       @selectContainerID("container","Container",$container,$containerid);
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
@@ -986,11 +986,13 @@ habitat
        //     });
        //  </script>
        //  ";
+       @selectContainerID("container","Container",$container,$containerid);
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
 
        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
        @field ("habitat","Habitat",$habitat);
+       @field ("frequency", "Frequency", $frequency);
        @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
        @field ("provenance","Provenance",$provenance,'false');
@@ -1181,6 +1183,7 @@ habitat
                   setLoadedValue('dateidentified',data.dateidentified);
                   setLoadedValue('specificlocality',data.specificlocality);
                   setLoadedValue('habitat',data.habitat);
+                  setLoadedValue('frequency',data.frequency);
                   setLoadedValue('highergeography',data.geography);
                   setLoadedValue('verbatimelevation',data.verbatimelevation);
                   setLoadedValue('geographyid',data.geographyid);

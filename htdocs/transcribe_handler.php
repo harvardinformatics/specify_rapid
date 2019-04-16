@@ -270,6 +270,7 @@ if ($connection && $authenticated) {
          @$datepublished= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_POST['datepublished']),0,huh_taxoncitation::TEXT2_SIZE);
          @$isfragment= substr(preg_replace('/[^0-9a-z]/','',$_POST['isfragment']),0,1);   // taxon
          @$habitat= substr(preg_replace('/[^A-Za-z&!\' 0-9\[\]\.\-\,\(\)\?\:\;]/','',$_POST['habitat']),0,huh_collectingevent::REMARKS_SIZE);
+         @$frequency= substr(preg_replace('/[^A-Za-z&!\' 0-9\[\]\.\-\,\(\)\?\:\;]/','',$_POST['frequency']),0,huh_collectionobject::TEXT4_SIZE);
          @$host = substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_POST['host']),0,900);
          @$substrate= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_POST['substrate']),0,huh_fragment::TEXT2_SIZE);
          @$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_POST['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
@@ -340,6 +341,7 @@ if ($connection && $authenticated) {
          if ( @($datepublished!=$_POST['datepublished']) ) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
          if ( @($isfragment!=$_POST['isfragment']) ) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
          if ( @($habitat!=$_POST['habitat']) ) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
+         if ( @($frequency!=$_POST['frequency']) ) { $truncation = true; $truncated .= "frequency : [$frequency] "; }
          if ( @($host!=$_POST['host']) ) { $truncation = true; $truncated .= "host : [$host] "; }
          if ( @($substrate!=$_POST['substrate']) ) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
          if ( @($phenology!=$_POST['phenology']) ) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
@@ -376,6 +378,36 @@ if ($connection && $authenticated) {
          //echo storeImageObject($batchid,$barcode);
 
        break;
+
+       case 'donebatch':
+          $ok = false;
+          @$id = $_GET['batch_id'];
+          $currentBatch = new TR_Batch();
+          $currentBatch->setID($id);
+
+          $currentBatch->setCompleted();
+
+          // TODO: retun to batch selection screen
+
+          $path = $currentBatch->getPath();
+          $pathfile = $currentBatch->incrementFile();
+          $position = $pathfile->position;
+          $filecount = $currentBatch->getFileCount();
+          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+          $path= $pathfile->path;
+          $filename = $pathfile->filename;
+          $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
+          if (strlen($pathfile->filename)>0) { $ok=true; }
+
+          header("Content-type: application/json");
+          if ($ok) {
+             $response = $values;
+          } else {
+             $response = '{}';
+          }
+          echo $response;
+          break;
+
        default:
          echo "Unknown Action [$action]";
    }
@@ -404,7 +436,7 @@ function ingest() {
    $highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
-   $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
+   $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage, $namedplace,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
@@ -489,6 +521,7 @@ function ingest() {
    if ($datepublished=='') { $datepublished = null; }
    if ($isfragment=='') { $isfragment = null; }
    if ($habitat=='') { $habitat = null; }
+   if ($frequency=='') { $frequency = null; }
    if ($host=='') { $host = null; }
    if ($substrate=='') { $substrate = null; }
    if ($phenology=='') { $phenology = 'NotDetermined'; }
@@ -576,6 +609,7 @@ function ingest() {
       $df.= "datepublished=[$datepublished] ";
       $df.= "isfragment=[$isfragment] ";
       $df.= "habitat=[$habitat] ";
+      $df.= "frequency=[$frequency] ";
       $df.= "phenology=[$phenology] ";
       $df.= "verbatimelevation=[$verbatimelevation] ";
       $df.= "namedplace=[$namedplace] ";
@@ -941,10 +975,10 @@ function ingest() {
 
                               // update Collectionobject, includes container and description fields
                               if (!$fail) {
-                                $sql = "update collectionobject set description=?, containerid = ?, version=version+1, timestampmodified=now(), modifiedbyagentid = ? where collectionobjectid = ?";
+                                $sql = "update collectionobject set description=?, text4=?, containerid=?, version=version+1, timestampmodified=now(), modifiedbyagentid=? where collectionobjectid=?";
                                 $statement = $connection->prepare($sql);
                                 if ($statement) {
-                                    $statement->bind_param("siii",$specimendescription, $containerid,$currentuserid,$collectionobjectid);
+                                    $statement->bind_param("ssiii",$specimendescription,$frequency,$containerid,$currentuserid,$collectionobjectid);
                                     $statement->execute();
                                     $rows = $connection->affected_rows;
                                     if ($rows==1) { $feedback = $feedback . " Updated container. "; }
@@ -1167,17 +1201,16 @@ EOD;
                               }
 
                               if (!$fail) {
-                                 // yesno1 = isLabel (yes)
-                                 $islabel = 1;  // we are capturing it in transcription, so must be label name
+                                 // yesno1 = isLabel (no)
                                  // yesno2 = isFragment (of type) (no)
                                  // yesno3 = isFiledUnder
                                  // iscurrent = isCurrent (yes)
                                  $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
                                         " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                                        " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
+                                        " values (?,?,?,?,?,?,?,0,0,?,1,now(),0,4,?) ";
                                  $statement = $connection->prepare($sql);
                                  if ($statement) {
-                                    $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $islabel, $filedundercurrent, $determinertext);
+                                    $statement->bind_param('iiisisiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $filedundercurrent, $determinertext);
                                     if ($statement->execute()) {
                                        $determinationid = $statement->insert_id;
                                        $adds .= "det=[$determinationid]";
@@ -1379,6 +1412,7 @@ function lookupDataForBarcode($barcode) {
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
        $result['specimendescription'] = $rcolobj->getDescription();
+       $result['frequency'] = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID());
        //$rprep->load($rprep->getPreparationID());
