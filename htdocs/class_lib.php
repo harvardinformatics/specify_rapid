@@ -863,10 +863,6 @@ class huh_picklistitem_custom extends huh_picklistitem {
   	         $stmt->bind_param("i", $picklistid);
   	         $stmt->execute();
   	         $stmt->bind_result($name,$val);
-  	         if (!$required) {
-  	            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-  	            $comma = ', ';
-  	         }
   	         while ($stmt->fetch()) {
   	            $val = trim($val);
   	            if ($val!='') {
@@ -927,13 +923,12 @@ class huh_referencework_custom extends huh_referencework {
    		$stmt->bind_param("ss", $term, $term);
    		$stmt->execute();
    		$stmt->bind_result($id, $name);
-   		$returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-   		$comma = ', ';
    		while ($stmt->fetch()) {
    			$name = trim($name);
    			if ($name!='') {
    				$name = str_replace('"','&quot;',$name);
    				$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+          $comma = ', ';
    			}
    		}
    		$stmt->close();
@@ -1065,13 +1060,12 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
-			$returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-			$comma = ', ';
 			while ($stmt->fetch()) {
 				$name = trim($name);
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+          $comma = ', ';
 				}
 			}
 			$stmt->close();
@@ -1107,13 +1101,12 @@ class huh_storage_custom extends huh_storage {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
-            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-            $comma = ', ';
             while ($stmt->fetch()) {
                 $name = trim($name);
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
                     $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+                    $comma = ', ';
                 }
             }
             $stmt->close();
@@ -1526,13 +1519,7 @@ class huh_project_custom extends huh_project {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
-            if ($withid) {
-               // $returnvalue .= $comma . ' { "id":"", "value":"", "name":"[no project]" } ';    // include blank as an option
-               $comma = '';
-            } else {
-               $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-               $comma = ', ';
-            }
+            $comma = '';
             while ($stmt->fetch()) {
                 $name = trim($name);
                 if ($name!='') {
@@ -1672,13 +1659,12 @@ class huh_geography_custom extends huh_geography {
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
          $stmt->bind_result($name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
@@ -1695,13 +1681,12 @@ class huh_geography_custom extends huh_geography {
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
          $stmt->bind_result($name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
@@ -1759,20 +1744,13 @@ class huh_geography_custom extends huh_geography {
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
          $stmt->bind_result($id,$name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
-         if ($primaryid!="") {
-             //$returnvalue .= $comma . ' { "value":"'.$primaryid.'", "name":"'.$primary.'" } ';    // include state/province as option
-         } else {
-            if ($countryid != "") {
-                //$returnvalue .= $comma . ' { "value":"'.$countryid.'", "name":"'.$country.'" } ';    // include country as an option
-            }
-         }
+
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
