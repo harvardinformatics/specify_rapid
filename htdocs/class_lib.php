@@ -899,13 +899,12 @@ class huh_agentvariant_custom extends huh_agentvariant {
          $stmt->bind_param("s", $term);
          $stmt->execute();
          $stmt->bind_result($id, $name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
