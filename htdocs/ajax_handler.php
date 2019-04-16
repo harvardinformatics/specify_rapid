@@ -550,6 +550,37 @@ if ($connection && $authenticated) {
          }
          break;
 
+         case 'returnjsoncontainer':
+         	$ok = false;
+         	$table = '';
+         	$key = '';
+         	$field = '';
+         	$value = '';
+         	$uniqueid = '';
+         	$controltype = '';
+         	@$limit= $_GET['term'];  // value to limit
+
+         	if (strlen($limit)>4) {
+         		$t = new huh_container_custom();
+         		try {
+         			$values = $t->keySelectJSONname("%$limit%");
+         			$ok = true;
+         		} catch (Exception $e) {
+         			$ok = false;
+         		}
+         	}
+         	//header("Content-type application/json");
+         	header("Content-type text/json-comment-filtered");
+         	if ($ok) {
+         		$response = '';
+         		echo '[ ';
+         		echo $values;
+         		echo ' ]';
+         	} else {
+         		$response = '{ }';
+         	}
+         	break;
+
          case 'returndistinctjsoncontainer':
          	$ok = false;
          	$table = '';
@@ -576,7 +607,7 @@ if ($connection && $authenticated) {
             echo '{ "identifier":"value", "label":"name",';
          		echo '"items": [ ';
          		echo $values;
-         		echo ' ]';
+         		echo ' ] }';
          	} else {
          		$response = '{ }';
          	}

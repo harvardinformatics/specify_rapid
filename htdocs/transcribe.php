@@ -1881,7 +1881,7 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
                     url: "ajax_handler.php",
                     dataType: "json",
                     data: {
-                       druid_action: "returndistinctjsoncontainer",
+                       druid_action: "returnjsoncontainer",
                        term: request.term
                     },
                     success: function( data ) {

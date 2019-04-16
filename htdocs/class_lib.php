@@ -941,7 +941,7 @@ class huh_referencework_custom extends huh_referencework {
 
 class huh_container_custom extends huh_container {
 
-	public function keySelectDistinctJSONname($term) {
+	public function keySelectJSONname($term) {
 		global $connection;
 		$returnvalue = '';
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
@@ -957,6 +957,33 @@ class huh_container_custom extends huh_container {
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "id":"'.$id.'", "label":"'.$name.'", "value":"'.$name.'" } ';
+          $comma = ', ';
+				}
+			}
+			$stmt->close();
+		} else {
+      error_log("Query failed for $preparemysql [$term]");
+    }
+		return $returnvalue;
+
+	}
+
+  public function keySelectDistinctJSONname($term) {
+		global $connection;
+		$returnvalue = '';
+		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
+		$comma = '';
+		$term = str_replace("*", "%", $term);
+		$term = mysql_escape_string($term);
+		if ($stmt = $connection->prepare($preparemysql)) {
+			$stmt->bind_param("s", $term);
+			$stmt->execute();
+			$stmt->bind_result($id, $name);
+			while ($stmt->fetch()) {
+				$name = trim($name);
+				if ($name!='') {
+					$name = str_replace('"','&quot;',$name);
+					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'"} ';
           $comma = ', ';
 				}
 			}
@@ -1051,7 +1078,7 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 
 	public function keySelectDistinctJSONname($term) {
 		global $connection;
-    $returnvalue = '[';
+    $returnvalue = '';
 		$preparemysql = "select distinct collectingtripid, collectingtripname from collectingtrip where collectingtripname like ? order by collectingtripname asc ";
 		$comma = '';
 		$term = str_replace("*", "%", $term);
@@ -1070,7 +1097,6 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 			}
 			$stmt->close();
 		}
-    $returnvalue .= ']';
 		return $returnvalue;
 
 	}
