@@ -573,7 +573,8 @@ if ($connection && $authenticated) {
          	header("Content-type text/json-comment-filtered");
          	if ($ok) {
          		$response = '';
-         		echo '[ ';
+            echo '{ "identifier":"value", "label":"name",';
+         		echo '"items": [ ';
          		echo $values;
          		echo ' ]';
          	} else {
@@ -594,7 +595,7 @@ if ($connection && $authenticated) {
          	if (strlen($limit)>4) {
          		$t = new huh_collectingtrip_custom();
          		try {
-         			$values = $t->keySelectDistinctJSONname($limit);
+         			$values = $t->keySelectDistinctJSONname("%$limit%");
         			$ok = true;
          		} catch (Exception $e) {
          			$ok = false;
