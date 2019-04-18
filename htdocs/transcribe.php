@@ -1422,23 +1422,28 @@ habitat
      $utmeasting='';
      $utmnorthing='';
 
+     $BAK_BASEWIDTH=$BASEWIDTH;
+     $BASEWIDTH=10;
+
      echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
      echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
      echo '<div>';
      echo '<table>';
-     field ("verbatimlat","Verbatim Lat.  &deg; ' \"",$verbatimlat);
-     field ("verbatimlong","Verbatim Long. &deg; ' \"",$verbatimlong);
-     field ("decimallat","Decimal Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
-     field ("decimallong","Decimal Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+     field ("verbatimlat","Verb. Lat.  &deg; ' \"",$verbatimlat);
+     field ("verbatimlong","Verb. Long. &deg; ' \"",$verbatimlong);
+     field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+     field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
      field ("datum","Datum",$datum);
      field ("coordinateuncertanty","Uncertainty (m)",$coordinateuncertainty,'false','[0-9]*');
-     @selectCollectorsID("georeferencedby","Georeferenced By",$georeferencedby,$georeferencedbyid,'false','false');
-     @field ("dategeoreferenced","Date Georeferenced",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+     @selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false');
+     @field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
      fieldselectpicklist("georeferencesource",'Lat/Long Method',$georeferencesource,'false','georefsourcepl',31);
      //utm($utmzone, $utmeasting, $utmnorthing);
      echo '</table>';
      echo '</div>';
      echo '</div>';
+
+     $BASEWIDTH=$BAK_BASEWIDTH;
    }
 
    echo "</form>\n";
