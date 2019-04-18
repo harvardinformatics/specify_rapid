@@ -589,7 +589,7 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= $_GET['term'];  // value to limit
+         	@$limit= $_GET['name'];  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_container_custom();

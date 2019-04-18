@@ -697,7 +697,7 @@ function selectContainerID($field,$label,$required='false') {
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
-	searchAttr='term' value='' >
+	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
 	echo $returnvalue;
