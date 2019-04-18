@@ -1351,6 +1351,7 @@ habitat
          $( function(){
             $("#imagezoomdiv").accordion( { heightStyle: "content" } ) ;
             $("#extrafieldsdiv").accordion( { heightStyle: "content" } ) ;
+            $("#geofieldsdiv").accordion( { heightStyle: "content" } ) ;
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
