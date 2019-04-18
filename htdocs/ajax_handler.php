@@ -594,7 +594,7 @@ if ($connection && $authenticated) {
          	if (strlen($limit)>4) {
          		$t = new huh_container_custom();
          		try {
-         			$values = $t->keySelectDistinctJSONname("%$limit%");
+         			$values = $t->keySelectDistinctJSONname($limit);
          			$ok = true;
          		} catch (Exception $e) {
          			$ok = false;
@@ -626,7 +626,7 @@ if ($connection && $authenticated) {
          	if (strlen($limit)>4) {
          		$t = new huh_collectingtrip_custom();
          		try {
-         			$values = $t->keySelectDistinctJSONname("%$limit%");
+         			$values = $t->keySelectDistinctJSONname($limit);
         			$ok = true;
          		} catch (Exception $e) {
          			$ok = false;
