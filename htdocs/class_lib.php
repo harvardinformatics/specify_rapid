@@ -2188,7 +2188,7 @@ function ingestCollectionObject() {
                                                        "  values (?,?,?,?,?,?,now(),0)";
                $statement = $connection->prepare($sql);
                if ($statement) {
-                  $statement->bind_param('isiisi',$localityid,$utmzone,$utmeasting,$utmnorthing,$datum, $currentuserid);
+                  $statement->bind_param('isiisi',$localityid,$utmzone,$utmeasting,$utmnorthing,$datum,$currentuserid);
                   if ($statement->execute()) {
                      $localitydetailid = $statement->insert_id;
                      $adds .= "localitydetail=[$localitydetailid]";

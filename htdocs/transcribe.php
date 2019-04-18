@@ -1400,6 +1400,44 @@ habitat
    selectPrepType("preptype","Format:",$defaultformat,'true','true');
    echo '</table>';
    echo '</div>';
+
+   if ($config=="minimal") {
+     // nada
+   } else {
+     // TODO FIXME add these fields to the
+     // 1) initial page load, 2) barcodelookup method (a. data result, b. setLoadedValue()), 3) ingest
+     $verbatimlat='';
+     $verbatimlong='';
+     $decimallat='';
+     $decimallong='';
+     $datum='';
+     $coordinateuncertainty='';
+     $georeferencedby='';
+     $georeferencedbyid='';
+     $dategeoreferenced='';
+     $georeferencesource='';
+     $utmzone='';
+     $utmeasting='';
+     $utmnorthing='';
+
+     echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
+     echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
+     echo '<div>';
+     echo '<table>';
+     field ("verbatimlat","Verbatim Latitude  &deg; ' \"",$verbatimlat);
+     field ("verbatimlong","Verbatim Longitude &deg; ' \"",$verbatimlong);
+     field ("decimallat","Decimal Latitude",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+     field ("decimallong","Decimal Longitude",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+     field ("datum","datum",$datum);
+     field ("coordinateuncertanty","uncertainty radius meters",$coordinateuncertainty,'false','[0-9]*');
+     @selectCollectorsID("georeferencedby","Georeferenced By",$georeferencedby,$georeferencedbyid,'false','false');
+     @field ("dategeoreferenced","Date Georeferenced",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+     fieldselectpicklist("georeferencesource",'Lat/Long method',$georeferencesource,'false','georefsourcepl',31);
+     utm($utmzone, $utmeasting, $utmnorthing);
+     echo '</table>';
+     echo '</div>';
+   }
+
    echo "</form>\n";
 
    echo '</div>'; //end rightside
@@ -1553,13 +1591,13 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
 }
 
 
-function utm() {
+function utm($utmzonedefault='', $utmeastingdefault='', $utmnorthingdefault='') {
 	echo "<tr><td>\n";
 	echo "<label for='utmzone'>UTM Zone,Easting,Northing</label>";
 	echo "</td><td>\n";
-	echo "<input name=utmzone value='' dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+[A-Z]' style='width: 4em;' >";
-	echo "<input name=utmeasting value='' dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
-	echo "<input name=utmnorthing value='' dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
+	echo "<input name=utmzone value=$utmzonedefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+[A-Z]' style='width: 4em;' >";
+	echo "<input name=utmeasting value=$utmeastingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
+	echo "<input name=utmnorthing value=$utmnorthingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
    echo "</td></tr>\n";
 }
 
