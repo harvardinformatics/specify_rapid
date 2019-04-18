@@ -1423,7 +1423,7 @@ habitat
      $utmnorthing='';
 
      $bak_basewidth=BASEWIDTH;
-     BASEWIDTH=10;
+     define("BASEWIDTH",10);
 
      echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
      echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
@@ -1443,7 +1443,7 @@ habitat
      echo '</div>';
      echo '</div>';
 
-     BASEWIDTH=$bak_basewidth;
+     define("BASEWIDTH",$bak_basewidth);
    }
 
    echo "</form>\n";
