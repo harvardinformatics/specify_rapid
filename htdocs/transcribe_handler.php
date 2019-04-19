@@ -1080,7 +1080,7 @@ function ingest() {
                            if (isset($verbatimlat) || isset($decimallat)) {
                              $latlongtype = "Point";
                            } else {
-                             $latlongtype = "";
+                             $latlongtype = null;
                            }
 
                            if (!$fail && $localityid!=null) {
