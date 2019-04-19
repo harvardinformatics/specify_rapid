@@ -1067,12 +1067,12 @@ function ingest() {
 
 
                            // ensure that verbatim and decimal are either both set are neither set
-                           if (isset($verbatimlat)==isset($verbatimlong)) {
+                           if (isset($verbatimlat)!=isset($verbatimlong)) {
                              $fail = true;
                              $feedback.= "Verbatim Lat [$verbatimlat] and Long [$verbatimlong] must both be set";
                            }
 
-                           if(isset($decimallat)==isset($decimallong)) {
+                           if(isset($decimallat)!=isset($decimallong)) {
                              $fail = true;
                              $feedback.= "Decimal Lat [$decimallat] and Long [$decimallong] must both be set";
                            }
