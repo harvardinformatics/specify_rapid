@@ -8,7 +8,7 @@ include_once("transcribe_lib.php");
 include_once("imagehandler.php");
 
 define("ENABLE_DUPLICATE_FINDING",TRUE);
-define("BASEWIDTH",20);  // em for width of form fields
+$GLOBALS['BASEWIDTH']=20; // em for width of form fields
 
 $error = "";
 $targethostdb = "Not Set";
@@ -1422,8 +1422,8 @@ habitat
      $utmeasting='';
      $utmnorthing='';
 
-     $bak_basewidth=BASEWIDTH;
-     define("BASEWIDTH",10);
+     $bak_basewidth = $GLOBALS['BASEWIDTH'];
+     $GLOBALS['BASEWIDTH'] = 10;
 
      echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
      echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
@@ -1443,7 +1443,7 @@ habitat
      echo '</div>';
      echo '</div>';
 
-     define("BASEWIDTH",$bak_basewidth);
+     $GLOBALS['BASEWIDTH'] = $bak_basewidth;
    }
 
    echo "</form>\n";
@@ -1500,12 +1500,12 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
       $disabled = '';
    }
    if ($required=='false') {
-      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".BASEWIDTH."em; ' $disabled >";
+      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    } else {
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".BASEWIDTH."em; ' $disabled >";
+      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    }
    echo "</td></tr>\n";
 }
@@ -1530,7 +1530,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       $disabled = '';
    }
    //$width = BASEWIDTH - 2;
-   $width = BASEWIDTH;
+   $width = $GLOBALS['BASEWIDTH'];
    if ($required=='false') {
       echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
@@ -1812,7 +1812,7 @@ function selectBasionymID($field,$label,$required='false') {
   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
-	$width = BASEWIDTH - 3;
+	$width = $GLOBALS['BASEWIDTH'] - 3;
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='taxonStore$field' $req searchDelay='900' hasDownArrow='false'
@@ -1998,7 +1998,7 @@ function selectProject($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' value='$default' $req style='width: ".BASEWIDTH."em; ' class='carryforward' >
+        <input id='$field' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
      </div>
   </td></tr>
     ";
