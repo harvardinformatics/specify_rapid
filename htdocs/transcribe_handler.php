@@ -253,14 +253,14 @@ if ($connection && $authenticated) {
          @$verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',$_POST['verbatimlong']),0,huh_locality::LONG1TEXT_SIZE);
          @$decimallat= substr(preg_replace('/[^0-9\.\-]/','',$_POST['decimallat']),0,huh_locality::LATITUDE1_SIZE);
          @$decimallong= substr(preg_replace('/[^0-9\.\-]/','',$_POST['decimallong']),0,huh_locality::LONGITUDE1_SIZE);
-         @$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_POST['datum']),0,huh_locality::DATUM_SIZE);
-         @$coordinateuncertanty= substr(preg_replace('/[^0-9]/','',$_POST['coordinateuncertanty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
-         @$georeferencedby= substr(preg_replace('/[^0-9]/','',$_POST['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
-         @$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',$_POST['georeferencedate']),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
+         //@$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_POST['datum']),0,huh_locality::DATUM_SIZE);
+         @$coordinateuncertainty= substr(preg_replace('/[^0-9]/','',$_POST['coordinateuncertainty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
+         //@$georeferencedby= substr(preg_replace('/[^0-9]/','',$_POST['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
+         //@$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',$_POST['georeferencedate']),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
          @$georeferencesource= substr(preg_replace('/[^A-Za-z]/','',$_POST['georeferencesource']),0,huh_locality::LATLONGMETHOD_SIZE);
-         @$utmzone= substr(preg_replace('/[^0-9A-Z]/','',$_POST['utmzone']),0,huh_localitydetail::UTMZONE_SIZE);
-         @$utmeasting= substr(preg_replace('/[^0-9]/','',$_POST['utmeasting']),0,huh_localitydetail::UTMEASTING_SIZE);
-         @$utmnorthing= substr(preg_replace('/[^0-9]/','',$_POST['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
+         //@$utmzone= substr(preg_replace('/[^0-9A-Z]/','',$_POST['utmzone']),0,huh_localitydetail::UTMZONE_SIZE);
+         //@$utmeasting= substr(preg_replace('/[^0-9]/','',$_POST['utmeasting']),0,huh_localitydetail::UTMEASTING_SIZE);
+         //@$utmnorthing= substr(preg_replace('/[^0-9]/','',$_POST['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
 
          @$typestatus= substr(preg_replace('/[^A-Za-z]/','',$_POST['typestatus']),0,huh_determination::TYPESTATUSNAME_SIZE);
          @$typeconfidence= substr(preg_replace('/[^A-Za-z]/','',$_POST['typeconfidence']),0,huh_determination::CONFIDENCE_SIZE);
@@ -324,14 +324,14 @@ if ($connection && $authenticated) {
          if ( @($verbatimlong!=$_POST['verbatimlong']) ) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
          if ( @($decimallat!=$_POST['decimallat']) ) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
          if ( @($decimallong!=$_POST['decimallong']) ) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
-         if ( @($datum!=$_POST['datum']) ) { $truncation = true; $truncated .= "datum : [$datum] "; }
-         if ( @($coordinateuncertanty!=$_POST['coordinateuncertanty']) ) { $truncation = true; $truncated .= "coordinateuncertanty : [$coordinateuncertanty] "; }
-         if ( @($georeferencedby!=$_POST['georeferencedby']) ) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
-         if ( @($georeferencedate!=$_POST['georeferencedate']) ) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
+         //if ( @($datum!=$_POST['datum']) ) { $truncation = true; $truncated .= "datum : [$datum] "; }
+         if ( @($coordinateuncertainty!=$_POST['coordinateuncertainty']) ) { $truncation = true; $truncated .= "coordinateuncertainty : [$coordinateuncertainty] "; }
+         //if ( @($georeferencedby!=$_POST['georeferencedby']) ) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
+         //if ( @($georeferencedate!=$_POST['georeferencedate']) ) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
          if ( @($georeferencesource!=$_POST['georeferencesource']) ) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
-         if ( @($utmzone!=$_POST['utmzone']) ) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
-         if ( @($utmeasting!=$_POST['utmeasting']) ) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
-         if ( @($utmnorthing!=$_POST['utmnorthing']) ) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
+         //if ( @($utmzone!=$_POST['utmzone']) ) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
+         //if ( @($utmeasting!=$_POST['utmeasting']) ) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
+         //if ( @($utmnorthing!=$_POST['utmnorthing']) ) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
 
          if ( @($typestatus!=$_POST['typestatus']) ) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
          if ( @($typeconfidence!=@$_POST['typeconfidence']) ) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
@@ -434,10 +434,10 @@ function ingest() {
    $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
    $highergeography,
-   $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
-   $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
+   $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong, // $datum,$georeferencedby,$georeferencedate,$utmzone,$utmeasting,$utmnorthing,
+   $coordinateuncertainty,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,
    $project, $storagelocation, $storage, $namedplace,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -491,27 +491,27 @@ function ingest() {
    if ($verbatimlong=='') { $verbatimlong = null; }
    if ($decimallat=='') { $decimallat = null; }
    if ($decimallong=='') { $decimallong = null; }
-   if ($datum=='') { $datum = null; }
-   if ($coordinateuncertanty=='') {
-      $coordinateuncertanty = null;
+   //if ($datum=='') { $datum = null; }
+   if ($coordinateuncertainty=='') {
+      $coordinateuncertainty = null;
       $maxuncertantyestunit = null;
    } else {
       $maxuncertantyestunit = 'm';
    }
-   if ($georeferencedby=='') { $georeferencedby = null; }
-   if ($georeferencedate=='') { $georeferencedate = null; }
+   //if ($georeferencedby=='') { $georeferencedby = null; }
+   //if ($georeferencedate=='') { $georeferencedate = null; }
    if ($georeferencesource=='') { $georeferencesource = null; }
-   if ($utmzone=='') { $utmzone = null; }
-   if ($utmeasting=='') { $utmeasting = null; }
-   if ($utmnorthing=='') { $utmnorthing = null; }
-   if ($utmeasting!=null) {
-      if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) {
-         // OK, specify takes UTM easting and northing in meters, can't abstract to MGRS or USNG
-      } else {
-         $fail = true;
-         $feedback .= "UTM Easting and northing must be in meters, there must be 6 digits in the easting and 7 in the northing.";
-      }
-   }
+   //if ($utmzone=='') { $utmzone = null; }
+   //if ($utmeasting=='') { $utmeasting = null; }
+   //if ($utmnorthing=='') { $utmnorthing = null; }
+   // if ($utmeasting!=null) {
+   //    if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) {
+   //       // OK, specify takes UTM easting and northing in meters, can't abstract to MGRS or USNG
+   //    } else {
+   //       $fail = true;
+   //       $feedback .= "UTM Easting and northing must be in meters, there must be 6 digits in the easting and 7 in the northing.";
+   //    }
+   // }
 
    if ($typestatus=='') { $typestatus = null; }
    if ($typeconfidence=='') { $typeconfidence = null; }
@@ -596,10 +596,10 @@ function ingest() {
       $df.= "verbatimlong=[$verbatimlong] ";
       $df.= "decimallat=[$decimallat] ";
       $df.= "decimallong=[$decimallong] ";
-      $df.= "datum=[$datum] ";
-      $df.= "coordinateuncertanty=[$coordinateuncertanty] ";
-      $df.= "georeferencedby=[$georeferencedby] ";
-      $df.= "georeferencedate=[$georeferencedate] ";
+      //$df.= "datum=[$datum] ";
+      $df.= "coordinateuncertainty=[$coordinateuncertainty] ";
+      //$df.= "georeferencedby=[$georeferencedby] ";
+      //$df.= "georeferencedate=[$georeferencedate] ";
       $df.= "georeferencesource=[$georeferencesource] ";
       $df.= "typestatus=[$typestatus] ";
       $df.= "typeconfidence=[$typeconfidence] ";
@@ -1018,7 +1018,7 @@ function ingest() {
                                }
 
                                // add/update collector
-                               if ($collectingeventid!=null) {
+                               if (!$fail && $collectingeventid!=null) {
                                   $sql = "select collectorid from collector where collectingeventid = ? ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1066,7 +1066,24 @@ function ingest() {
                            } // has collector
 
 
-                           if ($localityid!=null) {
+                           // ensure that verbatim and decimal are either both set are neither set
+                           if (isset($verbatimlat)==isset($verbatimlong)) {
+                             $fail = true;
+                             $feedback.= "Verbatim Lat and Long must both be set";
+                           }
+
+                           if(isset($decimallat)==isset($decimallong)) {
+                             $fail = true;
+                             $feedback.= "Decimal Lat and Long must both be set";
+                           }
+
+                           if (isset($verbatimlat) || isset($decimallat)) {
+                             $latlongtype = "Point";
+                           } else {
+                             $latlongtype = "";
+                           }
+
+                           if (!$fail && $localityid!=null) {
                                $countco = countCollectionObjectsForLocality($localityid);
                                if ($countco < 0) {
                                    $fail = true;
@@ -1076,10 +1093,11 @@ function ingest() {
                                    $feedback.= "Error: no collection objects found for locality. ";
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
-                                  $sql = "update locality set localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+
+                                  $sql = "update locality set Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                 		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("sssii", $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->bind_param("ssiiisssssii", $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
@@ -1453,6 +1471,13 @@ function lookupDataForBarcode($barcode) {
        //$rgeography->load($rgeography->getGeographyID());
        $result['geographyid'] = $rgeography->getGeographyID();
        $result['geography'] = $rgeography->getFullName();
+       $result['verbatimlat'] = $rlocality->getLat1Text();
+       $result['verbatimlong'] = $rlocality->getLong1Text();
+       $result['decimallat'] = $rlocality->getLatitude1();
+       $result['decimallong'] = $rlocality->getLongitude1();
+       $result['coordinateuncertainty'] = $rlocality->getLatLongAccuracy();
+       $result['georeferencesource'] = $rlocality->getLatLongMethod();
+
        $result['error']="";
    } else {
        $result['status'] = "ERROR";

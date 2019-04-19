@@ -804,6 +804,12 @@ habitat
        $geographyid = $rgeography->getGeographyID();
        $geography = $rgeography->getFullName();
 
+       $verbatimlat = $rlocality->getLat1Text();
+       $verbatimlong = $rlocality->getLong1Text();
+       $decimallat = $rlocality->getLatitude1();
+       $decimallong = $rlocality->getLongitude1();
+       $coordinateuncertainty = $rlocality->getLatLongAccuracy();
+       $georeferencesource = $rlocality->getLatLongMethod();
 
    } elseif ($num_matches==0) {
        // set defaults to create new record
@@ -1198,6 +1204,12 @@ habitat
                   setLoadedValue('specimendescription',data.specimendescription);
                   setLoadedValue('collectingtrip',data.collectingtrip);
                   setLoadedValue('collectingtripid',data.collectingtripid);
+                  setLoadedValue('verbatimlat',data.verbatimlat);
+                  setLoadedValue('verbatimlong',data.verbatimlong);
+                  setLoadedValue('decimallat',data.decimallat);
+                  setLoadedValue('decimallong',data.decimallong);
+                  setLoadedValue('coordinateuncertainty',data.coordinateuncertainty);
+                  setLoadedValue('georeferencesource',data.georeferencesource);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
@@ -1412,18 +1424,12 @@ habitat
      $verbatimlong='';
      $decimallat='';
      $decimallong='';
-     $datum='';
      $coordinateuncertainty='';
-     $georeferencedby='';
-     $georeferencedbyid='';
-     $dategeoreferenced='';
      $georeferencesource='';
-     $utmzone='';
-     $utmeasting='';
-     $utmnorthing='';
+
 
      $bak_basewidth = $GLOBALS['BASEWIDTH'];
-     $GLOBALS['BASEWIDTH'] = 10;
+     $GLOBALS['BASEWIDTH'] = 11;
 
      echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
      echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
@@ -1433,11 +1439,11 @@ habitat
      field ("verbatimlong","Verb. Long.",$verbatimlong);
      field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
      field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
-     fieldselectpicklist("georeferencesource",'Method',$georeferencesource,'false','georefsourcepl',31);
+     field ("georeferencesource",'Method',$georeferencesource,'false');
      //field ("datum","Datum",$datum); // almost never encountered on a label
-     field ("coordinateuncertanty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
-     @selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false');
-     @field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+     field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
+     //@selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false'); // This might only make sense in the data model for post-hoc georeferencing
+     //@field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); // doesn't make sense for label transcription, should be used for post-hoc georeferencing
      //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription
      echo '</table>';
      echo '</div>';
