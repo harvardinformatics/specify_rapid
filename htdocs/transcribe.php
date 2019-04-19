@@ -1711,7 +1711,7 @@ function fieldselectpicklist($name,$label,$default,$required,$storeId,$picklisti
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
 	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
 	store='$storeId' required='$required'
-	searchAttr='name' value='$default' ></td></tr>";
+	searchAttr='name' value='$default' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; '></td></tr>";
    echo $returnvalue;
 }
 
