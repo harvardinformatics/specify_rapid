@@ -1434,11 +1434,11 @@ habitat
      field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
      field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
      fieldselectpicklist("georeferencesource",'Method',$georeferencesource,'false','georefsourcepl',31);
-     field ("datum","Datum",$datum);
+     //field ("datum","Datum",$datum); // almost never encountered on a label
      field ("coordinateuncertanty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
      @selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false');
      @field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-     //utm($utmzone, $utmeasting, $utmnorthing);
+     //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription
      echo '</table>';
      echo '</div>';
      echo '</div>';
@@ -1635,7 +1635,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
    if ($field=='geographyfilter') { $style = " background-color: lightgrey; "; } else { $style = ""; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; $style ' $carryforward  >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' $carryforward  >
     <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1672,7 +1672,7 @@ function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultco
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
     <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -1777,7 +1777,7 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' $carryforward >
+	<input type=text name=$field id=$field $req  value='$value' style=' width:". $GLOBALS['BASEWIDTH'] ."em;' $carryforward >
 	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1830,7 +1830,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' $carryforward >
     <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1913,7 +1913,7 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 20em; ' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' $carryforward >
     <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1949,7 +1949,7 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field  value='$value' style=' width: 20em; ' >
+    <input type=text name=$field id=$field  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
     <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
     </td></tr>";
    $returnvalue .= '
