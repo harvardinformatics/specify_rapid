@@ -455,6 +455,7 @@ function ingest() {
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
    if ($stationfieldnumber=='') { $stationfieldnumber = null; }
+   if ($namedplace=='') { $namedplace = null; }
    if ($accessionnumber=='') { $accessionnumber = null; }
    if ($provenance=='') { $provenance = null; }
    if ($verbatimdate=='') { $verbatimdate = null; }
