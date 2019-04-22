@@ -238,12 +238,12 @@ function doSetup() {
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
    if ($batchPath==null || strlen($batchPath)==0) {
-       echo " <strong>No Current Batch.</strong>";
+     echo " <strong>No Current Batch.</strong>";
    } else {
       echo " <strong>Batch: [$batchPath]</strong>";
       echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
-            echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+        echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       }
       //echo " First File: [$targetBatchFirst->filename]";
    }
@@ -253,7 +253,6 @@ function doSetup() {
    echo " <strong>Work on another batch:</strong>";
    echo "<select id='targetBatch' name='targetBatch'>";
    $sql = "select trb.path, IF(trb.completed_date is not null, 1, 0) as completed, group_concat(trub.username separator ',') as users from TR_BATCH trb left join TR_USER_BATCH trub on trb.tr_batch_id = trub.tr_batch_id and trub.position > 1 group by trb.tr_batch_id order by completed, path asc";
-   $selectedfound = false;
    if ($statement = $connection->prepare($sql)) {
        $statement->execute();
        $statement->bind_result($path,$completed,$users);
@@ -266,15 +265,14 @@ function doSetup() {
              $complete="Done: ";
           }
           if (strlen($users)>0) {
-            $usersworking = $users;
-          } else {
             $usersworking = " ($users)";
+          } else {
+            $usersworking = "";
           }
           $upath = urlencode($path);
 
-          if (!$selectedfound && strpos($users, $username) !== false) {
+          if ($path==$batchpath) {
             $selected = "selected";
-            $selectedfound=true; 
           } else {
             $selected = "";
           }
