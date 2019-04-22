@@ -551,24 +551,6 @@ class DateRangeWithPrecision {
 
 class huh_determination_custom extends huh_determination {
 
-   /**
-    * Is an array of values returned by lookupCurrentDetermination/lookupFiledUnderDetermination
-    * consistent with data entry through the transcription application (should transcribe do update or insert).
-    *
-    * @param det an array of key/value pairs as returned by lookupCurrentDetermination.
-    * @return boolean, true if not a type, and data not caputured as the determiner, false otherwise.
-    */
-   public static function consistentWithTranscribeCapture($det) {
-      $result = false;
-      if (strlen($det["typestatusname"])==0
-          && ($det["determinertext"]=="[data not captured]" || $det["determinertext"]=="")
-          && strlen($det["determineddate"])==0
-         ) {
-         $result = true;
-      }
-      return $result;
-   }
-
    public static function countDeterminations($fragmentid) {
       global $connection;
       $result = 0;
@@ -652,7 +634,7 @@ class huh_determination_custom extends huh_determination {
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname, $determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determinedddate,$remarks);
+         $statement->bind_result($typestatusname, $determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -881,10 +863,6 @@ class huh_picklistitem_custom extends huh_picklistitem {
   	         $stmt->bind_param("i", $picklistid);
   	         $stmt->execute();
   	         $stmt->bind_result($name,$val);
-  	         if (!$required) {
-  	            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-  	            $comma = ', ';
-  	         }
   	         while ($stmt->fetch()) {
   	            $val = trim($val);
   	            if ($val!='') {
@@ -917,13 +895,12 @@ class huh_agentvariant_custom extends huh_agentvariant {
          $stmt->bind_param("s", $term);
          $stmt->execute();
          $stmt->bind_result($id, $name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
@@ -946,13 +923,12 @@ class huh_referencework_custom extends huh_referencework {
    		$stmt->bind_param("ss", $term, $term);
    		$stmt->execute();
    		$stmt->bind_result($id, $name);
-   		$returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-   		$comma = ', ';
    		while ($stmt->fetch()) {
    			$name = trim($name);
    			if ($name!='') {
    				$name = str_replace('"','&quot;',$name);
    				$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+          $comma = ', ';
    			}
    		}
    		$stmt->close();
@@ -965,7 +941,7 @@ class huh_referencework_custom extends huh_referencework {
 
 class huh_container_custom extends huh_container {
 
-	public function keySelectDistinctJSONname($term) {
+	public function keySelectJSONname($term) {
 		global $connection;
 		$returnvalue = '';
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
@@ -976,17 +952,45 @@ class huh_container_custom extends huh_container {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
-			$returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-			$comma = ', ';
 			while ($stmt->fetch()) {
 				$name = trim($name);
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
-					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+					$returnvalue .= $comma . ' { "id":"'.$id.'", "label":"'.$name.'", "value":"'.$name.'" } ';
+          $comma = ', ';
 				}
 			}
 			$stmt->close();
-		}
+		} else {
+      error_log("Query failed for $preparemysql [$term]");
+    }
+		return $returnvalue;
+
+	}
+
+  public function keySelectDistinctJSONname($term) {
+		global $connection;
+		$returnvalue = '';
+		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
+		$comma = '';
+		$term = str_replace("*", "%", $term);
+		$term = mysql_escape_string($term);
+		if ($stmt = $connection->prepare($preparemysql)) {
+			$stmt->bind_param("s", $term);
+			$stmt->execute();
+			$stmt->bind_result($id, $name);
+			while ($stmt->fetch()) {
+				$name = trim($name);
+				if ($name!='') {
+					$name = str_replace('"','&quot;',$name);
+					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'"} ';
+          $comma = ', ';
+				}
+			}
+			$stmt->close();
+		} else {
+      error_log("Query failed for $preparemysql [$term]");
+    }
 		return $returnvalue;
 
 	}
@@ -1003,7 +1007,7 @@ class huh_collector_custom extends huh_collector {
    public function keySelectCollectorAgentIDJSON($term) {
       global $connection;
       $returnvalue = '[';
-      $preparemysql = " SELECT agentvariant.agentid, concat(name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ']') as label, name as value FROM agentvariant left join agent on agentvariant.agentid = agent.agentid where name like ? and vartype = 4 order by name ASC ";
+      $preparemysql = " SELECT agentvariant.agentid, concat(name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']') as label, name as value FROM agentvariant left join agent on agentvariant.agentid = agent.agentid where name like ? and vartype = 4 order by name ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
@@ -1027,7 +1031,8 @@ class huh_collector_custom extends huh_collector {
    public static function getCollectorVariantName($collectoragentid) {
       global $connection;
       $returnvalue = "";
-      $sql = "select name from agentvariant where agentid = ? and vartype = 4 limit 1 ";
+      //$sql = "select name from agentvariant where agentid = ? and vartype = 4 limit 1 ";
+      $sql = "select concat(av.name, ' [', coalesce(year(a.dateofbirth), '?'), '-', coalesce(year(a.dateofdeath), '?'), ']') as name from agentvariant av left join agent a on av.agentid = a.agentid where av.agentid = ? and av.vartype = 4 limit 1 ";
       if ($statement = $connection->prepare($sql)) {
          $statement->bind_param("i", $collectoragentid);
          $statement->execute();
@@ -1070,9 +1075,10 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
       return $returnvalue;
    }
 
+
 	public function keySelectDistinctJSONname($term) {
 		global $connection;
-		$returnvalue = '';
+    $returnvalue = '';
 		$preparemysql = "select distinct collectingtripid, collectingtripname from collectingtrip where collectingtripname like ? order by collectingtripname asc ";
 		$comma = '';
 		$term = str_replace("*", "%", $term);
@@ -1081,13 +1087,12 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
-			$returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-			$comma = ', ';
 			while ($stmt->fetch()) {
 				$name = trim($name);
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+          $comma = ', ';
 				}
 			}
 			$stmt->close();
@@ -1122,13 +1127,12 @@ class huh_storage_custom extends huh_storage {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
-            $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-            $comma = ', ';
             while ($stmt->fetch()) {
                 $name = trim($name);
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
                     $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+                    $comma = ', ';
                 }
             }
             $stmt->close();
@@ -1541,13 +1545,7 @@ class huh_project_custom extends huh_project {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
-            if ($withid) {
-               // $returnvalue .= $comma . ' { "id":"", "value":"", "name":"[no project]" } ';    // include blank as an option
-               $comma = '';
-            } else {
-               $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-               $comma = ', ';
-            }
+            $comma = '';
             while ($stmt->fetch()) {
                 $name = trim($name);
                 if ($name!='') {
@@ -1687,13 +1685,12 @@ class huh_geography_custom extends huh_geography {
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
          $stmt->bind_result($name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
@@ -1710,13 +1707,12 @@ class huh_geography_custom extends huh_geography {
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
          $stmt->bind_result($name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
@@ -1774,20 +1770,13 @@ class huh_geography_custom extends huh_geography {
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
          $stmt->bind_result($id,$name);
-         $returnvalue .= $comma . ' { "value":"", "name":"" } ';    // include blank as an option
-         $comma = ', ';
-         if ($primaryid!="") {
-             //$returnvalue .= $comma . ' { "value":"'.$primaryid.'", "name":"'.$primary.'" } ';    // include state/province as option
-         } else {
-            if ($countryid != "") {
-                //$returnvalue .= $comma . ' { "value":"'.$countryid.'", "name":"'.$country.'" } ';    // include country as an option
-            }
-         }
+
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
+               $comma = ', ';
             }
          }
          $stmt->close();
@@ -2199,7 +2188,7 @@ function ingestCollectionObject() {
                                                        "  values (?,?,?,?,?,?,now(),0)";
                $statement = $connection->prepare($sql);
                if ($statement) {
-                  $statement->bind_param('isiisi',$localityid,$utmzone,$utmeasting,$utmnorthing,$datum, $currentuserid);
+                  $statement->bind_param('isiisi',$localityid,$utmzone,$utmeasting,$utmnorthing,$datum,$currentuserid);
                   if ($statement->execute()) {
                      $localitydetailid = $statement->insert_id;
                      $adds .= "localitydetail=[$localitydetailid]";

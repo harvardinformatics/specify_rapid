@@ -24,9 +24,9 @@ if (!$connection) {
 
 $display = '';
 @$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
-if ($display=='') { 
+if ($display=='') {
    @$display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
-} 
+}
 $tdisplay = $display;
 $showDefault = true;
 
@@ -70,7 +70,7 @@ if ($require_authentication) {
          $user->setAgentId($_SESSION["agentid"]);
          $user->setLastLogin($_SESSION["lastlogin"]);
          $user->setAbout($_SESSION["about"]);
-      } else { 
+      } else {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
          $display = 'logout';
@@ -153,19 +153,19 @@ echo $apage->getFooter();
 function inProfile($profile,$field, $location) {
    global $profiles;
 
-   if ($profiles ==null) { 
+   if ($profiles ==null) {
       $profiles = array();
       // load data from profiles.conf, blank lines and lines starting with # are ignored.
       $fh = fopen('profiles.conf','r');
       while ($line = fgets($fh)) {
-        if ( (strlen($line)>0)  && (substr($line,0,1)<>"#") ) { 
+        if ( (strlen($line)>0)  && (substr($line,0,1)<>"#") ) {
            $bits = explode(",",$line);
            if (count($bits)==3) {
               $key = $bits[0].$bits[1];
               $profiles[$key] = trim($bits[2]);
            }
         }
-      }  
+      }
       fclose($fh);
       reset($profiles);
    }
@@ -176,16 +176,16 @@ function inProfile($profile,$field, $location) {
    if (array_key_exists($key,$profiles)) {
       // a location is provided in the profile for the field
       $val = $profiles[$key];
-      if ($val==$location) { 
-         $result = true; 
-      } else { 
-         $result = false; 
+      if ($val==$location) {
+         $result = true;
+      } else {
+         $result = false;
       }
-   } else { 
+   } else {
        // the combination of profile and field are not present in the selected profile.
-       if ($location=="main") {  
+       if ($location=="main") {
           $result = true;
-       } else { 
+       } else {
           $result = false;
        }
    }
@@ -226,8 +226,8 @@ function pageheader($error="") {
              dojo.require("dojox.data.CsvStore");
              dojo.require("dojo.parser");
              dojo.require("dojo.dom");
-   			 
-        </script>        
+
+        </script>
         <style type="text/css">
             html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
             #borderContainer { width: 100%; height: 100%; }
@@ -248,7 +248,7 @@ function pageheader($error="") {
 function form() {
 
    @$profile = substr(preg_replace("/[^0-9A-Za-z]/","",$_GET['profile']),0,255);
-   if ($profile == "") { $profile = "default"; } 
+   if ($profile == "") { $profile = "default"; }
    echo '
            <script type="text/javascript">
             dojo.addOnLoad( function() {
@@ -256,7 +256,7 @@ function form() {
 
                 dojo.connect(form, "onsubmit", function(event) {
                      dojo.stopEvent(event);
- 
+
                      var xhrArgs = {
                         form: dojo.byId("rapidForm"),
                         handleAs: "text",
@@ -268,7 +268,7 @@ function form() {
                         }
                     }
                     dojo.byId("feedback").innerHTML = "Adding..."
-                    
+
                     var deferred = dojo.xhrGet(xhrArgs);
               });
            });
@@ -278,7 +278,7 @@ function form() {
                 dojo.connect(dijit.byId("buttonDefaults"), "onClick", defDialog, "show");
                 dojo.connect(dijit.byId("buttonCancel"), "onClick", defDialog, "hide");
             });
-   		
+
    			dojo.addOnLoad(function() {
    				var topOfForm = dojo.byId("collectors");
    				var rapidForm = dojo.byId("rapidForm");
@@ -287,30 +287,30 @@ function form() {
 						if (evt.shiftKey || evt.ctrlKey) {
    							var charOrCode = evt.charCode || evt.keyCode;
    							switch(charOrCode) {
-   							case dojo.keys.UP_ARROW:   							
+   							case dojo.keys.UP_ARROW:
    								dijit.focus(topOfForm);
    								break;
 	   						}
    						}
    					});
-   				}   				
+   				}
    			});
-   		
+
         </script>
    ';
-   
+
    @$cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
    if ($cleardefaultgeography==1) {
        $defaultcountry = "";
        $defaultprimary = "";
-   } else { 
+   } else {
         @$defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
         @$defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
-   
+
        // Sensible default values for original California project, no longer sensible.
-       // if ($defaultcountry=='') { 
+       // if ($defaultcountry=='') {
        //     $defaultcountry = "United States of America";
-       //     if ($defaultprimary=='') { 
+       //     if ($defaultprimary=='') {
        //         $defaultprimary = "California";
        //     }
        // }
@@ -320,13 +320,13 @@ function form() {
    @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
    @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
-   if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; } 
+   if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
    @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
-   
+
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
    //echo "<div dojoType='dijit.form.Form' id='rapidForm' jsId='rapidForm' encType='multipart/form-data' action='ajax_handler.php' method='GET'>";
    echo "<input type=hidden name='druid_action' value='rapidaddprocessor'>";
-   
+
    echo '<div dojoType="dijit.layout.AccordionContainer" region="left" layoutPriority="1">';
    echo '<div dojoType="dijit.layout.ContentPane" title="Required">';
    echo "<table>\n";
@@ -338,12 +338,12 @@ function form() {
    if(inProfile($profile, 'container','main')) { selectContainerID ("container","Container"); }
    if(inProfile($profile, 'collectingtrip','main')) { selectCollectingTripID("collectingtrip","Collecting Trip"); }
    if(inProfile($profile, 'highergeography','main')) { staticvalue("Country limit",$defaultcountry); }
-   if(inProfile($profile, 'highergeography','main')) { staticvalue("State limit",$defaultprimary); } 
+   if(inProfile($profile, 'highergeography','main')) { staticvalue("State limit",$defaultprimary); }
    if(inProfile($profile, 'highergeography','main')) { selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); } // higher picklist limited by country/primary
    if(inProfile($profile, 'specificlocality','main')) { field ("specificlocality","Verbatim locality",'','true'); }
-   if(inProfile($profile, 'host','main')) { field ("host","Host"); } 
+   if(inProfile($profile, 'host','main')) { field ("host","Host"); }
    if(inProfile($profile, 'substrate','main')) { field ("substrate", "Substrate"); }
-   if(inProfile($profile, 'collectors','main')) { selectCollectorsID('collectors','Collector(s)','true'); } 
+   if(inProfile($profile, 'collectors','main')) { selectCollectorsID('collectors','Collector(s)','true'); }
    if(inProfile($profile, 'etal','main')) {field ("etal","et al."); }
    if(inProfile($profile, 'fieldnumber','main')) {field ("fieldnumber","Collector number"); }
    if(inProfile($profile, 'datecollected','main')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); }  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDatea
@@ -358,11 +358,11 @@ function form() {
    fieldselectpicklist("prepmethod",'Preparation method',$defaultprepmethod,'true','prepmethodpl',55);
    preptypeselect("format","Format",$defaultformat,'true','formatStore','huh_preptype','Name');
    selectProject("project","Project",$defaultproject);
-    
+
    echo "<tr><td></td><td>";
    //echo "<input type=submit value='Add'>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Add</button>";
-   if (ENABLE_DUPLICATE_FINDING===TRUE) { 
+   if (ENABLE_DUPLICATE_FINDING===TRUE) {
        echo "<button type='button' dojoType='dijit.form.Button' id='grabLichenButton'
                      onclick='on_grab_lichen_click(); return false;'>Grab Lichen</button>";
        echo "<button type='button' dojoType='dijit.form.Button' id='grabNevpButton'
@@ -373,7 +373,7 @@ function form() {
    echo '</div>';
    echo '</div>';
    echo '<div dojoType="dijit.layout.AccordionContainer" region="center" >';
-   
+
    echo '<div dojoType="dijit.layout.AccordionPane" title="Georeference">';
    echo "<table>\n";
    field ("verbatimlat","verbatim latitude  &deg; ' \"");
@@ -385,15 +385,15 @@ function form() {
    selectCollectorsID("georeferencedby","Georeferenced by");
    field ("georeferencedate","georeference date (9999-99-99)",'','false','[0-9]{4}-[0-9]{2}-[0-9]{2}','2010-03-18');
    fieldselectpicklist("georeferencesource",'Lat/Long method','','false','georefsourcepl',31);
-   staticvalue("Note:","If you fill in any fields above you should fill in all of them."); 
+   staticvalue("Note:","If you fill in any fields above you should fill in all of them.");
    utm();
-   staticvalue("See:","<a href='http://www.gbif.org/orc/?doc_id=1288'>GBIF guide to best practices in Georeferencing</a>"); 
+   staticvalue("See:","<a href='http://www.gbif.org/orc/?doc_id=1288'>GBIF guide to best practices in Georeferencing</a>");
    echo "</table>\n";
    echo '</div>';
-   
+
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Additional Fields">';
    echo "<table><tr><td valign='top'><table>\n";
-   
+
    if(inProfile($profile, 'fiidentificationqualifier','additional')) { fieldselectpicklist("fiidentificationqualifier",'Id qualifier (filed)','','false','fiidqualifierpl',26); }
    field ("specimenremarks","Specimen remarks");
    field ("specimendescription","Specimen (collection object) description");
@@ -401,31 +401,31 @@ function form() {
    field ("verbatimelevation","Verbatim elevation");
    //field ("minelevation","Min. elevation meters",'','false','[0-9]*');
    //field ("maxelevation","Max. elevation meters",'','false','[0-9]*');
-   
+
    field ("habitat","Habitat");  // https://code.google.com/p/applecore/wiki/Habitat
    fieldselectpicklist("phenology",'Reproductive condition','','false','repcondpl',54);  // https://code.google.com/p/applecore/wiki/Phenology
    staticvalue("See also:","<a href='https://code.google.com/p/applecore/wiki/Habitat'>Habitat</a>&nbsp;<a href='https://code.google.com/p/applecore/wiki/Phenology'>ReproductiveCondition</a>");
 
-   if(inProfile($profile, 'host','additional')) { field ("host","Host"); } 
+   if(inProfile($profile, 'host','additional')) { field ("host","Host"); }
    if(inProfile($profile, 'substrate','additional')) { field ("substrate", "Substrate"); }
    if(inProfile($profile, 'provenance','additional')) { field ("provenance", "Provenance"); }
    if(inProfile($profile, 'container','additional')) { selectContainerID ("container","Container"); }
    if(inProfile($profile, 'collectingtrip','additional')) { selectCollectingTripID("collectingtrip","Collecting Trip"); }
-    
+
    echo "</table></td>\n";
    echo "<td valign=\"top\" style=\"padding: 25px\"><table>\n";
-   
+
    selectRefWorkID("exsiccati","Exsiccati");
    field ("exsiccatinumber","Number");
    field ("fascicle","Fascicle");
    echo "<BR>";
    if(inProfile($profile, 'highergeography','additional')) { staticvalue("Country limit",$defaultcountry); }
-   if(inProfile($profile, 'highergeography','additional')) { staticvalue("State limit",$defaultprimary); } 
+   if(inProfile($profile, 'highergeography','additional')) { staticvalue("State limit",$defaultprimary); }
    if(inProfile($profile, 'highergeography','additional')) { selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); } // higher picklist limited by country/primary
-   if(inProfile($profile, 'collectors','additional')) { selectCollectorsID('collectors','Collector(s)','true'); } 
+   if(inProfile($profile, 'collectors','additional')) { selectCollectorsID('collectors','Collector(s)','true'); }
    if(inProfile($profile, 'etal','additional')) {field ("etal","et al."); }
    if(inProfile($profile, 'fieldnumber','additional')) {field ("fieldnumber","Collector number"); }
-    
+
    echo "</table></td></tr>\n";
    echo "<tr><td valign='center'><table>\n";
 
@@ -433,7 +433,7 @@ function form() {
    selectStorageID("storage","Subcollection");
    field ("storagelocation","Storage Location");
    if(inProfile($profile, 'specificlocality','additional')) { field ("specificlocality","Verbatim locality",'','true'); }
-   if(inProfile($profile, 'datecollected','additional')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); } 
+   if(inProfile($profile, 'datecollected','additional')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); }
    if(inProfile($profile, 'verbatimdate','additional')) { field ("verbatimdate","Verb. date coll."); }
 
    if(inProfile($profile, 'currentdetermination','additional')) { selectCurrentID("currentdetermination","Current Id");  }  // current id
@@ -442,11 +442,11 @@ function form() {
    if(inProfile($profile, 'determinertext','additional')) {field ("determinertext", "Identified by (text)"); }
    if(inProfile($profile, 'dateidentified','additional')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
 
-   
+
    echo "</table></td>\n";
    echo "<td valign='top'><table>\n";
-   
-   staticvalue("","Type Specimen Information"); 
+
+   staticvalue("","Type Specimen Information");
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
    fieldselectpicklist("confidence",'Confidence','','false','confidencepl',47);
    selectCurrentID("basionym","Basionym");
@@ -454,61 +454,61 @@ function form() {
    field ("page","Vol: Page");
    field ("datepublished","Year published");
    selectYesNo ("isfragment","Is fragment");
-   
+
    echo "</table></td></tr>\n";
 
-   if (ENABLE_DUPLICATE_FINDING===TRUE) { 
+   if (ENABLE_DUPLICATE_FINDING===TRUE) {
       echo "<tr><td><div id='fp-data-entry-plugin-goes-here'></div></td><td></td></tr>";
    }
    echo "</table>\n";
    echo '</div>'; // accordion pane
-   
+
    echo '<div dojoType="dijit.layout.AccordionPane" selected="true" title="Entering Data">';
    echo "<table>\n";
-   staticvalue("Required:","Fill in all fields under Required if there is data to put in them.  You cannot leave Herbarium acronym, Barcode, Filed under Name, Higher Geography, Verbatim Locality, Preparation Method, or Format Blank."); 
-   staticvalue("Picklists:","For people and taxa: type part of the value and wait for the picklist to popup.  Use * as a wildcard, Collector='J*Mack' finds 'J. A. Macklin'.  For qualifiers, format, etc, you can just pull down the list.");  
-   staticvalue("Dates:","Must be in the form 2011-02-25 (except for verbatim dates). 2011-05 and 2011 are allowed to express just month or year."); 
-   staticvalue("DateCollected:","Also allows ranges with start and end dates separated by a slash: e.g. 2006/2008,  1886-11/1887-02, 1902-03-16/1902-03-18, 1912-03/1922 "); 
-   staticvalue("Barcode:","Required. Up to 8 digits, can be zero padded, e.g. 00154335."); 
-   staticvalue("FiledUnderName:","Required.The taxon name on the folder the specimen is in."); 
-   staticvalue("CurrentID:","The most recent identification on the sheet, leave blank if the same as Filed Under Name.  Identified by and date identified pertain to the Current Id."); 
-   staticvalue("Collector(s)","The names of people (collectors, determiners, georeferencers) must be present as agents with variant names of type Label/Collector name in Specify before they can be entered here."); 
-   staticvalue("Country/State:","Change the default settings for the higher geography filter on the Set Default Values, note that this resets all form entries to blank values."); 
-   staticvalue("Clear Button:","The button <button id='buttonResetDummy' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' data-dojo-props=\"iconClass:'dijitIconClear'\" ></button> will clear the field next to the button.  You must use this button to change the field to an empty value, simply erasing the current value will still retain and submit that value."); 
-   staticvalue("See:","<a href='http://watson.huh.harvard.edu/wiki/index.php/Minimal_Data_Capture'>Minimal Data Capture Wiki Page</a>"); 
-   staticvalue("See:","<a href='http://watson.huh.harvard.edu/wiki/index.php/Field_Definitions'>Field Definitions</a>"); 
-   staticvalue("See:","<a href='https://code.google.com/p/applecore/wiki/CodesAndNumbers'>AppleCore guidance document</a>"); 
+   staticvalue("Required:","Fill in all fields under Required if there is data to put in them.  You cannot leave Herbarium acronym, Barcode, Filed under Name, Higher Geography, Verbatim Locality, Preparation Method, or Format Blank.");
+   staticvalue("Picklists:","For people and taxa: type part of the value and wait for the picklist to popup.  Use * as a wildcard, Collector='J*Mack' finds 'J. A. Macklin'.  For qualifiers, format, etc, you can just pull down the list.");
+   staticvalue("Dates:","Must be in the form 2011-02-25 (except for verbatim dates). 2011-05 and 2011 are allowed to express just month or year.");
+   staticvalue("DateCollected:","Also allows ranges with start and end dates separated by a slash: e.g. 2006/2008,  1886-11/1887-02, 1902-03-16/1902-03-18, 1912-03/1922 ");
+   staticvalue("Barcode:","Required. Up to 8 digits, can be zero padded, e.g. 00154335.");
+   staticvalue("FiledUnderName:","Required.The taxon name on the folder the specimen is in.");
+   staticvalue("CurrentID:","The most recent identification on the sheet, leave blank if the same as Filed Under Name.  Identified by and date identified pertain to the Current Id.");
+   staticvalue("Collector(s)","The names of people (collectors, determiners, georeferencers) must be present as agents with variant names of type Label/Collector name in Specify before they can be entered here.");
+   staticvalue("Country/State:","Change the default settings for the higher geography filter on the Set Default Values, note that this resets all form entries to blank values.");
+   staticvalue("Clear Button:","The button <button id='buttonResetDummy' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' data-dojo-props=\"iconClass:'dijitIconClear'\" ></button> will clear the field next to the button.  You must use this button to change the field to an empty value, simply erasing the current value will still retain and submit that value.");
+   staticvalue("See:","<a href='http://watson.huh.harvard.edu/wiki/index.php/Minimal_Data_Capture'>Minimal Data Capture Wiki Page</a>");
+   staticvalue("See:","<a href='http://watson.huh.harvard.edu/wiki/index.php/Field_Definitions'>Field Definitions</a>");
+   staticvalue("See:","<a href='https://code.google.com/p/applecore/wiki/CodesAndNumbers'>AppleCore guidance document</a>");
    echo "</table>\n";
-   echo '<button id="buttonDefaults" dojoType="dijit.form.Button" type="button">Set Default Values</button>'; 
+   echo '<button id="buttonDefaults" dojoType="dijit.form.Button" type="button">Set Default Values</button>';
    echo '</div>'; // accordion pane
-   
-   
+
+
    echo '</div>'; // accordion container
-   
+
    echo "</form>\n";
-   
+
    echo '<div dojoType="dijit.Dialog" id="defaultsDialog" title="Set Default Values">';
    echo "<form action='rapid.php' method='GET'>";
    echo "<table>\n";
-   staticvalue("","Pressing the Set default button below sets the values for the filter that is placed on Higher Geography.");  
-   staticvalue("","You can leave one of these filters blank.  Select \"yes\" on clear both to clear both filters.");  
-   staticvalue("","If you set a country and a state, the state will be used as the filter.");  
+   staticvalue("","Pressing the Set default button below sets the values for the filter that is placed on Higher Geography.");
+   staticvalue("","You can leave one of these filters blank.  Select \"yes\" on clear both to clear both filters.");
+   staticvalue("","If you set a country and a state, the state will be used as the filter.");
    geographyselect("defaultcountry","Country limit",$defaultcountry,'false','country');
-   geographyselect("defaultprimary","State/province limit",$defaultprimary,'false','primary');   
+   geographyselect("defaultprimary","State/province limit",$defaultprimary,'false','primary');
    selectYesNo ("cleardefaultgeography","Clear both Country and State/Province limit");
    selectAcronym("defaultherbarium",$defaultherbarium);
    fieldselectpicklist("defaultprepmethod",'Preparation method','Pressed','true','prepmethodpl',55);
    preptypeselect("defaultformat","Format",'Sheet','true','formatStore','huh_preptype','Name');
-   selectProject ("defaultproject","Project",$defaultproject);  
+   selectProject ("defaultproject","Project",$defaultproject);
    staticvalue("Note:","Clears and resets all form values.  You will lose all unsaved data.");
    echo "<tr><td></td><td>";
    echo "<input type=submit value='Set default values'>\n";
-   echo '<button id="buttonCancel" dojoType="dijit.form.Button" type="button">Cancel</button>'; 
+   echo '<button id="buttonCancel" dojoType="dijit.form.Button" type="button">Cancel</button>';
    echo "</td></tr>";
    echo "</table>\n";
    echo "</form>\n";
    echo '</div>'; // dialog
-   
+
 }
 
 function field($name, $label, $default="", $required='false', $regex='', $placeholder='') {
@@ -539,8 +539,8 @@ function preptypeselect($name,$label,$default,$required,$storeId,$table,$field) 
    $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='$storeId'
 	 url='ajax_handler.php?druid_action=returndistinctjsonpreptype&table=$table&field=$field'> </div>";
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
-	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
-	store='$storeId' 
+	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
+	store='$storeId'
 	searchAttr='name' value='$default' ></td></tr>";
    echo $returnvalue;
 }
@@ -555,30 +555,30 @@ function geographyselect($name,$label,$default,$required,$rank) {
 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='store$name$rank'
 	 url='ajax_handler.php?druid_action=return".$rank."json'> </div>";
 	$returnvalue .= "<label for=\"$name\">$label</label></td><td>
-	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
+	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
 	store='store$name$rank' required='$required'
 	searchAttr='name' value='$default' ></td></tr>";
 	echo $returnvalue;
 }
 
-function selectHigherGeography($field,$label, $defaultcountry='', $defaultprimary='') { 
+function selectHigherGeography($field,$label, $defaultcountry='', $defaultprimary='') {
 	$returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='geoStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctgeography&country=$defaultcountry&primary=$defaultprimary'> </div>";
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='geoStore$field' 
+	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	store='geoStore$field'
     style='width: ".BASEWIDTH."em; '
 	searchAttr='name' value='' ></td></tr>";
 	echo $returnvalue;
 }
 
 function fieldselectpicklist($name,$label,$default,$required,$storeId,$picklistid) {
-   if ($required=='true') { $req = '&required=true'; } else { $req = ''; } 
+   if ($required=='true') { $req = '&required=true'; } else { $req = ''; }
    $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='$storeId'
 	 url='ajax_handler.php?druid_action=returndistinctjsonpicklist&field=value&picklistid=$picklistid$req'> </div>";
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
-	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect' 
-	store='$storeId' required='$required'   
+	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
+	store='$storeId' required='$required'
 	searchAttr='name' value='$default' ></td></tr>";
    echo $returnvalue;
 }
@@ -599,12 +599,12 @@ function selectAcronym($field,$default) {
    echo "<tr><td>\n";
    echo "<label for='$field'>Herbarium acronym</label>";
    echo "</td><td>\n";
-   if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; } 
-   if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; } 
-   if ($default=="FH") { $ghs = ""; $as = ""; $fhs = 'selected="selected"'; $amess=""; $econs=""; $nebcs=""; } 
-   if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; } 
-   if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; } 
-   if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; } 
+   if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
+   if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
+   if ($default=="FH") { $ghs = ""; $as = ""; $fhs = 'selected="selected"'; $amess=""; $econs=""; $nebcs=""; }
+   if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; }
+   if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; }
+   if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; }
    echo "<select name=\"$field\" dojoType=\"dijit.form.Select\">
 	<option value=\"GH\" $ghs>GH</option>
 	<option value=\"A\" $as>A</option>
@@ -621,11 +621,11 @@ function selectCurrentID($field,$label,$required='false') {
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
    $width = BASEWIDTH - 3;
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false' 
+	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
     style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
-    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
       onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
    echo $returnvalue;
@@ -651,11 +651,11 @@ function selectCollectorsID($field,$label,$required='false') {
 	 url='ajax_handler.php?druid_action=returndistinctjsoncollector' > </div>";
    $width = BASEWIDTH - 3;
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id='$field' dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' 
+	<input type='text' name=$field id='$field' dojoType='dijit.form.FilteringSelect'
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false'
     style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
-    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
       onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
    echo $returnvalue;
@@ -663,18 +663,18 @@ function selectCollectorsID($field,$label,$required='false') {
 
 
 function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
-   if ($exsiccati=='true') { 
+   if ($exsiccati=='true') {
        $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonexsiccati' > </div>";
-   } else { 
+   } else {
        $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsontitle' > </div>";
    }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;' 
+	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
-   <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+   <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
    echo $returnvalue;
 }
@@ -683,10 +683,10 @@ function selectStorageID($field,$label,$required='false') {
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonstorage' > </div>";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;' 
+	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
-	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
    echo $returnvalue;
 }
@@ -695,10 +695,10 @@ function selectContainerID($field,$label,$required='false') {
 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
+	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
-	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
 	echo $returnvalue;
 }
@@ -710,7 +710,7 @@ function selectCollectingTripID($field,$label,$required='false') {
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='collectingTripStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
-	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
 	echo $returnvalue;
 }
@@ -719,10 +719,10 @@ function selectProject($field,$label,$default,$required='false') {
     $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='projectStore$field'
      url='ajax_handler.php?druid_action=returndistinctjsonproject&name=*' > </div>";
     $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect' 
+    <input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
     store='projectStore$field' required='$required' hasDownArrow='false' style='border-color: blue;'
     searchAttr='name' value='$default' >
-    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button' 
+    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
     echo $returnvalue;
 }
@@ -736,7 +736,7 @@ function pagefooter() {
         <div id="feedback">Status</div>
 	</div>
 	<div dojoType="dijit.layout.ContentPane" region="bottom" layoutPriority="2" splitter="false">
-        Database: ' . $targethostdb . ' 
+        Database: ' . $targethostdb . '
 	</div>
 	';
    echo "</div>\n";
@@ -744,10 +744,10 @@ function pagefooter() {
    echo "</html>";
 }
 
-/** 
+/**
  *  Step one of a batch upload.  Describe the upload format and allow upload of a csv file.
  */
-function uploadspreadsheet() { 
+function uploadspreadsheet() {
    global $expectedheaderquoted;
    echo '
 <div dojoType="dijit.layout.ContentPane" region="center" layoutPriority="3" splitter="false">
@@ -771,8 +771,8 @@ function uploadspreadsheet() {
 /**
  * Step three of a batch upload.  Validate the spreadsheet, lookup values for each line, ingest into database,
  * and report on results.
- */ 
-function processspreadsheet() { 
+ */
+function processspreadsheet() {
 global $debug, $expectedheader, $expectedheaderquoted,
    $collectors,$etal,$fieldnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,
    $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$highergeography,
@@ -795,32 +795,32 @@ if ($handle !== FALSE) {
     $header = fgets($handle);
     fputs($report,"result,".$header);
     $recognized = false;
-    if (trim($header)==trim($expectedheader)) { 
+    if (trim($header)==trim($expectedheader)) {
        $recognized = true;
        $enclosed = '"';
        $delimiter = ",";
     }
-    if (trim($header)==trim($expectedheaderquoted)) { 
+    if (trim($header)==trim($expectedheaderquoted)) {
        $recognized = true;
        $enclosed = '"';
        $delimiter = ",";
-    } 
-    if (!$recognized) { 
+    }
+    if (!$recognized) {
       $results = "<p><strong>Format not recognized.</strong>  Must be comma separated values with exact match on expected header line.</p>";
       $results .= "<table><tr><td>Expected header</td><td>$expectedheaderquoted</td></tr>";
       $results .= "<tr><td>Found header</td><td>$header</td></tr></table>";
-    } else { 
+    } else {
        $row = 1;
        while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
           $message = "";
           $num = count($data);
-          if ($num==44) { 
+          if ($num==44) {
              // get field values from spreadsheet
              $herbariumacronym=$data[0];
              $barcode=$data[1];
              $collectors=$data[2];
              $etal=$data[3];
-             $fieldnumber=$data[4]; 
+             $fieldnumber=$data[4];
              $verbatimdate=$data[5];
              $datecollected=$data[6];
              $filedundername=$data[7];
@@ -860,152 +860,152 @@ if ($handle !== FALSE) {
              $maxelevation=$data[41];
              $specimenremarks=$data[42];
              $container=$data[43];
-             // do database lookups 
+             // do database lookups
              $lookupok = true;
              $agentvariant = new huh_agentvariant();
              // collectors
              $termsarray = array();
-             $termsarray['Name']=$collectors; 
-             $termsarray['VarType']='4'; 
+             $termsarray['Name']=$collectors;
+             $termsarray['VarType']='4';
              $matches = $agentvariant->loadArrayKeyValueSearch($termsarray);
-             if (count($matches)==1) { 
+             if (count($matches)==1) {
                  $collectors = $matches[0]->getAgentID();
-             } else { 
+             } else {
                $message .= "No match on Collector(s) [$collectors]. ";
                $lookupok = false;
-             } 
+             }
              // identified by
-             if ($identifiedby!='') { 
+             if ($identifiedby!='') {
                 $termsarray = array();
-                $termsarray['Name']=$identifiedby; 
-                $termsarray['VarType']='4'; 
+                $termsarray['Name']=$identifiedby;
+                $termsarray['VarType']='4';
                 $matches = $agentvariant->loadArrayKeyValueSearch($termsarray);
-                if (count($matches)==1) { 
+                if (count($matches)==1) {
                     $identifiedby = $matches[0]->getAgentID();
-                } else { 
+                } else {
                   $message .= "No match on Identified By [$identifiedby]. ";
                   $lookupok = false;
-                } 
+                }
              }
              // georeferenced by
-             if ($georeferencedby!='') { 
+             if ($georeferencedby!='') {
                 $termsarray = array();
-                $termsarray['Name']=$georeferencedby; 
-                $termsarray['VarType']='4'; 
+                $termsarray['Name']=$georeferencedby;
+                $termsarray['VarType']='4';
                 $matches = $agentvariant->loadArrayKeyValueSearch($termsarray);
-                if (count($matches)==1) { 
+                if (count($matches)==1) {
                     $georeferencedby = $matches[0]->getAgentID();
-                } else { 
+                } else {
                   $message .= "No match on Georeferenced By [$georeferencedby]. ";
                   $lookupok = false;
-                } 
+                }
              }
              $taxon = new huh_taxon();
              // identification
              $termsarray = array();
-             $termsarray['FullName']=$filedundername; 
-             $termsarray['Author']=$filedunderauthorship; 
+             $termsarray['FullName']=$filedundername;
+             $termsarray['Author']=$filedunderauthorship;
              $matches = $taxon->loadArrayKeyValueSearch($termsarray);
-             if (count($matches)==1) { 
+             if (count($matches)==1) {
                 $filedundername = $matches[0]->getTaxonID();
-             } else { 
+             } else {
                 $message .= "No match on Identification [$filedundername][$filedunderauthorship]. ";
                 $lookupok = false;
-             } 
+             }
 
              // geography
              $highergeography='';
              $geography = new huh_geography();
              $termsarray = array();
-             $termsarray['FullName']="$county ($state)"; 
+             $termsarray['FullName']="$county ($state)";
              $matches = $geography->loadArrayKeyValueSearch($termsarray);
-             if (count($matches)==1) { 
+             if (count($matches)==1) {
                 $highergeography = $matches[0]->getGeographyID();
-             } else { 
+             } else {
                 // TODO lookup parentages
-                $termsarray['FullName']="$state"; 
+                $termsarray['FullName']="$state";
                 $matches = $geography->loadArrayKeyValueSearch($termsarray);
-                if (count($matches)==1) { 
+                if (count($matches)==1) {
                    $highergeography = $matches[0]->getGeograhyID();
                 } else {
                    $message .= "No match on Geography [$county ($state)][$country][$state][$county]. ";
                    $lookupok = false;
                 }
-             } 
+             }
 
              // basionym
-             if ($basionym!='') { 
+             if ($basionym!='') {
                 $termsarray = array();
-                $termsarray['FullName']=$basionym; 
-                $termsarray['Author']=$basionymauthorship; 
+                $termsarray['FullName']=$basionym;
+                $termsarray['Author']=$basionymauthorship;
                 $matches = $taxon->loadArrayKeyValueSearch($termsarray);
-                if (count($matches)==1) { 
+                if (count($matches)==1) {
                     $basionym = $matches[0]->getTaxonID();
-                } else { 
+                } else {
                   $message .= "No match on Basionym [$basionym][$basionymauthorship]. ";
                   $lookupok = false;
-                } 
+                }
              }
-             // TODO publication              
+             // TODO publication
              $pub = new huh_referencework();
-             if ($publication!='') { 
+             if ($publication!='') {
                 $termsarray = array();
-                $termsarray['title']=$publication; 
+                $termsarray['title']=$publication;
                 $matches = $pub->loadArrayKeyValueSearch($termsarray);
-                if (count($matches)==1) { 
+                if (count($matches)==1) {
                     $publication = $matches[0]->getReferenceworkID();
-                } else { 
+                } else {
                   $message .= "No match on Publication [$publication]. ";
                   $lookupok = false;
-                } 
+                }
              }
              // TODO container
              $cont = new huh_container();
-             if ($container!='') { 
+             if ($container!='') {
                 $termsarray = array();
-                $termsarray['Name']=$container; 
+                $termsarray['Name']=$container;
                 $matches = $cont->loadArrayKeyValueSearch($termsarray);
-                if (count($matches)==1) { 
+                if (count($matches)==1) {
                     $Container = $matches[0]->getContainerID();
-                } else { 
+                } else {
                   $message .= "No match on Container [$container]. ";
                   $lookupok = false;
-                } 
+                }
              }
 
              $oktoingest = true;
-             // Test for success in all pk lookups 
+             // Test for success in all pk lookups
              // collectors, highergeography, filedundername are required and numeric only.
              $collectors = preg_replace("/[^0-9]/","",$collectors);
              $highergeography = preg_replace("/[^0-9]/","",$highergeography);
              $filedundername = preg_replace("/[^0-9]/","",$filedundername);
-             if (!$lookupok) { 
-                $oktoingest = false; 
+             if (!$lookupok) {
+                $oktoingest = false;
              }
              // Test for required fields.
              if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectors=='' ) {
-                $oktoingest = false; 
+                $oktoingest = false;
                 $message .= "Missing required field";
-             } 
+             }
              // ingest data
                 $results .= "<strong>$herbariumacronym-$barcode</strong> ";
-             if ($oktoingest) { 
+             if ($oktoingest) {
                 $debug = false;
                 $message .= ingestCollectionObject();
                 $results .= $message;
-                if (substr(strip_tags($message),0,2)=="OK") { 
+                if (substr(strip_tags($message),0,2)=="OK") {
                     $successcount++;
-                } else { 
+                } else {
                     $failurecount++;
                 }
-             } else { 
+             } else {
                 $failurecount++;
                 $results .= $message."<BR>";
              }
              $row = $enclosed.strip_tags($message).$enclosed.$delimiter.toCsvLine($data,$delimiter,$enclosed);
-          } else { 
+          } else {
              // row has an error, perhaps delimiter in text.
-             $row = $enclosed."Bad line".$enclosed.$delimiter.toCsvLine($data,$delimiter,$enclosed); 
+             $row = $enclosed."Bad line".$enclosed.$delimiter.toCsvLine($data,$delimiter,$enclosed);
              $results .= "Bad Line<BR>";
              $failurecount++;
           }
@@ -1014,16 +1014,16 @@ if ($handle !== FALSE) {
     }
     fclose($handle);
     fclose($report);
-} else { 
+} else {
   $results .= "Error: Can't read uploaded file.";
 }
 
-if ($successcount>0) { 
+if ($successcount>0) {
    $resultsummary .= "Successfully added $successcount rows. ";
-} 
-if ($failurecount>0) { 
+}
+if ($failurecount>0) {
    $resultsummary .= "<strong>Failure adding $failurecount rows.<strong>";
-} 
+}
 
    echo '
 <div dojoType="dijit.layout.ContentPane" region="center" layoutPriority="3" splitter="false">
@@ -1036,15 +1036,15 @@ if ($failurecount>0) {
 </div>
    ';
 
-} 
+}
 
 /**
  *  Given an array, produce a line for a csv file.
  */
-function toCsvLine($data,$delimiter,$enclosed) { 
+function toCsvLine($data,$delimiter,$enclosed) {
    $result = "";
    $comma = "";
-   for ($i=0; $i<count($data);$i++) { 
+   for ($i=0; $i<count($data);$i++) {
       $result .= $comma.$enclosed.$data[$i].$enclosed;
       $comma = $delimiter;
    }
@@ -1052,10 +1052,10 @@ function toCsvLine($data,$delimiter,$enclosed) {
 }
 
 /**
- * Step two of batch upload process.  Check that the uploaded file has the expected format and 
+ * Step two of batch upload process.  Check that the uploaded file has the expected format and
  * display its contents if it does.
  */
-function spreadsheet() { 
+function spreadsheet() {
 global $expectedheader, $expectedheaderquoted;
 
 $filename = "";
@@ -1087,7 +1087,7 @@ if ($handle !== FALSE) {
       $uploadresult .= "<table><tr><td>Expected header</td><td>$expectedheaderquoted</td></tr>";
       $uploadresult .= "<tr><td>Found header</td><td>$header</td></tr></table>";
     }
-} 
+}
 
 echo '
 <script type="text/javascript">
@@ -1164,7 +1164,7 @@ echo '
 echo '
 <div dojoType="dijit.layout.ContentPane" region="center" layoutPriority="3" splitter="false">';
   echo "<p>$uploadresult</p>";
-  if ($recognized) { 
+  if ($recognized) {
   echo'
   <div dojoType="dijit.form.Form" action="rapid.php" method="POST" >
     <input type="hidden" name="display" value="process" />
@@ -1177,7 +1177,7 @@ echo '
   </div>
 </div>
 ';
-      
+
 }
 
 

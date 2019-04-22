@@ -96,26 +96,30 @@ if ($connection && $authenticated) {
          } else {
             $targetBatch = getBatch($targetBatchDir);
          }
-         $targetBatchFirst = getFirstFileInBatch($targetBatchDir);
-         $position = $targetBatch->position + 1;
-         echo " <strong>Batch: [$targetBatch->path]</strong>";
-         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+
+         $batchPath = $targetBatch->getPath();
+         $targetBatchCurrent = $targetBatch->getCurrentFile();
+         $targetBatchFirst = $targetBatch->getFile(1);
+         $position = $targetBatchCurrent->position;
+         echo " <strong>Batch: [$batchPath]</strong>";
+         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
          if ($position > 1) {
-              echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+              echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
          }
-         echo " First File: [$targetBatch->filename]";
+         //echo " First File: [$targetBatchFirst->filename]";
          break;
 
       case 'getnextrecord':
          $ok = false;
          @$id = $_GET['batch_id'];
-         @$position = $_GET['position'];  // zero based position in file array
+         @$position = $_GET['position'];
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
          $path = $batch->getPath();
          $ir = $batch->getFile($position);
          $filename = $ir->filename;
+         $barcode = $ir->barcode;
 
          // IMAGE_LOCAL_FILE.path is expected to end with a /
          if (substr($path,-1,1)!="/") {
@@ -129,25 +133,9 @@ if ($connection && $authenticated) {
          $toencode['path']=$path;
          $toencode['filename']=$filename;
 
-         // lookup the barcode for this filename
-         $barcode = getBarcodeForFilename($path,$filename);
-
-         if($barcode==null || strlen(trim($barcode))==0) {
-             $toencode['barcode']='NOTFOUND';
-             $toencode['path']=$path;
-             $toencode['filename']=$filename;
-         } else {
-             $toencode['barcode']=$barcode;
-         }
-         $values = json_encode($toencode);
-         $ok = true;
-         break;
-
-         // obsolete code, looking up the data is done in a separate ajax call.
-/* 
          // lookup the data for this barcode.
-         $dataarray = getDataForBarcode($barcode);
-         $values = "";
+         $dataarray = lookupDataForBarcode($barcode);
+         $response = "{}";
          switch ($dataarray['status']) {
             case "NOTFOUND":
               if($barcode==null || strlen(trim($barcode))==0) {
@@ -157,19 +145,37 @@ if ($connection && $authenticated) {
               } else {
                    $toencode['barcode']=$barcode;
               }
-              $values = json_encode($toencode);
-              $ok = true;
+              $response = json_encode($toencode);
               break;
 
             case "FOUND":
-              $values = json_encode(dataarray);
-              $ok = true;
+              $response = json_encode($dataarray);
               break;
             case "ERROR":
             default:
+              $response = json_encode($dataarray);
               break;
          }
-*/
+
+         header("Content-type: application/json");
+
+         echo $response;
+         break;
+
+      case 'getnextimage':
+         $ok = false;
+         @$id = $_GET['batch_id'];
+         $currentBatch = new TR_Batch();
+         $currentBatch->setID($id);
+         $path = $currentBatch->getPath();
+         $pathfile = $currentBatch->incrementFile();
+         $position = $pathfile->position;
+         $filecount = $currentBatch->getFileCount();
+         $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         $path= $pathfile->path;
+         $filename = $pathfile->filename;
+         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
+         if (strlen($pathfile->filename)>0) { $ok=true; }
 
          header("Content-type: application/json");
          if ($ok) {
@@ -180,20 +186,19 @@ if ($connection && $authenticated) {
          echo $response;
          break;
 
-      case 'getnextimage':
+      case 'getpreviousimage':
          $ok = false;
          @$id = $_GET['batch_id'];
          $currentBatch = new TR_Batch();
          $currentBatch->setID($id);
          $path = $currentBatch->getPath();
-         //$pathfile = $currentBatch->getNextFile();
-         $pathfile = $currentBatch->incrementFile();
-         $position1 = $pathfile->position +1;  // convert zero based file array position to 1 based file x of y position.
+         $pathfile = $currentBatch->decrementFile();
+         $position = $pathfile->position;
          $filecount = $currentBatch->getFileCount();
          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
          $path= $pathfile->path;
          $filename = $pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position1\":\"$position1\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
+         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
          if (strlen($pathfile->filename)>0) { $ok=true; }
 
          header("Content-type: application/json");
@@ -219,24 +224,23 @@ if ($connection && $authenticated) {
          $truncated = "";
          @$collectors= $_POST['collectors'];
          @$collectorsid= substr(preg_replace('/[^0-9]/','',$_POST['collectorsid']),0,huh_agentvariant::AGENTID_SIZE);
-         @$etal= substr(preg_replace('/[^A-Za-z&\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
+         @$etal= substr(preg_replace('/[^A-Za-z&\[\]\-\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
-         @$datecollectedval= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollectedval']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
          @$barcode= substr(preg_replace('/[^0-9]/','',$_POST['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
          @$barcodeval= substr(preg_replace('/[^0-9]/','',$_POST['barcodeval']),0,huh_fragment::IDENTIFIER_SIZE);
          @$provenance= substr(preg_replace('/^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_POST['provenance']),0,huh_fragment::PROVENANCE_SIZE);
          @$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['filedundername']),0,huh_taxon::FULLNAME_SIZE);
          @$filedundernameid= substr(preg_replace('/[^0-9]/','',$_POST['filedundernameid']),0,huh_taxon::TAXONID_SIZE);
-         @$filedunderqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['filedunderqualifier']),0,huh_determination::QUALIFIER_SIZE);
          @$currentname= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['currentname']),0,huh_taxon::FULLNAME_SIZE);
          @$currentnameid= substr(preg_replace('/[^0-9]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
          @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
-         @$identifiedby=      substr(preg_replace('/[^0-9]/','',$_POST['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
+         @$identifiedby= $_POST['identifiedby'];
+         @$identifiedbyid= substr(preg_replace('/[^0-9]/','',$_POST['identifiedbyid']),0,huh_determination::DETERMINERID_SIZE);
          @$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_POST['determinertext']),0,huh_determination::TEXT1_SIZE);
          @$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_POST['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
          @$highergeography= $_POST['highergeography'];
@@ -249,14 +253,14 @@ if ($connection && $authenticated) {
          @$verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',$_POST['verbatimlong']),0,huh_locality::LONG1TEXT_SIZE);
          @$decimallat= substr(preg_replace('/[^0-9\.\-]/','',$_POST['decimallat']),0,huh_locality::LATITUDE1_SIZE);
          @$decimallong= substr(preg_replace('/[^0-9\.\-]/','',$_POST['decimallong']),0,huh_locality::LONGITUDE1_SIZE);
-         @$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_POST['datum']),0,huh_locality::DATUM_SIZE);
-         @$coordinateuncertanty= substr(preg_replace('/[^0-9]/','',$_POST['coordinateuncertanty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
-         @$georeferencedby= substr(preg_replace('/[^0-9]/','',$_POST['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
-         @$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',$_POST['georeferencedate']),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
+         //@$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_POST['datum']),0,huh_locality::DATUM_SIZE);
+         @$coordinateuncertainty= substr(preg_replace('/[^0-9]/','',$_POST['coordinateuncertainty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
+         //@$georeferencedby= substr(preg_replace('/[^0-9]/','',$_POST['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
+         //@$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',$_POST['georeferencedate']),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
          @$georeferencesource= substr(preg_replace('/[^A-Za-z]/','',$_POST['georeferencesource']),0,huh_locality::LATLONGMETHOD_SIZE);
-         @$utmzone= substr(preg_replace('/[^0-9A-Z]/','',$_POST['utmzone']),0,huh_localitydetail::UTMZONE_SIZE);
-         @$utmeasting= substr(preg_replace('/[^0-9]/','',$_POST['utmeasting']),0,huh_localitydetail::UTMEASTING_SIZE);
-         @$utmnorthing= substr(preg_replace('/[^0-9]/','',$_POST['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
+         //@$utmzone= substr(preg_replace('/[^0-9A-Z]/','',$_POST['utmzone']),0,huh_localitydetail::UTMZONE_SIZE);
+         //@$utmeasting= substr(preg_replace('/[^0-9]/','',$_POST['utmeasting']),0,huh_localitydetail::UTMEASTING_SIZE);
+         //@$utmnorthing= substr(preg_replace('/[^0-9]/','',$_POST['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
 
          @$typestatus= substr(preg_replace('/[^A-Za-z]/','',$_POST['typestatus']),0,huh_determination::TYPESTATUSNAME_SIZE);
          @$typeconfidence= substr(preg_replace('/[^A-Za-z]/','',$_POST['typeconfidence']),0,huh_determination::CONFIDENCE_SIZE);
@@ -265,7 +269,8 @@ if ($connection && $authenticated) {
          @$page= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_POST['page']),0,huh_taxoncitation::TEXT1_SIZE);
          @$datepublished= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_POST['datepublished']),0,huh_taxoncitation::TEXT2_SIZE);
          @$isfragment= substr(preg_replace('/[^0-9a-z]/','',$_POST['isfragment']),0,1);   // taxon
-         @$habitat= substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?\:\;]/','',$_POST['habitat']),0,huh_collectingevent::REMARKS_SIZE);
+         @$habitat= substr(preg_replace('/[^A-Za-z&!\' 0-9\[\]\.\-\,\(\)\?\:\;]/','',$_POST['habitat']),0,huh_collectingevent::REMARKS_SIZE);
+         @$frequency= substr(preg_replace('/[^A-Za-z&!\' 0-9\[\]\.\-\,\(\)\?\:\;]/','',$_POST['frequency']),0,huh_collectionobject::TEXT4_SIZE);
          @$host = substr(preg_replace('/[^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_POST['host']),0,900);
          @$substrate= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_POST['substrate']),0,huh_fragment::TEXT2_SIZE);
          @$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_POST['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
@@ -276,8 +281,10 @@ if ($connection && $authenticated) {
          @$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
          @$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
          @$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_POST['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
-         @$container= substr(preg_replace('/[^0-9]/','',$_POST['container']),0,huh_collectionobject::CONTAINERID_SIZE);
- 		@$collectingtrip = substr(preg_replace('/[^0-9]/','',$_POST['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
+         @$container= substr($_POST['container'],0,huh_container::NAME_SIZE);
+         @$containerid= substr(preg_replace('/[^0-9]/','',$_POST['containerid']),0,huh_container::CONTAINERID_SIZE);
+ 		     @$collectingtrip = substr($_POST['collectingtrip'],0,huh_collectingtrip::COLLECTINGTRIPNAME_SIZE);
+         @$collectingtripid = substr(preg_replace('/[^0-9]/','',$_POST['collectingtripid']),0,huh_collectingtrip::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_POST['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
          @$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_POST['project']),0,huh_project::PROJECTNAME_SIZE);
          @$storage= substr(preg_replace('/[^0-9]/','',$_POST['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
@@ -296,17 +303,15 @@ if ($connection && $authenticated) {
          if ( @($accessionnumber!=$_POST['accessionnumber']) ) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
          if ( @($verbatimdate!=$_POST['verbatimdate']) ) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
          if ( @($datecollected!=$_POST['datecollected']) ) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
-         if ( @($datecollectedval!=$_POST['datecollectedval']) ) { $truncation = true; $truncated .= "datecollectedval : [$datecollectedval] "; }
          if ( @($herbariumacronym!=$_POST['herbariumacronym']) ) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
          if ( @($barcode!=$_POST['barcode']) ) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
          if ( @($provenance!=$_POST['provenance']) ) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
          if ( @($filedundername!=$_POST['filedundername']) ) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
          if ( @($filedundernameid!=$_POST['filedundernameid']) ) { $truncation = true; $truncated .= "filedundernameid : [$filedundernameid] "; }
-         if ( @($filedunderqualifier!=$_POST['filedunderqualifier']) ) { $truncation = true; $truncated .= "filedunderqualifier : [$filedunderqualifier] "; }
          if ( @($currentname!=$_POST['currentname']) ) { $truncation = true; $truncated .= "currentname : [$currentname] "; }
          if ( @($currentnameid!=$_POST['currentnameid']) ) { $truncation = true; $truncated .= "currentnameid : [$currentnameid] "; }
          if ( @($currentqualifier!=$_POST['currentqualifier']) ) { $truncation = true; $truncated .= "currentqualifier : [$currentqualifier] "; }
-         if ( @($identifiedby!=$_POST['identifiedby']) ) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
+         if ( @($identifiedbyid!=$_POST['identifiedbyid']) ) { $truncation = true; $truncated .= "identifiedbyid : [$identifiedbyid] "; }
          if ( @($determinertext!=$_POST['determinertext']) ) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
          if ( @($dateidentified!=$_POST['dateidentified']) ) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
          if ( @($highergeography!=$_POST['highergeography']) ) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
@@ -319,14 +324,14 @@ if ($connection && $authenticated) {
          if ( @($verbatimlong!=$_POST['verbatimlong']) ) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
          if ( @($decimallat!=$_POST['decimallat']) ) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
          if ( @($decimallong!=$_POST['decimallong']) ) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
-         if ( @($datum!=$_POST['datum']) ) { $truncation = true; $truncated .= "datum : [$datum] "; }
-         if ( @($coordinateuncertanty!=$_POST['coordinateuncertanty']) ) { $truncation = true; $truncated .= "coordinateuncertanty : [$coordinateuncertanty] "; }
-         if ( @($georeferencedby!=$_POST['georeferencedby']) ) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
-         if ( @($georeferencedate!=$_POST['georeferencedate']) ) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
+         //if ( @($datum!=$_POST['datum']) ) { $truncation = true; $truncated .= "datum : [$datum] "; }
+         if ( @($coordinateuncertainty!=$_POST['coordinateuncertainty']) ) { $truncation = true; $truncated .= "coordinateuncertainty : [$coordinateuncertainty] "; }
+         //if ( @($georeferencedby!=$_POST['georeferencedby']) ) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
+         //if ( @($georeferencedate!=$_POST['georeferencedate']) ) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
          if ( @($georeferencesource!=$_POST['georeferencesource']) ) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
-         if ( @($utmzone!=$_POST['utmzone']) ) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
-         if ( @($utmeasting!=$_POST['utmeasting']) ) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
-         if ( @($utmnorthing!=$_POST['utmnorthing']) ) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
+         //if ( @($utmzone!=$_POST['utmzone']) ) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
+         //if ( @($utmeasting!=$_POST['utmeasting']) ) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
+         //if ( @($utmnorthing!=$_POST['utmnorthing']) ) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
 
          if ( @($typestatus!=$_POST['typestatus']) ) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
          if ( @($typeconfidence!=@$_POST['typeconfidence']) ) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
@@ -336,6 +341,7 @@ if ($connection && $authenticated) {
          if ( @($datepublished!=$_POST['datepublished']) ) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
          if ( @($isfragment!=$_POST['isfragment']) ) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
          if ( @($habitat!=$_POST['habitat']) ) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
+         if ( @($frequency!=$_POST['frequency']) ) { $truncation = true; $truncated .= "frequency : [$frequency] "; }
          if ( @($host!=$_POST['host']) ) { $truncation = true; $truncated .= "host : [$host] "; }
          if ( @($substrate!=$_POST['substrate']) ) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
          if ( @($phenology!=$_POST['phenology']) ) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
@@ -346,29 +352,50 @@ if ($connection && $authenticated) {
          if ( @($specimendescription!=$_POST['specimendescription']) ) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
          if ( @($itemdescription!=$_POST['itemdescription']) ) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
          if ( @($container!=$_POST['container']) ) { $truncation = true; $truncated .= "container : [$container] "; }
+         if ( @($containerid!=$_POST['containerid']) ) { $truncation = true; $truncated .= "containerid : [$containerid] "; }
          if ( @($collectingtrip!=$_POST['collectingtrip']) ) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
+         if ( @($collectingtripid!=$_POST['collectingtripid']) ) { $truncation = true; $truncated .= "collectingtripid : [$collectingtripid] "; }
          if ( @($storagelocation!=$_POST['storagelocation']) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
          if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
          if ( @($storage!=$_POST['storage']) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
 
          // transcribe doesn't capture the determiner, provide a value.
          if ($determinertext=='') { $determinertext = '[data not captured]'; }
-         if ($identifiedby=='') { $identifiedby = '[data not captured]'; }
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
          if ($barcode=='' && strlen($barcodeval)>0 ) { $barcode = $barcodeval; }
-         // same for date collected, field is normall disabled
-         if ($datecollected=='' && strlen($datecollectedval)>0 ) { $datecollected = $datecollectedval; }
+
          // more clearly named fields
          $currentdetermination = $currentname;
          $currentdeterminationid = $currentnameid;
-         $fiidentificationqualifier = $filedunderqualifier;
          $identificationqualifier = $currentqualifier;
 
          echo ingest();
 
-         echo storeImageObject($batchid,$barcode);
+         // Commenting out the call to save images.
+         // At this time, all images should be preprocessed and exist in the database
+         // If this call is ever re-enabled, the function createImageSetFromLocalFile
+         // will need to be revisited so that paths and names are handled the same as the ingest process
+         //echo storeImageObject($batchid,$barcode);
 
        break;
+
+       case 'donebatch':
+          $ok = false;
+          @$id = $_GET['batch_id'];
+          $currentBatch = new TR_Batch();
+          $currentBatch->setID($id);
+          $currentBatch->setCompleted();
+          $ok=true;
+
+          header("Content-type: application/json");
+          if ($ok) {
+             $response =  "{ \"message\":\"Batch [$id] succesfully marked as done.\"}";
+          } else {
+             $response =  "{ \"message\":\"Failed to mark batch [$id] succesfully marked as done.\"}";
+          }
+          echo $response;
+          break;
+
        default:
          echo "Unknown Action [$action]";
    }
@@ -392,13 +419,13 @@ function ingest() {
    global $connection, $debug,
    $truncation, $truncated, $collectorsid,
    $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
-   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,
+   $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
    $highergeography,
-   $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
-   $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
-   $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong, // $datum,$georeferencedby,$georeferencedate,$utmzone,$utmeasting,$utmnorthing,
+   $coordinateuncertainty,$georeferencesource,$typestatus, $basionym,
+   $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,
    $project, $storagelocation, $storage, $namedplace,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -416,6 +443,7 @@ function ingest() {
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
    if ($stationfieldnumber=='') { $stationfieldnumber = null; }
+   if ($namedplace=='') { $namedplace = null; }
    if ($accessionnumber=='') { $accessionnumber = null; }
    if ($provenance=='') { $provenance = null; }
    if ($verbatimdate=='') { $verbatimdate = null; }
@@ -446,34 +474,33 @@ function ingest() {
       }
    }
    if ($herbariumacronym=='') { $herbariumacronym = null; }
-   if ($fiidentificationqualifier=='') { $fiidentificationqualifier = null; }
    if ($currentdetermination=='') { $currentdetermination = null; }
    if ($identificationqualifier=='') { $identificationqualifier = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
    if ($verbatimlong=='') { $verbatimlong = null; }
    if ($decimallat=='') { $decimallat = null; }
    if ($decimallong=='') { $decimallong = null; }
-   if ($datum=='') { $datum = null; }
-   if ($coordinateuncertanty=='') {
-      $coordinateuncertanty = null;
+   //if ($datum=='') { $datum = null; }
+   if ($coordinateuncertainty=='') {
+      $coordinateuncertainty = null;
       $maxuncertantyestunit = null;
    } else {
       $maxuncertantyestunit = 'm';
    }
-   if ($georeferencedby=='') { $georeferencedby = null; }
-   if ($georeferencedate=='') { $georeferencedate = null; }
+   //if ($georeferencedby=='') { $georeferencedby = null; }
+   //if ($georeferencedate=='') { $georeferencedate = null; }
    if ($georeferencesource=='') { $georeferencesource = null; }
-   if ($utmzone=='') { $utmzone = null; }
-   if ($utmeasting=='') { $utmeasting = null; }
-   if ($utmnorthing=='') { $utmnorthing = null; }
-   if ($utmeasting!=null) {
-      if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) {
-         // OK, specify takes UTM easting and northing in meters, can't abstract to MGRS or USNG
-      } else {
-         $fail = true;
-         $feedback .= "UTM Easting and northing must be in meters, there must be 6 digits in the easting and 7 in the northing.";
-      }
-   }
+   //if ($utmzone=='') { $utmzone = null; }
+   //if ($utmeasting=='') { $utmeasting = null; }
+   //if ($utmnorthing=='') { $utmnorthing = null; }
+   // if ($utmeasting!=null) {
+   //    if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) {
+   //       // OK, specify takes UTM easting and northing in meters, can't abstract to MGRS or USNG
+   //    } else {
+   //       $fail = true;
+   //       $feedback .= "UTM Easting and northing must be in meters, there must be 6 digits in the easting and 7 in the northing.";
+   //    }
+   // }
 
    if ($typestatus=='') { $typestatus = null; }
    if ($typeconfidence=='') { $typeconfidence = null; }
@@ -483,6 +510,7 @@ function ingest() {
    if ($datepublished=='') { $datepublished = null; }
    if ($isfragment=='') { $isfragment = null; }
    if ($habitat=='') { $habitat = null; }
+   if ($frequency=='') { $frequency = null; }
    if ($host=='') { $host = null; }
    if ($substrate=='') { $substrate = null; }
    if ($phenology=='') { $phenology = 'NotDetermined'; }
@@ -491,8 +519,10 @@ function ingest() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($determinertext=='') { $determinertext = null; }
-   if ($container=='') { $container = null; }
-   if ($collectingtrip=='') { $collectingtrip = null; }
+   if ($container=='') { $container = null; $containerid = null; }
+   if ($containerid=='') { $containerid = null; }
+   if ($collectingtrip=='') { $collectingtrip = null; $collectingtripid = null; }
+   if ($collectingtripid=='') { $collectingtripid = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
    if ($storage=='') { $storage = null; }  // subcollection
@@ -545,7 +575,6 @@ function ingest() {
       $df.= "barcode=[$barcode] ";  // required
       $df.= "provenance=[$provenance] ";
       $df.= "filedundername=[$filedundername] ";  // required
-      $df.= "fiidentificationqualifier=[$fiidentificationqualifier] ";
       $df.= "currentdetermination=[$currentdetermination] ";
       $df.= "identificationqualifier=[$identificationqualifier] ";
       $df.= "highergeography=[$highergeography] ";  // required
@@ -556,10 +585,10 @@ function ingest() {
       $df.= "verbatimlong=[$verbatimlong] ";
       $df.= "decimallat=[$decimallat] ";
       $df.= "decimallong=[$decimallong] ";
-      $df.= "datum=[$datum] ";
-      $df.= "coordinateuncertanty=[$coordinateuncertanty] ";
-      $df.= "georeferencedby=[$georeferencedby] ";
-      $df.= "georeferencedate=[$georeferencedate] ";
+      //$df.= "datum=[$datum] ";
+      $df.= "coordinateuncertainty=[$coordinateuncertainty] ";
+      //$df.= "georeferencedby=[$georeferencedby] ";
+      //$df.= "georeferencedate=[$georeferencedate] ";
       $df.= "georeferencesource=[$georeferencesource] ";
       $df.= "typestatus=[$typestatus] ";
       $df.= "typeconfidence=[$typeconfidence] ";
@@ -569,16 +598,20 @@ function ingest() {
       $df.= "datepublished=[$datepublished] ";
       $df.= "isfragment=[$isfragment] ";
       $df.= "habitat=[$habitat] ";
+      $df.= "frequency=[$frequency] ";
       $df.= "phenology=[$phenology] ";
       $df.= "verbatimelevation=[$verbatimelevation] ";
       $df.= "namedplace=[$namedplace] ";
       $df.= "minelevation=[$minelevation] ";
       $df.= "maxelevation=[$maxelevation] ";
       $df.= "identifiedby=[$identifiedby] ";
+      $df.= "identifiedbyid=[$identifiedbyid] ";
       $df.= "determinertext=[$determinertext] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";
+      $df.= "containerid=[$containerid] ";
       $df.= "collectingtrip=[$collectingtrip] ";
+      $df.= "collectingtripid=[$collectingtripid] ";
       $df.= "storagelocation=[$storagelocation] ";
       $df.= "project=[$project] ";
       $df.= "host=[$host] ";
@@ -703,6 +736,8 @@ function ingest() {
                     $statement->store_result();
                     if ($statement->num_rows==1) {
                        if ($statement->fetch()) {
+                           // update database record peice by peice:
+
                            // set project if it isn't set.
                            if($project!="") {
                                $sql = "select count(*) as projectcount from project_colobj where projectid in (select projectid from project where projectname = ?) and collectionobjectid = ? ";
@@ -740,6 +775,76 @@ function ingest() {
                                    $feedback.= "Query Error looking up project. " . $connection->error  . " ";
                                }
                            }
+
+                           // Update fragment record
+                           if ($fragmentid!=null) {
+                               $statement1 = $connection->stmt_init();
+
+                               $sql = "update fragment set text1=?, prepmethod=?, provenance=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where fragmentid = ? ";
+                               $statement1 = $connection->prepare($sql);
+                               if ($statement1) {
+                                   $statement1->bind_param("sssii", $herbariumacronym, $prepmethod, $provenance, $currentuserid, $fragmentid);
+                                   $statement1->execute();
+                                   $rows = $connection->affected_rows;
+                                   if ($rows==1) { $feedback = $feedback . " Updated Fragment. "; }
+                                   if ($rows==0) { $feedback = $feedback . " Fragment unchanged. "; }
+                               } else {
+                                   $fail = true;
+                                   $feedback.= "Query Error modifying fragment. " . $connection->error  . " ";
+                               }
+
+                               $statement1->close();
+                           } else {
+                             $fail = true;
+                             $feedback.= "Failed to lookup fragment (item) record.";
+                           }
+
+
+                           // check for existing collectingtrip if just name is supplied
+                           if (!$fail && strlen(trim($collectingtripid))==0 && strlen(trim($collectingtrip))>0) { // new record
+                             $sql = "select collectingtripid from collectingtrip where collectingtripname = ? limit 1";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                                $statement->bind_param("s",$collectingtrip);
+                                $statement->execute();
+                                $statement->bind_result($cid);
+                                $statement->store_result();
+                                if ($statement->num_rows==1) {
+                                   if ($statement->fetch()) {
+                                      // Found an existing collectingtrip record for the name
+                                      $collectingtripid = $cid;
+                                   } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error " . $connection->error;
+                                   }
+                                } else {
+                                  // create collectingtrip record
+                                  $sql = "insert into collectingtrip (timestampcreated, version, collectingtripname, disciplineid, createdbyagentid)
+                                          values (now(), 1, ?, 3, ?)";
+                                  $statement1 = $connection->prepare($sql);
+                                  if ($statement1) {
+                                     $statement1->bind_param("si", $collectingtrip, $currentuserid);
+                                     $statement1->execute();
+                                     $rows = $connection->affected_rows;
+                                     if ($rows==1) {
+                                       $collectingtripid = $statement1->insert_id;
+                                       $feedback = $feedback . " Added CollectingTrip. ";
+                                     }
+                                  } else {
+                                     $fail = true;
+                                     $feedback.= "Query Error inserting collectingtrip: " . $connection->error  . " ";
+                                  }
+                                  $statement1->close();
+                                }
+                                $statement->free_result();
+                                $statement->close();
+                             } else {
+                                $fail = true;
+                                $feedback.= "Query error: " . $connection->error . " " . $sql;
+                             }
+                          }
+
+
                            if ($collectingeventid!=null) {
                                $countco = countCollectionObjectsForEvent($collectingeventid);
                                if ($countco < 0) {
@@ -751,10 +856,10 @@ function ingest() {
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
 
-                                  $sql = "update collectingevent set stationfieldnumber=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
+                                  $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, collectingtripid=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                   $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("ssisisii", $stationfieldnumber, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $collectingeventid);
+                                      $statement1->bind_param("sssisisiii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $collectingeventid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -784,10 +889,10 @@ function ingest() {
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectionobject. "; }
-                                          $sql = "update collectingevent set stationfieldnumber=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
+                                          $sql = "update collectingevent set stationfieldnumber=?, remarks=?, startdate=?, startdateprecision=?, enddate=?, enddateprecision=?, verbatimdate=?, collectingtripid=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectingeventid = ? ";
                                           $statement1 = $connection->prepare($sql);
                                           if ($statement1) {
-                                              $statement1->bind_param("ssisisii", $stationfieldnumber, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $currentuserid, $newcollectingeventid);
+                                              $statement1->bind_param("sssisisiii", $stationfieldnumber, $habitat, $startdate, $startdateprecision, $enddate, $enddateprecision, $verbatimdate, $collectingtripid, $currentuserid, $newcollectingeventid);
                                               $statement1->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated CollectingEvent. "; }
@@ -808,13 +913,76 @@ function ingest() {
                                    $feedback.= "Error: No collectingevent found/created.";
                                }
 
+                              // containerid should not be submitted without string
+                               if (strlen(trim($container))==0) {
+                                 $containerid = null;
+                               }
+
+                               // check for existing container if just name is supplied
+                               if (!$fail && strlen(trim($containerid))==0 && strlen(trim($container))>0) { // new record
+                                 $sql = "select containerid from container where name = ? limit 1";
+                                 $statement = $connection->prepare($sql);
+                                 if ($statement) {
+                                    $statement->bind_param("s",$container);
+                                    $statement->execute();
+                                    $statement->bind_result($cid);
+                                    $statement->store_result();
+                                    if ($statement->num_rows==1) {
+                                       if ($statement->fetch()) {
+                                          // Found an existing container record for the name
+                                          $containerid = $cid;
+                                       } else {
+                                          $fail = true;
+                                          $feedback.= "Query Error " . $connection->error;
+                                       }
+                                    } else {
+                                      // create container record
+                                      $sql = "insert into container (timestampcreated, version, collectionmemberid, name, type, createdbyagentid)
+                                              values (now(), 1, 4, ?, 9, ?)";
+                                      $statement1 = $connection->prepare($sql);
+                                      if ($statement1) {
+                                         $statement1->bind_param("si", $container, $currentuserid);
+                                         $statement1->execute();
+                                         $rows = $connection->affected_rows;
+                                         if ($rows==1) {
+                                           $containerid = $statement1->insert_id;
+                                           $feedback = $feedback . " Added Container. ";
+                                         }
+                                      } else {
+                                         $fail = true;
+                                         $feedback.= "Query Error inserting container: " . $connection->error  . " ";
+                                      }
+                                      $statement1->close();
+                                    }
+                                    $statement->free_result();
+                                    $statement->close();
+                                 } else {
+                                    $fail = true;
+                                    $feedback.= "Query error: " . $connection->error . " " . $sql;
+                                 }
+                              }
+
+                              // update Collectionobject, includes container and description fields
+                              if (!$fail) {
+                                $sql = "update collectionobject set remarks=?, description=?, text4=?, containerid=?, version=version+1, timestampmodified=now(), modifiedbyagentid=? where collectionobjectid=?";
+                                $statement = $connection->prepare($sql);
+                                if ($statement) {
+                                    $statement->bind_param("sssiii",$specimenremarks,$specimendescription,$frequency,$containerid,$currentuserid,$collectionobjectid);
+                                    $statement->execute();
+                                    $rows = $connection->affected_rows;
+                                    if ($rows==1) { $feedback = $feedback . " Updated container. "; }
+                                } else {
+                                    $fail = true;
+                                    $feedback.= "Query Error updating container. " . $connection->error . " ";
+                                }
+                              }
+
                                // lookup agentid for collector
-                               if (strlen(trim($collectorsid))==0 && strlen($collectors)>0) {
+                               if (strlen(trim($collectorsid))==0 && strlen(trim($collectors))>0) {
                                   $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
-                                  $param = "s";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
-                                     $statement->bind_param($param,$collectors);
+                                     $statement->bind_param("s",$collectors);
                                      $statement->execute();
                                      $statement->bind_result($agentid);
                                      $statement->store_result();
@@ -839,7 +1007,7 @@ function ingest() {
                                }
 
                                // add/update collector
-                               if ($collectingeventid!=null) {
+                               if (!$fail && $collectingeventid!=null) {
                                   $sql = "select collectorid from collector where collectingeventid = ? ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -884,9 +1052,27 @@ function ingest() {
                                       $feedback.= "Query Error looking up collector. " . $connection->error . " ";
                                   }
                                }
-                           } // has collecting event
+                           } // has collector
 
-                           if ($localityid!=null) {
+
+                           // ensure that verbatim and decimal are either both set are neither set
+                           if (isset($verbatimlat)!=isset($verbatimlong)) {
+                             $fail = true;
+                             $feedback.= "Verbatim Lat [$verbatimlat] and Long [$verbatimlong] must both be set";
+                           }
+
+                           if(isset($decimallat)!=isset($decimallong)) {
+                             $fail = true;
+                             $feedback.= "Decimal Lat [$decimallat] and Long [$decimallong] must both be set";
+                           }
+
+                           if (isset($verbatimlat) || isset($decimallat)) {
+                             $latlongtype = "Point";
+                           } else {
+                             $latlongtype = null;
+                           }
+
+                           if (!$fail && $localityid!=null) {
                                $countco = countCollectionObjectsForLocality($localityid);
                                if ($countco < 0) {
                                    $fail = true;
@@ -896,10 +1082,11 @@ function ingest() {
                                    $feedback.= "Error: no collection objects found for locality. ";
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
-                                  $sql = "update locality set localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
-                		  $statement1 = $connection->prepare($sql);
+
+                                  $sql = "update locality set Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("sssii", $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->bind_param("ssiiisssssii", $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
@@ -910,8 +1097,12 @@ function ingest() {
                                   }
                                } else {
                                   // more than one collection object, need to create new locality
-                                  $sql = "insert into locality (TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID) select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
-                		          $statement = $connection->prepare($sql);
+                                  $query = <<<EOD
+insert into locality
+(TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID)
+select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
+EOD;
+                		              $statement = $connection->prepare($sql);
                                   if ($statement) {
                                       $statement->bind_param("i", $localityid);
                                       $statement->execute();
@@ -948,291 +1139,191 @@ function ingest() {
                                    }
                                }
                            } // end localityid
-                           if ($collectionobjectid!=null) {
-                              if ($habitat!=null && $habitat!="") {
-                                  $sql = "update collectionobject set text1 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectionobjectid = ? ";
-                		          $statement = $connection->prepare($sql);
-                                  if ($statement) {
-                                      $statement->bind_param("sii", $habitat, $currentuserid, $collectionobjectid);
-                                      $statement->execute();
-                                      $rows = $connection->affected_rows;
-                                      if ($rows==1) { $feedback = $feedback . " Updated CollObject. "; }
-                                      if ($rows==0) { $feedback = $feedback . " CollObject unchanged. "; }
-                                  } else {
+
+
+
+                          // Deal with determinations (current and filed under)
+                          if (strlen(trim($identifiedbyid))==0) {
+                             $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                                $statement->execute();
+                                $statement->bind_result($agentid);
+                                $statement->store_result();
+                                if ($statement->num_rows==1) {
+                                   if ($statement->fetch()) {
+                                      // retrieves collector.agentid
+                                      $identifiedbyid = $agentid;
+                                   } else {
                                       $fail = true;
-                                      $feedback.= "Query Error modifying locality. " . $connection->error . " ";
-                                  }
+                                      $feedback.= "Query Error " . $connection->error;
+                                   }
+                                } else {
+                                   $fail = true;
+                                   $feedback.= "No Match for collector agent: [data not captured]";
+                                }
+                                $statement->free_result();
+                                $statement->close();
+                             } else {
+                                $fail = true;
+                                $feedback.= "Query error: " . $connection->error . " " . $sql;
+                             }
+                          }
+
+                          // make sure that we have taxonid values.
+                          if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
+                              $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
+                          }
+                          if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
+                              $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
+                          }
+
+                          // Check if current and filed under are the same, in most cases we only want one det with both flags
+                          if ($currentdeterminationid==$filedundernameid) {
+                             $filedundercurrent = 1;
+                          } else {
+                             $filedundercurrent = 0;
+                          }
+
+                          $adds = "";
+
+                          // insert or update the current det
+                          $current = huh_determination_custom::lookupCurrentDetermination($fragmentid);
+                          if ($current["status"]=="NotFound" || $current["taxonid"] != $currentdeterminationid) {
+                              // insert new determination
+
+                              // clear old iscurrent flag
+                              if (!$fail && isset($current["determinationid"])) {
+                                // insert new current
+                                $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent=true ";
+                                $statement = $connection->prepare($sql);
+                                if ($statement) {
+                                   $statement->bind_param("ii",$currentuserid,$current["determinationid"]);
+                                   $statement->execute();
+                                   $statement->close();
+                                } else {
+                                   $fail = true;
+                                   $feedback.= "Error preparing update determination query " . $connection->error;
+                                }
                               }
-                           }
 
-                           // look up/update determinations.
-
-                           // are the determinations the same
-                           $namesidentical = FALSE;
-                           if ($filedundername==$currentdetermination) {
-                              // See BugID: 588 if both names are the same, only add filed under, and mark it as current.
-                              $namesidentical = TRUE;
-                              // Consequences:  If the names are the same: One determination record with both filed under and current flags set.
-                              // If the names are different, two records, one filed under name without
-                              // a determiner, and one current name (if creating here, both lack determiner and date determined)
-                           }
-
-                           // make sure that we have taxonid values.
-                           if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
-                               $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
-                           }
-                           if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
-                               $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
-                           }
-                           // look up the agentid for data not captured agent.
-                           $determinerid = null;
-                           $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
-                           $statement = $connection->prepare($sql);
-                           if ($statement) {
-                              $statement->execute();
-                              $statement->bind_result($determinerid);
-                              $statement->store_result();
-                              if ($statement->num_rows==1) {
-                                 if ($statement->fetch()) {
-                                    // retrieves determiner agentid
-                                 } else {
-                                    $fail = true;
-                                    $feedback.= "Query Error " . $connection->error;
-                                 }
-                              } else {
-                                 $fail = true;
-                                 $feedback.= "No Match for agent: '[data not captured]' " . $identifiedby;
-                              }
-                              $statement->free_result();
-                              $statement->close();
-                           } else {
-                              $fail = true;
-                              $feedback.= "Error preparing lookup agent query " . $connection->error;
-                           }
-
-                           // what is the number of determinations in the database now for this fragment?
-                           $detcount = huh_determination_custom::countDeterminations($fragmentid);
-                           if ($detcount==0) {
-                              // Insert the determination(s) provided.
-                              if ($namesidentical===FALSE) {
-                                 // only add the filed under name if the names are different.
-                                 // add the filed under name as a separate determination from the current determination.
-
+                              if (!$fail) {
                                  // yesno1 = isLabel (no)
                                  // yesno2 = isFragment (of type) (no)
-                                 // yesno3 = isFiledUnder (yes)
-                                 // iscurrent = isCurrent (no)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
-                                           " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                                           " values (?,?,?,?,0,0,1,0,now(),0,4) ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param('iiis', $filedundernameid,$fragmentid,$currentuserid,$fiidentificationqualifier);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                         $pluraldet = "s";  // for output, added more than one determination.
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save filed under name: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-                                }
-                                if (!$fail) {
-                                   // Current determination
-                                   // Always add.  May also be filed under name.
+                                 // yesno3 = isFiledUnder
+                                 // iscurrent = isCurrent (yes)
+                                 $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
+                                        " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
+                                        " values (?,?,?,?,?,?,?,0,0,?,1,now(),0,4,?) ";
+                                 $statement = $connection->prepare($sql);
+                                 if ($statement) {
+                                    $statement->bind_param('iiisisiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $filedundercurrent, $determinertext);
+                                    if ($statement->execute()) {
+                                       $determinationid = $statement->insert_id;
+                                       $adds .= "det=[$determinationid]";
+                                    } else {
+                                       $fail = true;
+                                       $feedback.= "Unable to save current determination: " . $connection->error;
+                                    }
+                                    $statement->free_result();
+                                 } else {
+                                    $fail = true;
+                                    $feedback.= "Query error: " . $connection->error . " " . $sql;
+                                 }
 
-                                   // yesno1 = isLabel (yes)
-                                   $islabel = 1;  // we are capturing it in transcription, so must be label name
-                                   // yesno2 = isFragment (of type) (no)
-                                   // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-                                   $isfiledunder = 0;
-                                   if ($namesidentical===TRUE) {
-                                      $isfiledunder = 1;
-                                   }
-                                   // iscurrent = isCurrent (yes)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                                                    " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                                                    " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save current determination: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
+                              }
+                          } else { // update existing record
 
-                                }
-                                if (!$fail) {
-                                    $feedback.= "Added Determination$pluraldet";
-                                    if ($debug) {  $feedback.=" $adds "; }
-                                }
-                                // end no determinations currently in the database.
-                           } else {
-                               // one or more determinations currently exist in the database, check if we should insert or update.
-                               // is the currentdetermination consistent with rapid entry?
-                               // is the filedunderdetermination consistent with rapid entry?
-                               $adds = "";
-                               $filedunder = huh_determination_custom::lookupFiledUnderDetermination($fragmentid);
-                               $updatefiledunder = false;
-                               if ( huh_determination_custom::consistentWithTranscribeCapture($filedunder)) {
-                                    // ok to update
-                                    $existingfiledundername = $filedunder["taxonname"];
-                                    $existingfiledundernameid = $filedunder["taxonid"];
-                                    $existingfiledunderqualifier = $filedunder["qualifier"];
-                                    $existingfiledunderdetermination = $filedunder["determinationid"];
-                                    $updatefiledunder = true;
-                               }
-                               $current = huh_determination_custom::lookupCurrentDetermination($fragmentid);
-                               $updatecurrent = false;
-                               if ( huh_determination_custom::consistentWithTranscribeCapture($current)) {
-                                    // ok to update
-                                    $existingcurrentname = $current["taxonname"];
-                                    $existingcurrentnameid = $current["taxonid"];
-                                    $existingidentificationqualifier = $current["qualifier"];
-                                    $existingcurrentdetermination = $current["determinationid"];
-                                    $updatecurrent = true;
-                               }
+                            $existingcurrentname = $current["taxonname"];
+                            $existingcurrentnameid = $current["taxonid"];
+                            $existingidentificationqualifier = $current["qualifier"];
+                            $existingcurrentdetermination = $current["determinationid"];
+                            $existingdeterminerid = $current["determinerid"];
+                            $existingdetermineddate = $current["determineddate"];
+                            $existingisfiledunder = $current["isfiledunder"];
 
-                               // Insert/update determinations.
-                               if ($updatefiledunder && !$fail) {
-                                   // Update filedunder determination
-                                   if ($existingfiledundernameid!=$filedundernameid && $existingfiledunderqualifier!=$fiidentificationqualifier) {
-                                      $sql = "update determination set taxonid = ?, qualifier = ?, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? ";
-                                      $statement = $connection->prepare($sql);
-                                      if ($statement) {
-                                         $statement->bind_param("isii",$filedundernameid,$fiidentificationqualifier,$currentuserid,$existingfiledunderdetermination);
-                                         $statement->execute();
-                                         $statement->close();
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Error preparing update determination query " . $connection->error;
-                                      }
-                                   } else {
-                                      $feedback.= "Filed Under unchanged. ";
-                                   }
-                               } else {
-                                   if ($namesidentical===FALSE) {
-                                      // insert new filedunder
-                                      $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent = true ";
-                                      $statement = $connection->prepare($sql);
-                                      if ($statement) {
-                                         $statement->bind_param("ii",$currentuserid, $existingfiledunderdetermination);
-                                         $statement->execute();
-                                         $statement->close();
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Error preparing update determination query " . $connection->error;
-                                      }
-                                   }
-                                   // yesno1 = isLabel (no)
-                                   // yesno2 = isFragment (of type) (no)
-                                   // yesno3 = isFiledUnder (yes)
-                                   // iscurrent = isCurrent (no)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
-                                           " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                                           " values (?,?,?,?,0,0,1,0,now(),0,4) ";
+                            if (!$fail) {
+                                // Update current determination
+                                if ($existingcurrentnameid!=$currentdeterminationid
+                                    || $existingidentificationqualifier!=$identificationqualifier
+                                    || $existingdeterminerid!=$identifiedbyid
+                                    || $existingdetermineddate!=$dateidentified
+                                    || $existingisfiledunder!=$filedundercurrent) {
+
+                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param('iiis', $filedundernameid,$fragmentid,$currentuserid,$fiidentificationqualifier);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                         $pluraldet = "s";  // for output, added more than one determination.
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save filed under name: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-                               }
-                               if ($updatecurrent && !$fail) {
-                                   // Update current determination
-                                   if ($existingcurrentnameid!=$currentdeterminationid && $existingidentificationqualifier!=$identificationqualifier) {
-                                      $sql = "update determination set taxonid = ?, qualifier = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
-                                      $statement = $connection->prepare($sql);
-                                      if ($statement) {
-                                         $statement->bind_param("isii",$currentdeterminationid,$identificationqualifier,$currentuserid,$existingcurrentdetermination);
-                                         $statement->execute();
-                                         $statement->close();
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Error preparing update determination query " . $connection->error;
-                                      }
-                                   } else {
-                                      $feedback.= "Current unchanged. ";
-                                   }
-                               } else {
-                                   // insert new current
-                                   $sql = "update determination set iscurrent = false, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ? and iscurrent=true ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param("ii",$currentuserid,$existingcurrentdetermination);
+                                      $statement->bind_param("isisiiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentified,$dateidentifiedprecision,$filedundercurrent,$currentuserid,$existingcurrentdetermination);
                                       $statement->execute();
                                       $statement->close();
                                    } else {
                                       $fail = true;
                                       $feedback.= "Error preparing update determination query " . $connection->error;
                                    }
-
-                                   // yesno1 = isLabel (yes)
-                                   $islabel = 1;  // we are capturing it in transcription, so must be label name
-                                   // yesno2 = isFragment (of type) (no)
-                                   // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-                                   $isfiledunder = 0;
-                                   if ($namesidentical===TRUE) {
-                                      $isfiledunder = 1;
-                                   }
-                                   // iscurrent = isCurrent (yes)
-                                   $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                                                    " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                                                    " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
-                                   $statement = $connection->prepare($sql);
-                                   if ($statement) {
-                                      $statement->bind_param('iiisisiiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
-                                      if ($statement->execute()) {
-                                         $determinationid = $statement->insert_id;
-                                         $adds .= "det=[$determinationid]";
-                                      } else {
-                                         $fail = true;
-                                         $feedback.= "Unable to save current determination: " . $connection->error;
-                                      }
-                                      $statement->free_result();
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                   }
-
+                                } else {
+                                   $feedback.= "Current unchanged. ";
                                 }
-                                if (!$fail) {
-                                    if ($adds!="") {
-                                       $feedback.= "Added Determination$pluraldet";
-                                       if ($debug) {  $feedback.=" $adds "; }
-                                    }
-                                }
-                           } // end handle existing determinations
+                            }
+                          }
+
+                          // insert filed under det if needed
+                          $filedunder = huh_determination_custom::lookupFiledUnderDetermination($fragmentid);
+                          if (($filedunder["status"]=="NotFound" || $filedunder["taxonid"] != $filedundernameid)) {
+                            // clear filed under flag on previous record
+                            if (!$fail && isset($filedunder['determinationid'])) { // existing record exists
+                              $sql = "update determination set yesno3 = 0, version=version+1,  modifiedbyagentid=?, timestampmodified=now() where determinationid = ?";
+                              $statement = $connection->prepare($sql);
+                              if ($statement) {
+                                 $statement->bind_param("ii",$currentuserid, $filedunder['determinationid']);
+                                 $statement->execute();
+                                 $statement->close();
+                              } else {
+                                 $fail = true;
+                                 $feedback.= "Error preparing update determination query " . $connection->error;
+                              }
+                            }
+
+                            if (!$fail && !$filedundercurrent) {
+                              // need to create a new record for just the filed under
+
+                               // yesno1 = isLabel (no)
+                               // yesno2 = isFragment (of type) (no)
+                               // yesno3 = isFiledUnder (yes)
+                               // iscurrent = isCurrent (no)
+                               $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, " .
+                                       " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
+                                       " values (?,?,?,0,0,1,0,now(),0,4) ";
+                               $statement = $connection->prepare($sql);
+                               if ($statement) {
+                                  $statement->bind_param('iii', $filedundernameid,$fragmentid,$currentuserid);
+                                  if ($statement->execute()) {
+                                     $determinationid = $statement->insert_id;
+                                     $adds .= "det=[$determinationid]";
+                                  } else {
+                                     $fail = true;
+                                     $feedback.= "Unable to save filed under name: " . $connection->error;
+                                  }
+                                  $statement->free_result();
+                               } else {
+                                  $fail = true;
+                                  $feedback.= "Query error: " . $connection->error . " " . $sql;
+                               }
+                            }
+                        } else {
+                           $feedback.= "Filed Under unchanged. ";
+                        }
+
+                        if (!$fail && $adds) {
+                            $feedback.= "Added Determination(s)";
+                            if ($debug) {  $feedback.=" $adds "; }
+                        }
 
 
-                       } else {
-                          //  statement.fetch to retrieve fragmentid, collectionobjectid, collectingeventid, localityid failed.
-                          $fail = true;
-                          $feedback.= "Query Error " . $connection->error . " " .  $sql;
-                       }
+                     } else {
+                        //  statement.fetch to retrieve fragmentid, collectionobjectid, collectingeventid, localityid failed.
+                        $fail = true;
+                        $feedback.= "Query Error " . $connection->error . " " .  $sql;
+                     }
 
                        // done one and only one fragment
                    } elseif ($statement->num_rows==0) {
@@ -1306,36 +1397,47 @@ function lookupDataForBarcode($barcode) {
    $num_matches = count($matches);
    $result['num_matches'] = $num_matches;
    if ($num_matches==1) {
+       $result['status'] = "FOUND";
        $match = $matches[0];
        $match->load($match->getFragmentID());
        $result['prepmethod'] = $match->getPrepMethod();
+       $result['herbariumacronym'] = $match->getText1();
+       $result['provenance'] = $match->getProvenance();
 
-       // get filedundername, currentname, filedunderqualifier, currentqualifier
+       // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
        $result['filedundername'] = $filedunder["taxonname"];
        $result['filedundernameid'] = $filedunder["taxonid"];
-       $result['filedunderqualifier'] = $filedunder["qualifier"];
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
        $result['currentname'] = $current["taxonname"];
        $result['currentnameid'] = $current["taxonid"];
        $result['currentqualifier'] = $current["qualifier"];
+       $result['identifiedbyid'] = $current["determinerid"];
+       $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
+       $result['dateidentified'] = $current["determineddate"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
+       $result['specimendescription'] = $rcolobj->getDescription();
+       $result['specimenremarks'] = $rcolobj->getRemarks();
+       $result['frequency'] = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
-       $rcolobj->load($rcolobj->getCollectionObjectID());
-       $rprep->load($rprep->getPreparationID());
+       //$rcolobj->load($rcolobj->getCollectionObjectID());
+       //$rprep->load($rprep->getPreparationID());
        $result['formatid'] = $rprep->getPrepTypeID();
        $related = $rprep->loadLinkedTo();
        $rpreptype = $related['PrepTypeID'];
-       $rpreptype->load($rpreptype->getPrepTypeID());
+       //$rpreptype->load($rpreptype->getPrepTypeID());
        $result['format'] = $rpreptype->getName();
        $result['created'] = $rcolobj->getTimestampCreated();
        $related = $rcolobj->loadLinkedTo();
+       $rcontainer = $related['ContainerID'];
+       $result['container'] = $rcontainer->getName();
+       $result['containerid'] = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
        $result['project'] = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
-       $rcoleve->load($rcoleve->getCollectingEventID());
+       //$rcoleve->load($rcoleve->getCollectingEventID());
        $result['stationfieldnumber'] = $rcoleve->getStationFieldNumber();
        $result['datecollected'] = dateBitsToString($rcoleve->getStartDate(), $rcoleve->getStartDatePrecision(), $rcoleve->getEndDate(), $rcoleve->getEndDatePrecision());
        $result['verbatimdate'] = $rcoleve->getVerbatimDate();
@@ -1347,18 +1449,30 @@ function lookupDataForBarcode($barcode) {
        $result['collectors'] = huh_collector_custom::getCollectorVariantName($collectoragentid);
        $result['etal'] = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
-       $rlocality->load($rlocality->getLocalityID());
-       $result['namedPlace'] = $rlocality->getNamedPlace();
-       $result['verbatimElevation'] = $rlocality->getVerbatimElevation();
-       $result['specificLocality'] = $rlocality->getLocalityName();
+       $rcollectingtrip = $related['CollectingTripID'];
+       $result['collectingtrip'] = $rcollectingtrip->getCollectingTripName();
+       $result['collectingtripid'] = $rcollectingtrip->getCollectingTripID();
+       //$rlocality->load($rlocality->getLocalityID());
+       $result['namedplace'] = $rlocality->getNamedPlace();
+       $result['verbatimelevation'] = $rlocality->getVerbatimElevation();
+       $result['specificlocality'] = $rlocality->getLocalityName();
        $related = $rlocality->loadLinkedTo();
        $rgeography = $related['GeographyID'];
-       $rgeography->load($rgeography->getGeographyID());
+       //$rgeography->load($rgeography->getGeographyID());
        $result['geographyid'] = $rgeography->getGeographyID();
        $result['geography'] = $rgeography->getFullName();
+       $result['verbatimlat'] = $rlocality->getLat1Text();
+       $result['verbatimlong'] = $rlocality->getLong1Text();
+       $result['decimallat'] = $rlocality->getLatitude1();
+       $result['decimallong'] = $rlocality->getLongitude1();
+       $result['coordinateuncertainty'] = $rlocality->getLatLongAccuracy();
+       $result['georeferencesource'] = $rlocality->getLatLongMethod();
+
        $result['error']="";
    } else {
+       $result['status'] = "ERROR";
        $result['error']="Item Not Found for [$barcode], matches=$num_matches. ";
+       error_log($result['error']);
    }
 
    return $result;

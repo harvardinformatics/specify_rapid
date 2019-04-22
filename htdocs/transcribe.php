@@ -8,7 +8,7 @@ include_once("transcribe_lib.php");
 include_once("imagehandler.php");
 
 define("ENABLE_DUPLICATE_FINDING",TRUE);
-define("BASEWIDTH",21);  // em for width of form fields
+$GLOBALS['BASEWIDTH']=20; // em for width of form fields
 
 $error = "";
 $targethostdb = "Not Set";
@@ -230,41 +230,54 @@ function doSetup() {
    } else {
       $targetBatch = getBatch($targetBatchDir);
    }
-   $targetBatchFirst = getFirstFileInNextBatch();
-   $position = $targetBatch->position + 1;
+
+   $batchPath = $targetBatch->getPath();
+   $targetBatchCurrent = $targetBatch->getCurrentFile();
+   $targetBatchFirst = $targetBatch->getFile(1);
+   $position = $targetBatchCurrent->position;
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
-   if ($targetBatch->path ==null || strlen($targetBatch->path)==0) {
-       echo " <strong>No Current Batch.</strong>";
+   if ($batchPath==null || strlen($batchPath)==0) {
+     echo " <strong>No Current Batch.</strong>";
    } else {
-      echo " <strong>Batch: [$targetBatch->path]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatch->filename)."\",\"$targetBatch->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+      echo " <strong>Batch: [$batchPath]</strong>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
-           echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($targetBatch->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"0\",\"standard\");' class='ui-button'>Start from first.</button>";
+        echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
       }
-      echo " First File: [$targetBatch->filename]";
+      //echo " First File: [$targetBatchFirst->filename]";
    }
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
    echo " <strong>Work on another batch:</strong>";
    echo "<select id='targetBatch' name='targetBatch'>";
-   $sql = "select path, completed_date from TR_BATCH order by completed_date asc";
+   $sql = "select trb.path, IF(trb.completed_date is not null, 1, 0) as completed, group_concat(trub.username separator ',') as users from TR_BATCH trb left join TR_USER_BATCH trub on trb.tr_batch_id = trub.tr_batch_id and trub.position > 1 group by trb.tr_batch_id order by completed, path asc";
    if ($statement = $connection->prepare($sql)) {
        $statement->execute();
-       $statement->bind_result($path,$completed_date);
+       $statement->bind_result($path,$completed,$users);
        $statement->store_result();
        $selected = "";
        while ($statement->fetch()) {
-          if($completed_date=="") {
+          if($completed==0) {
              $complete = "";
-             if ($selected=="") { $selected = "selected"; } else { $selected = ""; }
           } else {
-             $complete="($completed_date)";
-             $selected = "";
+             $complete="Done: ";
+          }
+          if (strlen($users)>0) {
+            $usersworking = " ($users)";
+          } else {
+            $usersworking = "";
           }
           $upath = urlencode($path);
-          echo "<option value='$path' $selected >$path $complete</option>";
+
+          if ($path==$batchpath) {
+            $selected = "selected";
+          } else {
+            $selected = "";
+          }
+
+          echo "<option value='$path' $selected >$complete$path$usersworking</option>";
        }
        $statement->free_result();
        $statement->close();
@@ -281,7 +294,7 @@ function doSetup() {
                   url: 'transcribe_handler.php',
                   data: {
                        action: 'updatedosetup',
-                       targetBatch: $('#targetBatch').find(\"option:selected\").text()
+                       targetBatch: $('#targetBatch').find(\"option:selected\").val()
                   },
                   success: function(data) {
                       $('#setupBatchControls').html(data);
@@ -292,39 +305,39 @@ function doSetup() {
            });
       });
    </script>";
-   echo "<div id='pickbatch' style='padding: 0.5em;' >";
-   echo "<form method='GET' action='transcribe.php?display=preparebatch' >";
-   echo "<input type='hidden' id='display' name='display' value='preparebatch'>";
-   echo "<button type='submit' value='Pick Batch' class='ui-button'>Prepare New Batch</button>";
-   echo "</form></div>";
-   echo "<div>";
-   if (!defined("BASE_IMAGE_PATH")) {
-       echo "<h3>Error: BASE_IMAGE_PATH must be defined in connection_library.php</h3>";
-   }
-   if (!defined("BATCHPATH")) {
-       echo "<h3>Error: BATCHPATH must be defined in connection_library.php</h3>";
-   }
-   if (!defined("PHPINCPATH")) {
-       echo "<h3>Error: PHPINCPATH must be defined in connection_library.php</h3>";
-   }
-   echo "<h3>Some design Assumptions of this application:</h3><ul>";
-   echo "<li>Data is being transcribed into database fields off of labels in herbarium sheet images.</li>";
-   echo "<li>Users have dual monitors and are using Firefox.</li>";
-   echo "<li>Barcodes identify items, barcoded preparations are not supported.</li>";
-   echo "<li>Database records for specimens and images may or may not exist prior to transcription.</li>";
-   echo "<li>Not all images are of herbarium sheets (some are of covers)</li>";
-   echo "<li>When image files are sorted in by their filename, this sort produces the correct sequence of images for transcription.</li>";
-   echo "<li>One directory contains one batch of work, and can be pre-processed to check image files for barcodes.</li>";
-   echo "<li>Saving a record saves both specimen and image records into the database.</li>";
-   echo "<li>Taxon and higher geography records exist or will be entered by users through Specify-HUH.</li>";
-   echo "<li>Saving identifications when identifications already exist in the database will add new identifications unless the existing identifications appear to have been entered through this application.</li>";
-   echo "</ul>";
-   echo "<h3>The Barcode field has unexpected properties.</h3><ul>";
-   echo "<li>When a barcode is known for an image, the barcode field will be disabled.</li>";
-   echo "<li>When no barcode is known for an image, the barcode field will be enabled and empty.</li>";
-   echo "<li>When the enabled barcode field loses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
-   echo "<li>When multiple barcodes are present in an image, you can save one record, click the delta button next to the barcode field to make it editable, and enter another barcode that is present on the sheet, along with its data.</li>";
-   echo "</ul></div>";
+//    echo "<div id='pickbatch' style='padding: 0.5em;' >";
+//    echo "<form method='GET' action='transcribe.php?display=preparebatch' >";
+//    echo "<input type='hidden' id='display' name='display' value='preparebatch'>";
+//    echo "<button type='submit' value='Pick Batch' class='ui-button'>Prepare New Batch</button>";
+//    echo "</form></div>";
+//    echo "<div>";
+//    if (!defined("BASE_IMAGE_PATH")) {
+//        echo "<h3>Error: BASE_IMAGE_PATH must be defined in connection_library.php</h3>";
+//    }
+//    if (!defined("BATCHPATH")) {
+//        echo "<h3>Error: BATCHPATH must be defined in connection_library.php</h3>";
+//    }
+//    if (!defined("PHPINCPATH")) {
+//        echo "<h3>Error: PHPINCPATH must be defined in connection_library.php</h3>";
+//    }
+//    echo "<h3>Some design Assumptions of this application:</h3><ul>";
+//    echo "<li>Data is being transcribed into database fields off of labels in herbarium sheet images.</li>";
+//    echo "<li>Users have dual monitors and are using Firefox.</li>";
+//    echo "<li>Barcodes identify items, barcoded preparations are not supported.</li>";
+//    echo "<li>Database records for specimens and images may or may not exist prior to transcription.</li>";
+//    echo "<li>Not all images are of herbarium sheets (some are of covers)</li>";
+//    echo "<li>When image files are sorted in by their filename, this sort produces the correct sequence of images for transcription.</li>";
+//    echo "<li>One directory contains one batch of work, and can be pre-processed to check image files for barcodes.</li>";
+//    echo "<li>Saving a record saves both specimen and image records into the database.</li>";
+//    echo "<li>Taxon and higher geography records exist or will be entered by users through Specify-HUH.</li>";
+//    echo "<li>Saving identifications when identifications already exist in the database will add new identifications unless the existing identifications appear to have been entered through this application.</li>";
+//    echo "</ul>";
+//    echo "<h3>The Barcode field has unexpected properties.</h3><ul>";
+//    echo "<li>When a barcode is known for an image, the barcode field will be disabled.</li>";
+//    echo "<li>When no barcode is known for an image, the barcode field will be enabled and empty.</li>";
+//    echo "<li>When the enabled barcode field loses focus, a search is run on the database for that barcode and all non-carry forward fields will have their data replace by data from the database, while all non-empty carry forward fields will be populated with data retrieved from the database.</li>";
+//    echo "<li>When multiple barcodes are present in an image, you can save one record, click the delta button next to the barcode field to make it editable, and enter another barcode that is present on the sheet, along with its data.</li>";
+//    echo "</ul></div>";
 }
 
 function target() {
@@ -398,7 +411,7 @@ function targetfile($path,$filename) {
 
    //$height = 5616;
    //$width = 3744;
-   $s = 700/$height; // scale factor
+   $s = 400/$height; // scale factor
    $h = round($height*$s);
    $w = round($width*$s);
 
@@ -406,8 +419,8 @@ function targetfile($path,$filename) {
    $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
    $result->medialink = $medialink;
 
-   $barcode = ImageHandler::checkFilenameForBarcode($path,$filename,false);
-   $result->barcode = $barcode;
+   //$barcode = ImageHandler::checkFilenameForBarcode($path,$filename,false);
+   //$result->barcode = $barcode;
 
    // TODO: Lookup barcode image height, image width from path and filename.
    /*
@@ -464,7 +477,7 @@ function imageForBarcode($barcode) {
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
-            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            where identifier = ? and object_type_id = 3 and hidden_flag = 0 and active_flag = 1
             limit 1 ";
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
@@ -489,7 +502,7 @@ function imageDataForBarcode($barcode) {
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
-            where identifier = ? and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
+            where identifier = ? and object_type_id = 3 and hidden_flag = 0 and active_flag = 1
             limit 1 ";
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
@@ -578,7 +591,7 @@ switch ($display) {
       break;
 }
 
-echo $apage->getFooter();
+echo $apage->getFooter($user);
 
 
 // ********************************************************************************
@@ -670,12 +683,11 @@ habitat
 */
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
-   @$test = substr(preg_replace('/[^a-z]/','',$_GET['test']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
-   @$path = urldecode($_GET['path']);
-   $position = 0;
+   @$batchpath = urldecode($_GET['batch']);
+   $position = 1;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
-   if ($position==null || $position=="") { $position = 0;  }
+   if ($position==null || $position=="") { $position = 1;  }
 
    switch ($config) {
       case 'minimal':
@@ -688,11 +700,11 @@ habitat
 
 
    $currentBatch = new TR_Batch();
-   $currentBatch->setPath($path);
-   $path = $currentBatch->getPath();
+   $currentBatch->setPath($batchpath);
    $filecount = $currentBatch->getFileCount();
    $currentBatch->moveTo($position);
    $file = $currentBatch->getFile($position);
+   $filepath = $file->path;
    $filename = $file->filename;
 
    $currentBatch->selectOrCreateUserForBatch();
@@ -701,9 +713,9 @@ habitat
    if (strlen($filename)==0) {
       $target = target();
    } else {
-      $target = targetfile($path,$filename);
+      $target = targetfile($filepath,$filename);
    }
-   $targetbarcode = $target->barcode;
+   $targetbarcode = $file->barcode;
    $targetheight = $target->height;
    $targetwidth = $target->width;
    echo "
@@ -728,7 +740,7 @@ habitat
               });
          };
 
-      $(document).ready(logEvent('start_transcription','$path, $filename, $position'));
+      $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
    </script>";
 
 
@@ -743,6 +755,9 @@ habitat
        $match->load($match->getFragmentID());
        $prepmethod = $match->getPrepMethod();
 
+       $provenance = $match->getProvenance();
+       $created = $match->getTimestampCreated();
+
        // get filedundername, currentname, filedunderqualifier, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
        $filedundername = $filedunder["taxonname"];
@@ -752,23 +767,31 @@ habitat
        $currentname = $current["taxonname"];
        $currentnameid = $current["taxonid"];
        $currentqualifier = $current["qualifier"];
+       $identifiedbyid = $current["determinerid"];
+       $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
+       $dateidentified = $current["determineddate"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
+       $specimendescription = $rcolobj->getDescription();
+       $specimenremarks = $rcolobj->getRemarks();
+       $frequency = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
-       $rcolobj->load($rcolobj->getCollectionObjectID());
-       $rprep->load($rprep->getPreparationID());
+       //$rcolobj->load($rcolobj->getCollectionObjectID()); // already loaded
+       //$rprep->load($rprep->getPreparationID()); // already loaded
        $formatid = $rprep->getPrepTypeID();
        $related = $rprep->loadLinkedTo();
        $rpreptype = $related['PrepTypeID'];
-       $rpreptype->load($rpreptype->getPrepTypeID());
+       //$rpreptype->load($rpreptype->getPrepTypeID()); // already loaded
        $format = $rpreptype->getName();
-       $created = $rcolobj->getTimestampCreated();
        $related = $rcolobj->loadLinkedTo();
+       $rcontainer = $related['ContainerID'];
+       $container = $rcontainer->getName();
+       $containerid = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
        $project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
-       $rcoleve->load($rcoleve->getCollectingEventID());
+       //$rcoleve->load($rcoleve->getCollectingEventID()); // already loaded
        $stationfieldnumber = $rcoleve->getStationFieldNumber();
        $datecollected = dateBitsToString($rcoleve->getStartDate(), $rcoleve->getStartDatePrecision(), $rcoleve->getEndDate(), $rcoleve->getEndDatePrecision());
        $verbatimdate = $rcoleve->getVerbatimDate();
@@ -779,16 +802,25 @@ habitat
        $collectors = huh_collector_custom::getCollectorVariantName($collectoragentid);
        $etal = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
-       $rlocality->load($rlocality->getLocalityID());
+       $rcollectingtrip = $related['CollectingTripID'];
+       $collectingtrip = $rcollectingtrip->getCollectingTripName();
+       $collectingtripid = $rcollectingtrip->getCollectingTripID();
+       //$rlocality->load($rlocality->getLocalityID()); // already loaded
        $namedPlace = $rlocality->getNamedPlace();
        $verbatimElevation = $rlocality->getVerbatimElevation();
        $specificLocality = $rlocality->getLocalityName();
        $related = $rlocality->loadLinkedTo();
        $rgeography = $related['GeographyID'];
-       $rgeography->load($rgeography->getGeographyID());
+       //$rgeography->load($rgeography->getGeographyID()); // already loaded
        $geographyid = $rgeography->getGeographyID();
        $geography = $rgeography->getFullName();
 
+       $verbatimlat = $rlocality->getLat1Text();
+       $verbatimlong = $rlocality->getLong1Text();
+       $decimallat = $rlocality->getLatitude1();
+       $decimallong = $rlocality->getLongitude1();
+       $coordinateuncertainty = $rlocality->getLatLongAccuracy();
+       $georeferencesource = $rlocality->getLatLongMethod();
 
    } elseif ($num_matches==0) {
        // set defaults to create new record
@@ -827,25 +859,22 @@ habitat
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>Starting batch $path with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
+   echo "&nbsp;<span id='batch_info'>Starting batch $batchpath with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
    echo "</div>";
    echo "</div>";
-   echo "<div class='flex-main hfbox' style='padding: 0em;'>";
 
-   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' >\n";
+   echo "<div class='flex-main hfbox' style='min-width: 1000px; padding: 0em;'>";
+   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
+
    echo "<input type=hidden name='action' value='transcribe' class='carryforward'>";
    echo "<input type=hidden name='operator' value='".$user->getAgentId()."' class='carryforward'>";
-   if ($test=="true") {
-      echo "<input type=hidden name='test' value='true' class='carryforward'>";
-   } else {
-      echo "<input type=hidden name='test' value='false' class='carryforward'>";
-   }
    echo '<script>
          $( function(){
             $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
           });
    </script>';
-   echo '<div style="width: 34em;" id="transcribediv" >';
+   echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
+   echo '<div style="width: 30em;" id="transcribediv" >';
    echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
 
@@ -859,13 +888,11 @@ habitat
    </script>
    ';
 
-   @staticvalueid("Record Created:",$created,"recordcreated");
-   if ($test=="true") {
-      @staticvalue("Project",$defaultproject);
-      echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
-   } else {
-      selectProject("defaultproject","Project",$defaultproject);
-   }
+   //if ($test=="true") {
+      //@staticvalue("Project",$defaultproject);
+      //echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
+   //} else {
+
    if (strlen($targetbarcode==0)) {
        $enabled = 'true';
    } else {
@@ -889,15 +916,6 @@ habitat
    });
    </script>
    ';
-   if ($test=="true") {
-      @staticvalue("Prep Method",$prepmethod);
-      echo "<input type='hidden' name='prepmethod' id='prepmethod' value='$prepmethod' class='carryforward'>";
-      @staticvalue("Format:",$defaultformat);
-      echo "<input type='hidden' name='preptype' id='preptype' value='$defaultformat' class='carryforward'>";
-   } else {
-      selectPrepMethod("prepmethod","Prep Method:",$prepmethod,'true','true');
-      selectPrepType("preptype","Format:",$defaultformat,'true','true');
-   }
 
    if ($config=="minimal") {
        /*
@@ -909,160 +927,115 @@ habitat
        highergeography - pick
        scientific name - filed under, plus qualifier - carry forward
        */
+       @selectAcronym("herbariumacronym",$herbarium);
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
        @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
+       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        echo "
-        <script>
-           $('#verbatimdate').blur(function() {
-               var verbatim = $('#verbatimdate').val();
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   data: {
-                       action: 'interpretdate',
-                       verbatimdate: verbatim
-                   },
-                   success: function(data) {
-                       if (data!='') {
-                         $('#datecollected').val(data);
-                       }
-                   }
-               });
+        // Verbatim date auto-parsing disabled for now, not deemed useful to workflow and some edge cases would need to be resolved
+        // echo "
+        // <script>
+        //    $('#verbatimdate').blur(function() {
+        //       if (!$(this).val().trim()) {
+        //         $('#datecollected').val('');
+        //       } else {
+        //
+        //        $('#datecollected').prop('disabled', true);
+        //        var verbatim = $('#verbatimdate').val();
+        //        $.ajax({
+        //            type: 'GET',
+        //            url: 'transcribe_handler.php',
+        //            data: {
+        //                action: 'interpretdate',
+        //                verbatimdate: verbatim
+        //            },
+        //            success: function(data) {
+        //                if (data!='') {
+        //                  $('#datecollected').val(data);
+        //                  $('#datecollected').prop('disabled', field);
+        //                }
+        //            }
+        //        });
+        //
+        //      }
+        //    });
+        // </script>
+        // ";
+        @selectProject("defaultproject","Project",$defaultproject);
+   } else { //if ($config=="standard") {
 
-           });
-        </script>
-        ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
-       selectAcronym("herbariumacronym",$herbarium);
-   } elseif ($config=="standard") {
-
-
+       @selectAcronym("herbariumacronym",$herbarium);
        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
-       @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier);
        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
+       @selectCollectorsID("identifiedby","Identified By",$identifiedby,$identifiedbyid,'false','false');
+       @field ("dateidentified","Date Identified",$dateidentified,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
 
-       /*
-       Longer list (12 fields, for comparison)
-       project - default US and Canada, show
-       barcode - known, not editable - on save, go to next in list.
-       format - default sheet, show
-       preparation method - pressed default, show
-       scientific name -
-          filed under  -   carry forward
-          plus qualifier - carry forward
-       scientific name -
-          current -- carry forward
-          qualifier
-       collectioncode - likely (GH, A, NEBC)
-       collecting trip - pick
-       highergeography - pick
-       *verbatim locality
-       collectors, et al
-       *collector number
-       *verbatim date collected
-       *date collected
-       */
-        // @selectCollectingTripID ("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
-        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
-        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
+       @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
+       @field ("etal","Et al.",$etal,'false');
+       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
+       @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
+       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
+       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+       // echo "
+       //  <script>
+       //     $('#verbatimdate').blur(function() {
+       //       if (!$(this).val().trim()) {
+       //         $('#datecollected').val('');
+       //       } else {
+       //         $('#datecollected').prop('disabled', true);
+       //         var verbatim = $('#verbatimdate').val();
+       //         $.ajax({
+       //             type: 'GET',
+       //             url: 'transcribe_handler.php',
+       //             data: {
+       //                 action: 'interpretdate',
+       //                 verbatimdate: verbatim
+       //             },
+       //             success: function(data) {
+       //                 if (data!='') {
+       //                   $('#datecollected').val(data);
+       //                   $('#datecollected').prop('disabled', false);
+       //                 }
+       //             }
+       //         });
+       //       }
+       //     });
+       //  </script>
+       //  ";
+       @selectContainerID("container","Container",$container,$containerid);
+       @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
+       @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
 
-        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
-        @field ("habitat","Habitat",$habitat);
+       @field ("specificlocality","Verbatim locality",$specificLocality,'true');
+       @field ("habitat","Habitat",$habitat);
+       @field ("frequency", "Frequency", $frequency);
+       @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
-        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
-        @field ("etal","Et al.",$etal,'false');
+       @field ("provenance","Provenance",$provenance,'false');
+       @field ("specimendescription","Description",$specimendescription,'false');
+       @field ("specimenremarks","Remarks",$specimenremarks,'false');
+       @selectProject("defaultproject","Project",$defaultproject);
 
-        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        echo "
-        <script>
-           $('#verbatimdate').blur(function() {
-               var verbatim = $('#verbatimdate').val();
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   data: {
-                       action: 'interpretdate',
-                       verbatimdate: verbatim
-                   },
-                   success: function(data) {
-                       if (data!='') {
-                         $('#datecollected').val(data);
-                       }
-                   }
-               });
-
-           });
-        </script>
-        ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','false');
-        echo "<input type='hidden' name='datecollectedval' id='datecollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
-       selectAcronym("herbariumacronym",$herbarium);
-
-   } else {
-
-        @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true');
-        @selectQualifier("filedunderqualifier","ID Qualifier",$filedunderqualifier);
-        @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true');
-        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
-
-        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
-        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
-
-        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
-        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        echo "
-        <script>
-           $('#verbatimdate').blur(function() {
-               var verbatim = $('#verbatimdate').val();
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   data: {
-                       action: 'interpretdate',
-                       verbatimdate: verbatim
-                   },
-                   success: function(data) {
-                       if (data!='') {
-                         $('#datecollected').val(data);
-                         $('#datecollectedval').val(data);
-                       }
-                   }
-               });
-
-           });
-        </script>
-        ";
-        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','2010-03-18','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-        echo "<input type='hidden' name='datecollectedval' id='datacollectedval' value='$datecollected'>"; // to carry submission of datecollected with disabled input.
-
-        @field ("habitat","Habitat",$habitat);
-        @field ("namedplace","Named place",$namedPlace);
-        @field ("verbatimelevation","verbatimElevation",$verbatimElevation,'false');
-
-        selectAcronym("herbariumacronym",$herbarium);
    }
 
    echo "<tr><td colspan=2>";
-   echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."'>";
-   echo "<input type='submit' value='Save' id='saveButton' class='carryforward ui-button'> ";
+   echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
+   echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button'>";
    echo "</td></tr>";
-   echo "<tr><td colspan=2 style=' font-size: 0.9em;'>";
-   echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
-   echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
-   echo "</td></tr>";
-// TODO: Implement previous button.
+   //echo "<tr><td colspan=2 style=' font-size: 0.9em;'>";
+   //echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
+   //echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
+   //echo "</td></tr>";
+
    echo "<script>
 
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
-               logEvent('next_button_click',$('#batch_info').html())
+               logEvent('next_button_click',$('#batch_info').html());
                // clear fields
                $('#transcribeForm  input:not(.carryforward)').val('');
 
@@ -1076,23 +1049,19 @@ habitat
                        batch_id: ".$currentBatch->getBatchID()."
                    },
                    success: function(data) {
-                     console.log(data.src);
+                     console.log(data);
                      $('#image_div').attr('src',data.src);
                      var imagesource = data.src;
                      var imagepath = data.path;
                      var imagefilename = data.filename;
-                     var position1 = data.position1;
-                     $('#current_position').html(data.position1);
+                     var position = data.position;
+                     $('#current_position').html(data.position);
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position1 +' of $filecount.');
-                     if (position1==filecount) {
-                        // end of batch, disable next button, enable done button.
-                        $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
-                        $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
-                     }
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
+
                      // load data for this record.
-                     loadNextData(position1,".$currentBatch->getBatchID().");
+                     loadNextData(position,".$currentBatch->getBatchID().");
                    },
                    error: function() {
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
@@ -1102,20 +1071,60 @@ habitat
                event.preventDefault();
           });
 
+
+         $('#previousButton').click(function(event){
+
+               $('#feedback').html( 'Loading next...');
+               logEvent('previous_button_click',$('#batch_info').html());
+               // clear fields
+               $('#transcribeForm  input:not(.carryforward)').val('');
+
+               // load next image
+               $.ajax({
+                   type: 'GET',
+                   url: 'transcribe_handler.php',
+                   dataType: 'json',
+                   data: {
+                       action: 'getpreviousimage',
+                       batch_id: ".$currentBatch->getBatchID()."
+                   },
+                   success: function(data) {
+                     console.log(data.src);
+                     $('#image_div').attr('src',data.src);
+                     var imagesource = data.src;
+                     var imagepath = data.path;
+                     var imagefilename = data.filename;
+                     var position = data.position;
+                     $('#current_position').html(data.position);
+                     var filecount = data.filecount;
+                     channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
+
+                     // load data for this record.
+                     loadNextData(position,".$currentBatch->getBatchID().");
+                   },
+                   error: function() {
+                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                   }
+               });
+               event.preventDefault();
+          });
+
+
           $('#doneButton').click(function(event){
                $('#feedback').html( 'Completing batch...');
-               logEvent('done',$('#batch_info').html())
+               logEvent('done',$('#batch_info').html());
                // move position to mark batch as done
                $.ajax({
                    type: 'GET',
                    url: 'transcribe_handler.php',
                    dataType: 'json',
                    data: {
-                       action: 'getnextimage',
+                       action: 'donebatch',
                        batch_id: ".$currentBatch->getBatchID()."
                    },
                    success: function(data) {
-                     console.log(data.src);
+                     console.log(data);
                      doclear();
                    },
                    error: function() {
@@ -1130,35 +1139,128 @@ habitat
            * @param value the new value to set (unless the field is a carryforward with an existing value).
            */
           function setLoadedValue(field,value) {
-              if (!field=='datecollected') {
-                 if ($('select[name='+field+']').length) {
-                     $('#'+field).css({'color':'black'});
-                 } else {
-                     $('#'+field).css({'background-color':'#FFFFFF'});
-                 }
-              }
+              //if (!field=='datecollected') {
+               if ($('select[name='+field+']').length) {
+                   $('#'+field).css({'color':'black'});
+               } else {
+                   $('#'+field).css({'background-color':'#FFFFFF'});
+               }
+              //}
               if($('#'+field).val()=='') {
                  // if field is empty, populate from provided value.
                  $('#'+field).val(value);
               } else {
                  // field contains a value
-                 if (!field=='datecollected') {
+                 //if (!field=='datecollected') {
                     // set color to indicate changed data
-                    if ($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
-                       // if carryforward field and values are different, set background color
-                       if ($('select[name='+field+']').length) {
-                          $('#'+field).css({'color':'darksalmon'});
-                       } else {
-                         $('#'+field).css({'background-color':'#FFFAA2'});
-                       }
-                    }
-                 }
+                  if ($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
+                     // if carryforward field and values are different, set background color
+                     if ($('select[name='+field+']').length) {
+                        $('#'+field).css({'color':'darksalmon'});
+                     } else {
+                       $('#'+field).css({'background-color':'#FFFAA2'});
+                     }
+                  }
+                 //}
                  // update value from provided value.
-                 if (!$('.carryforward[id][name='+field+']').length) {
-                     // if field contains a value only populate if not a carryforward field (carryforward trumps lookup).
-                     $('.carryforward[id][name='+field+']').val(value);
-                 }
+                 // if (!$('.carryforward[id][name='+field+']').length) {
+                 //     // if field contains a value only populate if not a carryforward field (carryforward trumps lookup).
+                 //     $('#'+field).val(value);
+                 // }
+                 $('#'+field).val(value);
               }
+          }
+
+          function loadFormData(data) {
+              var barcodeval = data.barcode;
+              if (data.barcode==null || data.barcode=='NOTFOUND') {
+                  barcodeval = '';
+              }
+
+              $('#barcode').val(barcodeval);
+              if ($('#barcode').val().length==0) {
+                  $('#barcode').prop('disabled', null);
+                  $('#recordcreated').html('New Record');
+                  $('#feedback').html( 'Ready.');
+              } else {
+                  $('#barcode').prop('disabled', true);
+                  $('#recordcreated').html(data.created);
+                  setLoadedValue('defaultproject',data.project);
+                  setLoadedValue('container',data.container);
+                  setLoadedValue('containerid',data.containerid);
+                  setLoadedValue('prepmethod',data.prepmethod);
+                  setLoadedValue('preptype',data.format);
+                  setLoadedValue('filedundername',data.filedundername);
+                  setLoadedValue('filedundernameid',data.filedundernameid);
+                  setLoadedValue('filedunderqualifier',data.filedunderqualifier);
+                  setLoadedValue('currentname',data.currentname);
+                  setLoadedValue('currentnameid',data.currentnameid);
+                  setLoadedValue('currentqualifier',data.currentqualifier);
+                  setLoadedValue('identifiedby',data.identifiedby);
+                  setLoadedValue('identifiedbyid',data.identifiedbyid);
+                  setLoadedValue('dateidentified',data.dateidentified);
+                  setLoadedValue('specificlocality',data.specificlocality);
+                  setLoadedValue('habitat',data.habitat);
+                  setLoadedValue('frequency',data.frequency);
+                  setLoadedValue('highergeography',data.geography);
+                  setLoadedValue('verbatimelevation',data.verbatimelevation);
+                  setLoadedValue('geographyid',data.geographyid);
+                  setLoadedValue('collectors',data.collectors);
+                  setLoadedValue('collectorsid',data.collectoragentid);
+                  setLoadedValue('etal',data.etal);
+                  setLoadedValue('stationfieldnumber',data.stationfieldnumber);
+                  setLoadedValue('verbatimdate',data.verbatimdate);
+                  setLoadedValue('datecollected',data.datecollected);
+                  setLoadedValue('herbariumacronym',data.herbariumacronym);
+                  setLoadedValue('provenance',data.provenance);
+                  setLoadedValue('specimendescription',data.specimendescription);
+                  setLoadedValue('specimenremarks',data.specimenremarks);
+                  setLoadedValue('collectingtrip',data.collectingtrip);
+                  setLoadedValue('collectingtripid',data.collectingtripid);
+                  setLoadedValue('verbatimlat',data.verbatimlat);
+                  setLoadedValue('verbatimlong',data.verbatimlong);
+                  setLoadedValue('decimallat',data.decimallat);
+                  setLoadedValue('decimallong',data.decimallong);
+                  setLoadedValue('coordinateuncertainty',data.coordinateuncertainty);
+                  setLoadedValue('georeferencesource',data.georeferencesource);
+
+                  $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
+              }
+
+            /*
+            num_matches
+            prepmethod
+            filedundername
+            filedundernameid
+            filedunderqualifier
+            currentname
+            currentnameid
+            currentqualifier
+            formatid
+            format
+            created
+            project
+            stationfieldnumber
+            datecollected
+            verbatimdate
+            habitat
+            collectoragentid
+            collectors
+            etal
+            namedPlace
+            verbatimElevation
+            specificLocality
+            geographyid
+            geography
+            error
+            */
+          // find the corresponding input (input id = data key) in transcribeForm
+
+          // if the input value is empty, replace it with the value from data.
+
+          // if the input value is not empty, and the input is not in class carry_forward, set the value from the data.
+          // (if the input value is not empty, and the input is in class carry_forward, leave unchanged).
+
           }
 
           function loadDataForBarcode(barcodevalue) {
@@ -1191,61 +1293,7 @@ habitat
                          $('#feedback').html( '<strong>Warning:</strong> more than one match for Barcode: ' + $('#barcode').val() + ' Enter in Specify. '  );
                      } else {
                          $('#recordcreated').html(data.created);
-                         setLoadedValue('defaultproject',data.project);
-                         setLoadedValue('prepmethod',data.prepmethod);
-                         setLoadedValue('preptype',data.format);
-                         setLoadedValue('filedundername',data.filedundername);
-                         setLoadedValue('filedundernameid',data.filedundernameid);
-                         setLoadedValue('filedunderqualifier',data.filedunderqualifier);
-                         setLoadedValue('currentname',data.currentname);
-                         setLoadedValue('currentnameid',data.currentnameid);
-                         setLoadedValue('currentqualifier',data.currentqualifier);
-                         setLoadedValue('specificlocality',data.specificLocality);
-                         setLoadedValue('habitat',data.habitat);
-                         setLoadedValue('highergeography',data.geography);
-                         setLoadedValue('geographyid',data.geographyid);
-                         setLoadedValue('collectors',data.collectors);
-                         setLoadedValue('collectorsid',data.collectorsid);
-                         setLoadedValue('etal',data.etal);
-                         setLoadedValue('stationfieldnumber',data.stationfieldnumber);
-                         setLoadedValue('verbatimdate',data.verbatimdate);
-                         setLoadedValue('datecollected',data.datecollected);
-                         setLoadedValue('herbariumacronym',data.herbariumacronym);
-
-/*
-       num_matches
-       prepmethod
-       filedundername
-       filedundernameid
-       filedunderqualifier
-       currentname
-       currentnameid
-       currentqualifier
-       formatid
-       format
-       created
-       project
-       stationfieldnumber
-       datecollected
-       verbatimdate
-       habitat
-       collectoragentid
-       collectors
-       etal
-       namedPlace
-       verbatimElevation
-       specificLocality
-       geographyid
-       geography
-       error
-*/
-                     // find the corresponding input (input id = data key) in transcribeForm
-
-                     // if the input value is empty, replace it with the value from data.
-
-                     // if the input value is not empty, and the input is not in class carry_forward, set the value from the data.
-                     // (if the input value is not empty, and the input is in class carry_forward, leave unchanged).
-
+                         loadFormData(data);
                          $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
                      }
 
@@ -1256,37 +1304,35 @@ habitat
                });
           }
 
-          function loadNextData(position1,batch_id) {
-               console.log('called loadNextData() with ' + position1 + ',' +batch_id);
-               var position0 = position1 - 1; // change one based position count to zero based position count.
-               $.ajax({
+          function loadNextData(position,batch_id) {
+               console.log('called loadNextData() with ' + position + ',' +batch_id);
+
+               if(position > 1) {
+                   $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
+               } else {
+                   $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
+               }
+
+               if(position < $filecount) {
+                   $('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
+                   $('#doneButton').attr('disabled', true).addClass('ui-state-disabled');
+               } else {
+                   $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
+                   $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
+               }
+
+                $.ajax({
                    type: 'GET',
                    url: 'transcribe_handler.php',
                    dataType: 'json',
                    data: {
                        action: 'getnextrecord',
                        batch_id: batch_id,
-                       position: position0
+                       position: position
                    },
                    success: function(data) {
                      console.log(data);
-                     console.log('barcode:' + data.barcode);
-                     var barcodeval = data.barcode;
-                     if (data.barcode==null || data.barcode=='NOTFOUND') {
-                         barcodeval = '';
-                     }
-
-                     $('#barcode').val(barcodeval);
-                     if ($('#barcode').val().length==0) {
-                         $('#barcode').prop('disabled', null);
-                         $('#recordcreated').html('New Record');
-                         $('#feedback').html( 'Ready.');
-                     } else {
-                        $('#barcode').prop('disabled', true);
-                        loadDataForBarcode(barcodeval);
-                     }
-
-
+                     loadFormData(data);
                    },
                    error: function() {
                       console.log('ajax call to transcribe_handler.php/action=getnextrecord failed');
@@ -1298,37 +1344,10 @@ habitat
 
    </script>";
 
-   if ($test=="true") {
-       // in test mode, only log data capture rate
    echo "<script>
-         $('#transcribeForm').submit(function(event){
-               $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
+         $('#saveButton').click(function(event){
                // handle disabled fields, copy data to val fields.
                $('#barcodeval').val($('#barcode').val());
-               $('#datecollectedval').val($('#datecollected').val());
-               $.ajax({
-                   type: 'POST',
-                   url: 'transcribe_logger.php',
-                   data: $('#transcribeForm').serialize(),
-                   success: function(data) {
-                       $('#feedback').html( data ) ;
-                       //$('#nextButton').prop('disabled',false)
-                       //$('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
-                   },
-                   error: function() {
-                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                   }
-               });
-               event.preventDefault();
-          });
-   </script>";
-   } else {
-       // otherwise, save the changes
-   echo "<script>
-         $('#transcribeForm').submit(function(event){
-               // handle disabled fields, copy data to val fields.
-               $('#barcodeval').val($('#barcode').val());
-               $('#datecollectedval').val($('#datecollected').val());
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
                $.ajax({
                    type: 'POST',
@@ -1344,20 +1363,20 @@ habitat
                event.preventDefault();
           });
    </script>";
-   }
-
 
    echo "</table>";
    echo '</div>';  // end of accordion
 
-
    echo '</div>';
+   echo '</div>'; //end leftside
 
-   echo "</form>\n";
+   echo '<div style="display: inline-block; float: right;" id="rightside">';
 
    echo '<script>
          $( function(){
             $("#imagezoomdiv").accordion( { heightStyle: "content" } ) ;
+            $("#extrafieldsdiv").accordion( { heightStyle: "content" } ) ;
+            $("#geofieldsdiv").accordion( { heightStyle: "content" } ) ;
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
@@ -1367,8 +1386,6 @@ habitat
    #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
    #$mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
    #$mediauri = imageForBarcode($targetbarcode);
-
-
 
    echo '<div class=flexbox>';
     $medialink = $target->medialink;
@@ -1395,11 +1412,65 @@ habitat
 
         </script>
     ";
-    echo "$medialink";
+   echo "$medialink";
+   echo '</div>';
    echo '</div>';
 
 
+   echo '<div id="extrafieldsdiv" style="margin-top: 5px;">';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Additional fields</h3>';
+   echo '<div>';
+   echo '<table>';
+   @staticvalueid("Record Created:",$created,"recordcreated");
+   selectPrepMethod("prepmethod","Prep Method",$prepmethod,'true','true');
+   selectPrepType("preptype","Format",$defaultformat,'true','true');
+   echo '</table>';
    echo '</div>';
+   echo '</div>';
+
+   if ($config=="minimal") {
+     // nada
+   } else {
+     // TODO FIXME add these fields to the
+     // 1) initial page load, 2) barcodelookup method (a. data result, b. setLoadedValue()), 3) ingest
+     $verbatimlat='';
+     $verbatimlong='';
+     $decimallat='';
+     $decimallong='';
+     $coordinateuncertainty='';
+     $georeferencesource='';
+
+
+     $bak_basewidth = $GLOBALS['BASEWIDTH'];
+     $GLOBALS['BASEWIDTH'] = 11;
+
+     echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
+     echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
+     echo '<div>';
+     echo '<table>';
+     field ("verbatimlat","Verb. Lat.",$verbatimlat);
+     field ("verbatimlong","Verb. Long.",$verbatimlong);
+     field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+     field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+     field ("georeferencesource",'Method',$georeferencesource,'false');
+     //field ("datum","Datum",$datum); // almost never encountered on a label
+     field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
+     //@selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false'); // This might only make sense in the data model for post-hoc georeferencing
+     //@field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); // doesn't make sense for label transcription, should be used for post-hoc georeferencing
+     //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription
+     echo '</table>';
+     echo '</div>';
+     echo '</div>';
+
+     $GLOBALS['BASEWIDTH'] = $bak_basewidth;
+   }
+
+   echo "</form>\n";
+
+   echo '</div>'; //end rightside
+
+   echo '</div>';
+
 
    /*
    echo '<div class="flexbox"><div id="testimage"><img src="'.$mediauri.'" width="360"></div><div class="flexbox"><div id="imgtarget" style="width: 680px;"></div></div></div>';
@@ -1448,12 +1519,12 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
       $disabled = '';
    }
    if ($required=='false') {
-      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".BASEWIDTH."em; ' $disabled >";
+      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    } else {
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".BASEWIDTH."em; ' $disabled >";
+      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    }
    echo "</td></tr>\n";
 }
@@ -1477,7 +1548,8 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
    } else {
       $disabled = '';
    }
-   $width = BASEWIDTH - 2;
+   //$width = BASEWIDTH - 2;
+   $width = $GLOBALS['BASEWIDTH'];
    if ($required=='false') {
       echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
@@ -1486,7 +1558,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       }
       echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    }
-   echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
+   //echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
    echo "<script>
          function doEnable$name(){
             $('#$name').prop('disabled', null);
@@ -1513,7 +1585,7 @@ function selectPrepMethod($field,$label,$default,$required='true',$carryforward=
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: ".BASEWIDTH."em; ' $carryforward >
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' $carryforward >
      </div>
   </td></tr>
    ";
@@ -1538,7 +1610,7 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: ".BASEWIDTH."em; ' $carryforward >
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' $carryforward >
      </div>
   </td></tr>
    ";
@@ -1546,13 +1618,13 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
 }
 
 
-function utm() {
+function utm($utmzonedefault='', $utmeastingdefault='', $utmnorthingdefault='') {
 	echo "<tr><td>\n";
 	echo "<label for='utmzone'>UTM Zone,Easting,Northing</label>";
 	echo "</td><td>\n";
-	echo "<input name=utmzone value='' dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+[A-Z]' style='width: 4em;' >";
-	echo "<input name=utmeasting value='' dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
-	echo "<input name=utmnorthing value='' dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
+	echo "<input name=utmzone value=$utmzonedefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+[A-Z]' style='width: 4em;' >";
+	echo "<input name=utmeasting value=$utmeastingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
+	echo "<input name=utmnorthing value=$utmnorthingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
    echo "</td></tr>\n";
 }
 
@@ -1582,7 +1654,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
    if ($field=='geographyfilter') { $style = " background-color: lightgrey; "; } else { $style = ""; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: 25em; $style ' $carryforward  >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' $carryforward  >
     <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1617,8 +1689,9 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
 function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultcountry='', $defaultprimary='',$required='true') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
     <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -1657,7 +1730,7 @@ function fieldselectpicklist($name,$label,$default,$required,$storeId,$picklisti
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
 	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
 	store='$storeId' required='$required'
-	searchAttr='name' value='$default' ></td></tr>";
+	searchAttr='name' value='$default' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; '></td></tr>";
    echo $returnvalue;
 }
 
@@ -1706,7 +1779,7 @@ function selectAcronym($field,$default) {
    if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; }
    if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; }
    if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; }
-   echo "<select name=\"$field\" >
+   echo "<select id=\"$field\" name=\"$field\" >
 	<option value=\"GH\" $ghs>GH</option>
 	<option value=\"A\" $as>A</option>
 	<option value=\"NEBC\" $nebcs>NEBC</option>
@@ -1720,10 +1793,11 @@ function selectAcronym($field,$default) {
 function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforward='false') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' $carryforward >
-	<input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
+	<input type=text name=$field id=$field $req  value='$value' style=' width:". $GLOBALS['BASEWIDTH'] ."em;' $carryforward >
+	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1754,12 +1828,13 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
 }
 
 function selectBasionymID($field,$label,$required='false') {
+  if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
-	$width = BASEWIDTH - 3;
+	$width = $GLOBALS['BASEWIDTH'] - 3;
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
+	store='taxonStore$field' $req searchDelay='900' hasDownArrow='false'
 	style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
@@ -1771,10 +1846,11 @@ function selectBasionymID($field,$label,$required='false') {
 function selectCollectorsID($field,$label,$value,$valueid,$required='false',$carryforward='false') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field required='$required'  value='$value' style=' width: 25em; ' $carryforward >
-    <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1807,6 +1883,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
 
 
 function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($exsiccati=='true') {
        $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonexsiccati' > </div>";
@@ -1816,7 +1893,7 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
    }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
@@ -1824,34 +1901,74 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
 }
 
 function selectStorageID($field,$label,$required='false') {
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonstorage' > </div>";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
    echo $returnvalue;
 }
 
-function selectContainerID($field,$label,$required='false') {
-	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
-	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
-	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
-	store='agentStore$field' required='$required' searchDelay='900' hasDownArrow='false' style='border-color: blue;'
-	searchAttr='name' value='' >
-	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
-    onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
-	echo $returnvalue;
+// function selectContainerID($field,$label,$required='false') {
+//   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
+// 	$returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
+// 	 url='ajax_handler.php?druid_action=returndistinctjsoncontainer' > </div>";
+// 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
+// 	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+// 	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
+// 	searchAttr='name' value='' >
+// 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
+//     onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button></td></tr>";
+// 	echo $returnvalue;
+// }
+
+function selectContainerID($field,$label,$value,$valueid,$required='false',$carryforward='false') {
+   $returnvalue = "<tr><td>";
+   $fieldid = $field."id";
+   if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
+   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   $returnvalue .= "<label for=\"$field\">$label</label></td><td>
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
+    </td></tr>";
+   $returnvalue .= '
+      <script>
+         $(function() {
+            $( "#'.$field.'" ).autocomplete({
+               minLength: 5,
+               delay: 400,
+               source: function( request, response ) {
+                  $.ajax( {
+                    url: "ajax_handler.php",
+                    dataType: "json",
+                    data: {
+                       druid_action: "returnjsoncontainer",
+                       term: request.term
+                    },
+                    success: function( data ) {
+                       response( data );
+                    }
+                  } );
+                },
+                select: function( event, ui ) {
+                    $("#'.$fieldid.'").val(ui.item.id);
+                }
+            } );
+         } );
+      </script>
+   ';
+   echo $returnvalue;
 }
 
 function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='false') {
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field  value='$value' style=' width: 25em; ' >
+    <input type=text name=$field id=$field  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
     <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -1883,6 +2000,7 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
 }
 
 function selectProject($field,$label,$default,$required='false') {
+    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
     $returnvalue = "
   <script>
   $( function() {
@@ -1899,7 +2017,7 @@ function selectProject($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' value='$default'  style='width: ".BASEWIDTH."em; ' class='carryforward' >
+        <input id='$field' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
      </div>
   </td></tr>
     ";
