@@ -252,22 +252,34 @@ function doSetup() {
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
    echo " <strong>Work on another batch:</strong>";
    echo "<select id='targetBatch' name='targetBatch'>";
-   $sql = "select path, completed_date from TR_BATCH order by completed_date, path asc";
+   $sql = "select trb.path, IF(trb.completed_date is not null, 1, 0) as completed, group_concat(trub.username separator ',') as users from TR_BATCH trb left join TR_USER_BATCH trub on trb.tr_batch_id = trub.tr_batch_id and trub.position > 1 group by trb.tr_batch_id order by completed, path asc";
+   $selectedfound = false;
    if ($statement = $connection->prepare($sql)) {
        $statement->execute();
-       $statement->bind_result($path,$completed_date);
+       $statement->bind_result($path,$completed,$users);
        $statement->store_result();
        $selected = "";
        while ($statement->fetch()) {
-          if($completed_date=="") {
+          if($completed==0) {
              $complete = "";
-             if ($selected=="") { $selected = "selected"; } else { $selected = ""; }
           } else {
-             $complete="Done: ($completed_date) ";
-             $selected = "";
+             $complete="Done: ";
+          }
+          if (strlen($users)>0) {
+            $usersworking = $users;
+          } else {
+            $usersworking = " ($users)";
           }
           $upath = urlencode($path);
-          echo "<option value='$path' $selected >$complete$path</option>";
+
+          if (!$selectedfound && strpos($users, $username) !== false) {
+            $selected = "selected";
+            $selectedfound=true; 
+          } else {
+            $selected = "";
+          }
+
+          echo "<option value='$path' $selected >$complete$path$usersworking</option>";
        }
        $statement->free_result();
        $statement->close();
