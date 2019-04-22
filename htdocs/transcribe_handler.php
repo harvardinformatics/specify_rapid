@@ -384,26 +384,14 @@ if ($connection && $authenticated) {
           @$id = $_GET['batch_id'];
           $currentBatch = new TR_Batch();
           $currentBatch->setID($id);
-
           $currentBatch->setCompleted();
-
-          // TODO: retun to batch selection screen
-
-          $path = $currentBatch->getPath();
-          $pathfile = $currentBatch->incrementFile();
-          $position = $pathfile->position;
-          $filecount = $currentBatch->getFileCount();
-          $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-          $path= $pathfile->path;
-          $filename = $pathfile->filename;
-          $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
-          if (strlen($pathfile->filename)>0) { $ok=true; }
+          $ok=true;
 
           header("Content-type: application/json");
           if ($ok) {
-             $response = $values;
+             $response =  "{ \"message\":\"Batch [$id] succesfully marked as done.\"}";
           } else {
-             $response = '{}';
+             $response =  "{ \"message\":\"Failed to mark batch [$id] succesfully marked as done.\"}";
           }
           echo $response;
           break;
@@ -976,10 +964,10 @@ function ingest() {
 
                               // update Collectionobject, includes container and description fields
                               if (!$fail) {
-                                $sql = "update collectionobject set description=?, text4=?, containerid=?, version=version+1, timestampmodified=now(), modifiedbyagentid=? where collectionobjectid=?";
+                                $sql = "update collectionobject set remarks=?, description=?, text4=?, containerid=?, version=version+1, timestampmodified=now(), modifiedbyagentid=? where collectionobjectid=?";
                                 $statement = $connection->prepare($sql);
                                 if ($statement) {
-                                    $statement->bind_param("ssiii",$specimendescription,$frequency,$containerid,$currentuserid,$collectionobjectid);
+                                    $statement->bind_param("sssiii",$specimenremarks,$specimendescription,$frequency,$containerid,$currentuserid,$collectionobjectid);
                                     $statement->execute();
                                     $rows = $connection->affected_rows;
                                     if ($rows==1) { $feedback = $feedback . " Updated container. "; }
@@ -1431,6 +1419,7 @@ function lookupDataForBarcode($barcode) {
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
        $result['specimendescription'] = $rcolobj->getDescription();
+       $result['specimenremarks'] = $rcolobj->getRemarks();
        $result['frequency'] = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID());

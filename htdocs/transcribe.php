@@ -764,6 +764,7 @@ habitat
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
        $specimendescription = $rcolobj->getDescription();
+       $specimenremarks = $rcolobj->getRemarks();
        $frequency = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID()); // already loaded
@@ -1003,6 +1004,7 @@ habitat
 
        @field ("provenance","Provenance",$provenance,'false');
        @field ("specimendescription","Description",$specimendescription,'false');
+       @field ("specimenremarks","Remarks",$specimenremarks,'false');
        @selectProject("defaultproject","Project",$defaultproject);
 
    }
@@ -1108,11 +1110,11 @@ habitat
                    url: 'transcribe_handler.php',
                    dataType: 'json',
                    data: {
-                       action: 'getnextimage',
+                       action: 'donebatch',
                        batch_id: ".$currentBatch->getBatchID()."
                    },
                    success: function(data) {
-                     console.log(data.src);
+                     console.log(data);
                      doclear();
                    },
                    error: function() {
@@ -1202,6 +1204,7 @@ habitat
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
                   setLoadedValue('provenance',data.provenance);
                   setLoadedValue('specimendescription',data.specimendescription);
+                  setLoadedValue('specimenremarks',data.specimenremarks);
                   setLoadedValue('collectingtrip',data.collectingtrip);
                   setLoadedValue('collectingtripid',data.collectingtripid);
                   setLoadedValue('verbatimlat',data.verbatimlat);
