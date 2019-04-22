@@ -294,7 +294,7 @@ function doSetup() {
                   url: 'transcribe_handler.php',
                   data: {
                        action: 'updatedosetup',
-                       targetBatch: $('#targetBatch').find(\"option:selected\").text()
+                       targetBatch: $('#targetBatch').find(\"option:selected\").value()
                   },
                   success: function(data) {
                       $('#setupBatchControls').html(data);
