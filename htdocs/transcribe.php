@@ -1304,10 +1304,10 @@ habitat
                }
 
                if(position < $filecount) {
-                   $('#nextbuttonButton').attr('disabled', false).removeClass('ui-state-disabled');
+                   $('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
                    $('#doneButton').attr('disabled', true).addClass('ui-state-disabled');
                } else {
-                   $('#nextbuttonButton').attr('disabled', true).addClass('ui-state-disabled');
+                   $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
                    $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                }
 
