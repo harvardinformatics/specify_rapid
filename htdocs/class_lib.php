@@ -2893,6 +2893,9 @@ function ingestCollectionObject() {
             }
             $statement->free_result();
             $statement->close();
+         } else {
+            $fail = true;
+            $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
 
          // yesno1 = isLabel (user)
