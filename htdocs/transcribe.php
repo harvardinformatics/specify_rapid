@@ -271,7 +271,7 @@ function doSetup() {
           }
           $upath = urlencode($path);
 
-          if ($path==$batchpath) {
+          if ($path==$batchPath) {
             $selected = "selected";
           } else {
             $selected = "";
