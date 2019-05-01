@@ -2867,35 +2867,37 @@ function ingestCollectionObject() {
          }
 
          $determinerid = null;
-         if (preg_match("/^[0-9]+$/", $identifiedby)) {
-            $sql = "select distinct agentid from agent where agentid = ? ";
-            $param = "i";
-         } else {
-            $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
-            $param = "s";
-         }
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param($param,$identifiedby);
-            $statement->execute();
-            $statement->bind_result($determinerid);
-            $statement->store_result();
-            if ($statement->num_rows==1) {
-               if ($statement->fetch()) {
-                  // retrieves determiner agentid
-               } else {
-                  $fail = true;
-                  $feedback.= "Query Error " . $connection->error;
-               }
-            } else {
-               $fail = true;
-               $feedback.= "No Match for agent: " . $identifiedby;
-            }
-            $statement->free_result();
-            $statement->close();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         if (strlen($identifiedby)>0) {
+           if (preg_match("/^[0-9]+$/", $identifiedby)) {
+              $sql = "select distinct agentid from agent where agentid = ? ";
+              $param = "i";
+           } else {
+              $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
+              $param = "s";
+           }
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param($param,$identifiedby);
+              $statement->execute();
+              $statement->bind_result($determinerid);
+              $statement->store_result();
+              if ($statement->num_rows==1) {
+                 if ($statement->fetch()) {
+                    // retrieves determiner agentid
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error " . $connection->error;
+                 }
+              } else {
+                 $fail = true;
+                 $feedback.= "No Match for agent: " . $identifiedby;
+              }
+              $statement->free_result();
+              $statement->close();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
          }
 
          // yesno1 = isLabel (user)
