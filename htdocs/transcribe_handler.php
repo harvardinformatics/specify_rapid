@@ -1103,10 +1103,10 @@ function ingest() {
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
 
-                                  $sql = "update locality set Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                                  $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                 		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("ssiiisssssii", $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
@@ -1132,16 +1132,16 @@ EOD;
                                          $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                       }
                                       $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
-                		              $statement = $connection->prepare($sql);
+                		                  $statement = $connection->prepare($sql);
                                       if ($statement) {
                                           $statement->bind_param("ii", $newlocalityid, $collectingeventid);
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectingevent. "; }
-                                          $sql = "update locality set localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
-                        		          $statement = $connection->prepare($sql);
+                                          $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                        		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement->bind_param("sssii", $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
+                                              $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
