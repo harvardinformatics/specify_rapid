@@ -421,7 +421,7 @@ function ingest() {
    $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
-   $highergeography,
+   $highergeography,$highergeographyid,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong, // $datum,$georeferencedby,$georeferencedate,$utmzone,$utmeasting,$utmnorthing,
    $coordinateuncertainty,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
@@ -678,46 +678,66 @@ function ingest() {
 
          $exists = FALSE;
 
-         // check for duplicate barcode
-         $sql = "select count(*) ct from fragment where identifier = ? union select count(*) ct from preparation where identifier = ? ";
+         // check for existing barcode in prep table
+         $sql = "select count(*) as c from preparation where identifier = ?";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param("ss", $barcode,$barcode);
+            $statement->bind_param("s", $barcode);
             $statement->execute();
             $statement->bind_result($barcodematchcount);
             $statement->store_result();
-            if ($statement->num_rows>0) {
+            if ($statement->num_rows==1) {
                if ($statement->fetch()) {
-                  if ($statement->num_rows==1) {
-                      if ($barcodematchcount!='0') {
-         		         $exists = TRUE;
-                         $feedback.= "Barcode [$barcode] in database.";
-                      }
-                  } else {
-                     $fragmatchcount = $barcodematchcount;
-                     if ($statement->fetch()) {
-                         if ($fragmatchcount!='0' || $barcodematchount!='0') {
-         		            $exists = TRUE;
-                            $feedback.= "Barcode [$barcode] in database.";
-                         }
-                     } else {
-                        $fail = true;
-                        $feedback.= "Query Error " . $connection->error . " " .  $sql;
-                     }
-                  }
+                  if ($barcodematchcount!='0') {
+      		           $exists = TRUE;
+                     $fail = true;
+                     $feedback.= "Barcode [$barcode] in database is an unbarcoded item: Update record using Specify.";
+                   }
                } else {
                   $fail = true;
                   $feedback.= "Query Error " . $connection->error . " " . $sql;
                }
             } else {
                $fail = true;
-               $feedback.= "Query error. Returned other than two rows [" . $statement->num_rows . "] on check for barcode: " . $barcode;
+               $feedback.= "Query error. Returned other than one row [" . $statement->num_rows . "] on check for barcode: " . $barcode;
             }
             $statement->free_result();
          } else {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
+
+
+         // check for existing barcode in fragment table
+         if (!$fail) {
+           $sql = "select count(*) as c from fragment where identifier = ?";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param("s", $barcode);
+              $statement->execute();
+              $statement->bind_result($barcodematchcount);
+              $statement->store_result();
+              if ($statement->num_rows==1) {
+                 if ($statement->fetch()) {
+                    if ($barcodematchcount!='0') {
+        		           $exists = TRUE;
+                       $feedback.= "Barcode [$barcode] in database.";
+                     }
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error " . $connection->error . " " . $sql;
+                 }
+              } else {
+                 $fail = true;
+                 $feedback.= "Query error. Returned other than one row [" . $statement->num_rows . "] on check for barcode: " . $barcode;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
+         }
+
 
          if (!$fail) {
             if ($exists) {
@@ -1083,10 +1103,10 @@ function ingest() {
                                } elseif ($countco==1) {
                                   $statement1 = $connection->stmt_init();
 
-                                  $sql = "update locality set Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                                  $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                 		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("ssiiisssssii", $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
@@ -1112,16 +1132,16 @@ EOD;
                                          $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                       }
                                       $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
-                		              $statement = $connection->prepare($sql);
+                		                  $statement = $connection->prepare($sql);
                                       if ($statement) {
                                           $statement->bind_param("ii", $newlocalityid, $collectingeventid);
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectingevent. "; }
-                                          $sql = "update locality set localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
-                        		          $statement = $connection->prepare($sql);
+                                          $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                        		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement->bind_param("sssii", $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
+                                              $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }

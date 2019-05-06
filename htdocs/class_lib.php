@@ -2513,7 +2513,7 @@ function ingestCollectionObject() {
                    select count(*) as c from preparation where identifier = ? ) as t";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param("s", $barcode);
+            $statement->bind_param("ss", $barcode,$barcode);
             $statement->execute();
             $statement->bind_result($barcodematchcount);
             $statement->store_result();
