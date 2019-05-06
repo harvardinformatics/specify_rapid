@@ -1603,7 +1603,7 @@ class huh_geography_custom extends huh_geography {
       $returnvalue = '[';
       $hasfilter = FALSE;
       if (strlen(trim($within))>0) {
-          $sql = "select nodenumber, highestchildnodenumber from geography where name = ? order by rankid asc";
+          $sql = "select nodenumber, highestchildnodenumber from geography where name like ? order by rankid asc";
           if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param('s',$within);
             $stmt->execute();
