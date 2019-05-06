@@ -710,7 +710,7 @@ function ingest() {
 
          // check for existing barcode in fragment table
          if (!$fail) {
-           $sql = "select count(*) as c from preparation where identifier = ?";
+           $sql = "select count(*) as c from fragment where identifier = ?";
            $statement = $connection->prepare($sql);
            if ($statement) {
               $statement->bind_param("s", $barcode);
