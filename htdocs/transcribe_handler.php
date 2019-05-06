@@ -359,8 +359,6 @@ if ($connection && $authenticated) {
          if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
          if ( @($storage!=$_POST['storage']) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
 
-         // transcribe doesn't capture the determiner, provide a value.
-         if ($determinertext=='') { $determinertext = '[data not captured]'; }
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
          if ($barcode=='' && strlen($barcodeval)>0 ) { $barcode = $barcodeval; }
 
@@ -1159,36 +1157,6 @@ EOD;
                                    }
                                }
                            } // end localityid
-
-
-
-                          // Deal with determinations (current and filed under)
-                          if (strlen(trim($identifiedbyid))==0) {
-                             $sql = "select distinct agentid from agentvariant where name = '[data not captured]' and vartype = 4 ";
-                             $statement = $connection->prepare($sql);
-                             if ($statement) {
-                                $statement->execute();
-                                $statement->bind_result($agentid);
-                                $statement->store_result();
-                                if ($statement->num_rows==1) {
-                                   if ($statement->fetch()) {
-                                      // retrieves collector.agentid
-                                      $identifiedbyid = $agentid;
-                                   } else {
-                                      $fail = true;
-                                      $feedback.= "Query Error " . $connection->error;
-                                   }
-                                } else {
-                                   $fail = true;
-                                   $feedback.= "No Match for collector agent: [data not captured]";
-                                }
-                                $statement->free_result();
-                                $statement->close();
-                             } else {
-                                $fail = true;
-                                $feedback.= "Query error: " . $connection->error . " " . $sql;
-                             }
-                          }
 
                           // make sure that we have taxonid values.
                           if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
