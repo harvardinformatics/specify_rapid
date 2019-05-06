@@ -2507,7 +2507,10 @@ function ingestCollectionObject() {
          // Fragment (item)
 
          // check for duplicate barcode
-         $sql = "select count(*) from fragment where identifier = ?";
+         $sql = "select sum(c) from ( 
+                   select count(*) as c from fragment where identifier = ?
+                   union
+                   select count(*) as c from preparation where identifier = ? ) as t"
          $statement = $connection->prepare($sql);
          if ($statement) {
             $statement->bind_param("s", $barcode);
