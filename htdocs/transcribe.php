@@ -1203,8 +1203,8 @@ habitat
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('frequency',data.frequency);
                   setLoadedValue('highergeography',data.geography);
+                  setLoadedValue('highergeographyid',data.geographyid);
                   setLoadedValue('verbatimelevation',data.verbatimelevation);
-                  setLoadedValue('geographyid',data.geographyid);
                   setLoadedValue('collectors',data.collectors);
                   setLoadedValue('collectorsid',data.collectoragentid);
                   setLoadedValue('etal',data.etal);
