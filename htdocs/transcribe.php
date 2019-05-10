@@ -761,7 +761,15 @@ habitat
        // get filedundername, currentname, filedunderqualifier, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
        $filedundername = $filedunder["taxonname"];
+       $filedunderalternatename = $filedunder["alternatename"];
        $filedundernameid = $filedunder["taxonid"];
+       if (trim($filedundername)=='' && strlen(trim($filedundernameid))>0) {
+         if (strlen(trim($filedundernameid))>0) {
+           $filedundername="[Alt name: $filedunderalternatename]";
+         } else {
+           $filedundername="[empty name]";
+         }
+       }
        $filedunderqualifier = $filedunder["qualifier"];
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
        $currentname = $current["taxonname"];

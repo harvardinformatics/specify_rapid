@@ -438,6 +438,7 @@ function ingest() {
    }
    // handle nulls
    if ($collectors=='') { $collectors = null; }
+   if ($collectorsid=='') { $collectorsid = null; }
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
    if ($stationfieldnumber=='') { $stationfieldnumber = null; }
@@ -473,7 +474,12 @@ function ingest() {
    }
    if ($herbariumacronym=='') { $herbariumacronym = null; }
    if ($currentdetermination=='') { $currentdetermination = null; }
+   if ($currentdeterminationid=='') { $currentdeterminationid = null; }
    if ($identificationqualifier=='') { $identificationqualifier = null; }
+   if ($highergeography=='') { $highergeography = null; }
+   if ($highergeographyid=='') { $highergeographyid = null; }
+   if ($filedundername=='') { $filedundername = null; }
+   if ($filedundernameid=='') { $filedundernameid = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
    if ($verbatimlong=='') { $verbatimlong = null; }
    if ($decimallat=='') { $decimallat = null; }
@@ -637,16 +643,16 @@ function ingest() {
    }
 
   // Test for required elements:
-   if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectors=='' ) {
+   if ($highergeographyid=='' || $herbariumacronym=='' || $filedundernameid=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectorsid=='' ) {
       $fail = true;
       $feedback .= "Missing a required value: ";
-      if ($highergeography=='') {
+      if ($highergeographyid=='') {
          $feedback.= "Geography. ";
       }
       if ($herbariumacronym=='') {
          $feedback.= "Herbarium. ";
       }
-      if ($filedundername=='') {
+      if ($filedundernameid=='') {
          $feedback.= "Filed under name. ";
       }
       if ($prepmethod=='') {
@@ -658,7 +664,7 @@ function ingest() {
       if ($specificlocality=='') {
          $feedback.= "Locality.";
       }
-      if ($collectors=='') {
+      if ($collectorsid=='') {
         $feedback.= "Collector.";
       }
    }
@@ -1394,8 +1400,19 @@ function lookupDataForBarcode($barcode) {
 
        // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
-       $result['filedundername'] = $filedunder["taxonname"];
-       $result['filedundernameid'] = $filedunder["taxonid"];
+       $filedundername = $filedunder["taxonname"];
+       $filedunderalternatename = $filedunder["alternatename"];
+       $filedundernameid = $filedunder["taxonid"];
+       if (trim($filedundername)=='' && strlen(trim($filedundernameid))>0) {
+         if (strlen(trim($filedundernameid))>0) {
+           $filedundername="Alt name: $filedunderalternatename";
+         } else {
+           $filedundername="[empty name]";
+         }
+       }
+       $result['filedundername'] = $filedundername;
+       $result['filedundernameid'] = $filedundernameid;
+
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
        $result['currentname'] = $current["taxonname"];
        $result['currentnameid'] = $current["taxonid"];
