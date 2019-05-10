@@ -1175,10 +1175,10 @@ EOD;
                           }
 
                           // make sure that we have taxonid values.
-                          if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
+                          if (($filedundernameid==null || strlen(trim($filedundernameid))==0) && strlen(trim($filedundername))>0)) {
                               $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
                           }
-                          if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
+                          if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && trlen(trim($currentdetermination))>0) {
                               $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
                           }
 
@@ -1427,9 +1427,23 @@ function lookupDataForBarcode($barcode) {
        $result['filedundernameid'] = $filedundernameid;
 
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
+       $determinationid = $current["determinationid"];
+       $currentname = $current["taxonname"];
+       $currentalternatename = $current["alternatename"];
+       $currentnameid = $current["taxonid"];
+       if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
+         $currentnameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $currentname="[Alt name: $currentalternatename]";
+         } else {
+           $currentname="[Det has no taxon]";
+         }
+       }
        $result['currentname'] = $current["taxonname"];
        $result['currentnameid'] = $current["taxonid"];
        $result['currentqualifier'] = $current["qualifier"];
+
        $result['identifiedbyid'] = $current["determinerid"];
        $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
        $result['dateidentified'] = $current["determineddate"];

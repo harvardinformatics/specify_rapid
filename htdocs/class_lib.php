@@ -581,12 +581,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks,$alternatename);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -602,6 +602,7 @@ class huh_determination_custom extends huh_determination {
                $result["qualifier"]=$qualifier;
                $result["determineddate"]=$determineddate;
                $result["remarks"]=$remarks;
+               $result["alternatename"]=$alternatename;
                $result["status"]="Success";
                if ($statement->num_rows>1) {
                   $result["status"]="Error";
@@ -748,6 +749,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
      * @throw exception on a query error.
      */
     public static function lookupTaxonIdForName($fullname) {
+       global $connection;
        $taxonid = null;
        $sql = "select taxonid from taxon where fullname = ? ";
        $statement = $connection->prepare($sql);
