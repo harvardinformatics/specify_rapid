@@ -236,8 +236,8 @@ if ($connection && $authenticated) {
          @$provenance= substr($_POST['provenance'],0,huh_fragment::PROVENANCE_SIZE);
          @$filedundername= substr($_POST['filedundername'],0,huh_taxon::FULLNAME_SIZE);
          @$filedundernameid= substr(preg_replace('/[^0-9\-]/','',$_POST['filedundernameid']),0,huh_taxon::TAXONID_SIZE);
-         @$currentname= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['currentname']),0,huh_taxon::FULLNAME_SIZE);
-         @$currentnameid= substr(preg_replace('/[^0-9]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
+         @$currentname= substr($_POST['currentname'],0,huh_taxon::FULLNAME_SIZE);
+         @$currentnameid= substr(preg_replace('/[^0-9\-]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
          @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
          @$identifiedby= $_POST['identifiedby'];
          @$identifiedbyid= substr(preg_replace('/[^0-9]/','',$_POST['identifiedbyid']),0,huh_determination::DETERMINERID_SIZE);
