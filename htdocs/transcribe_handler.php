@@ -1164,6 +1164,16 @@ EOD;
                                }
                            } // end localityid
 
+                          // If id is -1, a det exists without a taxon - therefore we set values to null which should trigger an update of the existing records
+                          if ($filedundernameid == -1) {
+                            $filedundernameid = null;
+                            $filedundername = null;
+                          }
+                          if ($currentdeterminationid == -1) {
+                            $currentdeterminationid = null;
+                            $currentdetermination = null;
+                          }
+
                           // make sure that we have taxonid values.
                           if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
                               $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
