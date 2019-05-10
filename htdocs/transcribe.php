@@ -774,11 +774,23 @@ habitat
            $filedundername="[Det has no taxon]";
          }
        }
-
        $filedunderqualifier = $filedunder["qualifier"];
+
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
+       $determinationid = $current["determinationid"];
        $currentname = $current["taxonname"];
+       $currentalternatename = $current["alternatename"];
        $currentnameid = $current["taxonid"];
+       if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
+         $currentnameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $currentname="[Alt name: $currentalternatename]";
+         } else {
+           $currentname="[Det has no taxon]";
+         }
+       }
+
        $currentqualifier = $current["qualifier"];
        $identifiedbyid = $current["determinerid"];
        $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);

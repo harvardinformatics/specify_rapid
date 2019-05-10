@@ -1440,8 +1440,8 @@ function lookupDataForBarcode($barcode) {
            $currentname="[Det has no taxon]";
          }
        }
-       $result['currentname'] = $current["taxonname"];
-       $result['currentnameid'] = $current["taxonid"];
+       $result['currentname'] = $currentname;
+       $result['currentnameid'] = $currentnameid;
        $result['currentqualifier'] = $current["qualifier"];
 
        $result['identifiedbyid'] = $current["determinerid"];
