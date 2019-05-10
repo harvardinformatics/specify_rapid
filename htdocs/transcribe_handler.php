@@ -1178,7 +1178,7 @@ EOD;
                           if (($filedundernameid==null || strlen(trim($filedundernameid))==0) && strlen(trim($filedundername))>0) {
                               $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
                           }
-                          if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && trlen(trim($currentdetermination))>0) {
+                          if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && strlen(trim($currentdetermination))>0) {
                               $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
                           }
 
