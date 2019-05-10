@@ -1400,14 +1400,17 @@ function lookupDataForBarcode($barcode) {
 
        // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
+       $determinationid = $filedunder["determinationid"];
        $filedundername = $filedunder["taxonname"];
        $filedunderalternatename = $filedunder["alternatename"];
        $filedundernameid = $filedunder["taxonid"];
-       if (trim($filedundername)=='' && strlen(trim($filedundernameid))>0) {
-         if (strlen(trim($filedundernameid))>0) {
-           $filedundername="Alt name: $filedunderalternatename";
+       if (strlen(trim($determinationid)) > 0 && ($filedundernameid==null || trim($filedundernameid)=='')) {
+         $filedundernameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $filedundername="[Alt name: $filedunderalternatename]";
          } else {
-           $filedundername="[empty name]";
+           $filedundername="[Det has no taxon]";
          }
        }
        $result['filedundername'] = $filedundername;
