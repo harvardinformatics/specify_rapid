@@ -1794,7 +1794,7 @@ function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated,
    $collectors,$etal,$fieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
-   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$highergeography,
+   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
@@ -1808,6 +1808,13 @@ function ingestCollectionObject() {
    if ($truncation) {
      $fail = true;
      $feedback = "Data truncation: $truncated";
+   }
+
+   if (strlen(trim($filedundernameid)) > 0) {
+     $filedundername = $filedundernameid;
+   }
+   if (strlen(trim($currentdeterminationid)) > 0) {
+     $currentdetermination = $currentdeterminationid;
    }
 
    // Test for required elements:
