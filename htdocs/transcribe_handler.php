@@ -773,7 +773,7 @@ function ingest() {
                                    $statement1->store_result();
                                    $addProject = false;
                                    if ($statement1->fetch()){
-                                      if ($projectcount==0) { $addProject = true; } else { $feedback.="Project exists."; }
+                                      if ($projectcount==0) { $addProject = true; }
                                    } else {
                                       $fail = true;
                                       $feedback.= "Query Error looking up project. " . $connection->error  . " ";

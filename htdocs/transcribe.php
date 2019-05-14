@@ -986,7 +986,7 @@ habitat
         //    });
         // </script>
         // ";
-        @selectProject("defaultproject","Project",$defaultproject);
+        @selectProject("project","Project",$defaultproject);
    } else { //if ($config=="standard") {
 
        @selectAcronym("herbariumacronym",$herbarium);
@@ -1040,7 +1040,7 @@ habitat
        @field ("provenance","Provenance",$provenance,'false');
        @field ("specimendescription","Description",$specimendescription,'false');
        @field ("specimenremarks","Remarks",$specimenremarks,'false');
-       @selectProject("defaultproject","Project",$defaultproject);
+       @selectProject("project","Project",$defaultproject);
 
    }
 
@@ -1210,7 +1210,7 @@ habitat
               } else {
                   $('#barcode').prop('disabled', true);
                   $('#recordcreated').html(data.created);
-                  setLoadedValue('defaultproject',data.project);
+                  setLoadedValue('project',data.project);
                   setLoadedValue('container',data.container);
                   setLoadedValue('containerid',data.containerid);
                   setLoadedValue('prepmethod',data.prepmethod);
