@@ -483,8 +483,8 @@ function ingest() {
    if ($identificationqualifier=='') { $identificationqualifier = null; }
    if ($highergeography=='') { $highergeography = null; }
    if ($highergeographyid=='') { $highergeographyid = null; }
-   if ($geographyfilter=='') { $highergeography = null; }
-   if ($geographyfilterid=='') { $highergeographyid = null; }
+   if ($geographyfilter=='') { $geographyfilter = null; }
+   if ($geographyfilterid=='') { $geographyfilterid = null; }
    if ($filedundername=='') { $filedundername = null; }
    if ($filedundernameid=='') { $filedundernameid = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
