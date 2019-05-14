@@ -2211,7 +2211,7 @@ function ingestCollectionObject() {
          }
       }
 
-      if (!$fail && $collectors!=null) {
+      if (!$fail) {
          // Collector, Collecting Event
          $collectoragentid = null;
          if (preg_match("/^[0-9]+$/", $collectors)) {
@@ -2304,22 +2304,24 @@ function ingestCollectionObject() {
          }
 
          // Collector
-         $sql = "insert into collector (agentid, etal, collectingeventid, createdbyagentid, timestampcreated, version, collectionmemberid, isprimary, ordernumber) " .
-             " values (?,?,?,?,now(),0,4,1,1)";
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param('isii',$collectoragentid, $etal, $collectingeventid, $currentuserid);
-            if ($statement->execute()) {
-               $collectorid = $statement->insert_id;
-               $adds .= "collector=[$collectorid]";
-            } else {
-               $fail = true;
-               $feedback.= "Unable to save collector: " . $connection->error;
-            }
-            $statement->free_result();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         if ($collectoragentid!=null) {
+           $sql = "insert into collector (agentid, etal, collectingeventid, createdbyagentid, timestampcreated, version, collectionmemberid, isprimary, ordernumber) " .
+               " values (?,?,?,?,now(),0,4,1,1)";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param('isii',$collectoragentid, $etal, $collectingeventid, $currentuserid);
+              if ($statement->execute()) {
+                 $collectorid = $statement->insert_id;
+                 $adds .= "collector=[$collectorid]";
+              } else {
+                 $fail = true;
+                 $feedback.= "Unable to save collector: " . $connection->error;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
          }
       }
 
