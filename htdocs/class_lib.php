@@ -1798,7 +1798,7 @@ function ingestCollectionObject() {
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -2147,7 +2147,7 @@ function ingestCollectionObject() {
                $sql = "select distinct agentid from agent where agentid = ? ";
                $param = "i";
             } else {
-               $sql = "select distinct agentid from agentvariant where fullname = ? and vartype = 4 ";
+               $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
                $param = "s";
             }
             $statement = $connection->prepare($sql);
@@ -2879,8 +2879,12 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
 
+         if (strlen(trim($identifiedbyid)) > 0) {
+           $identifiedby = $identifiedbyid;
+         }
+
          $determinerid = null;
-         if (strlen($identifiedby)>0) {
+         if (strlen(trim($identifiedby))>0) {
            if (preg_match("/^[0-9]+$/", $identifiedby)) {
               $sql = "select distinct agentid from agent where agentid = ? ";
               $param = "i";
@@ -2913,33 +2917,36 @@ function ingestCollectionObject() {
            }
          }
 
-         // yesno1 = isLabel (user)
-         $islabel = 0;
-         // yesno2 = isFragment (of type) (no)
-         // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-         $isfiledunder = 0;
-         if ($namesidentical===TRUE) {
-            $isfiledunder = 1;
-         }
-         // iscurrent = isCurrent (yes)
-         $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                          " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                          " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
-            if ($statement->execute()) {
-               $determinationid = $statement->insert_id;
-               $adds .= "det=[$determinationid]";
-            } else {
-               $fail = true;
-               $feedback.= "Unable to save current determination: " . $connection->error;
-            }
-            $statement->free_result();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
-         }
+
+         if (!$fail) {
+           // yesno1 = isLabel (user)
+           $islabel = 0;
+           // yesno2 = isFragment (of type) (no)
+           // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
+           $isfiledunder = 0;
+           if ($namesidentical===TRUE) {
+              $isfiledunder = 1;
+           }
+           // iscurrent = isCurrent (yes)
+           $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
+                            " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
+                            " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+              if ($statement->execute()) {
+                 $determinationid = $statement->insert_id;
+                 $adds .= "det=[$determinationid]";
+              } else {
+                 $fail = true;
+                 $feedback.= "Unable to save current determination: " . $connection->error;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
+        }
 
       }
    }
