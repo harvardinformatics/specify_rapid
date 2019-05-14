@@ -643,9 +643,12 @@ function ingest() {
    }
 
   // Test for required elements:
-   if ($highergeographyid=='' || $herbariumacronym=='' || $filedundernameid=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectorsid=='' ) {
+   if ($highergeographyid=='' || $herbariumacronym=='' || $filedundernameid=='' || $prepmethod=='' || $format=='' || $barcode=='' ) {
       $fail = true;
       $feedback .= "Missing a required value: ";
+      if ($barcode=='') {
+         $feedback.= "Barcode. ";
+      }
       if ($highergeographyid=='') {
          $feedback.= "Geography. ";
       }
@@ -660,12 +663,6 @@ function ingest() {
       }
       if ($format=='') {
          $feedback.= "Format. ";
-      }
-      if ($specificlocality=='') {
-         $feedback.= "Locality.";
-      }
-      if ($collectorsid=='') {
-        $feedback.= "Collector.";
       }
    }
 

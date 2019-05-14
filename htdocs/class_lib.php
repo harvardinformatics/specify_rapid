@@ -1818,7 +1818,7 @@ function ingestCollectionObject() {
    }
 
    // Test for required elements:
-   if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectors=='' ) {
+   if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $barcode=='' ) {
       $fail = true;
       $feedback .= "Missing a required value: ";
       if ($highergeography=='') {
@@ -1836,14 +1836,8 @@ function ingestCollectionObject() {
       if ($format=='') {
          $feedback.= "Format. ";
       }
-      if ($specificlocality=='') {
-         $feedback.= "Locality.";
-      }
       if ($barcode=='') {
          $feedback.= "Barcode.";
-      }
-      if ($collectors=='') {
-      	$feedback.= "Collector.";
       }
    }
 
@@ -2217,7 +2211,7 @@ function ingestCollectionObject() {
          }
       }
 
-      if (!$fail) {
+      if (!$fail && $collectors!=null) {
          // Collector, Collecting Event
          $collectoragentid = null;
          if (preg_match("/^[0-9]+$/", $collectors)) {
