@@ -1182,6 +1182,7 @@ habitat
               if($('.carryforward[id][name='+field+']').length && (value==null || value=='')) {
                 $('#'+field).css({'color':'darksalmon'});
               } else {
+                $('#'+field).css({'color':'black'});
                 $('#'+field).val(value);
               }
 
