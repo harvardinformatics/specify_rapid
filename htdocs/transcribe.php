@@ -1172,15 +1172,15 @@ habitat
               }
 
               // carryforward field different from previous record, change color to notify user
-              if($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
-                $('#'+field).css({'background-color':'#FFFAA2'});
-              } else {
-                $('#'+field).css({'background-color':'#FFFFFF'});
-              }
+              // if($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value && (value!=null || value!='')) {
+              //  $('#'+field).css({'background-color':'#FFFAA2'});
+              // } else {
+              //  $('#'+field).css({'background-color':'#FFFFFF'});
+              //}
 
               // set field to value, unless carryover field and value is null/empty
               if($('.carryforward[id][name='+field+']').length && (value==null || value=='')) {
-                // do nothing
+                $('#'+field).css({'color':'darksalmon'});
               } else {
                 $('#'+field).val(value);
               }
