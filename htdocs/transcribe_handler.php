@@ -1011,7 +1011,7 @@ function ingest() {
                               }
 
                                // lookup agentid for collector
-                               if (strlen(trim($collectorsid))==0 && strlen(trim($collectors))>0) {
+                               if ($collectorsid==null && strlen(trim($collectors))>0) {
                                   $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1040,7 +1040,7 @@ function ingest() {
                                }
 
                                // add/update collector
-                               if (!$fail && $collectingeventid!=null) {
+                               if (!$fail && $collectingeventid!=null && $collectorsid!=null) {
                                   $sql = "select collectorid from collector where collectingeventid = ? ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1085,7 +1085,7 @@ function ingest() {
                                       $feedback.= "Query Error looking up collector. " . $connection->error . " ";
                                   }
                                }
-                           } // has collector
+                           }
 
 
                            // ensure that verbatim and decimal are either both set are neither set
