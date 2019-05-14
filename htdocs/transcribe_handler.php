@@ -245,6 +245,9 @@ if ($connection && $authenticated) {
          @$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_POST['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
          @$highergeography= $_POST['highergeography'];
          @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
+         @$geographyfilter= $_POST['geographyfilter'];
+         @$geographyfilterid= substr(preg_replace('/[^0-9]/','',$_POST['geographyfilterid']),0,huh_geography::GEOGRAPHYID_SIZE);
+         @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
          @$specificlocality = substr($_POST['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
          @$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_POST['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
          @$format = substr(preg_replace('/[^A-Za-z]/','',$_POST['preptype']),0,huh_preptype::NAME_SIZE);
@@ -316,6 +319,8 @@ if ($connection && $authenticated) {
          if ( @($dateidentified!=$_POST['dateidentified']) ) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
          if ( @($highergeography!=$_POST['highergeography']) ) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
          if ( @($highergeographyid!=$_POST['highergeographyid']) ) { $truncation = true; $truncated .= "highergeographyid : [$highergeographyid] "; }
+         if ( @($geographyfilter!=$_POST['geographyfilter']) ) { $truncation = true; $truncated .= "geographyfilter : [$geographyfilter] "; }
+         if ( @($geographyfilterid!=$_POST['geographyfilterid']) ) { $truncation = true; $truncated .= "geographyfilterid : [$geographyfilterid] "; }
          if ( @($specificlocality!=$_POST['specificlocality']) ) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
          if ( @($prepmethod!=$_POST['prepmethod']) ) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
          if ( @($format!=$_POST['preptype']) ) { $truncation = true; $truncated .= "preptype/format : [$format] "; }
@@ -419,7 +424,7 @@ function ingest() {
    $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
-   $highergeography,$highergeographyid,
+   $highergeography,$highergeographyid,$geographyfilter,$geographyfilterid,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong, // $datum,$georeferencedby,$georeferencedate,$utmzone,$utmeasting,$utmnorthing,
    $coordinateuncertainty,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
@@ -478,6 +483,8 @@ function ingest() {
    if ($identificationqualifier=='') { $identificationqualifier = null; }
    if ($highergeography=='') { $highergeography = null; }
    if ($highergeographyid=='') { $highergeographyid = null; }
+   if ($geographyfilter=='') { $highergeography = null; }
+   if ($geographyfilterid=='') { $highergeographyid = null; }
    if ($filedundername=='') { $filedundername = null; }
    if ($filedundernameid=='') { $filedundernameid = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
@@ -562,6 +569,11 @@ function ingest() {
    $latlongtype = 'point';
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
+   }
+
+   if ($highergeographyid==null) { // if higher geography is empty, use the node from the filter
+     $highergeographyid=$geographyfilterid;
+     $highergeography=$geographyfilter;
    }
 
    $df = "";
