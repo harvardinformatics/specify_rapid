@@ -1467,7 +1467,7 @@ function lookupDataForBarcode($barcode) {
        $result['container'] = $rcontainer->getName();
        $result['containerid'] = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
-       $result['project'] = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
+       //$result['project'] = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
        //$rcoleve->load($rcoleve->getCollectingEventID());
        $result['stationfieldnumber'] = $rcoleve->getStationFieldNumber();

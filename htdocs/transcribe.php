@@ -814,7 +814,7 @@ habitat
        $container = $rcontainer->getName();
        $containerid = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
-       $project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
+       //$project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
        //$rcoleve->load($rcoleve->getCollectingEventID()); // already loaded
        $stationfieldnumber = $rcoleve->getStationFieldNumber();
@@ -1202,7 +1202,7 @@ habitat
               } else {
                   $('#barcode').prop('disabled', true);
                   $('#recordcreated').html(data.created);
-                  setLoadedValue('project',data.project);
+                  //setLoadedValue('project',data.project);
                   setLoadedValue('container',data.container);
                   setLoadedValue('containerid',data.containerid);
                   setLoadedValue('prepmethod',data.prepmethod);
