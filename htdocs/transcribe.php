@@ -1166,16 +1166,16 @@ habitat
           function setLoadedValue(field,value) {
 
               if ($('select[name='+field+']').length) {
-                  $('#'+field).css({'color':'black'});
+                $('#'+field).css({'color':'black'});
               } else {
-                  $('#'+field).css({'background-color':'#FFFFFF'});
+                $('#'+field).css({'background-color':'#FFFFFF'});
               }
 
               // carryforward field different from previous record, change color to notify user
               if($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
-                 $('#'+field).css({'color':'darksalmon'});
+                $('#'+field).css({'background-color':'#FFFAA2'});
               } else {
-                 $('#'+field).css({'background-color':'#FFFAA2'});
+                $('#'+field).css({'background-color':'#FFFFFF'});
               }
 
               // set field to value, unless carryover field and value is null/empty
