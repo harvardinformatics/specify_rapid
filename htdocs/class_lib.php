@@ -2214,36 +2214,38 @@ function ingestCollectionObject() {
       if (!$fail) {
          // Collector, Collecting Event
          $collectoragentid = null;
-         if (preg_match("/^[0-9]+$/", $collectors)) {
-            $sql = "select distinct agentid from agent where agentid = ? ";
-            $param = "i";
-         } else {
-            $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
-            $param = "s";
-         }
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param($param,$collectors);
-            $statement->execute();
-            $statement->bind_result($agentid);
-            $statement->store_result();
-            if ($statement->num_rows==1) {
-               if ($statement->fetch()) {
-                  // retrieves collectoragentid
-                  $collectoragentid = $agentid;
-               } else {
-                  $fail = true;
-                  $feedback.= "Query Error " . $connection->error;
-               }
-            } else {
-               $fail = true;
-               $feedback.= "No Match for collector agent: " . $collectors;
-            }
-            $statement->free_result();
-            $statement->close();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         if ($collectors!=null) {
+           if (preg_match("/^[0-9]+$/", $collectors)) {
+              $sql = "select distinct agentid from agent where agentid = ? ";
+              $param = "i";
+           } else {
+              $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
+              $param = "s";
+           }
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param($param,$collectors);
+              $statement->execute();
+              $statement->bind_result($agentid);
+              $statement->store_result();
+              if ($statement->num_rows==1) {
+                 if ($statement->fetch()) {
+                    // retrieves collectoragentid
+                    $collectoragentid = $agentid;
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error " . $connection->error;
+                 }
+              } else {
+                 $fail = true;
+                 $feedback.= "No Match for collector agent: " . $collectors;
+              }
+              $statement->free_result();
+              $statement->close();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
          }
 
          if (!$fail && $collectingtrip != null) {
