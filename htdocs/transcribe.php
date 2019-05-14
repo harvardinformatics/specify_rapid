@@ -850,7 +850,7 @@ habitat
    } elseif ($num_matches==0) {
        // set defaults to create new record
        $prepmethod = "Pressed";
-       $format = "Sheet";
+       $defaultformat = "Sheet";
        $created = "New Record";
    } else {
        // error condition, found more than one fragment by the barcode.
@@ -1164,36 +1164,27 @@ habitat
            * @param value the new value to set (unless the field is a carryforward with an existing value).
            */
           function setLoadedValue(field,value) {
-              //if (!field=='datecollected') {
-               if ($('select[name='+field+']').length) {
-                   $('#'+field).css({'color':'black'});
-               } else {
-                   $('#'+field).css({'background-color':'#FFFFFF'});
-               }
-              //}
-              if($('#'+field).val()=='') {
-                 // if field is empty, populate from provided value.
-                 $('#'+field).val(value);
+
+              if ($('select[name='+field+']').length) {
+                  $('#'+field).css({'color':'black'});
               } else {
-                 // field contains a value
-                 //if (!field=='datecollected') {
-                    // set color to indicate changed data
-                  if ($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
-                     // if carryforward field and values are different, set background color
-                     if ($('select[name='+field+']').length) {
-                        $('#'+field).css({'color':'darksalmon'});
-                     } else {
-                       $('#'+field).css({'background-color':'#FFFAA2'});
-                     }
-                  }
-                 //}
-                 // update value from provided value.
-                 // if (!$('.carryforward[id][name='+field+']').length) {
-                 //     // if field contains a value only populate if not a carryforward field (carryforward trumps lookup).
-                 //     $('#'+field).val(value);
-                 // }
-                 $('#'+field).val(value);
+                  $('#'+field).css({'background-color':'#FFFFFF'});
               }
+
+              // carryforward field different from previous record, change color to notify user
+              if($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
+                 $('#'+field).css({'color':'darksalmon'});
+              } else {
+                 $('#'+field).css({'background-color':'#FFFAA2'});
+              }
+
+              // set field to value, unless carryover field and value is null/empty
+              if($('.carryforward[id][name='+field+']').length && (value==null || value=='')) {
+                // do nothing
+              } else {
+                $('#'+field).val(value);
+              }
+
           }
 
           function loadFormData(data) {
