@@ -533,7 +533,7 @@ function ingest() {
    if ($determinertext=='') { $determinertext = null; }
    if ($container=='') { $container = null; $containerid = null; }
    if ($containerid=='') { $containerid = null; }
-   if ($collectingtrip=='') { $collectingtrip = null; $collectingtripid = null; }
+   if ($collectingtrip=='') { $collectingtrip = null; }
    if ($collectingtripid=='') { $collectingtripid = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
