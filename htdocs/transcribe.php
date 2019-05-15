@@ -1872,11 +1872,13 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    $returnvalue .= '
       <script>
 
-        $( "#'.$field.'" ).focusout(function() {
-          if ($("#'.$field.'").val()=='') {
-            $("#'.$fieldid.'").val('');
+        $( "#'$field.'" ).focusout(
+          function() {
+            if ($("#'.$field.'").val()=="") {
+              $("#'.$fieldid.'").val("");
+            }
           }
-        });
+        );
 
        $(function() {
           $( "#'.$field.'" ).autocomplete({
