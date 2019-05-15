@@ -234,16 +234,19 @@ if ($connection && $authenticated) {
          @$barcode= substr(preg_replace('/[^0-9]/','',$_POST['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
          @$barcodeval= substr(preg_replace('/[^0-9]/','',$_POST['barcodeval']),0,huh_fragment::IDENTIFIER_SIZE);
          @$provenance= substr($_POST['provenance'],0,huh_fragment::PROVENANCE_SIZE);
-         @$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['filedundername']),0,huh_taxon::FULLNAME_SIZE);
-         @$filedundernameid= substr(preg_replace('/[^0-9]/','',$_POST['filedundernameid']),0,huh_taxon::TAXONID_SIZE);
-         @$currentname= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9.]/','',$_POST['currentname']),0,huh_taxon::FULLNAME_SIZE);
-         @$currentnameid= substr(preg_replace('/[^0-9]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
+         @$filedundername= substr($_POST['filedundername'],0,huh_taxon::FULLNAME_SIZE);
+         @$filedundernameid= substr(preg_replace('/[^0-9\-]/','',$_POST['filedundernameid']),0,huh_taxon::TAXONID_SIZE);
+         @$currentname= substr($_POST['currentname'],0,huh_taxon::FULLNAME_SIZE);
+         @$currentnameid= substr(preg_replace('/[^0-9\-]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
          @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
          @$identifiedby= $_POST['identifiedby'];
          @$identifiedbyid= substr(preg_replace('/[^0-9]/','',$_POST['identifiedbyid']),0,huh_determination::DETERMINERID_SIZE);
          @$determinertext= substr($_POST['determinertext'],0,huh_determination::TEXT1_SIZE);
          @$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_POST['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
          @$highergeography= $_POST['highergeography'];
+         @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
+         @$geographyfilter= $_POST['geographyfilter'];
+         @$geographyfilterid= substr(preg_replace('/[^0-9]/','',$_POST['geographyfilterid']),0,huh_geography::GEOGRAPHYID_SIZE);
          @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
          @$specificlocality = substr($_POST['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
          @$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_POST['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
@@ -316,6 +319,8 @@ if ($connection && $authenticated) {
          if ( @($dateidentified!=$_POST['dateidentified']) ) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
          if ( @($highergeography!=$_POST['highergeography']) ) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
          if ( @($highergeographyid!=$_POST['highergeographyid']) ) { $truncation = true; $truncated .= "highergeographyid : [$highergeographyid] "; }
+         if ( @($geographyfilter!=$_POST['geographyfilter']) ) { $truncation = true; $truncated .= "geographyfilter : [$geographyfilter] "; }
+         if ( @($geographyfilterid!=$_POST['geographyfilterid']) ) { $truncation = true; $truncated .= "geographyfilterid : [$geographyfilterid] "; }
          if ( @($specificlocality!=$_POST['specificlocality']) ) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
          if ( @($prepmethod!=$_POST['prepmethod']) ) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
          if ( @($format!=$_POST['preptype']) ) { $truncation = true; $truncated .= "preptype/format : [$format] "; }
@@ -419,7 +424,7 @@ function ingest() {
    $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
-   $highergeography,$highergeographyid,
+   $highergeography,$highergeographyid,$geographyfilter,$geographyfilterid,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong, // $datum,$georeferencedby,$georeferencedate,$utmzone,$utmeasting,$utmnorthing,
    $coordinateuncertainty,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
@@ -438,6 +443,7 @@ function ingest() {
    }
    // handle nulls
    if ($collectors=='') { $collectors = null; }
+   if ($collectorsid=='') { $collectorsid = null; }
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
    if ($stationfieldnumber=='') { $stationfieldnumber = null; }
@@ -473,7 +479,14 @@ function ingest() {
    }
    if ($herbariumacronym=='') { $herbariumacronym = null; }
    if ($currentdetermination=='') { $currentdetermination = null; }
+   if ($currentdeterminationid=='') { $currentdeterminationid = null; }
    if ($identificationqualifier=='') { $identificationqualifier = null; }
+   if ($highergeography=='') { $highergeography = null; }
+   if ($highergeographyid=='') { $highergeographyid = null; }
+   if ($geographyfilter=='') { $geographyfilter = null; }
+   if ($geographyfilterid=='') { $geographyfilterid = null; }
+   if ($filedundername=='') { $filedundername = null; }
+   if ($filedundernameid=='') { $filedundernameid = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
    if ($verbatimlong=='') { $verbatimlong = null; }
    if ($decimallat=='') { $decimallat = null; }
@@ -516,10 +529,11 @@ function ingest() {
    if ($minelevation=='') { $minelevation = null; }
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
+   if ($identifiedbyid=='') { $identifiedbyid = null; }
    if ($determinertext=='') { $determinertext = null; }
    if ($container=='') { $container = null; $containerid = null; }
    if ($containerid=='') { $containerid = null; }
-   if ($collectingtrip=='') { $collectingtrip = null; $collectingtripid = null; }
+   if ($collectingtrip=='') { $collectingtrip = null; }
    if ($collectingtripid=='') { $collectingtripid = null; }
    if ($storagelocation=='') { $storagelocation = null; }
    if ($project=='') { $project = null; }
@@ -556,6 +570,11 @@ function ingest() {
    $latlongtype = 'point';
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
+   }
+
+   if ($highergeographyid==null) { // if higher geography is empty, use the node from the filter
+     $highergeographyid=$geographyfilterid;
+     $highergeography=$geographyfilter;
    }
 
    $df = "";
@@ -637,16 +656,19 @@ function ingest() {
    }
 
   // Test for required elements:
-   if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectors=='' ) {
+   if ($highergeographyid=='' || $herbariumacronym=='' || $filedundernameid=='' || $prepmethod=='' || $format=='' || $barcode=='' ) {
       $fail = true;
       $feedback .= "Missing a required value: ";
-      if ($highergeography=='') {
+      if ($barcode=='') {
+         $feedback.= "Barcode. ";
+      }
+      if ($highergeographyid=='') {
          $feedback.= "Geography. ";
       }
       if ($herbariumacronym=='') {
          $feedback.= "Herbarium. ";
       }
-      if ($filedundername=='') {
+      if ($filedundernameid=='') {
          $feedback.= "Filed under name. ";
       }
       if ($prepmethod=='') {
@@ -654,12 +676,6 @@ function ingest() {
       }
       if ($format=='') {
          $feedback.= "Format. ";
-      }
-      if ($specificlocality=='') {
-         $feedback.= "Locality.";
-      }
-      if ($collectors=='') {
-        $feedback.= "Collector.";
       }
    }
 
@@ -767,7 +783,7 @@ function ingest() {
                                    $statement1->store_result();
                                    $addProject = false;
                                    if ($statement1->fetch()){
-                                      if ($projectcount==0) { $addProject = true; } else { $feedback.="Project exists."; }
+                                      if ($projectcount==0) { $addProject = true; }
                                    } else {
                                       $fail = true;
                                       $feedback.= "Query Error looking up project. " . $connection->error  . " ";
@@ -996,7 +1012,7 @@ function ingest() {
                               }
 
                                // lookup agentid for collector
-                               if (strlen(trim($collectorsid))==0 && strlen(trim($collectors))>0) {
+                               if ($collectorsid==null && strlen(trim($collectors))>0) {
                                   $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1025,7 +1041,7 @@ function ingest() {
                                }
 
                                // add/update collector
-                               if (!$fail && $collectingeventid!=null) {
+                               if (!$fail && $collectingeventid!=null && $collectorsid!=null) {
                                   $sql = "select collectorid from collector where collectingeventid = ? ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1033,7 +1049,21 @@ function ingest() {
                                         $statement->execute();
                                         $statement->bind_result($collectorid);
                                         $statement->store_result();
-                                        if ($statement->num_rows>0) {
+                                        if ($statement->num_rows < 1) {
+                                          $sql = "insert into collector (collectingeventid,etal,agentid,collectionmemberid,isprimary,ordernumber,timestampcreated,version,createdbyagentid) values (?,?,?,4,1,1,now(),0,?); ";
+                                          $s2 = $connection->prepare($sql);
+                                          $s2->bind_param("isii",$collectingeventid,$etal,$collectorsid,$currentuserid);
+                                          $s2->execute();
+                                          $rows = $connection->affected_rows;
+                                          if ($rows==1) {
+                                             $collectorid = $statement->insert_id;
+                                             $feedback = $feedback . "Added collector [$collectorid]. ";
+                                          }
+                                          $s2->close();
+                                        } elseif ($statement->num_rows > 1) {
+                                          $fail = true;
+                                          $feedback.= "Multiple collectors found for record. Update in Specify. ";
+                                        } else {
                                             if ($statement->fetch()) {
                                                $sql = "update collector set etal = ?, agentid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectorid = ? ";
                                                $s2 = $connection->prepare($sql);
@@ -1051,18 +1081,8 @@ function ingest() {
                                                $fail = true;
                                                $feedback.= "Query Error locating collector. " . $connection->error . " ";
                                             }
-                                        } else {
-                                            $sql = "insert into collector (etal,agentid,timestampcreated,version,createdbyagentid) values (?,?,now(),0,?); ";
-                                            $s2 = $connection->prepare($sql);
-                                            $s2->bind_param("sii",$etal,$collectorsid,$currentuserid);
-                                            $s2->execute();
-                                            $rows = $connection->affected_rows;
-                                            if ($rows==1) {
-                                               $collectorid = $statement->insert_id;
-                                               $feedback = $feedback . "Added collector [$collectorid]. ";
-                                            }
-                                            $s2->close();
                                         }
+
                                         $statement->free_result();
                                         $statement->close();
                                    } else {
@@ -1070,7 +1090,49 @@ function ingest() {
                                       $feedback.= "Query Error looking up collector. " . $connection->error . " ";
                                   }
                                }
-                           } // has collector
+
+                               // check to see if we need to remove the collector record
+                               if (!$fail && $collectingeventid!=null && $collectorsid==null) {
+                                  $sql = "select collectorid from collector where collectingeventid = ? ";
+                                  $statement = $connection->prepare($sql);
+                                  if ($statement) {
+                                        $statement->bind_param("i", $collectingeventid);
+                                        $statement->execute();
+                                        $statement->bind_result($collectorid);
+                                        $statement->store_result();
+                                        if ($statement->num_rows > 1) {
+                                          $fail = true;
+                                          $feedback.= "Multiple collectors found for record. Update in Specify. ";
+                                        } elseif ($statement->num_rows == 1) {
+                                          $statement->fetch();
+                                          $sql = "delete from collector where collectorid = ?";
+                                          $s2 = $connection->prepare($sql);
+                                          if ($s2) {
+                                            $s2->bind_param("i",$collectorid);
+                                            $s2->execute();
+                                            $rows = $connection->affected_rows;
+                                            if ($rows==1) {
+                                               $feedback = $feedback . "Deleted collector [$collectorid]. ";
+                                            }
+                                            $s2->close();
+                                          } else {
+                                            $fail = true;
+                                            $feedback.= "Query Error deleting collector. " . $connection->error . " ";
+                                          }
+                                        } else {
+                                          // nothing to do
+                                        }
+
+                                        $statement->free_result();
+                                        $statement->close();
+                                  } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error looking up collector. " . $connection->error . " ";
+                                  }
+                               }
+
+
+                           }
 
 
                            // ensure that verbatim and decimal are either both set are neither set
@@ -1158,11 +1220,21 @@ EOD;
                                }
                            } // end localityid
 
+                          // If id is -1, a det exists without a taxon - therefore we set values to null which should trigger an update of the existing records
+                          if ($filedundernameid == -1) {
+                            $filedundernameid = null;
+                            $filedundername = null;
+                          }
+                          if ($currentdeterminationid == -1) {
+                            $currentdeterminationid = null;
+                            $currentdetermination = null;
+                          }
+
                           // make sure that we have taxonid values.
-                          if ($filedundernameid==null||strlen(trim($filedundernameid))==0) {
+                          if (($filedundernameid==null || strlen(trim($filedundernameid))==0) && strlen(trim($filedundername))>0) {
                               $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
                           }
-                          if ($currentdeterminationid==null||strlen(trim($currentdeterminationid))==0) {
+                          if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && strlen(trim($currentdetermination))>0) {
                               $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
                           }
 
@@ -1394,12 +1466,40 @@ function lookupDataForBarcode($barcode) {
 
        // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
-       $result['filedundername'] = $filedunder["taxonname"];
-       $result['filedundernameid'] = $filedunder["taxonid"];
+       $determinationid = $filedunder["determinationid"];
+       $filedundername = $filedunder["taxonname"];
+       $filedunderalternatename = $filedunder["alternatename"];
+       $filedundernameid = $filedunder["taxonid"];
+       if (strlen(trim($determinationid)) > 0 && ($filedundernameid==null || trim($filedundernameid)=='')) {
+         $filedundernameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $filedundername="[Alt name: $filedunderalternatename]";
+         } else {
+           $filedundername="[Det has no taxon]";
+         }
+       }
+       $result['filedundername'] = $filedundername;
+       $result['filedundernameid'] = $filedundernameid;
+
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
-       $result['currentname'] = $current["taxonname"];
-       $result['currentnameid'] = $current["taxonid"];
+       $determinationid = $current["determinationid"];
+       $currentname = $current["taxonname"];
+       $currentalternatename = $current["alternatename"];
+       $currentnameid = $current["taxonid"];
+       if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
+         $currentnameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $currentname="[Alt name: $currentalternatename]";
+         } else {
+           $currentname="[Det has no taxon]";
+         }
+       }
+       $result['currentname'] = $currentname;
+       $result['currentnameid'] = $currentnameid;
        $result['currentqualifier'] = $current["qualifier"];
+
        $result['identifiedbyid'] = $current["determinerid"];
        $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
        $result['dateidentified'] = $current["determineddate"];
@@ -1423,7 +1523,7 @@ function lookupDataForBarcode($barcode) {
        $result['container'] = $rcontainer->getName();
        $result['containerid'] = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
-       $result['project'] = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
+       //$result['project'] = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
        //$rcoleve->load($rcoleve->getCollectingEventID());
        $result['stationfieldnumber'] = $rcoleve->getStationFieldNumber();

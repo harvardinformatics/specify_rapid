@@ -760,12 +760,37 @@ habitat
 
        // get filedundername, currentname, filedunderqualifier, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
+       $determinationid = $filedunder["determinationid"];
        $filedundername = $filedunder["taxonname"];
+       $filedunderalternatename = $filedunder["alternatename"];
        $filedundernameid = $filedunder["taxonid"];
+       // check if determination is there with no taxon
+       if (strlen(trim($determinationid)) > 0 && ($filedundernameid==null || trim($filedundernameid)=='')) {
+         $filedundernameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $filedundername="[Alt name: $filedunderalternatename]";
+         } else {
+           $filedundername="[Det has no taxon]";
+         }
+       }
        $filedunderqualifier = $filedunder["qualifier"];
+
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
+       $determinationid = $current["determinationid"];
        $currentname = $current["taxonname"];
+       $currentalternatename = $current["alternatename"];
        $currentnameid = $current["taxonid"];
+       if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
+         $currentnameid = -1;
+
+         if (strlen(trim($filedunderalternatename))>0) {
+           $currentname="[Alt name: $currentalternatename]";
+         } else {
+           $currentname="[Det has no taxon]";
+         }
+       }
+
        $currentqualifier = $current["qualifier"];
        $identifiedbyid = $current["determinerid"];
        $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
@@ -789,7 +814,7 @@ habitat
        $container = $rcontainer->getName();
        $containerid = $rcontainer->getContainerID();
        $proj = new huh_project_custom();
-       $project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
+       //$project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
        $rcoleve = $related['CollectingEventID'];
        //$rcoleve->load($rcoleve->getCollectingEventID()); // already loaded
        $stationfieldnumber = $rcoleve->getStationFieldNumber();
@@ -825,7 +850,7 @@ habitat
    } elseif ($num_matches==0) {
        // set defaults to create new record
        $prepmethod = "Pressed";
-       $format = "Sheet";
+       $defaultformat = "Sheet";
        $created = "New Record";
    } else {
        // error condition, found more than one fragment by the barcode.
@@ -961,7 +986,7 @@ habitat
         //    });
         // </script>
         // ";
-        @selectProject("defaultproject","Project",$defaultproject);
+        @selectProject("project","Project",$defaultproject);
    } else { //if ($config=="standard") {
 
        @selectAcronym("herbariumacronym",$herbarium);
@@ -1015,7 +1040,7 @@ habitat
        @field ("provenance","Provenance",$provenance,'false');
        @field ("specimendescription","Description",$specimendescription,'false');
        @field ("specimenremarks","Remarks",$specimenremarks,'false');
-       @selectProject("defaultproject","Project",$defaultproject);
+       @selectProject("project","Project",$defaultproject);
 
    }
 
@@ -1139,36 +1164,28 @@ habitat
            * @param value the new value to set (unless the field is a carryforward with an existing value).
            */
           function setLoadedValue(field,value) {
-              //if (!field=='datecollected') {
-               if ($('select[name='+field+']').length) {
-                   $('#'+field).css({'color':'black'});
-               } else {
-                   $('#'+field).css({'background-color':'#FFFFFF'});
-               }
-              //}
-              if($('#'+field).val()=='') {
-                 // if field is empty, populate from provided value.
-                 $('#'+field).val(value);
+
+              if ($('select[name='+field+']').length) {
+                $('#'+field).css({'color':'black'});
               } else {
-                 // field contains a value
-                 //if (!field=='datecollected') {
-                    // set color to indicate changed data
-                  if ($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value) {
-                     // if carryforward field and values are different, set background color
-                     if ($('select[name='+field+']').length) {
-                        $('#'+field).css({'color':'darksalmon'});
-                     } else {
-                       $('#'+field).css({'background-color':'#FFFAA2'});
-                     }
-                  }
-                 //}
-                 // update value from provided value.
-                 // if (!$('.carryforward[id][name='+field+']').length) {
-                 //     // if field contains a value only populate if not a carryforward field (carryforward trumps lookup).
-                 //     $('#'+field).val(value);
-                 // }
-                 $('#'+field).val(value);
+                $('#'+field).css({'background-color':'#FFFFFF'});
               }
+
+              // carryforward field different from previous record, change color to notify user
+              // if($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value && (value!=null || value!='')) {
+              //  $('#'+field).css({'background-color':'#FFFAA2'});
+              // } else {
+              //  $('#'+field).css({'background-color':'#FFFFFF'});
+              //}
+
+              // set field to value, unless carryover field and value is null/empty
+              if($('.carryforward[id][name='+field+']').length && (value==null || value=='')) {
+                $('#'+field).css({'color':'darksalmon'});
+              } else {
+                $('#'+field).css({'color':'black'});
+                $('#'+field).val(value);
+              }
+
           }
 
           function loadFormData(data) {
@@ -1185,7 +1202,7 @@ habitat
               } else {
                   $('#barcode').prop('disabled', true);
                   $('#recordcreated').html(data.created);
-                  setLoadedValue('defaultproject',data.project);
+                  //setLoadedValue('project',data.project);
                   setLoadedValue('container',data.container);
                   setLoadedValue('containerid',data.containerid);
                   setLoadedValue('prepmethod',data.prepmethod);
@@ -1854,29 +1871,38 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
     </td></tr>";
    $returnvalue .= '
       <script>
-         $(function() {
-            $( "#'.$field.'" ).autocomplete({
-               minLength: 4,
-               delay: 400,
-               source: function( request, response ) {
-                  $.ajax( {
-                    url: "ajax_handler.php",
-                    dataType: "json",
-                    data: {
-                       druid_action: "collagentidjson",
-                       term: request.term
-                    },
-                    success: function( data ) {
-                       response( data );
-                    }
-                  } );
-                },
-                select: function( event, ui ) {
-                    $("#'.$fieldid.'").val(ui.item.id);
-                }
-            } );
-         } );
-      </script>
+
+        $( "#'.$field.'" ).focusout(
+          function() {
+            if ($("#'.$field.'").val()=="") {
+              $("#'.$fieldid.'").val("");
+            }
+          }
+        );
+
+       $(function() {
+          $( "#'.$field.'" ).autocomplete({
+             minLength: 4,
+             delay: 400,
+             source: function( request, response ) {
+                $.ajax( {
+                  url: "ajax_handler.php",
+                  dataType: "json",
+                  data: {
+                     druid_action: "collagentidjson",
+                     term: request.term
+                  },
+                  success: function( data ) {
+                     response( data );
+                  }
+                } );
+              },
+              select: function( event, ui ) {
+                  $("#'.$fieldid.'").val(ui.item.id);
+              }
+          } );
+       } );
+    </script>
    ';
    echo $returnvalue;
 }
@@ -1973,27 +1999,36 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
     </td></tr>";
    $returnvalue .= '
       <script>
-         $(function() {
-            $( "#'.$field.'" ).autocomplete({
-               minLength: 3,
-               source: function( request, response ) {
-                  $.ajax( {
-                    url: "ajax_handler.php",
-                    dataType: "json",
-                    data: {
-                       druid_action: "colltripidcolltripjson",
-                       term: request.term
-                    },
-                    success: function( data ) {
-                       response( data );
-                    }
-                  } );
-                },
-                select: function( event, ui ) {
-                    $("#'.$fieldid.'").val(ui.item.id);
-                }
-            } );
-         } );
+
+        $( "#'.$field.'" ).focusout(
+          function() {
+            if ($("#'.$field.'").val()=="") {
+              $("#'.$fieldid.'").val("");
+            }
+          }
+        );
+
+       $(function() {
+          $( "#'.$field.'" ).autocomplete({
+             minLength: 3,
+             source: function( request, response ) {
+                $.ajax( {
+                  url: "ajax_handler.php",
+                  dataType: "json",
+                  data: {
+                     druid_action: "colltripidcolltripjson",
+                     term: request.term
+                  },
+                  success: function( data ) {
+                     response( data );
+                  }
+                } );
+              },
+              select: function( event, ui ) {
+                  $("#'.$fieldid.'").val(ui.item.id);
+              }
+          } );
+       } );
       </script>
    ';
    echo $returnvalue;
@@ -2017,7 +2052,7 @@ function selectProject($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
+        <input name='$field' id='$field' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
      </div>
   </td></tr>
     ";

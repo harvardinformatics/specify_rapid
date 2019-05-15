@@ -581,12 +581,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks,$alternatename);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -602,6 +602,7 @@ class huh_determination_custom extends huh_determination {
                $result["qualifier"]=$qualifier;
                $result["determineddate"]=$determineddate;
                $result["remarks"]=$remarks;
+               $result["alternatename"]=$alternatename;
                $result["status"]="Success";
                if ($statement->num_rows>1) {
                   $result["status"]="Error";
@@ -629,12 +630,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.yesno3=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.yesno3=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname, $determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks,$alternatename);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -650,6 +651,7 @@ class huh_determination_custom extends huh_determination {
                $result["qualifier"]=$qualifier;
                $result["determineddate"]=$determineddate;
                $result["remarks"]=$remarks;
+               $result["alternatename"]=$alternatename;
                $result["status"]="Success";
                if ($statement->num_rows>1) {
                   $result["status"]="Error";
@@ -747,6 +749,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
      * @throw exception on a query error.
      */
     public static function lookupTaxonIdForName($fullname) {
+       global $connection;
        $taxonid = null;
        $sql = "select taxonid from taxon where fullname = ? ";
        $statement = $connection->prepare($sql);
@@ -1790,12 +1793,12 @@ class huh_geography_custom extends huh_geography {
 function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated,
-   $collectors,$etal,$fieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
-   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$highergeography,
+   $collectors,$collectorsid,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
+   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
-   $identifiedby,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
+   $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
 
@@ -1807,8 +1810,15 @@ function ingestCollectionObject() {
      $feedback = "Data truncation: $truncated";
    }
 
+   if (strlen(trim($filedundernameid)) > 0) {
+     $filedundername = $filedundernameid;
+   }
+   if (strlen(trim($currentdeterminationid)) > 0) {
+     $currentdetermination = $currentdeterminationid;
+   }
+
    // Test for required elements:
-   if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $specificlocality=='' || $barcode=='' || $collectors=='' ) {
+   if ($highergeography=='' || $herbariumacronym=='' || $filedundername=='' || $prepmethod=='' || $format=='' || $barcode=='' ) {
       $fail = true;
       $feedback .= "Missing a required value: ";
       if ($highergeography=='') {
@@ -1826,14 +1836,8 @@ function ingestCollectionObject() {
       if ($format=='') {
          $feedback.= "Format. ";
       }
-      if ($specificlocality=='') {
-         $feedback.= "Locality.";
-      }
       if ($barcode=='') {
          $feedback.= "Barcode.";
-      }
-      if ($collectors=='') {
-      	$feedback.= "Collector.";
       }
    }
 
@@ -1874,8 +1878,10 @@ function ingestCollectionObject() {
    }
    // handle nulls
    if ($collectors=='') { $collectors = null; }
+   if ($collectorsid=='') { $collectorsid = null; }
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
+   if ($stationfieldnumber=='') { $stationfieldnumber = null; }
    if ($accessionnumber=='') { $accessionnumber = null; }
    if ($provenance=='') { $provenance = null; }
    if ($verbatimdate=='') { $verbatimdate = null; }
@@ -2013,6 +2019,14 @@ function ingestCollectionObject() {
       $latlongtype=null;
    }
 
+   if ($collectorsid != null) {
+     $collectors = $collectorsid;
+   }
+
+   if ($stationfieldnumber != null) {
+     $fieldnumber = $stationfieldnumber;
+   }
+
    $df = "";
    if ($debug) {
       $df.=" ";
@@ -2137,7 +2151,7 @@ function ingestCollectionObject() {
                $sql = "select distinct agentid from agent where agentid = ? ";
                $param = "i";
             } else {
-               $sql = "select distinct agentid from agentvariant where fullname = ? and vartype = 4 ";
+               $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
                $param = "s";
             }
             $statement = $connection->prepare($sql);
@@ -2210,36 +2224,38 @@ function ingestCollectionObject() {
       if (!$fail) {
          // Collector, Collecting Event
          $collectoragentid = null;
-         if (preg_match("/^[0-9]+$/", $collectors)) {
-            $sql = "select distinct agentid from agent where agentid = ? ";
-            $param = "i";
-         } else {
-            $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
-            $param = "s";
-         }
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param($param,$collectors);
-            $statement->execute();
-            $statement->bind_result($agentid);
-            $statement->store_result();
-            if ($statement->num_rows==1) {
-               if ($statement->fetch()) {
-                  // retrieves collectoragentid
-                  $collectoragentid = $agentid;
-               } else {
-                  $fail = true;
-                  $feedback.= "Query Error " . $connection->error;
-               }
-            } else {
-               $fail = true;
-               $feedback.= "No Match for collector agent: " . $collectors;
-            }
-            $statement->free_result();
-            $statement->close();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         if ($collectors!=null) {
+           if (preg_match("/^[0-9]+$/", $collectors)) {
+              $sql = "select distinct agentid from agent where agentid = ? ";
+              $param = "i";
+           } else {
+              $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
+              $param = "s";
+           }
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param($param,$collectors);
+              $statement->execute();
+              $statement->bind_result($agentid);
+              $statement->store_result();
+              if ($statement->num_rows==1) {
+                 if ($statement->fetch()) {
+                    // retrieves collectoragentid
+                    $collectoragentid = $agentid;
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error " . $connection->error;
+                 }
+              } else {
+                 $fail = true;
+                 $feedback.= "No Match for collector agent: " . $collectors;
+              }
+              $statement->free_result();
+              $statement->close();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
          }
 
          if (!$fail && $collectingtrip != null) {
@@ -2300,22 +2316,24 @@ function ingestCollectionObject() {
          }
 
          // Collector
-         $sql = "insert into collector (agentid, etal, collectingeventid, createdbyagentid, timestampcreated, version, collectionmemberid, isprimary, ordernumber) " .
-             " values (?,?,?,?,now(),0,4,1,1)";
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param('isii',$collectoragentid, $etal, $collectingeventid, $currentuserid);
-            if ($statement->execute()) {
-               $collectorid = $statement->insert_id;
-               $adds .= "collector=[$collectorid]";
-            } else {
-               $fail = true;
-               $feedback.= "Unable to save collector: " . $connection->error;
-            }
-            $statement->free_result();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         if ($collectoragentid!=null) {
+           $sql = "insert into collector (agentid, etal, collectingeventid, createdbyagentid, timestampcreated, version, collectionmemberid, isprimary, ordernumber) " .
+               " values (?,?,?,?,now(),0,4,1,1)";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param('isii',$collectoragentid, $etal, $collectingeventid, $currentuserid);
+              if ($statement->execute()) {
+                 $collectorid = $statement->insert_id;
+                 $adds .= "collector=[$collectorid]";
+              } else {
+                 $fail = true;
+                 $feedback.= "Unable to save collector: " . $connection->error;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
          }
       }
 
@@ -2869,8 +2887,12 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
 
+         if (strlen(trim($identifiedbyid)) > 0) {
+           $identifiedby = $identifiedbyid;
+         }
+
          $determinerid = null;
-         if (strlen($identifiedby)>0) {
+         if (strlen(trim($identifiedby))>0) {
            if (preg_match("/^[0-9]+$/", $identifiedby)) {
               $sql = "select distinct agentid from agent where agentid = ? ";
               $param = "i";
@@ -2903,33 +2925,36 @@ function ingestCollectionObject() {
            }
          }
 
-         // yesno1 = isLabel (user)
-         $islabel = 0;
-         // yesno2 = isFragment (of type) (no)
-         // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-         $isfiledunder = 0;
-         if ($namesidentical===TRUE) {
-            $isfiledunder = 1;
-         }
-         // iscurrent = isCurrent (yes)
-         $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                          " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                          " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
-            if ($statement->execute()) {
-               $determinationid = $statement->insert_id;
-               $adds .= "det=[$determinationid]";
-            } else {
-               $fail = true;
-               $feedback.= "Unable to save current determination: " . $connection->error;
-            }
-            $statement->free_result();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
-         }
+
+         if (!$fail) {
+           // yesno1 = isLabel (user)
+           $islabel = 0;
+           // yesno2 = isFragment (of type) (no)
+           // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
+           $isfiledunder = 0;
+           if ($namesidentical===TRUE) {
+              $isfiledunder = 1;
+           }
+           // iscurrent = isCurrent (yes)
+           $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
+                            " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
+                            " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+              if ($statement->execute()) {
+                 $determinationid = $statement->insert_id;
+                 $adds .= "det=[$determinationid]";
+              } else {
+                 $fail = true;
+                 $feedback.= "Unable to save current determination: " . $connection->error;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
+        }
 
       }
    }
