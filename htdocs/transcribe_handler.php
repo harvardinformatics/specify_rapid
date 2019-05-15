@@ -1107,14 +1107,19 @@ function ingest() {
                                         } elseif ($statement->num_rows == 1) {
                                           $sql = "delete from collector where collectorid = ?";
                                           $s2 = $connection->prepare($sql);
-                                          $s2->bind_param("i",$collectorid);
-                                          $s2->execute();
-                                          $rows = $connection->affected_rows;
-                                          if ($rows==1) {
-                                             $collectorid = $statement->insert_id;
-                                             $feedback = $feedback . "Deleted collector [$collectorid]. ";
+                                          if ($s2) {
+                                            $s2->bind_param("i",$collectorid);
+                                            $s2->execute();
+                                            $rows = $connection->affected_rows;
+                                            if ($rows==1) {
+                                               $collectorid = $statement->insert_id;
+                                               $feedback = $feedback . "Deleted collector [$collectorid]. ";
+                                            }
+                                            $s2->close();
+                                          } else {
+                                            $fail = true;
+                                            $feedback.= "Query Error deleting collector. " . $connection->error . " ";
                                           }
-                                          $s2->close();
                                         } else {
                                           // nothing to do
                                         }
@@ -1125,7 +1130,7 @@ function ingest() {
                                       $fail = true;
                                       $feedback.= "Query Error looking up collector. " . $connection->error . " ";
                                   }
-                               } 
+                               }
 
 
                            }
