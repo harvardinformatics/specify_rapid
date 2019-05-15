@@ -1793,7 +1793,7 @@ class huh_geography_custom extends huh_geography {
 function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated,
-   $collectors,$etal,$fieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
+   $collectors,$collectorsid,$etal,$fieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
@@ -1878,6 +1878,7 @@ function ingestCollectionObject() {
    }
    // handle nulls
    if ($collectors=='') { $collectors = null; }
+   if ($collectorsid=='') { $collectorsid = null; }
    if ($etal=='') { $etal = null; }
    if ($fieldnumber=='') { $fieldnumber = null; }
    if ($accessionnumber=='') { $accessionnumber = null; }
@@ -2015,6 +2016,10 @@ function ingestCollectionObject() {
    $latlongtype = 'point';
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
+   }
+
+   if ($collectorsid != null) {
+     $collectors = $collectorsid;
    }
 
    $df = "";
