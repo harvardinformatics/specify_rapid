@@ -1871,29 +1871,36 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
     </td></tr>";
    $returnvalue .= '
       <script>
-         $(function() {
-            $( "#'.$field.'" ).autocomplete({
-               minLength: 4,
-               delay: 400,
-               source: function( request, response ) {
-                  $.ajax( {
-                    url: "ajax_handler.php",
-                    dataType: "json",
-                    data: {
-                       druid_action: "collagentidjson",
-                       term: request.term
-                    },
-                    success: function( data ) {
-                       response( data );
-                    }
-                  } );
-                },
-                select: function( event, ui ) {
-                    $("#'.$fieldid.'").val(ui.item.id);
-                }
-            } );
-         } );
-      </script>
+
+        $( "#'.$field.'" ).focusout(function() {
+          if ($("#'.$field.'").val()=='') {
+            $("#'.$fieldid.'").val('');
+          }
+        });
+
+       $(function() {
+          $( "#'.$field.'" ).autocomplete({
+             minLength: 4,
+             delay: 400,
+             source: function( request, response ) {
+                $.ajax( {
+                  url: "ajax_handler.php",
+                  dataType: "json",
+                  data: {
+                     druid_action: "collagentidjson",
+                     term: request.term
+                  },
+                  success: function( data ) {
+                     response( data );
+                  }
+                } );
+              },
+              select: function( event, ui ) {
+                  $("#'.$fieldid.'").val(ui.item.id);
+              }
+          } );
+       } );
+    </script>
    ';
    echo $returnvalue;
 }
