@@ -1872,7 +1872,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    $returnvalue .= '
       <script>
 
-        $( "#'$field.'" ).focusout(
+        $( "#'.$field.'" ).focusout(
           function() {
             if ($("#'.$field.'").val()=="") {
               $("#'.$fieldid.'").val("");
