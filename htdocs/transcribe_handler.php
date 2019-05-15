@@ -1112,7 +1112,6 @@ function ingest() {
                                             $s2->execute();
                                             $rows = $connection->affected_rows;
                                             if ($rows==1) {
-                                               $collectorid = $statement->insert_id;
                                                $feedback = $feedback . "Deleted collector [$collectorid]. ";
                                             }
                                             $s2->close();
