@@ -1049,7 +1049,21 @@ function ingest() {
                                         $statement->execute();
                                         $statement->bind_result($collectorid);
                                         $statement->store_result();
-                                        if ($statement->num_rows>0) {
+                                        if ($statement->num_rows < 1) {
+                                          $sql = "insert into collector (collectingeventid,etal,agentid,collectionmemberid,isprimary,ordernumber,timestampcreated,version,createdbyagentid) values (?,?,?,4,1,1,now(),0,?); ";
+                                          $s2 = $connection->prepare($sql);
+                                          $s2->bind_param("isii",$collectingeventid,$etal,$collectorsid,$currentuserid);
+                                          $s2->execute();
+                                          $rows = $connection->affected_rows;
+                                          if ($rows==1) {
+                                             $collectorid = $statement->insert_id;
+                                             $feedback = $feedback . "Added collector [$collectorid]. ";
+                                          }
+                                          $s2->close();
+                                        } elseif ($statement->num_rows > 1) {
+                                          $fail = true;
+                                          $feedback.= "Multiple collectors found for record. Update in Specify. ";
+                                        } else {
                                             if ($statement->fetch()) {
                                                $sql = "update collector set etal = ?, agentid = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where collectorid = ? ";
                                                $s2 = $connection->prepare($sql);
@@ -1067,18 +1081,8 @@ function ingest() {
                                                $fail = true;
                                                $feedback.= "Query Error locating collector. " . $connection->error . " ";
                                             }
-                                        } else {
-                                            $sql = "insert into collector (collectingeventid,etal,agentid,collectionmemberid,isprimary,ordernumber,timestampcreated,version,createdbyagentid) values (?,?,?,4,1,1,now(),0,?); ";
-                                            $s2 = $connection->prepare($sql);
-                                            $s2->bind_param("isii",$collectingeventid,$etal,$collectorsid,$currentuserid);
-                                            $s2->execute();
-                                            $rows = $connection->affected_rows;
-                                            if ($rows==1) {
-                                               $collectorid = $statement->insert_id;
-                                               $feedback = $feedback . "Added collector [$collectorid]. ";
-                                            }
-                                            $s2->close();
                                         }
+
                                         $statement->free_result();
                                         $statement->close();
                                    } else {
@@ -1086,6 +1090,44 @@ function ingest() {
                                       $feedback.= "Query Error looking up collector. " . $connection->error . " ";
                                   }
                                }
+
+
+                               // check to see if we need to remove the collector record
+                               if (!$fail && $collectingeventid!=null && $collectorsid==null) {
+                                  $sql = "select collectorid from collector where collectingeventid = ? ";
+                                  $statement = $connection->prepare($sql);
+                                  if ($statement) {
+                                        $statement->bind_param("i", $collectingeventid);
+                                        $statement->execute();
+                                        $statement->bind_result($collectorid);
+                                        $statement->store_result();
+                                        if ($statement->num_rows > 1) {
+                                          $fail = true;
+                                          $feedback.= "Multiple collectors found for record. Update in Specify. ";
+                                        } elseif ($statement->num_rows == 1) {
+                                          $sql = "delete from collector where collectorid = ?";
+                                          $s2 = $connection->prepare($sql);
+                                          $s2->bind_param("i",$collectorid);
+                                          $s2->execute();
+                                          $rows = $connection->affected_rows;
+                                          if ($rows==1) {
+                                             $collectorid = $statement->insert_id;
+                                             $feedback = $feedback . "Deleted collector [$collectorid]. ";
+                                          }
+                                          $s2->close();
+                                        } else {
+                                          // nothing to do
+                                        }
+
+                                        $statement->free_result();
+                                        $statement->close();
+                                  } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error looking up collector. " . $connection->error . " ";
+                                  }
+                               } 
+
+
                            }
 
 
