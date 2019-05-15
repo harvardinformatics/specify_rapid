@@ -529,6 +529,7 @@ function ingest() {
    if ($minelevation=='') { $minelevation = null; }
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
+   if ($identifiedbyid=='') { $identifiedbyid = null; }
    if ($determinertext=='') { $determinertext = null; }
    if ($container=='') { $container = null; $containerid = null; }
    if ($containerid=='') { $containerid = null; }
