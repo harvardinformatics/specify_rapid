@@ -1091,7 +1091,6 @@ function ingest() {
                                   }
                                }
 
-
                                // check to see if we need to remove the collector record
                                if (!$fail && $collectingeventid!=null && $collectorsid==null) {
                                   $sql = "select collectorid from collector where collectingeventid = ? ";
@@ -1105,6 +1104,7 @@ function ingest() {
                                           $fail = true;
                                           $feedback.= "Multiple collectors found for record. Update in Specify. ";
                                         } elseif ($statement->num_rows == 1) {
+                                          $statement->fetch();
                                           $sql = "delete from collector where collectorid = ?";
                                           $s2 = $connection->prepare($sql);
                                           if ($s2) {
