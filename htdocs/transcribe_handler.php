@@ -1067,9 +1067,9 @@ function ingest() {
                                                $feedback.= "Query Error locating collector. " . $connection->error . " ";
                                             }
                                         } else {
-                                            $sql = "insert into collector (etal,agentid,timestampcreated,version,createdbyagentid) values (?,?,now(),0,?); ";
+                                            $sql = "insert into collector (collectingeventid,etal,agentid,collectionmemberid,isprimary,ordernumber,timestampcreated,version,createdbyagentid) values (?,?,?,4,1,1,now(),0,?); ";
                                             $s2 = $connection->prepare($sql);
-                                            $s2->bind_param("sii",$etal,$collectorsid,$currentuserid);
+                                            $s2->bind_param("isii",$collectingeventid,$etal,$collectorsid,$currentuserid);
                                             $s2->execute();
                                             $rows = $connection->affected_rows;
                                             if ($rows==1) {
