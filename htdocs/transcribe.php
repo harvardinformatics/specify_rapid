@@ -794,7 +794,7 @@ habitat
        $currentqualifier = $current["qualifier"];
        $identifiedbyid = $current["determinerid"];
        $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
-       $dateidentified = $current["determineddate"];
+       $dateidentified = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];

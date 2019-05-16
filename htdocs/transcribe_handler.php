@@ -1504,7 +1504,7 @@ function lookupDataForBarcode($barcode) {
 
        $result['identifiedbyid'] = $current["determinerid"];
        $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
-       $result['dateidentified'] = $current["determineddate"];
+       $result['dateidentified'] = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];

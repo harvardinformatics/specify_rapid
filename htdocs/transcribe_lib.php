@@ -63,7 +63,7 @@ function getBatch($path) {
  */
 function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecision) {
    $result = "";
-   if ($startDate!="") {
+   if ($startDate!=null && $startDate!="") {
      $result = $startDate;
      if ($startDatePrecision==3) {
         $result = substr($startDate,0,4);
@@ -72,7 +72,7 @@ function dateBitsToString($startDate,$startDatePrecision,$endDate,$endDatePrecis
         $result = substr($startDate,0,7);
      }
    }
-   if ($endDate!="") {
+   if ($endDate!=null && $endDate!="") {
      if ($result!="") { $result = "$result/"; }
      if ($endDatePrecision==3) {
         $endDate = substr($endDate,0,4);
