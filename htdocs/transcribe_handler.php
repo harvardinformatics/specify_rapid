@@ -1302,6 +1302,7 @@ EOD;
                             $existingcurrentdetermination = $current["determinationid"];
                             $existingdeterminerid = $current["determinerid"];
                             $existingdetermineddate = $current["determineddate"];
+                            $existingdetermineddateprecision = $current["determineddateprecision"];
                             $existingisfiledunder = $current["isfiledunder"];
 
                             if (!$fail) {
@@ -1310,6 +1311,7 @@ EOD;
                                     || $existingidentificationqualifier!=$identificationqualifier
                                     || $existingdeterminerid!=$identifiedbyid
                                     || $existingdetermineddate!=$dateidentifiedformatted
+                                    || $existingdetermineddateprecision!=$dateidentifiedprecision
                                     || $existingisfiledunder!=$filedundercurrent) {
 
                                    $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
