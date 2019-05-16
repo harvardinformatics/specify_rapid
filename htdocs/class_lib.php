@@ -1989,20 +1989,22 @@ function ingestCollectionObject() {
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
+   $dateidentifiedformatted=null;
    if ($dateidentified=='') {
       $dateidentified = null;
+      $dateidentifiedformatted=null;
       $dateidentifiedprecision = 1;
    } else {
       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
-         $dateidentified = $dateidentified;
+         $dateidentifiedformatted = $dateidentified;
          $dateidentifiedprecision = 1;
       } else {
          if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dateidentified)) {
-            $dateidentified = $dateidentified . "-01";
+            $dateidentifiedformatted = $dateidentified . "-01";
             $dateidentifiedprecision = 2;
          } else {
             if (preg_match("/^[1-2][0-9]{3}$/",$dateidentified)) {
-               $dateidentified = $dateidentified . "-01-01";
+               $dateidentifiedformatted = $dateidentified . "-01-01";
                $dateidentifiedprecision = 3;
             } else {
                $fail = true;
@@ -2942,7 +2944,7 @@ function ingestCollectionObject() {
                             " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
            $statement = $connection->prepare($sql);
            if ($statement) {
-              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";
