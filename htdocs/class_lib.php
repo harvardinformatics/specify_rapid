@@ -2371,6 +2371,7 @@ function ingestCollectionObject() {
 
       if (!$fail) {
          // container, collectionobject
+
          if ($container!=null) {
             $containerid = null;
             if (preg_match("/^[0-9]+$/", $container)) {
@@ -2386,7 +2387,7 @@ function ingestCollectionObject() {
                $statement->execute();
                $statement->bind_result($containerid);
                $statement->store_result();
-               if ($statement->num_rows==1) {
+               if ($statement->num_rows > 0) {
                   if ($statement->fetch()) {
                      // retrieves containerid
                   } else {
@@ -2394,9 +2395,25 @@ function ingestCollectionObject() {
                      $feedback.= "Query Error " . $connection->error;
                   }
                } else {
-                  $fail = true;
-                  $feedback.= "No Match for container: " . $container;
+                 // create container record
+                 $sql = "insert into container (timestampcreated, version, collectionmemberid, name, type, createdbyagentid)
+                         values (now(), 1, 4, ?, 9, ?)";
+                 $statement1 = $connection->prepare($sql);
+                 if ($statement1) {
+                    $statement1->bind_param("si", $container, $currentuserid);
+                    $statement1->execute();
+                    $rows = $connection->affected_rows;
+                    if ($rows==1) {
+                      $containerid = $statement1->insert_id;
+                      $feedback = $feedback . " Added Container record. ";
+                    }
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error inserting container: " . $connection->error  . " ";
+                 }
+                 $statement1->close();
                }
+
                $statement->free_result();
                $statement->close();
             } else {
@@ -2974,10 +2991,10 @@ function ingestCollectionObject() {
          if ($statement) {
             $statement->bind_param('s', $barcode);
             if ($statement->execute()) {
-                  $rows = $statement->affected_rows;
-                  if ($rows > 0) {
-                    $feedback .= " Linked $rows images. ";
-                  }
+                  //$rows = $statement->affected_rows;
+                  //if ($rows > 0) {
+                  //  $feedback .= " Linked $rows images. ";
+                  //}
             } else {
                $fail = true;
                $feedback.= "Failed while linking images " . $connection->error;
