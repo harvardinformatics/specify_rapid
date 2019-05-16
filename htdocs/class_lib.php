@@ -2962,6 +2962,33 @@ function ingestCollectionObject() {
         }
 
       }
+
+      if (!$fail) { // link any outstanding imagesets
+
+        $sql = """insert ignore into IMAGE_SET_collectionobject (collectionobjectid, imagesetid) (
+                  select f.collectionobjectid, imo.image_set_id from fragment f, IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo
+                  where f.identifier = imlf.barcode and imlf.id = imo.image_local_file_id and f.barcode = ?
+                  )
+               """;
+         $statement = $connection->prepare($sql);
+         if ($statement) {
+            $statement->bind_param('s', $barcode);
+            if ($statement->execute()) {
+                  $rows = $statement->affected_rows;
+                  if ($rows > 0) {
+                    $feedback .= " Linked $rows images. ";
+                  }
+            } else {
+               $fail = true;
+               $feedback.= "Failed while linking images " . $connection->error;
+            }
+            $statement->free_result();
+         } else {
+            $fail = true;
+            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         }
+      }
+
    }
 
    if ($fail) {
