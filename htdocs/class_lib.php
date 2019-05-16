@@ -2966,7 +2966,7 @@ function ingestCollectionObject() {
       if (!$fail) { // link any outstanding imagesets
 
         $sql = "insert ignore into IMAGE_SET_collectionobject (collectionobjectid, imagesetid) (
-                  select f.collectionobjectid, imo.image_set_id from fragment f, IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo
+                  select distinct f.collectionobjectid, imo.image_set_id from fragment f, IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo
                   where f.identifier = imlf.barcode and imlf.id = imo.image_local_file_id and f.identifier = ?
                 )
                ";
