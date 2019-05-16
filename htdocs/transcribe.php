@@ -795,6 +795,7 @@ habitat
        $identifiedbyid = $current["determinerid"];
        $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
        $dateidentified = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
+       $determinertext = $current["determinertext"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
@@ -995,7 +996,7 @@ habitat
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
        @selectCollectorsID("identifiedby","Identified By",$identifiedby,$identifiedbyid,'false','false');
        @field ("dateidentified","Date Identified",$dateidentified,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-
+       @field ("determinertext","Det. Text",$determinertext,'false');
        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
        @field ("etal","Et al.",$etal,'false');
        @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
@@ -1035,7 +1036,6 @@ habitat
        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
        @field ("habitat","Habitat",$habitat);
        @field ("frequency", "Frequency", $frequency);
-       @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
        @field ("provenance","Provenance",$provenance,'false');
        @field ("specimendescription","Description",$specimendescription,'false');
@@ -1216,6 +1216,7 @@ habitat
                   setLoadedValue('identifiedby',data.identifiedby);
                   setLoadedValue('identifiedbyid',data.identifiedbyid);
                   setLoadedValue('dateidentified',data.dateidentified);
+                  setLoadedValue('determinertext',data.determinertext);
                   setLoadedValue('specificlocality',data.specificlocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('frequency',data.frequency);
@@ -1465,13 +1466,14 @@ habitat
      echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
      echo '<div>';
      echo '<table>';
-     field ("verbatimlat","Verb. Lat.",$verbatimlat);
-     field ("verbatimlong","Verb. Long.",$verbatimlong);
-     field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
-     field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
-     field ("georeferencesource",'Method',$georeferencesource,'false');
+     @field ("verbatimelevation","Verb. Elev.",$verbatimElevation,'false');
+     @field ("verbatimlat","Verb. Lat.",$verbatimlat);
+     @field ("verbatimlong","Verb. Long.",$verbatimlong);
+     @field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+     @field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+     @field ("georeferencesource",'Method',$georeferencesource,'false');
      //field ("datum","Datum",$datum); // almost never encountered on a label
-     field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
+     @field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
      //@selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false'); // This might only make sense in the data model for post-hoc georeferencing
      //@field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); // doesn't make sense for label transcription, should be used for post-hoc georeferencing
      //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription

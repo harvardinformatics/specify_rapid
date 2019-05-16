@@ -1314,10 +1314,10 @@ EOD;
                                     || $existingdetermineddateprecision!=$dateidentifiedprecision
                                     || $existingisfiledunder!=$filedundercurrent) {
 
-                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
+                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, text1 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param("isisiiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentifiedformatted,$dateidentifiedprecision,$filedundercurrent,$currentuserid,$existingcurrentdetermination);
+                                      $statement->bind_param("isisiisii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentifiedformatted,$dateidentifiedprecision,$filedundercurrent,$determinertext,$currentuserid,$existingcurrentdetermination);
                                       $statement->execute();
                                       $statement->close();
                                    } else {
@@ -1507,6 +1507,7 @@ function lookupDataForBarcode($barcode) {
        $result['identifiedbyid'] = $current["determinerid"];
        $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
        $result['dateidentified'] = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
+       $result['determinertext'] = $current["determinertext"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
