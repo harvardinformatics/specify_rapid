@@ -2356,7 +2356,7 @@ function ingestCollectionObject() {
             $statement->bind_param('iiiisssss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate,$specimendescription,$frequency);
             if ($statement->execute()) {
                $collectionobjectid = $statement->insert_id;
-               $link = "<a href='http://kiki.huh.harvard.edu/databases/specimen_search.php?barcode=$barcode'>$herbariumacronym $barcode</a>";
+               $link = "<a href='http://data.huh.harvard.edu/$barcode'>$herbariumacronym$barcode</a>";
                $adds .= "collobj=[$collectionobjectid]";
             } else {
                $fail = true;
