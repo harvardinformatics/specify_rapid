@@ -997,39 +997,14 @@ habitat
        @selectCollectorsID("identifiedby","Identified By",$identifiedby,$identifiedbyid,'false','false');
        @field ("dateidentified","Date Identified",$dateidentified,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
        @field ("determinertext","Det. Text",$determinertext,'false');
+       @field ("provenance","Provenance",$provenance,'false');
        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
        @field ("etal","Et al.",$etal,'false');
-       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-       // echo "
-       //  <script>
-       //     $('#verbatimdate').blur(function() {
-       //       if (!$(this).val().trim()) {
-       //         $('#datecollected').val('');
-       //       } else {
-       //         $('#datecollected').prop('disabled', true);
-       //         var verbatim = $('#verbatimdate').val();
-       //         $.ajax({
-       //             type: 'GET',
-       //             url: 'transcribe_handler.php',
-       //             data: {
-       //                 action: 'interpretdate',
-       //                 verbatimdate: verbatim
-       //             },
-       //             success: function(data) {
-       //                 if (data!='') {
-       //                   $('#datecollected').val(data);
-       //                   $('#datecollected').prop('disabled', false);
-       //                 }
-       //             }
-       //         });
-       //       }
-       //     });
-       //  </script>
-       //  ";
        @selectContainerID("container","Container",$container,$containerid);
+       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
 
@@ -1037,7 +1012,6 @@ habitat
        @field ("habitat","Habitat",$habitat);
        @field ("frequency", "Frequency", $frequency);
 
-       @field ("provenance","Provenance",$provenance,'false');
        @field ("specimendescription","Description",$specimendescription,'false');
        @field ("specimenremarks","Remarks",$specimenremarks,'false');
        @selectProject("project","Project",$defaultproject);
