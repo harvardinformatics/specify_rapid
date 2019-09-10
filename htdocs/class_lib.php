@@ -581,12 +581,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks,$alternatename);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$determineddateprecision,$remarks,$alternatename);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -601,6 +601,7 @@ class huh_determination_custom extends huh_determination {
                $result["taxonname"]=$taxonname;
                $result["qualifier"]=$qualifier;
                $result["determineddate"]=$determineddate;
+               $result["determineddateprecision"]=$determineddateprecision;
                $result["remarks"]=$remarks;
                $result["alternatename"]=$alternatename;
                $result["status"]="Success";
@@ -630,12 +631,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.yesno3=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.yesno3=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$remarks,$alternatename);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$determineddateprecision,$remarks,$alternatename);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -650,6 +651,7 @@ class huh_determination_custom extends huh_determination {
                $result["taxonname"]=$taxonname;
                $result["qualifier"]=$qualifier;
                $result["determineddate"]=$determineddate;
+               $result["determineddateprecision"]=$determineddate;
                $result["remarks"]=$remarks;
                $result["alternatename"]=$alternatename;
                $result["status"]="Success";
@@ -1617,7 +1619,7 @@ class huh_geography_custom extends huh_geography {
           }
       }
       if ($hasfilter) {
-         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by g.fullname ASC ";
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param('sii',$term,$highernode,$higherhighestchildnode);
@@ -1635,7 +1637,7 @@ class huh_geography_custom extends huh_geography {
          }
 
       } else {
-         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid join geography c where g.name like ? and c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param('s',$term);
@@ -1797,7 +1799,7 @@ function ingestCollectionObject() {
    $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
-   $publication,$page,$datepublished,$isfragment,$habitat,$phenology,$verbatimelevation,$minelevation,$maxelevation,
+   $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
@@ -1972,6 +1974,7 @@ function ingestCollectionObject() {
    if ($datepublished=='') { $datepublished = null; }
    if ($isfragment=='') { $isfragment = null; }
    if ($habitat=='') { $habitat = null; }
+   if ($frequency=='') { $frequency = null; }
    if ($host=='') { $host = null; }
    if ($substrate=='') { $substrate = null; }
    if ($phenology=='') { $phenology = 'NotDetermined'; }
@@ -1988,20 +1991,22 @@ function ingestCollectionObject() {
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
+   $dateidentifiedformatted=null;
    if ($dateidentified=='') {
       $dateidentified = null;
+      $dateidentifiedformatted=null;
       $dateidentifiedprecision = 1;
    } else {
       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
-         $dateidentified = $dateidentified;
+         $dateidentifiedformatted = $dateidentified;
          $dateidentifiedprecision = 1;
       } else {
          if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dateidentified)) {
-            $dateidentified = $dateidentified . "-01";
+            $dateidentifiedformatted = $dateidentified . "-01";
             $dateidentifiedprecision = 2;
          } else {
             if (preg_match("/^[1-2][0-9]{3}$/",$dateidentified)) {
-               $dateidentified = $dateidentified . "-01-01";
+               $dateidentifiedformatted = $dateidentified . "-01-01";
                $dateidentifiedprecision = 3;
             } else {
                $fail = true;
@@ -2344,14 +2349,14 @@ function ingestCollectionObject() {
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2,description) " .
-                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?,?)" ;
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2,description,text4) " .
+                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?,?,?)" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiiissss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate,$specimendescription);
+            $statement->bind_param('iiiisssss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate,$specimendescription,$frequency);
             if ($statement->execute()) {
                $collectionobjectid = $statement->insert_id;
-               $link = "<a href='http://kiki.huh.harvard.edu/databases/specimen_search.php?barcode=$barcode'>$herbariumacronym $barcode</a>";
+               $link = "<a href='http://data.huh.harvard.edu/$barcode'>$herbariumacronym$barcode</a>";
                $adds .= "collobj=[$collectionobjectid]";
             } else {
                $fail = true;
@@ -2366,6 +2371,7 @@ function ingestCollectionObject() {
 
       if (!$fail) {
          // container, collectionobject
+
          if ($container!=null) {
             $containerid = null;
             if (preg_match("/^[0-9]+$/", $container)) {
@@ -2381,7 +2387,7 @@ function ingestCollectionObject() {
                $statement->execute();
                $statement->bind_result($containerid);
                $statement->store_result();
-               if ($statement->num_rows==1) {
+               if ($statement->num_rows > 0) {
                   if ($statement->fetch()) {
                      // retrieves containerid
                   } else {
@@ -2389,9 +2395,25 @@ function ingestCollectionObject() {
                      $feedback.= "Query Error " . $connection->error;
                   }
                } else {
-                  $fail = true;
-                  $feedback.= "No Match for container: " . $container;
+                 // create container record
+                 $sql = "insert into container (timestampcreated, version, collectionmemberid, name, type, createdbyagentid)
+                         values (now(), 1, 4, ?, 9, ?)";
+                 $statement1 = $connection->prepare($sql);
+                 if ($statement1) {
+                    $statement1->bind_param("si", $container, $currentuserid);
+                    $statement1->execute();
+                    $rows = $connection->affected_rows;
+                    if ($rows==1) {
+                      $containerid = $statement1->insert_id;
+                      $feedback = $feedback . " Added Container record. ";
+                    }
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error inserting container: " . $connection->error  . " ";
+                 }
+                 $statement1->close();
                }
+
                $statement->free_result();
                $statement->close();
             } else {
@@ -2941,7 +2963,7 @@ function ingestCollectionObject() {
                             " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
            $statement = $connection->prepare($sql);
            if ($statement) {
-              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentified, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";
@@ -2957,6 +2979,33 @@ function ingestCollectionObject() {
         }
 
       }
+
+      if (!$fail) { // link any outstanding imagesets
+
+        $sql = "insert ignore into IMAGE_SET_collectionobject (collectionobjectid, imagesetid) (
+                  select distinct f.collectionobjectid, imo.image_set_id from fragment f, IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo
+                  where f.identifier = imlf.barcode and imlf.id = imo.image_local_file_id and f.identifier = ?
+                )
+               ";
+         $statement = $connection->prepare($sql);
+         if ($statement) {
+            $statement->bind_param('s', $barcode);
+            if ($statement->execute()) {
+                  //$rows = $statement->affected_rows;
+                  //if ($rows > 0) {
+                  //  $feedback .= " Linked $rows images. ";
+                  //}
+            } else {
+               $fail = true;
+               $feedback.= "Failed while linking images " . $connection->error;
+            }
+            $statement->free_result();
+         } else {
+            $fail = true;
+            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         }
+      }
+
    }
 
    if ($fail) {

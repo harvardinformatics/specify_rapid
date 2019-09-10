@@ -541,20 +541,22 @@ function ingest() {
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
+   $dateidentifiedformatted=null;
    if ($dateidentified=='') {
       $dateidentified = null;
+      $dateidentifiedformatted=null;
       $dateidentifiedprecision = 1;
    } else {
       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
-         $dateidentified = $dateidentified;
+         $dateidentifiedformatted = $dateidentified;
          $dateidentifiedprecision = 1;
       } else {
          if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dateidentified)) {
-            $dateidentified = $dateidentified . "-01";
+            $dateidentifiedformatted = $dateidentified . "-01";
             $dateidentifiedprecision = 2;
          } else {
             if (preg_match("/^[1-2][0-9]{3}$/",$dateidentified)) {
-               $dateidentified = $dateidentified . "-01-01";
+               $dateidentifiedformatted = $dateidentified . "-01-01";
                $dateidentifiedprecision = 3;
             } else {
                $fail = true;
@@ -1277,7 +1279,7 @@ EOD;
                                         " values (?,?,?,?,?,?,?,0,0,?,1,now(),0,4,?) ";
                                  $statement = $connection->prepare($sql);
                                  if ($statement) {
-                                    $statement->bind_param('iiisisiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentified, $dateidentifiedprecision, $filedundercurrent, $determinertext);
+                                    $statement->bind_param('iiisisiis', $currentdeterminationid, $fragmentid, $currentuserid, $identificationqualifier, $identifiedbyid, $dateidentifiedformatted, $dateidentifiedprecision, $filedundercurrent, $determinertext);
                                     if ($statement->execute()) {
                                        $determinationid = $statement->insert_id;
                                        $adds .= "det=[$determinationid]";
@@ -1300,20 +1302,24 @@ EOD;
                             $existingcurrentdetermination = $current["determinationid"];
                             $existingdeterminerid = $current["determinerid"];
                             $existingdetermineddate = $current["determineddate"];
+                            $existingdetermineddateprecision = $current["determineddateprecision"];
                             $existingisfiledunder = $current["isfiledunder"];
+                            $existingdeterminertext = $current["determinertext"];
 
                             if (!$fail) {
                                 // Update current determination
                                 if ($existingcurrentnameid!=$currentdeterminationid
                                     || $existingidentificationqualifier!=$identificationqualifier
                                     || $existingdeterminerid!=$identifiedbyid
-                                    || $existingdetermineddate!=$dateidentified
-                                    || $existingisfiledunder!=$filedundercurrent) {
+                                    || $existingdetermineddate!=$dateidentifiedformatted
+                                    || $existingdetermineddateprecision!=$dateidentifiedprecision
+                                    || $existingisfiledunder!=$filedundercurrent
+                                    || $existingdeterminertext!=$determinertext) {
 
-                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
+                                   $sql = "update determination set taxonid = ?, qualifier = ?, determinerid = ?, determineddate = ?, determineddateprecision = ?, yesno3 = ?, text1 = ?, version=version+1, modifiedbyagentid=?, timestampmodified=now()  where determinationid = ? ";
                                    $statement = $connection->prepare($sql);
                                    if ($statement) {
-                                      $statement->bind_param("isisiiii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentified,$dateidentifiedprecision,$filedundercurrent,$currentuserid,$existingcurrentdetermination);
+                                      $statement->bind_param("isisiisii",$currentdeterminationid,$identificationqualifier,$identifiedbyid,$dateidentifiedformatted,$dateidentifiedprecision,$filedundercurrent,$determinertext,$currentuserid,$existingcurrentdetermination);
                                       $statement->execute();
                                       $statement->close();
                                    } else {
@@ -1502,7 +1508,8 @@ function lookupDataForBarcode($barcode) {
 
        $result['identifiedbyid'] = $current["determinerid"];
        $result['identifiedby'] = huh_collector_custom::getCollectorVariantName($result['identifiedbyid']);
-       $result['dateidentified'] = $current["determineddate"];
+       $result['dateidentified'] = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
+       $result['determinertext'] = $current["determinertext"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];

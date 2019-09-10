@@ -794,7 +794,8 @@ habitat
        $currentqualifier = $current["qualifier"];
        $identifiedbyid = $current["determinerid"];
        $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
-       $dateidentified = $current["determineddate"];
+       $dateidentified = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
+       $determinertext = $current["determinertext"];
 
        $related = $match->loadLinkedTo();
        $rcolobj = $related['CollectionObjectID'];
@@ -995,49 +996,22 @@ habitat
        @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
        @selectCollectorsID("identifiedby","Identified By",$identifiedby,$identifiedbyid,'false','false');
        @field ("dateidentified","Date Identified",$dateidentified,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-
+       @field ("determinertext","Det. Text",$determinertext,'false');
+       @field ("provenance","Provenance",$provenance,'false');
        @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
        @field ("etal","Et al.",$etal,'false');
-       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-       // echo "
-       //  <script>
-       //     $('#verbatimdate').blur(function() {
-       //       if (!$(this).val().trim()) {
-       //         $('#datecollected').val('');
-       //       } else {
-       //         $('#datecollected').prop('disabled', true);
-       //         var verbatim = $('#verbatimdate').val();
-       //         $.ajax({
-       //             type: 'GET',
-       //             url: 'transcribe_handler.php',
-       //             data: {
-       //                 action: 'interpretdate',
-       //                 verbatimdate: verbatim
-       //             },
-       //             success: function(data) {
-       //                 if (data!='') {
-       //                   $('#datecollected').val(data);
-       //                   $('#datecollected').prop('disabled', false);
-       //                 }
-       //             }
-       //         });
-       //       }
-       //     });
-       //  </script>
-       //  ";
        @selectContainerID("container","Container",$container,$containerid);
+       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
        @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
 
        @field ("specificlocality","Verbatim locality",$specificLocality,'true');
        @field ("habitat","Habitat",$habitat);
        @field ("frequency", "Frequency", $frequency);
-       @field ("verbatimelevation","Verbatim Elevation",$verbatimElevation,'false');
 
-       @field ("provenance","Provenance",$provenance,'false');
        @field ("specimendescription","Description",$specimendescription,'false');
        @field ("specimenremarks","Remarks",$specimenremarks,'false');
        @selectProject("project","Project",$defaultproject);
@@ -1216,6 +1190,7 @@ habitat
                   setLoadedValue('identifiedby',data.identifiedby);
                   setLoadedValue('identifiedbyid',data.identifiedbyid);
                   setLoadedValue('dateidentified',data.dateidentified);
+                  setLoadedValue('determinertext',data.determinertext);
                   setLoadedValue('specificlocality',data.specificlocality);
                   setLoadedValue('habitat',data.habitat);
                   setLoadedValue('frequency',data.frequency);
@@ -1465,13 +1440,14 @@ habitat
      echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
      echo '<div>';
      echo '<table>';
-     field ("verbatimlat","Verb. Lat.",$verbatimlat);
-     field ("verbatimlong","Verb. Long.",$verbatimlong);
-     field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
-     field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
-     field ("georeferencesource",'Method',$georeferencesource,'false');
+     @field ("verbatimelevation","Verb. Elev.",$verbatimElevation,'false');
+     @field ("verbatimlat","Verb. Lat.",$verbatimlat);
+     @field ("verbatimlong","Verb. Long.",$verbatimlong);
+     @field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+     @field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+     @field ("georeferencesource",'Method',$georeferencesource,'false');
      //field ("datum","Datum",$datum); // almost never encountered on a label
-     field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
+     @field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
      //@selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false'); // This might only make sense in the data model for post-hoc georeferencing
      //@field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); // doesn't make sense for label transcription, should be used for post-hoc georeferencing
      //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription
@@ -1796,7 +1772,7 @@ function selectAcronym($field,$default) {
    if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; }
    if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; }
    if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; }
-   echo "<select id=\"$field\" name=\"$field\" >
+   echo "<select id=\"$field\" name=\"$field\" class='carryforward'>
 	<option value=\"GH\" $ghs>GH</option>
 	<option value=\"A\" $as>A</option>
 	<option value=\"NEBC\" $nebcs>NEBC</option>
