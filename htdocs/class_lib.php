@@ -2982,8 +2982,6 @@ function ingestCollectionObject() {
 
       if (!$fail) { // link any outstanding imagesets
 
-      if (!$fail) { // link any outstanding imagesets
-
         $sql = "insert delayed ignore into IMAGE_SET_collectionobject (collectionobjectid, imagesetid) (
                   select distinct f.collectionobjectid, imo.image_set_id from IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo, fragment f
                   where imlf.barcode = ? and f.identifier = ? and imlf.id = imo.image_local_file_id
