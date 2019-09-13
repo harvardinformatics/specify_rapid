@@ -1863,7 +1863,12 @@ function ingestCollectionObject() {
 
    // zero pad barcode up to 8 digits if needed
    $barcode = str_pad($barcode,8,"0",STR_PAD_LEFT);
+
    // Test for validly formed barcode
+   if ($barcode=='00000000') {
+     $fail = true;
+     $feedback .= "Can not save record for barcode [00000000]. ";
+   }
    if (!preg_match("/^[0-9]{8}$/",$barcode)) {
       $fail = true;
       $feedback .= "Barcode [$barcode] is invalid.  Must be zero padded with exactly 8 digits: ";
