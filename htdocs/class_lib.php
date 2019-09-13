@@ -2508,7 +2508,7 @@ function ingestCollectionObject() {
         // Look for an existing preparation, using the image tables
         // Barcodes from the same IMAGE_SET are from the same sheet
         $sql = "select f.preparationid from fragment f, IMAGE_SET_collectionobject imsc where imsc.collectionobjectid = f.collectionobjectid and imsc.imagesetid in
-                (select imo.image_set_id from IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo where imo.image_local_file_id = imlf.id and imlf.barcode = ?)"
+                (select imo.image_set_id from IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo where imo.image_local_file_id = imlf.id and imlf.barcode = ?)";
         $statement = $connection->prepare($sql);
         if ($statement) {
            $statement->bind_param("s", $barcode);
