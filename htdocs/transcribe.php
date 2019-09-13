@@ -924,7 +924,7 @@ habitat
    } else {
        $enabled = 'false';
    }
-   fieldEnabalable("barcode","Barcode",$targetbarcode,'required','[0-9]{1,8}','','Barcode must be a 1-8 digit number.',$enabled);   // not zero padded when coming off barcode scanner.
+   fieldEnabalable("barcode","Barcode",$targetbarcode,'required','[0-9]{8}','','Barcode must be an 8 digit number.',$enabled);   // not zero padded when coming off barcode scanner.
    echo "<input type='hidden' name='barcodeval' id='barcodeval' value='$targetbarcode'>"; // to carry submission of barcode with disabled barcode input.
    // TODO: on loss of focus, check database for record and reload data.
    // ******************
@@ -1031,6 +1031,7 @@ habitat
    //echo "</td></tr>";
 
    echo "<script>
+        var re_barcode = /^[0-9]{8}$/;
 
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
@@ -1133,6 +1134,24 @@ habitat
                event.preventDefault();
           });
 
+          /* TODO: Check SoRo
+           */
+          function checkSoRo() {
+
+
+          }
+
+          /* Enable or disable Save button
+           */
+          function checkSaveButton() {
+            var barcode = $('#barcode').val();
+            if (re_barcode.test(barcode)) {
+                $('#saveButton').attr('disabled', false).removeClass('ui-state-disabled');
+            } else {
+                $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
+            }
+          }
+
           /* Set the value of a field if the field is empty or if the field is not a carryforward field.
            * @param field the id of the input for which to set the value
            * @param value the new value to set (unless the field is a carryforward with an existing value).
@@ -1164,7 +1183,7 @@ habitat
 
           function loadFormData(data) {
               var barcodeval = data.barcode;
-              if (data.barcode==null || data.barcode=='NOTFOUND') {
+              if (data.barcode==null || data.barcode=='NOTFOUND' || data.barcode=='00000000') {
                   barcodeval = '';
               }
 
@@ -1218,6 +1237,8 @@ habitat
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
+
+              checkSaveButton();
 
             /*
             num_matches
