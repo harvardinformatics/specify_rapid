@@ -2504,47 +2504,74 @@ function ingestCollectionObject() {
       }
 
       if (!$fail) {
-         // Preparation
-         $sql = "select preptypeid from preptype where name = ?";
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param("s", $format);
-            $statement->execute();
-            $statement->bind_result($preptid);
-            $statement->store_result();
-            if ($statement->num_rows==1) {
-               if ($statement->fetch()) {
-                  $preptypeid = $preptid;
-               } else {
-                  $fail = true;
-                  $feedback.= "Query Error " . $connection->error;
-               }
-            } else {
-               $fail = true;
-               $feedback.= "No Match for format: " . $format;
-            }
-            $statement->free_result();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
-         }
 
-         $sql = "insert into preparation (version,timestampcreated,countamt,samplenumber,createdbyagentid,preptypeid,storagelocation,storageid) " .
-              " values (0,now(),1,1,?,?,?,?) ";
-         $statement = $connection->prepare($sql);
-         if ($statement) {
-            $statement->bind_param('iisi', $currentuserid, $preptypeid,$storagelocation,$storage);
-            if ($statement->execute()) {
-               $preparationid = $statement->insert_id;
-               $adds .= "preparation=[$preparationid]";
-            } else {
-               $fail = true;
-               $feedback.= "Unable to save preparation: " . $connection->error;
-            }
-            $statement->free_result();
-         } else {
-            $fail = true;
-            $feedback.= "Query error: " . $connection->error . " " . $sql;
+        // Look for an existing preparation, using the image tables
+        // Barcodes from the same IMAGE_SET are from the same sheet
+        $sql = "select f.preparationid from fragment f, IMAGE_SET_collectionobject imsc where imsc.collectionobjectid = f.collectionobjectid and imsc.imagesetid in
+                (select imo.image_set_id from IMAGE_LOCAL_FILE imlf, IMAGE_OBJECT imo where imo.image_local_file_id = imlf.id and imlf.barcode = ?)"
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+           $statement->bind_param("s", $barcode);
+           $statement->execute();
+           $statement->bind_result($preparationid);
+           $statement->store_result();
+           if ($statement->num_rows>0) {
+             if ($statement->fetch()) {
+                 // done
+             } else {
+                 $fail = true;
+                 $feedback.= "Query Error " . $connection->error;
+             }
+           }
+           $statement->free_result();
+        } else {
+           $fail = true;
+           $feedback.= "Query error: " . $connection->error . " " . $sql;
+        }
+
+         // No existing preparation found, create new one
+         if (!$preparationid) {
+           $sql = "select preptypeid from preptype where name = ?";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param("s", $format);
+              $statement->execute();
+              $statement->bind_result($preptid);
+              $statement->store_result();
+              if ($statement->num_rows==1) {
+                 if ($statement->fetch()) {
+                    $preptypeid = $preptid;
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error " . $connection->error;
+                 }
+              } else {
+                 $fail = true;
+                 $feedback.= "No Match for format: " . $format;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
+
+           $sql = "insert into preparation (version,timestampcreated,countamt,samplenumber,createdbyagentid,preptypeid,storagelocation,storageid) " .
+                " values (0,now(),1,1,?,?,?,?) ";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param('iisi', $currentuserid, $preptypeid,$storagelocation,$storage);
+              if ($statement->execute()) {
+                 $preparationid = $statement->insert_id;
+                 $adds .= "preparation=[$preparationid]";
+              } else {
+                 $fail = true;
+                 $feedback.= "Unable to save preparation: " . $connection->error;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
          }
       }
 
