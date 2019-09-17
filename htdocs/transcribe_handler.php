@@ -289,7 +289,7 @@ if ($connection && $authenticated) {
  		     @$collectingtrip = substr($_POST['collectingtrip'],0,huh_collectingtrip::COLLECTINGTRIPNAME_SIZE);
          @$collectingtripid = substr(preg_replace('/[^0-9]/','',$_POST['collectingtripid']),0,huh_collectingtrip::COLLECTINGTRIPID_SIZE);
          @$storagelocation= substr($_POST['storagelocation'],0,huh_preparation::STORAGELOCATION_SIZE);
-         @$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_POST['project']),0,huh_project::PROJECTNAME_SIZE);
+         @$project= substr($_POST['project'],0,huh_project::PROJECTNAME_SIZE);
          @$storage= substr(preg_replace('/[^0-9]/','',$_POST['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
          @$exsiccati= substr(preg_replace('/[^0-9]/','',$_POST['exsiccati']),0,huh_referencework::REFERENCEWORKID_SIZE);
          @$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
