@@ -1608,7 +1608,7 @@ class huh_geography_custom extends huh_geography {
       $returnvalue = '[';
       $hasfilter = FALSE;
       if (strlen(trim($within))>0) {
-          $sql = "select nodenumber, highestchildnodenumber from geography where name like ? order by rankid asc";
+          $sql = "select nodenumber, highestchildnodenumber from geography where fullname like ? order by rankid asc";
           if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param('s',$within);
             $stmt->execute();
@@ -1619,7 +1619,7 @@ class huh_geography_custom extends huh_geography {
           }
       }
       if ($hasfilter) {
-         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.fullname like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by g.fullname ASC ";
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param('sii',$term,$highernode,$higherhighestchildnode);
@@ -1637,7 +1637,7 @@ class huh_geography_custom extends huh_geography {
          }
 
       } else {
-         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.fullname like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param('s',$term);
@@ -1661,7 +1661,7 @@ class huh_geography_custom extends huh_geography {
    public function keySelectGeoGeoIDJSONHigher($term) {
       global $connection;
       $returnvalue = '[';
-      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid where g.fullname like ? and g.isaccepted = 1 and r.GeographyTreeDefID = 1  order by g.fullname ASC ";
+      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID = 1  order by g.fullname ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
