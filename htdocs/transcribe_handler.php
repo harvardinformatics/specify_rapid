@@ -1567,7 +1567,7 @@ function lookupDataForBarcode($barcode) {
    } else {
        $result['status'] = "ERROR";
        $result['error']="Item Not Found for [$barcode], matches=$num_matches. ";
-       error_log($result['error']);
+       //error_log($result['error']);
    }
 
    return $result;
