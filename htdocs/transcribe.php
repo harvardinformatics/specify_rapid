@@ -1675,7 +1675,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 4,
+               minLength: 3,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
@@ -1713,7 +1713,7 @@ function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultco
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 4,
+               minLength: 3,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
