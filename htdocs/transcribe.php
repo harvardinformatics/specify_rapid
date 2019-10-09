@@ -1683,6 +1683,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
                     data: {
                        druid_action: "geoidgeojson",
                        term: request.term,
+                       rank: 300,
                        field: "'.$field.'"
                     },
                     success: function( data ) {

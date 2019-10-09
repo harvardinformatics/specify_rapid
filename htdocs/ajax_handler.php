@@ -349,6 +349,10 @@ if ($connection && $authenticated) {
          $ok = false;
          $within = "";
          @$within = $_GET['within'];
+         @$rank = $_GET['rank'];
+         if (strlen($rank)==0) {
+           $rank = 10000;
+         }
          $key = '';
          @$field = $_GET['field'];
          $value = '';
@@ -359,9 +363,9 @@ if ($connection && $authenticated) {
          if (strlen($term)>0) {
             try {
                if ($field=='geographyfilter') {
-                   $values = $t->keySelectGeoGeoIDJSONHigher("%$term%");
+                   $values = $t->keySelectGeoGeoIDJSONHigher("%$term%",$rank);
                } else {
-                   $values = $t->keySelectGeoGeoIDJSON("%$term%",$within);
+                   $values = $t->keySelectGeoGeoIDJSON("%$term%",$within,$rank);
                }
                $ok = true;
             } catch (Exception $e) {

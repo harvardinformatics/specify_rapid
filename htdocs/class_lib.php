@@ -1603,7 +1603,7 @@ class huh_geography_custom extends huh_geography {
     *  @param term query term for like search on taxon.fullname.
     *  @return json array of results.
     */
-   public function keySelectGeoGeoIDJSON($term,$within="") {
+   public function keySelectGeoGeoIDJSON($term,$within="",$rank=10000) {
       global $connection;
       $returnvalue = '[';
       $hasfilter = FALSE;
@@ -1619,10 +1619,10 @@ class huh_geography_custom extends huh_geography {
           }
       }
       if ($hasfilter) {
-         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by g.fullname ASC ";
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.rankid <= ? and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
-            $stmt->bind_param('sii',$term,$highernode,$higherhighestchildnode);
+            $stmt->bind_param('siii',$term,$rank,$highernode,$higherhighestchildnode);
             $stmt->execute();
             $stmt->bind_result($id, $label,$value);
             while ($stmt->fetch()) {
@@ -1637,10 +1637,10 @@ class huh_geography_custom extends huh_geography {
          }
 
       } else {
-         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1  order by g.fullname ASC ";
+         $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID =1 and g.rankid <= ? order by g.fullname ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
-            $stmt->bind_param('s',$term);
+            $stmt->bind_param('si',$term,$rank);
             $stmt->execute();
             $stmt->bind_result($id, $label,$value);
             while ($stmt->fetch()) {
@@ -1658,13 +1658,13 @@ class huh_geography_custom extends huh_geography {
       return $returnvalue;
    }
 
-   public function keySelectGeoGeoIDJSONHigher($term) {
+   public function keySelectGeoGeoIDJSONHigher($term,$rank=10000) {
       global $connection;
       $returnvalue = '[';
-      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID = 1  order by g.fullname ASC ";
+      $preparemysql = " SELECT distinct g.geographyid, concat(g.fullname,' [',r.name,']') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid where g.name like ? and g.isaccepted = 1 and r.GeographyTreeDefID = 1 and g.rankid <= ? order by g.fullname ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
-         $stmt->bind_param('s',$term);
+         $stmt->bind_param('si',$term,$rank);
          $stmt->execute();
          $stmt->bind_result($id, $label,$value);
          while ($stmt->fetch()) {
