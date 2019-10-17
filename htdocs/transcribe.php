@@ -1334,6 +1334,10 @@ habitat
                    $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
                }
 
+               var params = new URLSearchParams(window.location.search);
+               params.set('position', position);
+               window.history.pushState({}, '', decodeURIComponent('${location.pathname}?${params}'));
+
                 $.ajax({
                    type: 'GET',
                    url: 'transcribe_handler.php',
