@@ -1336,7 +1336,7 @@ habitat
 
                var params = new URLSearchParams(window.location.search);
                params.set('position', position);
-               window.history.pushState({}, '', decodeURIComponent(`${location.pathname}?${params}`));
+               window.history.pushState({}, '', decodeURIComponent(``${location.pathname}?${params}``));
 
                 $.ajax({
                    type: 'GET',
