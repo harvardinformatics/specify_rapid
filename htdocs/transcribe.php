@@ -1675,7 +1675,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 3,
+               minLength: 2,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
@@ -1713,7 +1713,7 @@ function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultco
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 3,
+               minLength: 2,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
@@ -1818,7 +1818,7 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 3,
+               minLength: 2,
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
@@ -1880,7 +1880,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
 
        $(function() {
           $( "#'.$field.'" ).autocomplete({
-             minLength: 4,
+             minLength: 2,
              delay: 400,
              source: function( request, response ) {
                 $.ajax( {
@@ -1963,7 +1963,7 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 5,
+               minLength: 2,
                delay: 400,
                source: function( request, response ) {
                   $.ajax( {
@@ -2008,7 +2008,7 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
 
        $(function() {
           $( "#'.$field.'" ).autocomplete({
-             minLength: 3,
+             minLength: 2,
              source: function( request, response ) {
                 $.ajax( {
                   url: "ajax_handler.php",
