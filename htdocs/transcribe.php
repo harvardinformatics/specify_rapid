@@ -826,6 +826,10 @@ habitat
        $rcollector = $rcoleve->loadLinkedFromcollector();
        $collectoragentid = $rcollector->getAgentID();
        $collectors = huh_collector_custom::getCollectorVariantName($collectoragentid);
+       if (strlen(trim($collectors)) == 0 && strlen(trim($collectoragentid)) == 0) {
+         $collectors = '[data not captured]';
+         $collectoragentid = 97236;
+       }
        $etal = $rcollector->getEtAl();
        $rlocality = $related['LocalityID'];
        $rcollectingtrip = $related['CollectingTripID'];
@@ -835,6 +839,9 @@ habitat
        $namedPlace = $rlocality->getNamedPlace();
        $verbatimElevation = $rlocality->getVerbatimElevation();
        $specificLocality = $rlocality->getLocalityName();
+       if (strlen(trim($specificLocality)) == 0) {
+         $specificLocality = '[no additional data]';
+       }
        $related = $rlocality->loadLinkedTo();
        $rgeography = $related['GeographyID'];
        //$rgeography->load($rgeography->getGeographyID()); // already loaded
@@ -1185,6 +1192,15 @@ habitat
               var barcodeval = data.barcode;
               if (data.barcode==null || data.barcode=='NOTFOUND' || data.barcode=='00000000') {
                   barcodeval = '';
+              }
+
+              if (! data.collectors && ! data.collectoragentid) {
+                data.collectors = '[data not captured]';
+                data.collectoragentid = 97236;
+              }
+
+              if (! data.specificlocality) {
+                data.specificlocality = '[no additional data]';
               }
 
               $('#barcode').val(barcodeval);
