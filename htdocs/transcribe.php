@@ -840,7 +840,7 @@ habitat
        $verbatimElevation = $rlocality->getVerbatimElevation();
        $specificLocality = $rlocality->getLocalityName();
        if (strlen(trim($specificLocality)) == 0) {
-         $specificLocality = '[no additional data]';
+         $specificLocality = '[data not captured]';
        }
        $related = $rlocality->loadLinkedTo();
        $rgeography = $related['GeographyID'];
@@ -1200,7 +1200,7 @@ habitat
               }
 
               if (! data.specificlocality) {
-                data.specificlocality = '[no additional data]';
+                data.specificlocality = '[data not captured]';
               }
 
               $('#barcode').val(barcodeval);
