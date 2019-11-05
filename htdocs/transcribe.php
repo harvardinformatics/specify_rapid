@@ -1025,12 +1025,14 @@ habitat
 
    }
 
+
+
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
    echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
-   echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button'>";
+   echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
-   echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button'>";
+   echo "<input type='button' value='Previous', id='previousButton'  disabled='true' class='carryforward ui-button ui-state-disabled'>";
    echo "</td></tr>";
    //echo "<tr><td colspan=2 style=' font-size: 0.9em;'>";
    //echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
@@ -1039,6 +1041,9 @@ habitat
 
    echo "<script>
         var re_barcode = /^[0-9]{8}$/;
+
+        // Enable/disable buttons based on position
+        checkPosition($position);
 
          $('#nextButton').click(function(event){
                $('#feedback').html( 'Loading next...');
@@ -1185,6 +1190,26 @@ habitat
                 $('#'+field).css({'color':'black'});
                 $('#'+field).val(value);
               }
+
+          }
+
+          /* Update UI elements based on the position in the batch
+           */
+          function checkPosition() {
+
+            if(position > 1) {
+                $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
+            } else {
+                $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
+            }
+
+            if(position < $filecount) {
+                $('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
+                $('#doneButton').attr('disabled', true).addClass('ui-state-disabled');
+            } else {
+                $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
+                $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
+            }
 
           }
 
@@ -1336,19 +1361,7 @@ habitat
           function loadNextData(position,batch_id) {
                console.log('called loadNextData() with ' + position + ',' +batch_id);
 
-               if(position > 1) {
-                   $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
-               } else {
-                   $('#previousButton').attr('disabled', true).addClass('ui-state-disabled');
-               }
-
-               if(position < $filecount) {
-                   $('#nextButton').attr('disabled', false).removeClass('ui-state-disabled');
-                   $('#doneButton').attr('disabled', true).addClass('ui-state-disabled');
-               } else {
-                   $('#nextButton').attr('disabled', true).addClass('ui-state-disabled');
-                   $('#doneButton').attr('disabled', false).removeClass('ui-state-disabled');
-               }
+               checkPosition(position);
 
                var params = new URLSearchParams(window.location.search);
                params.set('position', position);
