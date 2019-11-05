@@ -1195,7 +1195,7 @@ habitat
 
           /* Update UI elements based on the position in the batch
            */
-          function checkPosition() {
+          function checkPosition(position) {
 
             if(position > 1) {
                 $('#previousButton').attr('disabled', false).removeClass('ui-state-disabled');
