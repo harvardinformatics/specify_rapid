@@ -645,7 +645,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
-    echo "<button type='button' onclick='jumpto($('#jumpto').val());' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
+    echo "<button type='button' onclick='jumpto($(\"#jumpto\").val());' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
 
