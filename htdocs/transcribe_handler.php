@@ -116,7 +116,7 @@ if ($connection && $authenticated) {
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
-         $pathfile = $batch->movePosition(position);
+         $pathfile = $batch->movePosition($position);
          $position = $pathfile->position;
          $barcode = $pathfile->barcode;
 
