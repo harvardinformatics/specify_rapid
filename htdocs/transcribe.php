@@ -645,6 +645,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
+    echo "<button type='button' onclick='jumpto($('#jumpto').val());' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
 
@@ -892,7 +893,7 @@ habitat
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>Starting batch $batchpath with $filecount files.  [$targetbarcode]</span>&nbsp;[<span id='current_position'>$position</span>]";
+   echo "&nbsp;<span id='batch_info'>$batchpath file $position of $filecount. </span>";
    echo "</div>";
    echo "</div>";
 
@@ -1067,7 +1068,6 @@ habitat
                      var imagepath = data.path;
                      var imagefilename = data.filename;
                      var position = data.position;
-                     $('#current_position').html(data.position);
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
                      $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
@@ -1107,7 +1107,6 @@ habitat
                      var imagepath = data.path;
                      var imagefilename = data.filename;
                      var position = data.position;
-                     $('#current_position').html(data.position);
                      var filecount = data.filecount;
                      channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
                      $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
@@ -1385,6 +1384,11 @@ habitat
                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
                    }
                });
+          }
+
+          function jumpto(position) {
+            if (isNaN(position)) return;
+            loadNextData(position,".$currentBatch->getBatchID().");
           }
 
 
