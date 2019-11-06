@@ -1050,6 +1050,8 @@ habitat
              logEvent('next_button_click',$('#batch_info').html());
              // clear fields
              $('#transcribeForm  input:not(.carryforward)').val('');
+             var params = new URLSearchParams(window.location.search);
+             var position = params.get('position');             
              loadRecord(position+1,".$currentBatch->getBatchID().");
              event.preventDefault();
           });
@@ -1060,6 +1062,8 @@ habitat
              logEvent('previous_button_click',$('#batch_info').html());
              // clear fields
              $('#transcribeForm  input:not(.carryforward)').val('');
+             var params = new URLSearchParams(window.location.search);
+             var position = params.get('position');
              loadRecord(position-1,".$currentBatch->getBatchID().");
              event.preventDefault();
           });
