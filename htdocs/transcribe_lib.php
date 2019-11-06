@@ -302,6 +302,12 @@ class TR_Batch {
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("isi",$nextposition,$_SESSION["username"],$batch_id);
         $statement->execute();
+
+        if (mysql_affected_rows() < 1) {
+          $user = $_SESSION["username"];
+          throw new Exception("Could not update position [$position] for batch [$batch_id], user [$user]");
+        }
+
         $statement->close();
      } else {
        throw new Exception("Database connection failed");
