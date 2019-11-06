@@ -1160,6 +1160,8 @@ habitat
           }
 
           function loadFormData(data) {
+              console.log('called loadFormData()');
+
               var barcodeval = data.barcode;
               if (data.barcode==null || data.barcode=='NOTFOUND' || data.barcode=='00000000') {
                   barcodeval = '';
@@ -1264,14 +1266,20 @@ habitat
           }
 
           function loadImage(data) {
+            console.log('called loadImage()');
             $('#image_div').attr('src',data.src);
+
+            var params = new URLSearchParams(window.location.search);
+            params.set('filepath', data.path);
+            params.set('filename', data.filename);
+            window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+
             var imagesource = data.src;
             var imagepath = data.path;
             var imagefilename = data.filename;
             var position = data.position;
             var filecount = data.filecount;
             channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
-            $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
           }
 
           function loadDataForBarcode(barcodevalue) {
@@ -1336,6 +1344,7 @@ habitat
                    success: function(data) {
                      console.log(data);
                      loadFormData(data);
+                     $('#batch_info').html('".$currentBatch->getPath()." file ' + data.position +' of $filecount.');
                      loadImage(data);
                    },
                    error: function() {
