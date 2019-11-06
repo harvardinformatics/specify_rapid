@@ -645,7 +645,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
-    echo "<button type='button' onclick='jumpto($(\"#jumpto\").val());' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
+    echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
 
@@ -1092,6 +1092,24 @@ habitat
              event.preventDefault();
           });
 
+          $('#jumpButton').click(function(event){
+             $('#feedback').html( 'Jumping to position...');
+             jumpto($('#jumpto').val());
+             event.preventDefault();
+          });
+
+          $('#jumpto').keyup(function(event) {
+              if (event.keyCode === 13) {
+                  $('#jumpButton').click();
+              }
+          });
+
+          function jumpto(position) {
+            if (isNaN(position)) return;
+            loadRecord(position,".$currentBatch->getBatchID().");
+          }
+
+
           /* TODO: Check SoRo
            */
           function checkSoRo() {
@@ -1352,11 +1370,6 @@ habitat
                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
                    }
                });
-          }
-
-          function jumpto(position) {
-            if (isNaN(position)) return;
-            loadRecord(position,".$currentBatch->getBatchID().");
           }
 
 
