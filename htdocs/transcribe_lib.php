@@ -278,11 +278,14 @@ class TR_Batch {
   function movePosition($i) {
      global $connection, $user;
 
+     $batch_id = $this->getBatchId();
+     $user = $_SESSION["username"];
+
      // Check if there is a file at the new position
      $nextposition = $i;
      $sql = 'select position from TR_BATCH_IMAGE where tr_batch_id = ? and position = ?';
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("ii",$this->getBatchId(),$nextposition);
+        $statement->bind_param("ii",$batch_id,$nextposition);
         $statement->execute();
         $statement->bind_result($position2);
         $statement->store_result();
@@ -300,12 +303,11 @@ class TR_Batch {
      // Update position
      $sql = "update TR_USER_BATCH set position = ? where username = ? and tr_batch_id = ?";
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("isi",$nextposition,$_SESSION["username"],$batch_id);
+        $statement->bind_param("isi",$nextposition,$user,$batch_id);
         $statement->execute();
 
         if (mysql_affected_rows() < 1) {
-          $user = $_SESSION["username"];
-          throw new Exception("Could not update position [$position] for batch [$batch_id], user [$user]");
+          throw new Exception("Could not update position [$nextposition] for batch [$batch_id], user [$user]");
         }
 
         $statement->close();
