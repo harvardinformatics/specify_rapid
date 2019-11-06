@@ -1051,7 +1051,7 @@ habitat
              // clear fields
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
-             var position = params.get('position');             
+             var position = parseInt(params.get('position'));
              loadRecord(position+1,".$currentBatch->getBatchID().");
              event.preventDefault();
           });
@@ -1063,7 +1063,7 @@ habitat
              // clear fields
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
-             var position = params.get('position');
+             var position = parseInt(params.get('position'));
              loadRecord(position-1,".$currentBatch->getBatchID().");
              event.preventDefault();
           });
