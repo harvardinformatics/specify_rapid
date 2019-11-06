@@ -306,7 +306,7 @@ class TR_Batch {
         $statement->bind_param("isi",$nextposition,$username,$batch_id);
         $statement->execute();
 
-        if (mysql_affected_rows($connection) < 1) {
+        if (mysql_affected_rows() < 1) {
           throw new Exception("Could not update position [$nextposition] for batch [$batch_id], user [$username]");
         }
 
