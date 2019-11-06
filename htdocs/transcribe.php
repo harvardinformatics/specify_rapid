@@ -1047,102 +1047,46 @@ habitat
         checkPosition($position);
 
          $('#nextButton').click(function(event){
-               $('#feedback').html( 'Loading next...');
-               logEvent('next_button_click',$('#batch_info').html());
-               // clear fields
-               $('#transcribeForm  input:not(.carryforward)').val('');
-
-               // load next image
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   dataType: 'json',
-                   data: {
-                       action: 'getnextimage',
-                       batch_id: ".$currentBatch->getBatchID()."
-                   },
-                   success: function(data) {
-                     console.log(data);
-                     $('#image_div').attr('src',data.src);
-                     var imagesource = data.src;
-                     var imagepath = data.path;
-                     var imagefilename = data.filename;
-                     var position = data.position;
-                     var filecount = data.filecount;
-                     channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
-
-                     // load data for this record.
-                     loadNextData(position,".$currentBatch->getBatchID().");
-                   },
-                   error: function() {
-                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                       //$('#nextButton').prop('disabled',true)
-                   }
-               });
-               event.preventDefault();
+             $('#feedback').html( 'Loading next...');
+             logEvent('next_button_click',$('#batch_info').html());
+             // clear fields
+             $('#transcribeForm  input:not(.carryforward)').val('');
+             loadRecord(position+1,".$currentBatch->getBatchID().");
+             event.preventDefault();
           });
 
 
          $('#previousButton').click(function(event){
-
-               $('#feedback').html( 'Loading next...');
-               logEvent('previous_button_click',$('#batch_info').html());
-               // clear fields
-               $('#transcribeForm  input:not(.carryforward)').val('');
-
-               // load next image
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   dataType: 'json',
-                   data: {
-                       action: 'getpreviousimage',
-                       batch_id: ".$currentBatch->getBatchID()."
-                   },
-                   success: function(data) {
-                     console.log(data.src);
-                     $('#image_div').attr('src',data.src);
-                     var imagesource = data.src;
-                     var imagepath = data.path;
-                     var imagefilename = data.filename;
-                     var position = data.position;
-                     var filecount = data.filecount;
-                     channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
-
-                     // load data for this record.
-                     loadNextData(position,".$currentBatch->getBatchID().");
-                   },
-                   error: function() {
-                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                   }
-               });
-               event.preventDefault();
+             $('#feedback').html( 'Loading previous...');
+             logEvent('previous_button_click',$('#batch_info').html());
+             // clear fields
+             $('#transcribeForm  input:not(.carryforward)').val('');
+             loadRecord(position-1,".$currentBatch->getBatchID().");
+             event.preventDefault();
           });
 
 
           $('#doneButton').click(function(event){
-               $('#feedback').html( 'Completing batch...');
-               logEvent('done',$('#batch_info').html());
-               // move position to mark batch as done
-               $.ajax({
-                   type: 'GET',
-                   url: 'transcribe_handler.php',
-                   dataType: 'json',
-                   data: {
-                       action: 'donebatch',
-                       batch_id: ".$currentBatch->getBatchID()."
-                   },
-                   success: function(data) {
-                     console.log(data);
-                     doclear();
-                   },
-                   error: function() {
-                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
-                   }
-               });
-               event.preventDefault();
+             $('#feedback').html( 'Completing batch...');
+             logEvent('done',$('#batch_info').html());
+             // move position to mark batch as done
+             $.ajax({
+                 type: 'GET',
+                 url: 'transcribe_handler.php',
+                 dataType: 'json',
+                 data: {
+                     action: 'donebatch',
+                     batch_id: ".$currentBatch->getBatchID()."
+                 },
+                 success: function(data) {
+                   console.log(data);
+                   doclear();
+                 },
+                 error: function() {
+                     $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                 }
+             });
+             event.preventDefault();
           });
 
           /* TODO: Check SoRo
@@ -1316,6 +1260,17 @@ habitat
 
           }
 
+          function loadImage(data) {
+            $('#image_div').attr('src',data.src);
+            var imagesource = data.src;
+            var imagepath = data.path;
+            var imagefilename = data.filename;
+            var position = data.position;
+            var filecount = data.filecount;
+            channel.postMessage(  { action:'load', origheight:'$targetheight', origwidth:'$targetwidth', uri: imagesource, path: imagepath, filename: imagefilename }  );
+            $('#batch_info').html('".$currentBatch->getPath()." file ' + position +' of $filecount.');
+          }
+
           function loadDataForBarcode(barcodevalue) {
                console.log('called loadDataForBarcode() with ' + barcodevalue);
                $.ajax({
@@ -1357,8 +1312,8 @@ habitat
                });
           }
 
-          function loadNextData(position,batch_id) {
-               console.log('called loadNextData() with ' + position + ',' +batch_id);
+          function loadRecord(position,batch_id) {
+               console.log('called loadRecord() with ' + position + ',' +batch_id);
 
                checkPosition(position);
 
@@ -1371,16 +1326,17 @@ habitat
                    url: 'transcribe_handler.php',
                    dataType: 'json',
                    data: {
-                       action: 'getnextrecord',
+                       action: 'getrecord',
                        batch_id: batch_id,
                        position: position
                    },
                    success: function(data) {
                      console.log(data);
                      loadFormData(data);
+                     loadImage(data);
                    },
                    error: function() {
-                      console.log('ajax call to transcribe_handler.php/action=getnextrecord failed');
+                      console.log('ajax call to transcribe_handler.php/action=getrecord failed');
                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
                    }
                });
@@ -1388,7 +1344,7 @@ habitat
 
           function jumpto(position) {
             if (isNaN(position)) return;
-            loadNextData(position,".$currentBatch->getBatchID().");
+            loadRecord(position,".$currentBatch->getBatchID().");
           }
 
 

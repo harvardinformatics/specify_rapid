@@ -109,104 +109,35 @@ if ($connection && $authenticated) {
          //echo " First File: [$targetBatchFirst->filename]";
          break;
 
-      case 'getnextrecord':
+      case 'getrecord':
          $ok = false;
          @$id = $_GET['batch_id'];
          @$position = $_GET['position'];
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
-         $path = $batch->getPath();
-         $ir = $batch->getFile($position);
-         $filename = $ir->filename;
-         $barcode = $ir->barcode;
-
-         // IMAGE_LOCAL_FILE.path is expected to end with a /
-         if (substr($path,-1,1)!="/") {
-            $path = "$path/";
-         }
-         // IMAGE_LOCAL_FILE.path is expected to not start with a /
-         if (substr($path,0,1)=="/") {
-             $path = substr($path,1);
-         }
-         $toencode=array();
-         $toencode['path']=$path;
-         $toencode['filename']=$filename;
+         $pathfile = $batch->movePosition(position);
+         $position = $pathfile->position;
+         $barcode = $pathfile->barcode;
 
          // lookup the data for this barcode.
          $dataarray = lookupDataForBarcode($barcode);
-         $response = "{}";
-         switch ($dataarray['status']) {
-            case "NOTFOUND":
-              if($barcode==null || strlen(trim($barcode))==0) {
-                   $toencode['barcode']='NOTFOUND';
-                   $toencode['path']=$path;
-                   $toencode['filename']=$filename;
-              } else {
-                   $toencode['barcode']=$barcode;
-              }
-              $response = json_encode($toencode);
-              break;
 
-            case "FOUND":
-              $response = json_encode($dataarray);
-              break;
-            case "ERROR":
-            default:
-              $response = json_encode($dataarray);
-              break;
+         if($dataarray['status'] == "NOTFOUND" && ($barcode==null || strlen(trim($barcode))==0)) {
+              $dataarray['barcode']='NOTFOUND';
          }
+
+         // Attach image data
+         $dataarray['position'] = $position;
+         $dataarray['filecount'] = $batch->getFileCount();
+         $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         $dataarray['path'] = $pathfile->path;
+         $dataarray['filename'] = $pathfile->filename;
+
+         $response = json_encode($dataarray);
 
          header("Content-type: application/json");
 
-         echo $response;
-         break;
-
-      case 'getnextimage':
-         $ok = false;
-         @$id = $_GET['batch_id'];
-         $currentBatch = new TR_Batch();
-         $currentBatch->setID($id);
-         $path = $currentBatch->getPath();
-         $pathfile = $currentBatch->incrementFile();
-         $position = $pathfile->position;
-         $filecount = $currentBatch->getFileCount();
-         $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-         $path= $pathfile->path;
-         $filename = $pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
-         if (strlen($pathfile->filename)>0) { $ok=true; }
-
-         header("Content-type: application/json");
-         if ($ok) {
-            $response = $values;
-         } else {
-            $response = '{}';
-         }
-         echo $response;
-         break;
-
-      case 'getpreviousimage':
-         $ok = false;
-         @$id = $_GET['batch_id'];
-         $currentBatch = new TR_Batch();
-         $currentBatch->setID($id);
-         $path = $currentBatch->getPath();
-         $pathfile = $currentBatch->decrementFile();
-         $position = $pathfile->position;
-         $filecount = $currentBatch->getFileCount();
-         $mediauri = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-         $path= $pathfile->path;
-         $filename = $pathfile->filename;
-         $values = "{ \"src\":\"$mediauri\", \"position\":\"$position\", \"filecount\":\"$filecount\", \"path\":\"$path\", \"filename\":\"$filename\" }";
-         if (strlen($pathfile->filename)>0) { $ok=true; }
-
-         header("Content-type: application/json");
-         if ($ok) {
-            $response = $values;
-         } else {
-            $response = '{}';
-         }
          echo $response;
          break;
 
