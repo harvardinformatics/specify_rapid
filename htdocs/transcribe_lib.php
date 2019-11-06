@@ -279,7 +279,7 @@ class TR_Batch {
      global $connection, $user;
 
      $batch_id = $this->getBatchId();
-     $user = $_SESSION["username"];
+     $username = $_SESSION["username"];
 
      // Check if there is a file at the new position
      $nextposition = $i;
@@ -303,12 +303,12 @@ class TR_Batch {
      // Update position
      $sql = "update TR_USER_BATCH set position = ? where username = ? and tr_batch_id = ?";
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("isi",$nextposition,$user,$batch_id);
+        $statement->bind_param("isi",$nextposition,$username,$batch_id);
         $statement->execute();
 
-        //if (mysql_affected_rows($connection) < 1) {
-        //  throw new Exception("Could not update position [$nextposition] for batch [$batch_id], user [$user]");
-        //}
+        if (mysql_affected_rows($connection) < 1) {
+          throw new Exception("Could not update position [$nextposition] for batch [$batch_id], user [$username]");
+        }
 
         $statement->close();
      } else {
