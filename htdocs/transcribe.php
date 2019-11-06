@@ -892,7 +892,7 @@ habitat
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
-   echo "&nbsp;<span id='batch_info'>$batchpath file $position of $filecount. </span>";
+   echo "&nbsp;<span id='batch_info'>[$batchpath] file $position of $filecount. </span>";
    echo "</div>";
    echo "</div>";
 
@@ -1266,15 +1266,15 @@ habitat
           }
 
           function loadImage(data) {
-            console.log('called loadImage()');
-            $('#image_div').attr('src',data.src);
+            console.log('called loadImage(): ' + data.mediauri);
+            $('#image_div').attr('src',data.mediauri);
 
             var params = new URLSearchParams(window.location.search);
             params.set('filepath', data.path);
             params.set('filename', data.filename);
             window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
 
-            var imagesource = data.src;
+            var imagesource = data.mediauri;
             var imagepath = data.path;
             var imagefilename = data.filename;
             var position = data.position;
@@ -1344,7 +1344,7 @@ habitat
                    success: function(data) {
                      console.log(data);
                      loadFormData(data);
-                     $('#batch_info').html('".$currentBatch->getPath()." file ' + data.position +' of $filecount.');
+                     $('#batch_info').html('[".$currentBatch->getPath()."] file ' + data.position +' of $filecount.');
                      loadImage(data);
                    },
                    error: function() {
