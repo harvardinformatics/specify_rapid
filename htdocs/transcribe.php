@@ -703,8 +703,7 @@ habitat
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($batchpath);
    $filecount = $currentBatch->getFileCount();
-   $currentBatch->moveTo($position);
-   $file = $currentBatch->getFile($position);
+   $file = $currentBatch->movePosition($position);
    $filepath = $file->path;
    $filename = $file->filename;
 
