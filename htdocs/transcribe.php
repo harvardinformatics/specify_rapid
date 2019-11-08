@@ -1076,6 +1076,12 @@ function form() {
               projectConfig();
           });
 
+          $('#project').keyup(function(event) {
+            if (event.keyCode === 13) {
+                projectConfig();
+            }
+          });
+
 
           /* TODO: Check SoRo
            */
@@ -1094,48 +1100,32 @@ function form() {
             }
           }
 
-          /* TODO: Change project config
-           */
-           function projectConfig() {
+          var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
+          var defaultHideFields = ['accessionnumber'];
+
+          function projectConfig() {
              var project = $('#project').val();
              switch (project) {
                case 'Plants on Edge/Endless Forms':
-                configPoE();
+                hideFields(poeHideFields);
                 break;
                default:
-                configDefault();
+                hideFields(defaultHideFields);
              }
-           }
+          }
 
-           function configPoE() {
-             $('#provenance').hide();
-             $('label[for=\\'provenance\\']').hide();
-             $('#currentqualifier').hide();
-             $('label[for=\\'currentqualifier\\']').hide();
-             $('#collectingtrip').hide();
-             $('label[for=\\'collectingtrip\\']').hide();
-             $('#container').hide();
-             $('label[for=\\'container\\']').hide();
-             $('#specimendescription').hide();
-             $('label[for=\\'specimendescription\\']').hide();
-             $('#specimenremarks').hide();
-             $('label[for=\\'specimenremarks\\']').hide();
-           }
-
-           function configDefault() {
-             $('#provenance').show();
-             $('label[for=\\'provenance\\']').show();
-             $('#currentqualifier').show();
-             $('label[for=\\'currentqualifier\\']').show();
-             $('#collectingtrip').show();
-             $('label[for=\\'collectingtrip\\']').show();
-             $('#container').show();
-             $('label[for=\\'container\\']').show();
-             $('#specimendescription').show();
-             $('label[for=\\'specimendescription\\']').show();
-             $('#specimenremarks').show();
-             $('label[for=\\'specimenremarks\\']').show();
-           }
+          function hideFields(arr) {
+            $('.inputField').each(function(){
+              var idname = $(this).attr('id');
+              if (arr.includes(idname)) {
+                $(this).hide()
+                $('label[for=' + idname + ']').hide();
+              } else {
+                $(this).show()
+                $('label[for=' + idname + ']').show();
+              }
+            });
+          }
 
 
           /* Set the value of a field if the field is empty or if the field is not a carryforward field.
@@ -1524,12 +1514,12 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
       $disabled = '';
    }
    if ($required=='false') {
-      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    } else {
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    }
    echo "</td></tr>\n";
 }
@@ -1556,12 +1546,12 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
    //$width = BASEWIDTH - 2;
    $width = $GLOBALS['BASEWIDTH'];
    if ($required=='false') {
-      echo "<input id=$name name=$name value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    }
    //echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
    echo "<script>
@@ -1590,7 +1580,7 @@ function selectPrepMethod($field,$label,$default,$required='true',$carryforward=
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: 9em; ' $carryforward >
+        <input id='$field' name='$field' class='inputField' value='$default'  style='width: 9em; ' $carryforward >
      </div>
   </td></tr>
    ";
@@ -1615,7 +1605,7 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: 9em; ' $carryforward >
+        <input id='$field' name='$field' class='inputField' value='$default'  style='width: 9em; ' $carryforward >
      </div>
   </td></tr>
    ";
@@ -1627,9 +1617,9 @@ function utm($utmzonedefault='', $utmeastingdefault='', $utmnorthingdefault='') 
 	echo "<tr><td>\n";
 	echo "<label for='utmzone'>UTM Zone,Easting,Northing</label>";
 	echo "</td><td>\n";
-	echo "<input name=utmzone value=$utmzonedefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+[A-Z]' style='width: 4em;' >";
-	echo "<input name=utmeasting value=$utmeastingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
-	echo "<input name=utmnorthing value=$utmnorthingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
+	echo "<input name=utmzone class='inputField' value=$utmzonedefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+[A-Z]' style='width: 4em;' >";
+	echo "<input name=utmeasting class='inputField' value=$utmeastingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
+	echo "<input name=utmnorthing class='inputField' value=$utmnorthingdefault dojoType='dijit.form.ValidationTextBox' required='false' regExp='[0-9]+' style='width: 8em;' >";
    echo "</td></tr>\n";
 }
 
@@ -1637,7 +1627,7 @@ function preptypeselect($name,$label,$default,$required,$storeId,$table,$field) 
    $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='$storeId'
 	 url='ajax_handler.php?druid_action=returndistinctjsonpreptype&table=$table&field=$field'> </div>";
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
-	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
+	<input type=text name=$name id=$name class='inputField' dojoType='dijit.form.FilteringSelect'
 	store='$storeId'
 	searchAttr='name' value='$default' ></td></tr>";
    echo $returnvalue;
@@ -1659,7 +1649,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
    if ($field=='geographyfilter') { $style = " background-color: lightgrey; "; } else { $style = ""; }
    if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' $carryforward  >
+    <input type=text name=$field id=$field $req class='inputField' value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' $carryforward  >
     <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1697,7 +1687,7 @@ function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultco
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
+    <input type=text name=$field id=$field $req class='inputField' value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
     <input type=hidden name=$fieldid id=$fieldid required='$required'  value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -1734,7 +1724,7 @@ function fieldselectpicklist($name,$label,$default,$required,$storeId,$picklisti
    $returnvalue = "<tr><td><div dojoType='dojo.data.ItemFileReadStore' jsId='$storeId'
 	 url='ajax_handler.php?druid_action=returndistinctjsonpicklist&field=value&picklistid=$picklistid$req'> </div>";
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
-	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
+	<input type=text name=$name id=$name class='inputField' dojoType='dijit.form.FilteringSelect'
 	store='$storeId' required='$required'
 	searchAttr='name' value='$default' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; '></td></tr>";
    echo $returnvalue;
@@ -1744,7 +1734,7 @@ function selectYesNo($field,$label) {
 	echo "<tr><td>\n";
 	echo "<label for='$field'>$label</label>";
 	echo "</td><td>\n";
-	echo '<select name="'.$field.'" >
+	echo '<select name="'.$field.'" class="inputField">
 	<option value="" selected>&nbsp;&nbsp;&nbsp;</option>
 	<option value="1">Yes</option>
 	<option value="0">No</option>
@@ -1756,7 +1746,7 @@ function selectQualifier($field,$label,$default) {
 	echo "<tr><td>\n";
 	echo "<label for='$field'>$label</label>";
 	echo "</td><td>\n";
-	echo '<select name="'.$field.'" id="'.$field.'">';
+	echo '<select name="'.$field.'" id="'.$field.'" class="inputField">';
     if ($default=="") { $s0 = 'selected="selected"'; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; }
     if ($default=="SensuStricto") { $s0 = ''; $sss = 'selected="selected"'; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; }
     if ($default=="InQuestion") { $s0 = ''; $sss = ""; $sq = 'selected="selected"'; $sn=""; $scf=""; $ssl=""; $saf=""; }
@@ -1785,7 +1775,7 @@ function selectAcronym($field,$default) {
    if ($default=="AMES") { $ghs = ""; $as = ""; $fhs = ""; $amess='selected="selected"'; $econs=""; $nebcs=""; }
    if ($default=="ECON") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs='selected="selected"'; $nebcs=""; }
    if ($default=="NEBC") { $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs='selected="selected"'; }
-   echo "<select id=\"$field\" name=\"$field\" class='carryforward'>
+   echo "<select id=\"$field\" name=\"$field\" class='carryforward inputField'>
 	<option value=\"GH\" $ghs>GH</option>
 	<option value=\"A\" $as>A</option>
 	<option value=\"NEBC\" $nebcs>NEBC</option>
@@ -1800,9 +1790,9 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
-   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field $req  value='$value' style=' width:". $GLOBALS['BASEWIDTH'] ."em;' $carryforward >
+	<input type=text name=$field id=$field $req  value='$value' style=' width:". $GLOBALS['BASEWIDTH'] ."em;' class='inputField $carryforward'>
 	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1839,7 +1829,7 @@ function selectBasionymID($field,$label,$required='false') {
 	url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
 	$width = $GLOBALS['BASEWIDTH'] - 3;
 	$returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	<input type=text name=$field id=$field class='inputField' dojoType='dijit.form.FilteringSelect'
 	store='taxonStore$field' $req searchDelay='900' hasDownArrow='false'
 	style='width: ".$width."em; border-color: blue; '
 	searchAttr='name' value='' >
@@ -1853,9 +1843,9 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
-   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='inputField $carryforward' >
     <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1907,7 +1897,7 @@ function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
 	      url='ajax_handler.php?druid_action=returndistinctjsontitle' > </div>";
    }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	<input type='text' name=$field id=$field class='inputField' dojoType='dijit.form.FilteringSelect'
 	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
    <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
@@ -1920,7 +1910,7 @@ function selectStorageID($field,$label,$required='false') {
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='agentStore$field'
 	      url='ajax_handler.php?druid_action=returndistinctjsonstorage' > </div>";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-	<input type='text' name=$field id=$field dojoType='dijit.form.FilteringSelect'
+	<input type='text' name=$field id=$field class='inputField' dojoType='dijit.form.FilteringSelect'
 	store='agentStore$field' $req searchDelay='900' hasDownArrow='false' style='border-color: blue;'
 	searchAttr='name' value='' >
 	<button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
@@ -1945,9 +1935,9 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
-   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' $carryforward >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='class='inputField $carryforward' >
     <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -1983,7 +1973,7 @@ function selectCollectingTripID($field,$label,$value,$valueid,$carryforward='fal
    $returnvalue = "<tr><td>";
    $fieldid = $field."id";
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
+    <input type=text name=$field id=$field class='inputField' value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' >
     <input type=hidden name=$fieldid id=$fieldid value='$valueid' >
     </td></tr>";
    $returnvalue .= '
@@ -2041,7 +2031,7 @@ function selectProject($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input name='$field' id='$field' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
+        <input name='$field' id='$field' class='inputField' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
      </div>
   </td></tr>
     ";
