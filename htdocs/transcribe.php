@@ -652,37 +652,6 @@ function navigation() {
 function form() {
    global $user;
 
-/* Supported field list:
-
-barcode
-created
-herbarium
-format
-prepmethod
-project
-[geographyfilter]
-[geographyfilterid]
-highergeography
-highergeographyid
-filedundername
-filedundernameid
-filedunderqualifier
-currentname
-currentnameid
-currentqualifier
-collectingtrip
-collectors
-etal
-specificlocality
-stationfieldnumber
-verbatimdate
-datecollected
-namedplace
-verbatimelevation
-habitat
-
-*/
-
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$batchpath = urldecode($_GET['batch']);
@@ -758,7 +727,7 @@ habitat
        $provenance = $match->getProvenance();
        $created = $match->getTimestampCreated();
 
-       // get filedundername, currentname, filedunderqualifier, currentqualifier
+       // get filedundername, currentname, currentqualifier
        $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
        $determinationid = $filedunder["determinationid"];
        $filedundername = $filedunder["taxonname"];
@@ -774,7 +743,6 @@ habitat
            $filedundername="[Det has no taxon]";
          }
        }
-       $filedunderqualifier = $filedunder["qualifier"];
 
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
        $determinationid = $current["determinationid"];
@@ -920,11 +888,6 @@ habitat
      });
    </script>
    ';
-
-   //if ($test=="true") {
-      //@staticvalue("Project",$defaultproject);
-      //echo "<input type='hidden' name='project' id='project' value='$defaultproject' class='carryforward'>";
-   //} else {
 
    if (strlen($targetbarcode==0)) {
        $enabled = 'true';
@@ -1114,7 +1077,6 @@ habitat
            */
           function checkSoRo() {
 
-
           }
 
           /* Enable or disable Save button
@@ -1127,6 +1089,38 @@ habitat
                 $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
             }
           }
+
+          /* TODO: Change project config
+           */
+           function projectConfig() {
+             var project = $('#project').val();
+             switch (project) {
+               case 'Plants on Edge/Endless Forms':
+                configPoE();
+                break;
+               default:
+                configDefault();
+             }
+           }
+
+           function configPoE() {
+             $('#provenance').hide();
+             $('#currentqualifier').hide();
+             $('#collectingtrip').hide();
+             $('#container').hide();
+             $('#specimendescription').hide();
+             $('#specimenremarks').hide();
+           }
+
+           function configDefault() {
+             $('#provenance').show();
+             $('#currentqualifier').show();
+             $('#collectingtrip').show();
+             $('#container').show();
+             $('#specimendescription').show();
+             $('#specimenremarks').show();
+           }
+
 
           /* Set the value of a field if the field is empty or if the field is not a carryforward field.
            * @param field the id of the input for which to set the value
@@ -1202,14 +1196,12 @@ habitat
               } else {
                   $('#barcode').prop('disabled', true);
                   $('#recordcreated').html(data.created);
-                  //setLoadedValue('project',data.project);
                   setLoadedValue('container',data.container);
                   setLoadedValue('containerid',data.containerid);
                   setLoadedValue('prepmethod',data.prepmethod);
                   setLoadedValue('preptype',data.format);
                   setLoadedValue('filedundername',data.filedundername);
                   setLoadedValue('filedundernameid',data.filedundernameid);
-                  setLoadedValue('filedunderqualifier',data.filedunderqualifier);
                   setLoadedValue('currentname',data.currentname);
                   setLoadedValue('currentnameid',data.currentnameid);
                   setLoadedValue('currentqualifier',data.currentqualifier);
@@ -1246,41 +1238,6 @@ habitat
               }
 
               checkSaveButton();
-
-            /*
-            num_matches
-            prepmethod
-            filedundername
-            filedundernameid
-            filedunderqualifier
-            currentname
-            currentnameid
-            currentqualifier
-            formatid
-            format
-            created
-            project
-            stationfieldnumber
-            datecollected
-            verbatimdate
-            habitat
-            collectoragentid
-            collectors
-            etal
-            namedPlace
-            verbatimElevation
-            specificLocality
-            geographyid
-            geography
-            error
-            */
-          // find the corresponding input (input id = data key) in transcribeForm
-
-          // if the input value is empty, replace it with the value from data.
-
-          // if the input value is not empty, and the input is not in class carry_forward, set the value from the data.
-          // (if the input value is not empty, and the input is in class carry_forward, leave unchanged).
-
           }
 
           function loadImage(data) {
