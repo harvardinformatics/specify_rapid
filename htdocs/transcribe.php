@@ -668,7 +668,7 @@ function form() {
         // Load record for current position
         loadRecord($position);
 
-        $('#minimalToggle').button();
+        //$('#minimalToggle').button();
 
          $('#nextButton').click(function(event){
              $('#feedback').html( 'Loading next...');
