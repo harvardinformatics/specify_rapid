@@ -480,6 +480,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
+    echo "<label for='minimalToggle'>Minimal</label><input type='checkbox' id='minimalToggle' />";
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
@@ -664,8 +665,10 @@ function form() {
         checkPosition($position);
         // Set hide/show fields for default project
         projectConfig();
-        // TODO: load record for current position
+        // Load record for current position
         loadRecord($position);
+
+        $('minimalToggle').button();
 
          $('#nextButton').click(function(event){
              $('#feedback').html( 'Loading next...');
