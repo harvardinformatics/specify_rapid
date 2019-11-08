@@ -1683,9 +1683,8 @@ class huh_geography_custom extends huh_geography {
 
    public function selectDistinctParentGeographyJSON($childid,$parentrank) {
       global $connection;
-      $returnvalue = '[';
+      $returnvalue = '';
       $preparemysql = "select distinct g1.geographyid, g1.name from geography g1, geography g2 where g2.geographyid = ? and g1.rankid = ? and g1.nodenumber <= g2.nodenumber and g1.highestchildnodenumber >= g2.nodenumber and g1.isaccepted = 1 order by g1.name asc ";
-      $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('ii',$childid,$parentrank);
          $stmt->execute();
@@ -1693,11 +1692,10 @@ class huh_geography_custom extends huh_geography {
          if ($stmt->fetch()) {
             $name = trim($name);
             $name = str_replace('"','&quot;',$name);
-            $returnvalue .=  '{ "value":"'.$id.'", "name":"'.$name.'" }';
+            $returnvalue =  '{"id":"'.$id.'","label":"'.$name.'","value":"'.$name.'"}';
          }
          $stmt->close();
       }
-      $returnvalue .= ']';
       return $returnvalue;
    }
 

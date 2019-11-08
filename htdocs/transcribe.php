@@ -766,7 +766,7 @@ function form() {
                    rank: 300
                 },
                 success: function( data ) {
-                  if (soroStates.includes(data.items.name)) {
+                  if (soroStates.includes(data.value)) {
                     $('#feedback').html( 'SORO STATE FOUND!' ) ;
                   } else {
                     $('#feedback').html( 'NOT A SORO STATE' ) ;

@@ -868,22 +868,18 @@ if ($connection && $authenticated) {
 
            $t = new huh_geography_custom();
            try {
-              $values = $t->selectDistinctParentGeographyJSON($childid, $parentrank);
+              $response = $t->selectDistinctParentGeographyJSON($childid, $parentrank);
               $ok = true;
            } catch (Exception $e) {
               $ok = false;
            }
            //header("Content-type application/json");
            header("Content-type text/json-comment-filtered");
-           if ($ok) {
-              $response = '';
-              echo '{ "identifier":"value", "label":"name",';
-              echo '"items": [ ';
-              echo $values;
-              echo ' ] }';
-           } else {
+           if (! $ok) {
               $response = '{ }';
            }
+
+           echo $response;
            break;
 
       case 'returncountryjson':
