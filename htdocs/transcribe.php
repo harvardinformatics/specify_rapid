@@ -629,15 +629,12 @@ function form() {
    @selectCollectingTripID("collectingtrip","Collecting Trip",'','','false');
    @selectHigherGeography ("geographyfilter","Geography Within",'','','','','false','true');
    @selectHigherGeographyFiltered ("highergeography","Higher Geography",'','','','','true');
-
    @field ("specificlocality","Verbatim locality",'','true');
    @field ("habitat","Habitat",'');
    @field ("frequency", "Frequency", '');
-
    @field ("specimendescription","Description",'','false');
    @field ("specimenremarks","Remarks",'','false');
    @selectProject("project","Project",$defaultproject);
-
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
