@@ -480,7 +480,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
-    echo "<label for='minimalToggle'>Minimal</label><input type='checkbox' id='minimalToggle' class='ui-button' />";
+    echo "<button type='button' id='minimalButton' class='ui-button' >Minimal</button>";
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
@@ -650,6 +650,7 @@ function form() {
    //echo "</td></tr>";
 
    echo "<script>
+        var transcriptionMode = 'detailed';
         var re_barcode = /^[0-9]{8}$/;
         var batchid = ".$currentBatch->getBatchID().";
         var batchpath = '".$currentBatch->getPath()."';
@@ -668,7 +669,21 @@ function form() {
         // Load record for current position
         loadRecord($position);
 
-        //$('#minimalToggle').button();
+
+        $('#minimalButton').click(function(event){
+
+            if (transcriptionMode == 'detailed') {
+              $('#feedback').html( 'Switched to minimal data capture...');
+              $('#minimalButton').html('Detailed');
+              transcriptionMode = 'minimal';
+            } else {
+              $('#feedback').html( 'Switched to detailed data capture...');
+              $('#minimalButton').html('Minimal');
+              transcriptionMode = 'detailed';
+            }
+
+            event.preventDefault();
+         });
 
          $('#nextButton').click(function(event){
              $('#feedback').html( 'Loading next...');
