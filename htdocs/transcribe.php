@@ -653,6 +653,8 @@ function form() {
 
    echo "<script>
         var re_barcode = /^[0-9]{8}$/;
+        var batchid = ".$currentBatch->getBatchID()."
+        var batchpath = ".$currentBatch->getPath()."
 
         var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
         var defaultHideFields = ['accessionnumber'];
@@ -672,7 +674,7 @@ function form() {
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
-             loadRecord(position+1,".$currentBatch->getBatchID().");
+             loadRecord(position+1);
              event.preventDefault();
           });
 
@@ -684,7 +686,7 @@ function form() {
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
-             loadRecord(position-1,".$currentBatch->getBatchID().");
+             loadRecord(position-1);
              event.preventDefault();
           });
 
@@ -726,7 +728,7 @@ function form() {
 
           function jumpto(position) {
             if (isNaN(position)) return;
-            loadRecord(position,".$currentBatch->getBatchID().");
+            loadRecord(position);
           }
 
           $('#project').on( 'blur', function () {
@@ -962,8 +964,8 @@ function form() {
                });
           }
 
-          function loadRecord(position,batch_id) {
-               console.log('called loadRecord() with ' + position + ',' +batch_id);
+          function loadRecord(position) {
+               console.log('called loadRecord() for batch ' + batchid + ' position ' + position);
 
                checkPosition(position);
 
@@ -977,13 +979,13 @@ function form() {
                    dataType: 'json',
                    data: {
                        action: 'getrecord',
-                       batch_id: batch_id,
+                       batch_id: batchid,
                        position: position
                    },
                    success: function(data) {
                      console.log(data);
                      loadFormData(data);
-                     $('#batch_info').html('[".$currentBatch->getPath()."] file ' + data.position +' of $filecount.');
+                     $('#batch_info').html('[' + batchpath + '] file ' + data.position +' of $filecount.');
                      loadImage(data);
                    },
                    error: function() {
