@@ -480,7 +480,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
-    echo "<label for='minimalToggle' class='ui-button'>Minimal</label><input type='checkbox' id='minimalToggle' class='ui-button' />";
+    echo "<label for='minimalToggle'>Minimal</label><input type='checkbox' id='minimalToggle' class='ui-button' />";
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
