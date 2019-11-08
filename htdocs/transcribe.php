@@ -1072,6 +1072,10 @@ function form() {
             loadRecord(position,".$currentBatch->getBatchID().");
           }
 
+          $('#project').on( 'blur', function () {
+              configProject();
+          });
+
 
           /* TODO: Check SoRo
            */
@@ -1105,20 +1109,32 @@ function form() {
 
            function configPoE() {
              $('#provenance').hide();
+             $('label[for=\\'provenance\\']').hide();
              $('#currentqualifier').hide();
+             $('label[for=\\'currentqualifier\\']').hide();
              $('#collectingtrip').hide();
+             $('label[for=\\'collectingtrip\\']').hide();
              $('#container').hide();
+             $('label[for=\\'container\\']').hide();
              $('#specimendescription').hide();
+             $('label[for=\\'specimendescription\\']').hide();
              $('#specimenremarks').hide();
+             $('label[for=\\'specimenremarks\\']').hide();
            }
 
            function configDefault() {
              $('#provenance').show();
+             $('label[for=\\'provenance\\']').show();
              $('#currentqualifier').show();
+             $('label[for=\\'currentqualifier\\']').show();
              $('#collectingtrip').show();
+             $('label[for=\\'collectingtrip\\']').show();
              $('#container').show();
+             $('label[for=\\'container\\']').show();
              $('#specimendescription').show();
+             $('label[for=\\'specimendescription\\']').show();
              $('#specimenremarks').show();
+             $('label[for=\\'specimenremarks\\']').show();
            }
 
 
