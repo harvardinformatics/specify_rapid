@@ -762,7 +762,7 @@ function form() {
                 dataType: 'json',
                 data: {
                    druid_action: 'returnparentgeographyjson',
-                   id: $(#highergeographyid).val(),
+                   id: $('#highergeographyid').val(),
                    rank: 300
                 },
                 success: function( data ) {
