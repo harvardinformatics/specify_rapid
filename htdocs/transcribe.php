@@ -660,7 +660,7 @@ function form() {
 
         var soroHideFields = ['accessionnumber'];
         var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
-        var defaultHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','etal','stationfieldnumber','datecollected','verbatimdate','accessionnumber','container','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty'];
+        var defaultHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','etal','stationfieldnumber','datecollected','verbatimdate','accessionnumber','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty'];
 
         // Enable/disable buttons based on position
         checkPosition($position);
@@ -1589,7 +1589,7 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='class='inputField $carryforward' >
+    <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='inputField $carryforward' >
     <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
