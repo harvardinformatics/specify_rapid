@@ -656,6 +656,8 @@ function form() {
         var batchid = ".$currentBatch->getBatchID().";
         var batchpath = '".$currentBatch->getPath()."';
 
+        soroStates = ['Arizona','Colorado','Kansas','Nebraska','New Mexico','Oklahoma','South Dakota','Texas','Utah','Wyoming'];
+
         var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
         var defaultHideFields = ['accessionnumber'];
 
@@ -741,11 +743,39 @@ function form() {
             }
           });
 
+          $('#highergeography').on( 'blur', function () {
+              projectConfig();
+          });
+
+          $('#project').keyup(function(event) {
+            if (event.keyCode === 13) {
+                projectConfig();
+            }
+          });
+
 
           /* TODO: Check SoRo
            */
           function checkSoRo() {
-
+              $.ajax( {
+                url: 'ajax_handler.php',
+                dataType: 'json',
+                data: {
+                   druid_action: 'returnparentgeographyjson',
+                   id: $(#highergeographyid).val(),
+                   rank: 300
+                },
+                success: function( data ) {
+                  if (soroStates.includes(data.items.name)) {
+                    $('#feedback').html( 'SORO STATE FOUND!' ) ;
+                  } else {
+                    $('#feedback').html( 'NOT A SORO STATE' ) ;
+                  }
+                },
+                error: function() {
+                  $('#feedback').html( 'Failed Ajax call to check for SoRo states.' ) ;
+                }
+              } );
           }
 
           /* Enable or disable Save button
