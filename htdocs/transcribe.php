@@ -653,8 +653,8 @@ function form() {
 
    echo "<script>
         var re_barcode = /^[0-9]{8}$/;
-        var batchid = ".$currentBatch->getBatchID()."
-        var batchpath = ".$currentBatch->getPath()."
+        var batchid = ".$currentBatch->getBatchID().";
+        var batchpath = '".$currentBatch->getPath()."';
 
         var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
         var defaultHideFields = ['accessionnumber'];
