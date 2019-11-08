@@ -654,6 +654,9 @@ function form() {
    echo "<script>
         var re_barcode = /^[0-9]{8}$/;
 
+        var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
+        var defaultHideFields = ['accessionnumber'];
+
         // Enable/disable buttons based on position
         checkPosition($position);
         // Set hide/show fields for default project
@@ -763,9 +766,6 @@ function form() {
           highergeography - pick
           scientific name - filed under, plus qualifier - carry forward
           */
-
-          var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
-          var defaultHideFields = ['accessionnumber'];
 
           function projectConfig() {
              var project = $('#project').val();
