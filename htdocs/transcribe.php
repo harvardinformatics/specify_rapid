@@ -1140,13 +1140,6 @@ function form() {
                 $('#'+field).css({'background-color':'#FFFFFF'});
               }
 
-              // carryforward field different from previous record, change color to notify user
-              // if($('.carryforward[id][name='+field+']').length && $('#'+field).val()!=value && (value!=null || value!='')) {
-              //  $('#'+field).css({'background-color':'#FFFAA2'});
-              // } else {
-              //  $('#'+field).css({'background-color':'#FFFFFF'});
-              //}
-
               // set field to value, unless carryover field and value is null/empty
               if($('.carryforward[id][name='+field+']').length && (value==null || value=='')) {
                 $('#'+field).css({'color':'darksalmon'});
@@ -1563,7 +1556,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
 }
 
 function selectPrepMethod($field,$label,$default,$required='true',$carryforward='true') {
-   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue = "
   <script>
   $( function() {
@@ -1580,7 +1573,7 @@ function selectPrepMethod($field,$label,$default,$required='true',$carryforward=
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' class='inputField' value='$default'  style='width: 9em; ' $carryforward >
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' class='inputField $carryforward' >
      </div>
   </td></tr>
    ";
@@ -1588,7 +1581,7 @@ function selectPrepMethod($field,$label,$default,$required='true',$carryforward=
 }
 
 function selectPrepType($field,$label,$default,$required='true',$carryforward='true') {
-   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue = "
   <script>
   $( function() {
@@ -1605,7 +1598,7 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' class='inputField' value='$default'  style='width: 9em; ' $carryforward >
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' class='inputField $carryforward' >
      </div>
   </td></tr>
    ";
@@ -1647,9 +1640,9 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
    $fieldid = $field."id";
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }
    if ($field=='geographyfilter') { $style = " background-color: lightgrey; "; } else { $style = ""; }
-   if ($carryforward=='true') { $carryforward = " class='carryforward' "; } else { $carryforward=""; }
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
-    <input type=text name=$field id=$field $req class='inputField' value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' $carryforward  >
+    <input type=text name=$field id=$field $req value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' class='inputField $carryforward'  >
     <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' $carryforward >
     </td></tr>";
    $returnvalue .= '
@@ -2031,7 +2024,7 @@ function selectProject($field,$label,$default,$required='false') {
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input name='$field' id='$field' class='inputField' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='carryforward' >
+        <input name='$field' id='$field' value='$default' $req style='width: ".$GLOBALS['BASEWIDTH']."em; ' class='inputField carryforward' >
      </div>
   </td></tr>
     ";
