@@ -93,7 +93,6 @@ class targetReturn {
 }
 
 
-
 # Supporting functions ******************************
 
 function checkReady() {
@@ -104,121 +103,6 @@ function checkReady() {
     return true;
 }
 
-function fileCount($dir) {
-   $files = scandir($dir,SCANDIR_SORT_ASCENDING);
-   $filecount = 0;
-   foreach ($files as $file) {
-         if (substr($dir,-1,1)=="/") {
-             $pathfile = $dir.$file;
-         } else {
-             $pathfile = $dir.'/'.$file;
-         }
-         if (is_file($pathfile) && substr($file,0,1)!=".") {
-            $filecount++;
-         }
-   }
-   return $filecount;
-}
-function jpgCount($dir) {
-   $files = scandir($dir,SCANDIR_SORT_ASCENDING);
-   $filecount = 0;
-   foreach ($files as $file) {
-         if (substr($dir,-1,1)=="/") {
-             $pathfile = $dir.$file;
-         } else {
-             $pathfile = $dir.'/'.$file;
-         }
-         if (is_file($pathfile) && substr($file,0,1)!=".") {
-            if ( (substr(strtoupper($file), -strlen('JPEG')) === 'JPEG') || (substr(strtoupper($file), -strlen('JPG')) === 'JPG')   ) {
-                $filecount++;
-            }
-         }
-   }
-   return $filecount;
-}
-function dirList($dir,$depth) {
-   global$connection;
-   if ($depth>5) { return; }
-   echo "<ul>";
-   $files = scandir($dir,SCANDIR_SORT_ASCENDING);
-   foreach ($files as $file) {
-         if (substr($dir,-1,1)=="/") {
-             $pathfile = $dir.$file;
-         } else {
-             $pathfile = $dir.'/'.$file;
-         }
-         if (is_dir($pathfile) && substr($file,0,1)!=".") {
-            $pathbelowbase = substr($pathfile,strlen(BASE_IMAGE_PATH))."/";
-            $sql = "select isnull(completed_date) notdone, completed_date, tr_batch_id from TR_BATCH where path = ? ";
-            $stmt = $connection->prepare($sql);
-            $stmt->bind_param("s",$pathbelowbase);
-            $stmt->execute();
-            $stmt->bind_result($notdone,$completed_date,$tr_batch_id);
-            $stmt->store_result();
-            if ($stmt->fetch()) {
-                $exists = true;
-            }
-            if ($stmt->num_rows()==0) {
-                $exists = false;
-            }
-            $filecount = jpgCount($pathfile);
-            echo "<li>$file ($filecount jpegs) ";
-            if ($exists===false) {
-                if ($filecount>0) {
-                   echo " <input type='button' class='processButton ui-button' type='button' onclick=' processBatch(\"$pathfile\"); ' value='Process' />";
-                }
-            } else {
-                if ($notdone==1) { echo " Batch prepared for transcription. "; } else { echo " completed $completed_date "; }
-            }
-            echo "</li>";
-            $stmt->free_result();
-            $stmt->close();
-            dirList("$pathfile/",$depth+1);
-         }
-   }
-   echo "</ul>";
-}
-
-function doPrepareBatch() {
-   global $connection;
-   echo "<script type='text/javascript'>
-         function processBatch(targetdir){
-              $('#batchprogress').html('processing: '+targetdir);
-              $('.processButton').attr('disabled', true).addClass('ui-state-disabled');
-              $.ajax({
-                  type: 'POST',
-                  url: 'transcribe_handler.php',
-                  data: {
-                       action: 'processbatch',
-                       directory: targetdir,
-                  },
-                  dataType: 'json',
-                  success: function(data) {
-                      if (data.error=='') {
-                          $('#batchprogress').html('processed '+targetdir + ' ' + data.result);
-                      } else {
-                          $('#batchprogress').html('Error processing '+targetdir + ' ' + data.error);
-                      }
-                      console.log( data );
-                      $('.processButton').attr('disabled', false).removeClass('ui-state-disabled');
-                  },
-                  error: function() {
-                      $('#batchprogress').html('Error requesting processing for: '+targetdir);
-                      console.log( 'processBatch Failed.  Ajax Error.');
-                      $('.processButton').attr('disabled', false).removeClass('ui-state-disabled');
-                  }
-
-               });
-            };
-        </script>";
-   echo "<div style='margin: .2em; ' ><form action='transcribe.php'><input type='submit' class='processButton ui-button' value='Return to Main Menu'></form></div>";
-   echo "<div id='batchprogress' style='margin: .2em;'></div>";
-   echo "<div id='directorytree'>";
-   // TODO: Setup for production
-   // dirList(BASE_IMAGE_PATH."/",1);
-   dirList(BASE_IMAGE_PATH.BATCHPATH,1);  // for testing
-   echo "</div>";
-}
 
 function doSetup() {
    global $connection;
@@ -419,55 +303,6 @@ function targetfile($path,$filename) {
    $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
    $result->medialink = $medialink;
 
-   //$barcode = ImageHandler::checkFilenameForBarcode($path,$filename,false);
-   //$result->barcode = $barcode;
-
-   // TODO: Lookup barcode image height, image width from path and filename.
-   /*
-   $sql = "select distinct f.text1, f.identifier
-         from locality l left join collectingevent ce on l.localityid = ce.localityid
-                         left join collectionobject co on ce.collectingeventid = co.collectingeventid
-                         left join fragment f on co.collectionobjectid = f.collectionobjectid
-                         left join IMAGE_SET_collectionobject isco on co.collectionobjectid = isco.collectionobjectid
-                         left join IMAGE_OBJECT io on isco.imagesetid = io.image_set_id
-          where localityname = '[data not captured]'
-                and isco.collectionobjectid is not null
-                and object_type_id = 4 and hidden_flag = 0 and active_flag = 1
-          limit ? ";
-   $limit = 1;
-   if ($statement = $connection->prepare($sql)) {
-       $statement->bind_param("i", $limit);
-       $statement->execute();
-       $statement->bind_result($acronym, $barcode);
-       $statement->store_result();
-       while ($statement->fetch()) {
-         $result->barcode = $barcode;
-         $media = imageDataForBarcode($barcode);
-echo "[$media->image_set_id]";
-         $mediauri = $media->url;
-         $mediaid = $media->image_set_id;
-         $height = $media->pixel_height;
-         $width = $media->pixel_width;
-         if ($height==0||$height==null) {
-            $size = getImageSize($mediauri);
-            $width = $size[0];
-            $height = $size[1];
-         }
-         $result->mediauri = $mediauri;
-         //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
-         //$height =  4897;
-         //$width  =  3420;
-         $s = 200/$height; // scale factor
-         $h = round($height*$s);
-         $w = round($width*$s);
-         $medialink = "";
-         $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
-         $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
-         $result->medialink = $medialink;
-       }
-       $statement->close();
-   }
-   */
    return $result;
 }
 function imageForBarcode($barcode) {
@@ -599,7 +434,7 @@ echo $apage->getFooter($user);
 // ********************************************************************************
 
 // ** Work in progress
-
+/*
 function targetlist() {
    global $connection;
 
@@ -617,7 +452,7 @@ function targetlist() {
    }
    return $result;
 }
-/*
+
 function imageForBarcode($barcode) {
    global $connection;
    $result = "";
@@ -648,7 +483,6 @@ function navigation() {
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
-
 function form() {
    global $user;
 
@@ -658,16 +492,6 @@ function form() {
    $position = 1;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
    if ($position==null || $position=="") { $position = 1;  }
-
-   switch ($config) {
-      case 'minimal':
-          $config="minimal";
-          break;
-      case 'standard':
-      default :
-          $config="standard";
-   }
-
 
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($batchpath);
@@ -712,127 +536,7 @@ function form() {
       $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
    </script>";
 
-
-   $habitat = "";
-
-   $huh_fragment = new huh_fragment();
-   $matches = $huh_fragment->loadArrayByIdentifier($targetbarcode);
-   $num_matches = count($matches);
-   $project = null;
-   if ($num_matches==1) {
-       $match = $matches[0];
-       $match->load($match->getFragmentID());
-       $prepmethod = $match->getPrepMethod();
-
-       $provenance = $match->getProvenance();
-       $created = $match->getTimestampCreated();
-
-       // get filedundername, currentname, currentqualifier
-       $filedunder = huh_determination_custom::lookupFiledUnderDetermination($match->getFragmentID());
-       $determinationid = $filedunder["determinationid"];
-       $filedundername = $filedunder["taxonname"];
-       $filedunderalternatename = $filedunder["alternatename"];
-       $filedundernameid = $filedunder["taxonid"];
-       // check if determination is there with no taxon
-       if (strlen(trim($determinationid)) > 0 && ($filedundernameid==null || trim($filedundernameid)=='')) {
-         $filedundernameid = -1;
-
-         if (strlen(trim($filedunderalternatename))>0) {
-           $filedundername="[Alt name: $filedunderalternatename]";
-         } else {
-           $filedundername="[Det has no taxon]";
-         }
-       }
-
-       $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
-       $determinationid = $current["determinationid"];
-       $currentname = $current["taxonname"];
-       $currentalternatename = $current["alternatename"];
-       $currentnameid = $current["taxonid"];
-       if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
-         $currentnameid = -1;
-
-         if (strlen(trim($filedunderalternatename))>0) {
-           $currentname="[Alt name: $currentalternatename]";
-         } else {
-           $currentname="[Det has no taxon]";
-         }
-       }
-
-       $currentqualifier = $current["qualifier"];
-       $identifiedbyid = $current["determinerid"];
-       $identifiedby = huh_collector_custom::getCollectorVariantName($identifiedbyid);
-       $dateidentified = dateBitsToString($current["determineddate"], $current["determineddateprecision"], null, null);
-       $determinertext = $current["determinertext"];
-
-       $related = $match->loadLinkedTo();
-       $rcolobj = $related['CollectionObjectID'];
-       $specimendescription = $rcolobj->getDescription();
-       $specimenremarks = $rcolobj->getRemarks();
-       $frequency = $rcolobj->getText4();
-       $rprep = $related['PreparationID'];
-       //$rcolobj->load($rcolobj->getCollectionObjectID()); // already loaded
-       //$rprep->load($rprep->getPreparationID()); // already loaded
-       $formatid = $rprep->getPrepTypeID();
-       $related = $rprep->loadLinkedTo();
-       $rpreptype = $related['PrepTypeID'];
-       //$rpreptype->load($rpreptype->getPrepTypeID()); // already loaded
-       $format = $rpreptype->getName();
-       $related = $rcolobj->loadLinkedTo();
-       $rcontainer = $related['ContainerID'];
-       $container = $rcontainer->getName();
-       $containerid = $rcontainer->getContainerID();
-       $proj = new huh_project_custom();
-       //$project = $proj->getFirstProjectForCollectionObject($rcolobj->getCollectionObjectID());
-       $rcoleve = $related['CollectingEventID'];
-       //$rcoleve->load($rcoleve->getCollectingEventID()); // already loaded
-       $stationfieldnumber = $rcoleve->getStationFieldNumber();
-       $datecollected = dateBitsToString($rcoleve->getStartDate(), $rcoleve->getStartDatePrecision(), $rcoleve->getEndDate(), $rcoleve->getEndDatePrecision());
-       $verbatimdate = $rcoleve->getVerbatimDate();
-       $habitat = $rcoleve->getRemarks();
-       $related = $rcoleve->loadLinkedTo();
-       $rcollector = $rcoleve->loadLinkedFromcollector();
-       $collectoragentid = $rcollector->getAgentID();
-       $collectors = huh_collector_custom::getCollectorVariantName($collectoragentid);
-       if (strlen(trim($collectors)) == 0 && strlen(trim($collectoragentid)) == 0) {
-         $collectors = '[data not captured]';
-         $collectoragentid = 97236;
-       }
-       $etal = $rcollector->getEtAl();
-       $rlocality = $related['LocalityID'];
-       $rcollectingtrip = $related['CollectingTripID'];
-       $collectingtrip = $rcollectingtrip->getCollectingTripName();
-       $collectingtripid = $rcollectingtrip->getCollectingTripID();
-       //$rlocality->load($rlocality->getLocalityID()); // already loaded
-       $namedPlace = $rlocality->getNamedPlace();
-       $verbatimElevation = $rlocality->getVerbatimElevation();
-       $specificLocality = $rlocality->getLocalityName();
-       if (strlen(trim($specificLocality)) == 0) {
-         $specificLocality = '[data not captured]';
-       }
-       $related = $rlocality->loadLinkedTo();
-       $rgeography = $related['GeographyID'];
-       //$rgeography->load($rgeography->getGeographyID()); // already loaded
-       $geographyid = $rgeography->getGeographyID();
-       $geography = $rgeography->getFullName();
-
-       $verbatimlat = $rlocality->getLat1Text();
-       $verbatimlong = $rlocality->getLong1Text();
-       $decimallat = $rlocality->getLatitude1();
-       $decimallong = $rlocality->getLongitude1();
-       $coordinateuncertainty = $rlocality->getLatLongAccuracy();
-       $georeferencesource = $rlocality->getLatLongMethod();
-
-   } elseif ($num_matches==0) {
-       // set defaults to create new record
-       $prepmethod = "Pressed";
-       $defaultformat = "Sheet";
-       $created = "New Record";
-   } else {
-       // error condition, found more than one fragment by the barcode.
-       $created = "Problem: Found $num_matches item records, enter through Specify-HUH";
-   }
-
+/*
    @$cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
    if ($cleardefaultgeography==1) {
        $defaultcountry = "";
@@ -845,18 +549,17 @@ function form() {
         @$geographyfilter= $_GET['geographyfilter'];
         @$geographyfilterid= $_GET['geographyfilter'];
    }
+   */
+
+   $created = "New Record";
    @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
    if ($defaultherbarium=='') { $herbarium = "GH"; }
-   if ($num_matches==1) {
-       $herbarium = $match->getText1();
-   }
    @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
    @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
    @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
    if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = 'US and Canada - Mass Digitization'; }
-   if ($project==null || strlen($project)==0) { $project = $defaultproject; }
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
@@ -889,12 +592,7 @@ function form() {
    </script>
    ';
 
-   if (strlen($targetbarcode==0)) {
-       $enabled = 'true';
-   } else {
-       $enabled = 'false';
-   }
-   fieldEnabalable("barcode","Barcode",$targetbarcode,'required','[0-9]{8}','','Barcode must be an 8 digit number.',$enabled);   // not zero padded when coming off barcode scanner.
+   fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true');   // not zero padded when coming off barcode scanner.
    echo "<input type='hidden' name='barcodeval' id='barcodeval' value='$targetbarcode'>"; // to carry submission of barcode with disabled barcode input.
    // TODO: on loss of focus, check database for record and reload data.
    // ******************
@@ -913,82 +611,32 @@ function form() {
    </script>
    ';
 
-   if ($config=="minimal") {
-       /*
-       barcode - known, not editable - on save, go to next in list.
-       project - default US and Canada, show
-       format - default sheet, show
-       preparation method - pressed default, show
-       collectioncode - likely (GH, A, NEBC)
-       highergeography - pick
-       scientific name - filed under, plus qualifier - carry forward
-       */
-       @selectAcronym("herbariumacronym",$herbarium);
-       @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
-       @selectHigherGeography ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
-       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
-       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-        // Verbatim date auto-parsing disabled for now, not deemed useful to workflow and some edge cases would need to be resolved
-        // echo "
-        // <script>
-        //    $('#verbatimdate').blur(function() {
-        //       if (!$(this).val().trim()) {
-        //         $('#datecollected').val('');
-        //       } else {
-        //
-        //        $('#datecollected').prop('disabled', true);
-        //        var verbatim = $('#verbatimdate').val();
-        //        $.ajax({
-        //            type: 'GET',
-        //            url: 'transcribe_handler.php',
-        //            data: {
-        //                action: 'interpretdate',
-        //                verbatimdate: verbatim
-        //            },
-        //            success: function(data) {
-        //                if (data!='') {
-        //                  $('#datecollected').val(data);
-        //                  $('#datecollected').prop('disabled', field);
-        //                }
-        //            }
-        //        });
-        //
-        //      }
-        //    });
-        // </script>
-        // ";
-        @selectProject("project","Project",$defaultproject);
-   } else { //if ($config=="standard") {
+   @selectAcronym("herbariumacronym",$defaultherbarium);
+   @selectTaxon("filedundername","Filed Under",'','','true','true');
+   @selectTaxon ("currentname","Current Name",'','','true','true');
+   @selectQualifier("currentqualifier","ID Qualifier",'');
+   @selectCollectorsID("identifiedby","Identified By",'','','false','false');
+   @field ("dateidentified","Date Identified",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+   @field ("determinertext","Det. Text",'','false');
+   @field ("provenance","Provenance",'','false');
+   @selectCollectorsID("collectors","Collectors",'','','true','false');
+   @field ("etal","Et al.",'','false');
+   @field ("stationfieldnumber","Collector Number",'','false');
+   @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
+   @field ("verbatimdate","Verbatim Date",'','false');
+   @field ("accessionnumber","Accession Number",'','false');
+   @selectContainerID("container","Container",'','');
+   @selectCollectingTripID("collectingtrip","Collecting Trip",'','','false');
+   @selectHigherGeography ("geographyfilter","Geography Within",'','','','','false','true');
+   @selectHigherGeographyFiltered ("highergeography","Higher Geography",'','','','','true');
 
-       @selectAcronym("herbariumacronym",$herbarium);
-       @selectTaxon("filedundername","Filed Under",$filedundername,$filedundernameid,'true','true');
-       @selectTaxon ("currentname","Current Name",$currentname,$currentnameid,'true','true');
-       @selectQualifier("currentqualifier","ID Qualifier",$currentqualifier);
-       @selectCollectorsID("identifiedby","Identified By",$identifiedby,$identifiedbyid,'false','false');
-       @field ("dateidentified","Date Identified",$dateidentified,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-       @field ("determinertext","Det. Text",$determinertext,'false');
-       @field ("provenance","Provenance",$provenance,'false');
-       @selectCollectorsID("collectors","Collectors",$collectors,$collectoragentid,'true','false');
-       @field ("etal","Et al.",$etal,'false');
-       @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
-       @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
-       @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
-       @field ("accessionnumber","Accession Number",$accessionnumber,'false');
-       @selectContainerID("container","Container",$container,$containerid);
-       @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
-       @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
-       @selectHigherGeographyFiltered ("highergeography","Higher Geography",$geography,$geographyid,'','','true');
+   @field ("specificlocality","Verbatim locality",'','true');
+   @field ("habitat","Habitat",'');
+   @field ("frequency", "Frequency", '');
 
-       @field ("specificlocality","Verbatim locality",$specificLocality,'true');
-       @field ("habitat","Habitat",$habitat);
-       @field ("frequency", "Frequency", $frequency);
-
-       @field ("specimendescription","Description",$specimendescription,'false');
-       @field ("specimenremarks","Remarks",$specimenremarks,'false');
-       @selectProject("project","Project",$defaultproject);
-
-   }
-
+   @field ("specimendescription","Description",'','false');
+   @field ("specimenremarks","Remarks",'','false');
+   @selectProject("project","Project",$defaultproject);
 
 
    echo "<tr><td colspan=2>";
@@ -1008,6 +656,11 @@ function form() {
 
         // Enable/disable buttons based on position
         checkPosition($position);
+        // Set hide/show fields for default project
+        projectConfig();
+        // TODO: load record for current position
+        loadRecord($position);
+
 
          $('#nextButton').click(function(event){
              $('#feedback').html( 'Loading next...');
@@ -1100,6 +753,16 @@ function form() {
                 $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
             }
           }
+
+          /* minimal fields
+          barcode - known, not editable - on save, go to next in list.
+          project - default US and Canada, show
+          format - default sheet, show
+          preparation method - pressed default, show
+          collectioncode - likely (GH, A, NEBC)
+          highergeography - pick
+          scientific name - filed under, plus qualifier - carry forward
+          */
 
           var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
           var defaultHideFields = ['accessionnumber'];
@@ -1411,82 +1074,43 @@ function form() {
    echo '<div>';
    echo '<table>';
    @staticvalueid("Record Created:",$created,"recordcreated");
-   selectPrepMethod("prepmethod","Prep Method",$prepmethod,'true','true');
+   selectPrepMethod("prepmethod","Prep Method",$defaultprepmethod,'true','true');
    selectPrepType("preptype","Format",$defaultformat,'true','true');
    echo '</table>';
    echo '</div>';
    echo '</div>';
 
-   if ($config=="minimal") {
-     // nada
-   } else {
-     // TODO FIXME add these fields to the
-     // 1) initial page load, 2) barcodelookup method (a. data result, b. setLoadedValue()), 3) ingest
-     $verbatimlat='';
-     $verbatimlong='';
-     $decimallat='';
-     $decimallong='';
-     $coordinateuncertainty='';
-     $georeferencesource='';
 
+   $bak_basewidth = $GLOBALS['BASEWIDTH'];
+   $GLOBALS['BASEWIDTH'] = 11;
 
-     $bak_basewidth = $GLOBALS['BASEWIDTH'];
-     $GLOBALS['BASEWIDTH'] = 11;
+   echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
+   echo '<div>';
+   echo '<table>';
+   @field ("verbatimelevation","Verb. Elev.",'','false');
+   @field ("verbatimlat","Verb. Lat.",'');
+   @field ("verbatimlong","Verb. Long.",'');
+   @field ("decimallat","Dec. Lat.",'','false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+   @field ("decimallong","Dec. Long.",'','false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+   @field ("georeferencesource",'Method','','false');
+   //field ("datum","Datum",$datum); // almost never encountered on a label
+   @field ("coordinateuncertainty","Uncertainty",'','false','[0-9]*');
+   //@selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false'); // This might only make sense in the data model for post-hoc georeferencing
+   //@field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); // doesn't make sense for label transcription, should be used for post-hoc georeferencing
+   //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription
+   echo '</table>';
+   echo '</div>';
+   echo '</div>';
 
-     echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
-     echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
-     echo '<div>';
-     echo '<table>';
-     @field ("verbatimelevation","Verb. Elev.",$verbatimElevation,'false');
-     @field ("verbatimlat","Verb. Lat.",$verbatimlat);
-     @field ("verbatimlong","Verb. Long.",$verbatimlong);
-     @field ("decimallat","Dec. Lat.",$decimallat,'false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
-     @field ("decimallong","Dec. Long.",$decimallong,'false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
-     @field ("georeferencesource",'Method',$georeferencesource,'false');
-     //field ("datum","Datum",$datum); // almost never encountered on a label
-     @field ("coordinateuncertainty","Uncertainty",$coordinateuncertainty,'false','[0-9]*');
-     //@selectCollectorsID("georeferencedby","Georef. By",$georeferencedby,$georeferencedbyid,'false','false'); // This might only make sense in the data model for post-hoc georeferencing
-     //@field ("dategeoreferenced","Georef. Date",$dategeoreferenced,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd'); // doesn't make sense for label transcription, should be used for post-hoc georeferencing
-     //utm($utmzone, $utmeasting, $utmnorthing); // rarely encountered during transcription
-     echo '</table>';
-     echo '</div>';
-     echo '</div>';
+   $GLOBALS['BASEWIDTH'] = $bak_basewidth;
 
-     $GLOBALS['BASEWIDTH'] = $bak_basewidth;
-   }
 
    echo "</form>\n";
 
    echo '</div>'; //end rightside
 
    echo '</div>';
-
-
-   /*
-   echo '<div class="flexbox"><div id="testimage"><img src="'.$mediauri.'" width="360"></div><div class="flexbox"><div id="imgtarget" style="width: 680px;"></div></div></div>';
-   echo "<script>
-         $(document).ready(function(){
-               $('#testimage').zoom({
-                    url: '$mediauri',
-                    magnify: 1.1,
-                    target: 'imgtarget',
-                    on: 'togglehold'
-               });
-          });
-   </script>";
-   echo "<div>Scale zoom to:<span id=scale>1.1</span>&nbsp;&nbsp;";
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\'); $(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:0.4,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'0.4\');">[---]</span>';
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\'); $(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:0.6,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'0.6\');">[--]</span>';
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\');$(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:0.8,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'0.8\');">[-]</span>';
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\'); $(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:1.1,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'1.1\');">[1]</span>';
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\'); $(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:1.2,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'1.2\');">[+]</span>';
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\'); $(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:1.4,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'1.4\');">[++]</span>';
-   echo '<span onclick="$(\'#testimage\').trigger(\'zoom.destroy\'); $(\'#testimage\').zoom({ url:\''.$mediauri.'\',magnify:1.6,target:\'imgtarget\',on:\'togglehold\'}); $(\'#scale\').html(\'1.6\');">[+++]</span>';
-   echo '</div>';
-
-   echo '</div>';
-   echo '</div>';
-   */
 
 }
 
