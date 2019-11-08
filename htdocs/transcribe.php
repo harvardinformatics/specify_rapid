@@ -658,8 +658,9 @@ function form() {
 
         soroStates = ['Arizona','Colorado','Kansas','Nebraska','New Mexico','Oklahoma','South Dakota','Texas','Utah','Wyoming'];
 
+        var soroHideFields = ['accessionnumber'];
         var poeHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks'];
-        var defaultHideFields = ['accessionnumber'];
+        var defaultHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','etal','stationfieldnumber','datecollected','verbatimdate','accessionnumber','container','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty'];
 
         // Enable/disable buttons based on position
         checkPosition($position);
@@ -667,7 +668,6 @@ function form() {
         projectConfig();
         // TODO: load record for current position
         loadRecord($position);
-
 
          $('#nextButton').click(function(event){
              $('#feedback').html( 'Loading next...');
@@ -744,12 +744,12 @@ function form() {
           });
 
           $('#highergeography').on( 'blur', function () {
-              projectConfig();
+              checkSoRo();
           });
 
-          $('#project').keyup(function(event) {
+          $('#highergeography').keyup(function(event) {
             if (event.keyCode === 13) {
-                projectConfig();
+                checkSoRo();
             }
           });
 
@@ -767,9 +767,10 @@ function form() {
                 },
                 success: function( data ) {
                   if (soroStates.includes(data.value)) {
-                    $('#feedback').html( 'SORO STATE FOUND!' ) ;
+                    hideFields(soroHideFields);
+                    $('#feedback').html( 'SoRo State: Please transcribe all fields' ) ;
                   } else {
-                    $('#feedback').html( 'NOT A SORO STATE' ) ;
+                    projectConfig();
                   }
                 },
                 error: function() {
