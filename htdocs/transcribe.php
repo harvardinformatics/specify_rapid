@@ -973,6 +973,7 @@ function form() {
        @field ("stationfieldnumber","Collector Number",$stationfieldnumber,'false');
        @field ("datecollected","Date Collected",$datecollected,'false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
        @field ("verbatimdate","Verbatim Date",$verbatimdate,'false');
+       @field ("accessionnumber","Accession Number",$accessionnumber,'false');
        @selectContainerID("container","Container",$container,$containerid);
        @selectCollectingTripID("collectingtrip","Collecting Trip",$collectingtrip,$collectingtripid,'false');
        @selectHigherGeography ("geographyfilter","Geography Within",$geographyfilter,$geographyfilterid,'','','false','true');
@@ -1199,6 +1200,7 @@ function form() {
                   setLoadedValue('containerid',data.containerid);
                   setLoadedValue('prepmethod',data.prepmethod);
                   setLoadedValue('preptype',data.format);
+                  setLoadedValue('accessionnumber',data.accessionnumber);
                   setLoadedValue('filedundername',data.filedundername);
                   setLoadedValue('filedundernameid',data.filedundernameid);
                   setLoadedValue('currentname',data.currentname);
