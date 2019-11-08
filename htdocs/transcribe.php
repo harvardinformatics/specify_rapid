@@ -1073,7 +1073,7 @@ function form() {
           }
 
           $('#project').on( 'blur', function () {
-              configProject();
+              projectConfig();
           });
 
 
