@@ -791,7 +791,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
    public function keySelectTaxonTaxonIDJSON($term) {
       global $connection;
       $returnvalue = '[';
-      $preparemysql = " SELECT taxonid, fullname, concat(case when text1 = 'LaterHomonym' then 'INVALID: ' when text1 = 'NomInvalid' then 'INVALID: ' when text1 = 'NomRej' then 'INVALID: ' when text1 = 'NomSuperfl' then 'INVALID: ' when text1 = 'OrthVar' then 'INVALID: ' when text1 = 'Synonym' then 'INVALID: ' else '' end,fullname,' ',ifnull(author,''), '[',ifnull(groupnumber,''),']',if(remarks is null,'',concat('[',remarks,']'))) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
+      $preparemysql = " SELECT taxonid, fullname, concat(case when text1 = 'LaterHomonym' then 'INVALID: ' when text1 = 'NomInvalid' then 'INVALID: ' when text1 = 'NomRej' then 'INVALID: ' when text1 = 'NomSuperfl' then 'INVALID: ' when text1 = 'OrthVar' then 'INVALID: ' when text1 = 'Synonym' then 'INVALID: ' else '' end,fullname,if(author is null,'',concat(' ', author)), ' [',ifnull(groupnumber,''),']',if(remarks is null,'',concat('[',remarks,']'))) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
