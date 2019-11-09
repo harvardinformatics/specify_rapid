@@ -20,6 +20,14 @@ if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
+@$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+if ($transcriptionMode == 'minimal') {
+  $modeLabel = 'Minimal';
+} else {
+  $transcriptionMode = 'detailed';
+  $modeLabel = 'Detailed';
+}
+
 $display = '';
 @$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
 if ($display=='') {
@@ -480,7 +488,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
-    echo "<button type='button' id='minimalButton' class='ui-button' >Minimal</button>";
+    echo "<button type='button' id='minimalButton' class='ui-button' >$modeLabel</button>";
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
@@ -665,10 +673,15 @@ function form() {
         // Enable/disable buttons based on position
         checkPosition($position);
         // Set hide/show fields for default project
-        projectConfig();
+        //projectConfig();
+        checkSoRo();
         // Load record for current position
         loadRecord($position);
 
+        // TODO: change URL param to save value on refresh
+
+        // TODO: clean up dets with bad taxon names
+        // TODO: add invalid info to taxon lookup
 
         $('#minimalButton').click(function(event){
 
@@ -681,6 +694,12 @@ function form() {
               $('#minimalButton').html('Minimal');
               transcriptionMode = 'detailed';
             }
+
+            var params = new URLSearchParams(window.location.search);
+            params.set('mode', transcriptionMode);
+            window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+
+            projectConfig();
 
             event.preventDefault();
          });
@@ -770,7 +789,8 @@ function form() {
           });
 
 
-          /* TODO: Check SoRo
+          /* Check if higher geography is a SoRo state,
+           * if true, set fields to SoRo config
            */
           function checkSoRo() {
               $.ajax( {
@@ -784,9 +804,10 @@ function form() {
                 success: function( data ) {
                   if (soroStates.includes(data.value)) {
                     hideFields(soroHideFields);
-                    $('#feedback').html( 'SoRo State: Please transcribe all fields' ) ;
+                    $('#feedback').html( 'SoRo State; Please transcribe all fields' ) ;
                   } else {
                     projectConfig();
+                    $('#feedback').html( '' ) ;
                   }
                 },
                 error: function() {
@@ -823,7 +844,11 @@ function form() {
                 hideFields(poeHideFields);
                 break;
                default:
-                hideFields(defaultHideFields);
+                if (transcriptionMode == 'detailed') {
+                  hideFields(defaultHideFields);
+                } else {
+                  hideFields(minimalHideFields);
+                }
              }
           }
 
