@@ -857,12 +857,12 @@ function form() {
             $('.inputField').each(function(){
               var idname = $(this).attr('id');
               if (arr.includes(idname)) {
-                $(this).hide()
-                $('label[for=' + idname + ']').hide();
+                //$(this).hide()
+                //$('label[for=' + idname + ']').hide();
                 $(this).closest('tr').hide();
               } else {
-                $(this).show()
-                $('label[for=' + idname + ']').show();
+                //$(this).show()
+                //$('label[for=' + idname + ']').show();
                 $(this).closest('tr').show();
               }
             });
