@@ -20,7 +20,7 @@ if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
-@$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+@$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
 if ($transcriptionMode == 'minimal') {
   $modeLabel = 'Minimal';
 } else {
@@ -486,6 +486,8 @@ function imageForBarcode($barcode) {
 // ** Functions
 
 function navigation() {
+    global $transcriptionMode, $modeLabel;
+
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
     echo "<button type='button' id='minimalButton' class='ui-button' >$modeLabel</button>";
@@ -493,7 +495,7 @@ function navigation() {
 }
 
 function form() {
-   global $user;
+   global $user, $transcriptionMode;
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
@@ -658,7 +660,7 @@ function form() {
    //echo "</td></tr>";
 
    echo "<script>
-        var transcriptionMode = 'detailed';
+        var transcriptionMode = '$transcriptionMode';
         var re_barcode = /^[0-9]{8}$/;
         var batchid = ".$currentBatch->getBatchID().";
         var batchpath = '".$currentBatch->getPath()."';
