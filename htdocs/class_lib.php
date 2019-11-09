@@ -1693,6 +1693,8 @@ class huh_geography_custom extends huh_geography {
             $name = trim($name);
             $name = str_replace('"','&quot;',$name);
             $returnvalue =  '{"id":"'.$id.'","label":"'.$name.'","value":"'.$name.'"}';
+         } else {
+           $returnvalue = '{ }';
          }
          $stmt->close();
       }
