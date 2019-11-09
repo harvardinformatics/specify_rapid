@@ -22,10 +22,10 @@ if (!$connection) {
 
 @$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
 if ($transcriptionMode == 'minimal') {
-  $modeLabel = 'Minimal';
+  $modeLabel = 'Detailed';
 } else {
   $transcriptionMode = 'detailed';
-  $modeLabel = 'Detailed';
+  $modeLabel = 'Minimal';
 }
 
 $display = '';
