@@ -680,8 +680,6 @@ function form() {
         // Load record for current position
         loadRecord($position);
 
-        // TODO: change URL param to save value on refresh
-
         // TODO: clean up dets with bad taxon names
         // TODO: add invalid info to taxon lookup
 
