@@ -635,7 +635,7 @@ function form() {
    @field ("stationfieldnumber","Collector Number",'','false');
    @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
    @field ("verbatimdate","Verbatim Date",'','false');
-   @field ("accessionnumber","Accession Number",'','false');
+   @field ("accessionnumber","Accession Num.",'','false');
    @selectContainerID("container","Container",'','');
    @selectCollectingTripID("collectingtrip","Collecting Trip",'','','false');
    @selectHigherGeography ("geographyfilter","Geography Within",'','','','','false','true');
@@ -859,9 +859,11 @@ function form() {
               if (arr.includes(idname)) {
                 $(this).hide()
                 $('label[for=' + idname + ']').hide();
+                $(this).closest('tr').hide();
               } else {
                 $(this).show()
                 $('label[for=' + idname + ']').show();
+                $(this).closest('tr').show();
               }
             });
           }
@@ -1462,7 +1464,7 @@ function selectQualifier($field,$label,$default) {
 
 function selectAcronym($field,$default) {
    echo "<tr><td>\n";
-   echo "<label for='$field'>Herbarium acronym</label>";
+   echo "<label for='$field'>Herbarium</label>";
    echo "</td><td>\n";
    if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
