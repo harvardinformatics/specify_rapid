@@ -809,7 +809,6 @@ function form() {
                     $('#feedback').html( 'SoRo State; Please transcribe all fields' ) ;
                   } else {
                     projectConfig();
-                    $('#feedback').html( '' ) ;
                   }
                 },
                 error: function() {
@@ -1061,6 +1060,7 @@ function form() {
                      loadFormData(data);
                      $('#batch_info').html('[' + batchpath + '] file ' + data.position +' of $filecount.');
                      loadImage(data);
+                     projectConfig();
                    },
                    error: function() {
                       console.log('ajax call to transcribe_handler.php/action=getrecord failed');
