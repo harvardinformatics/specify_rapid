@@ -771,12 +771,12 @@ function form() {
           }
 
           $('#project').on( 'blur', function () {
-              projectConfig();
+              checkSoRo();
           });
 
           $('#project').keyup(function(event) {
             if (event.keyCode === 13) {
-                projectConfig();
+                checkSoRo();
             }
           });
 
@@ -1060,7 +1060,7 @@ function form() {
                      loadFormData(data);
                      $('#batch_info').html('[' + batchpath + '] file ' + data.position +' of $filecount.');
                      loadImage(data);
-                     projectConfig();
+                     checkSoRo();
                    },
                    error: function() {
                       console.log('ajax call to transcribe_handler.php/action=getrecord failed');
