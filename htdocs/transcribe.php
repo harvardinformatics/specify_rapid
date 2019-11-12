@@ -624,6 +624,7 @@ function form() {
    ';
 
    @selectAcronym("herbariumacronym",$defaultherbarium);
+   @field ("accessionnumber","Accession Num.",'','false');
    @selectTaxon("filedundername","Filed Under",'','','true','true');
    @selectTaxon ("currentname","Current Name",'','','true','true');
    @selectQualifier("currentqualifier","ID Qualifier",'');
@@ -636,7 +637,6 @@ function form() {
    @field ("stationfieldnumber","Collector Number",'','false');
    @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
    @field ("verbatimdate","Verbatim Date",'','false');
-   @field ("accessionnumber","Accession Num.",'','false');
    @selectContainerID("container","Container",'','');
    @selectCollectingTripID("collectingtrip","Collecting Trip",'','','false');
    @selectHigherGeography ("geographyfilter","Geography Within",'','','','','false','true');
