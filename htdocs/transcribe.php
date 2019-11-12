@@ -617,6 +617,7 @@ function form() {
        });
        $("#barcode").on( "blur", function () {
            loadDataForBarcode($("#barcode").val());
+           checkSaveButton();
        });
    });
    </script>
