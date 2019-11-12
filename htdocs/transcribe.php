@@ -1344,7 +1344,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
    if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
     <input type=text name=$field id=$field $req value='$value' style=' width: ".$GLOBALS['BASEWIDTH']."em; $style ' class='inputField $carryforward'  >
-    <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req value='$valueid' class='$carryforward' >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1487,7 +1487,7 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
    if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
 	<input type=text name=$field id=$field $req  value='$value' style=' width:". $GLOBALS['BASEWIDTH'] ."em;' class='inputField $carryforward'>
-	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
+	<input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' class='$carryforward' >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1540,7 +1540,7 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
     <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='inputField $carryforward' >
-    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' class='$carryforward' >
     </td></tr>";
    $returnvalue .= '
       <script>
@@ -1632,7 +1632,7 @@ function selectContainerID($field,$label,$value,$valueid,$required='false',$carr
    if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
    $returnvalue .= "<label for=\"$field\">$label</label></td><td>
     <input type=text name=$field id=$field $req  value='$value' style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='inputField $carryforward' >
-    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' $carryforward >
+    <input type=hidden name=$fieldid id=$fieldid $req  value='$valueid' class='$carryforward' >
     </td></tr>";
    $returnvalue .= '
       <script>
