@@ -681,7 +681,6 @@ function form() {
         loadRecord($position);
 
         // TODO: clean up dets with bad taxon names
-        // TODO: add invalid info to taxon lookup
 
         $('#minimalButton').click(function(event){
 
@@ -804,7 +803,7 @@ function form() {
                 success: function( data ) {
                   if (soroStates.includes(data.value)) {
                     hideFields(soroHideFields);
-                    $('#feedback').html( 'SoRo State; Please transcribe all fields' ) ;
+                    $('#feedback').html( '<mark>SoRo State; Please transcribe all fields</mark>' ) ;
                   } else {
                     projectConfig();
                   }
