@@ -791,17 +791,17 @@ class huh_taxon_CUSTOM extends huh_taxon {
    public function keySelectTaxonTaxonIDJSON($term) {
       global $connection;
       $returnvalue = '[';
-      $preparemysql = " SELECT taxonid, concat(fullname,' ',ifnull(author,'')) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
+      $preparemysql = " SELECT taxonid, fullname, concat(case when text1 = 'LaterHomonym' then 'INVALID: ' when text1 = 'NomInvalid' then 'INVALID: ' when text1 = 'NomRej' then 'INVALID: ' when text1 = 'NomSuperfl' then 'INVALID: ' when text1 = 'OrthVar' then 'INVALID: ' when text1 = 'Synonym' then 'INVALID: ' else '' end,fullname,if(author is null,'',concat(' ', author)), ' [',ifnull(groupnumber,''),']',if(remarks is null,'',concat('[',remarks,']'))) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
          $stmt->execute();
-         $stmt->bind_result($id, $label);
+         $stmt->bind_result($id, $fullname, $label);
          while ($stmt->fetch()) {
             $label = trim($label);
             if ($label!='') {
                   $label = str_replace('"','&quot;',$label);
-                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$label.'"}';
+                  $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$fullname.'"}';
                   $comma = ',';
             }
          }
@@ -1678,6 +1678,26 @@ class huh_geography_custom extends huh_geography {
          $stmt->close();
       }
       $returnvalue .= ']';
+      return $returnvalue;
+   }
+
+   public function selectDistinctParentGeographyJSON($childid,$parentrank) {
+      global $connection;
+      $returnvalue = '';
+      $preparemysql = "select distinct g1.geographyid, g1.name from geography g1, geography g2 where g2.geographyid = ? and g1.rankid = ? and g1.nodenumber <= g2.nodenumber and g1.highestchildnodenumber >= g2.nodenumber and g1.isaccepted = 1 order by g1.name asc ";
+      if ($stmt = $connection->prepare($preparemysql)) {
+         $stmt->bind_param('ii',$childid,$parentrank);
+         $stmt->execute();
+         $stmt->bind_result($id,$name);
+         if ($stmt->fetch()) {
+            $name = trim($name);
+            $name = str_replace('"','&quot;',$name);
+            $returnvalue =  '{"id":"'.$id.'","label":"'.$name.'","value":"'.$name.'"}';
+         } else {
+           $returnvalue = '{ }';
+         }
+         $stmt->close();
+      }
       return $returnvalue;
    }
 

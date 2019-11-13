@@ -187,7 +187,7 @@ class TR_Batch {
    function setCompleted() {
      global $connection, $user;
 
-     $this->moveTo(1);
+     $this->movePosition(1);
 
      $sql = 'update TR_BATCH set completed_date = now() where tr_batch_id = ?';
      if ($statement = $connection->prepare($sql)) {
@@ -248,31 +248,44 @@ class TR_Batch {
 
   }
 
+  /** Adjust position from current position by $i
+   */
+  function adjustPosition($i) {
+    global $connection, $user;
+
+    // Look up current position
+    $sql = 'select ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ?';
+    if ($statement = $connection->prepare($sql)) {
+       $statement->bind_param("is",$this->getBatchId(),$_SESSION["username"]);
+       $statement->execute();
+       $statement->bind_result($position, $batch_id);
+       $statement->store_result();
+       if ($statement->fetch()) {
+         // nothing
+       } else {
+         throw new Exception("Could not find current batch/position for tr_batch_id [{$this->getBatchId()}]");
+       }
+       $statement->close();
+    } else {
+      throw new Exception("Database connection failed");
+    }
+
+    return movePosition($position + $i);
+  }
+
+  /** Move current position in batch to $i
+   */
   function movePosition($i) {
      global $connection, $user;
 
-     // Look up current position
-     $sql = 'select ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ?';
-     if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("is",$this->getBatchId(),$_SESSION["username"]);
-        $statement->execute();
-        $statement->bind_result($position, $batch_id);
-        $statement->store_result();
-        if ($statement->fetch()) {
-          // nothing
-        } else {
-          throw new Exception("Could not find current batch/position for tr_batch_id [{$this->getBatchId()}]");
-        }
-        $statement->close();
-     } else {
-       throw new Exception("Database connection failed");
-     }
+     $batch_id = $this->getBatchId();
+     $username = $_SESSION["username"];
 
      // Check if there is a file at the new position
-     $nextposition = $position + $i;
+     $nextposition = $i;
      $sql = 'select position from TR_BATCH_IMAGE where tr_batch_id = ? and position = ?';
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("ii",$this->getBatchId(),$nextposition);
+        $statement->bind_param("ii",$batch_id,$nextposition);
         $statement->execute();
         $statement->bind_result($position2);
         $statement->store_result();
@@ -290,8 +303,13 @@ class TR_Batch {
      // Update position
      $sql = "update TR_USER_BATCH set position = ? where username = ? and tr_batch_id = ?";
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("isi",$nextposition,$_SESSION["username"],$batch_id);
+        $statement->bind_param("isi",$nextposition,$username,$batch_id);
         $statement->execute();
+
+        //if (mysql_affected_rows() < 1) {
+        //  throw new Exception("Could not update position [$nextposition] for batch [$batch_id], user [$username]");
+        //}
+
         $statement->close();
      } else {
        throw new Exception("Database connection failed");
@@ -305,7 +323,7 @@ class TR_Batch {
    * @return a PathFile object containing the next file and it's path, empty if no next file found.
    */
   function incrementFile() {
-  	return $this->movePosition(1);
+  	return $this->adjustPosition(1);
   }
 
   /** Find the previous file in this batch for the current user and move to it.
@@ -313,7 +331,7 @@ class TR_Batch {
    * @return a PathFile object containing the previous file and it's path, empty if no previous file found.
    */
   function decrementFile() {
-  	return $this->movePosition(-1);
+  	return $this->adjustPosition(-1);
   }
 
   /** Find the file at a specified position in this batch without moving to it.
@@ -371,21 +389,6 @@ class TR_Batch {
      }
      return $this->getFile($position);
   }
-
-  /** Reset the position in this batch for the current user to the specified position.
-   *
-   * @param position the position to move to.
-   */
-  function moveTo($position) {
-     global $connection, $user;
-     // find the current batch
-     $sql = 'update TR_USER_BATCH set position = ? where tr_batch_id = ? and username = ?';
-     if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("iis",$position, $this->batch_id,$_SESSION["username"]);
-        $statement->execute();
-     }
-  }
-
 }
 
 class TPage extends Page {

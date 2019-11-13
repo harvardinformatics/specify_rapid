@@ -859,6 +859,29 @@ if ($connection && $authenticated) {
             }
             break;
 
+        case 'returnparentgeographyjson':
+           // test call: druid_handler.php?action=returncountryjson
+           // use with dojo dojo.data.ItemFileDataStore and dijit.form.ComboBox to generate a pick list of countries
+           $ok = false;
+           @$childid= substr(preg_replace('/[^0-9]/','',$_GET['id']),0,60);  // value to limit
+           @$parentrank= substr(preg_replace('/[^0-9]/','',$_GET['rank']),0,60);  // value to limit
+
+           $t = new huh_geography_custom();
+           try {
+              $response = $t->selectDistinctParentGeographyJSON($childid, $parentrank);
+              $ok = true;
+           } catch (Exception $e) {
+              $ok = false;
+           }
+           //header("Content-type application/json");
+           header("Content-type text/json-comment-filtered");
+           if (! $ok) {
+              $response = '{ }';
+           }
+
+           echo $response;
+           break;
+
       case 'returncountryjson':
          // test call: druid_handler.php?action=returncountryjson
          // use with dojo dojo.data.ItemFileDataStore and dijit.form.ComboBox to generate a pick list of countries
