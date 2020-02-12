@@ -1623,7 +1623,7 @@ class huh_geography_custom extends huh_geography {
          UNION SELECT distinct g.acceptedid as gid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']',' [Synonym]') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 0 and g.acceptedid is not null and r.GeographyTreeDefID =1 and g.rankid <= ? and g.nodenumber > ? and g.highestchildnodenumber <= ?  order by value ASC ";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
-            $stmt->bind_param('siiis111',$term,$rank,$highernode,$higherhighestchildnode,$term,$rank,$highernode,$higherhighestchildnode);
+            $stmt->bind_param('siiisiii',$term,$rank,$highernode,$higherhighestchildnode,$term,$rank,$highernode,$higherhighestchildnode);
             $stmt->execute();
             $stmt->bind_result($id, $label,$value);
             while ($stmt->fetch()) {
@@ -1642,7 +1642,7 @@ class huh_geography_custom extends huh_geography {
                            UNION SELECT distinct g.acceptedid as gid, concat(g.fullname,' [',ifnull(c.fullname,''),':',r.name,']',' [Synonym]') as label, g.fullname as value FROM geography g left join geographytreedefitem r on g.rankid = r.rankid left join geography c on c.rankid = 200 and c.nodenumber < g.nodenumber and c.highestchildnodenumber >= g.highestchildnodenumber where g.name like ? and g.isaccepted = 0 and g.acceptedid is not null and r.GeographyTreeDefID =1 and g.rankid <= ? order by value ASC";
          $comma = '';
          if ($stmt = $connection->prepare($preparemysql)) {
-            $stmt->bind_param('sis1',$term,$rank,$term,$rank);
+            $stmt->bind_param('sisi',$term,$rank,$term,$rank);
             $stmt->execute();
             $stmt->bind_result($id, $label,$value);
             while ($stmt->fetch()) {
