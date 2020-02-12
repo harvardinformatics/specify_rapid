@@ -1787,7 +1787,7 @@ class huh_geography_custom extends huh_geography {
          }
       }
 
-      $preparemysql = "select distinct geographyid, fullname from geography $wherebit order by name, fullname asc ";
+      $preparemysql = "select distinct if(g1.acceptedid is null, g1.geographyid, -1), if(g1.acceptedid is null, g1.fullname, concat(g1.fullname, ' [Synonym for ',g2.fullname,']')) from geography g1 left join geography g2 on g1.acceptedid = g2.geographyid $wherebit order by g1.name, g1.fullname asc ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
