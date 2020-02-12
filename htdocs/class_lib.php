@@ -1796,6 +1796,7 @@ class huh_geography_custom extends huh_geography {
          while ($stmt->fetch()) {
             $name = trim($name);
             if ($name!='') {
+               $name = iconv("UTF8","ASCII//TRANSLIT", $name);
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
                $comma = ', ';
