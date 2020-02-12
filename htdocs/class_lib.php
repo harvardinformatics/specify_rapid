@@ -1755,13 +1755,11 @@ class huh_geography_custom extends huh_geography {
    public function limitedSelectDistinctJSONGeography($country,$primary) {
       global $connection;
       $returnvalue = '';
-      $wherebit = " ";
+      $wherebit = "";
       $primaryid = "";
       $countryid = "";
-      $and = " and ";
 
       if ($primary !='') {
-         $wherebit .= "";
          $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 300 and name like ? and isaccepted = 1 ";
          if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param("s",$primary);
@@ -1769,14 +1767,12 @@ class huh_geography_custom extends huh_geography {
             $stmt->bind_result($primaryid,$nn,$hcnn);
            if ($stmt->fetch()) {
                $name = str_replace('"','&quot;',$name);
-               $wherebit .= "$and nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
-               $and = " and ";
+               $wherebit .= "where nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
             }
             $stmt->close();
          }
       } else {
          if ($country !='') {
-            $wherebit .= "";
             $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 200 and name like ? and isaccepted = 1 ";
             if ($stmt = $connection->prepare($sql)) {
                $stmt->bind_param("s",$country);
@@ -1784,16 +1780,11 @@ class huh_geography_custom extends huh_geography {
                $stmt->bind_result($countryid,$nn,$hcnn);
                if ($stmt->fetch()) {
                   $name = str_replace('"','&quot;',$name);
-                  $wherebit .= "$and nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
-                  $and = " and ";
+                  $wherebit .= "where nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
                }
                $stmt->close();
             }
          }
-      }
-
-      if ($wherebit==" where ") {
-         $wherebit = "";
       }
 
       $preparemysql = "select distinct coalesce(acceptedid, geographyid), fullname from geography $wherebit order by name, fullname asc ";
