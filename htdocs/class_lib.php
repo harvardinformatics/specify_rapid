@@ -1755,7 +1755,7 @@ class huh_geography_custom extends huh_geography {
    public function limitedSelectDistinctJSONGeography($country,$primary) {
       global $connection;
       $returnvalue = '';
-      $wherebit = " where isaccepted = 1 ";
+      $wherebit = " ";
       $primaryid = "";
       $countryid = "";
       $and = " and ";
@@ -1796,7 +1796,7 @@ class huh_geography_custom extends huh_geography {
          $wherebit = "";
       }
 
-      $preparemysql = "select distinct geographyid, fullname from geography $wherebit order by name, fullname asc ";
+      $preparemysql = "select distinct coalesce(acceptedid, geographyid), fullname from geography $wherebit order by name, fullname asc ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
