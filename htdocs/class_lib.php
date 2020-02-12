@@ -1762,7 +1762,7 @@ class huh_geography_custom extends huh_geography {
 
       if ($primary !='') {
          $wherebit .= "";
-         $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 300 and name = ? and isaccepted = 1 ";
+         $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 300 and name like ? and isaccepted = 1 ";
          if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param("s",$primary);
             $stmt->execute();
@@ -1777,7 +1777,7 @@ class huh_geography_custom extends huh_geography {
       } else {
          if ($country !='') {
             $wherebit .= "";
-            $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 200 and name = ? and isaccepted = 1 ";
+            $sql = "select geographyid, nodenumber, highestchildnodenumber from geography where GeographyTreeDefID=1 and rankid = 200 and name like ? and isaccepted = 1 ";
             if ($stmt = $connection->prepare($sql)) {
                $stmt->bind_param("s",$country);
                $stmt->execute();
