@@ -1787,7 +1787,7 @@ class huh_geography_custom extends huh_geography {
          }
       }
 
-      $preparemysql = "select distinct coalesce(acceptedid, geographyid), fullname from geography $wherebit order by name, fullname asc ";
+      $preparemysql = "select distinct geographyid, fullname from geography $wherebit order by name, fullname asc ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->execute();
