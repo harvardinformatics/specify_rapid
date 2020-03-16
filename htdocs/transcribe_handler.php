@@ -1103,7 +1103,7 @@ function ingest() {
                                     $decimallong, $coordinateuncertainty, $verbatimelevation, $minelevation, $maxelevation, $georeferencesource, $currentuserid, $latlongtype);
                                     if ($statement->execute()) {
                                        $newlocalityid = $statement->insert_id;
-                                       $adds .= "locality=[$newlocalityid]";
+                                       $adds .= "locality=[" . $newlocalityid . "]";
                                     } else {
                                        $fail = true;
                                        $feedback.= "Unable to save locality: " . $connection->error;
