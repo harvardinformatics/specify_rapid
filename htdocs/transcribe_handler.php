@@ -1090,45 +1090,7 @@ function ingest() {
                            if (!$fail) {
 
                                if ($localityid == null) {
-                                 // Locality + localitydetail + geocoorddetail
-                                 $sql = "insert into locality (geographyid, localityname, namedplace, datum, lat1text, long1text, latitude1,
-                                                           longitude1, LatLongAccuracy, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid,
-                                                           latlongtype, disciplineid,timestampcreated,version,originallatlongunit,srclatlongunit)
-                                                           values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,3,now(),0,0,0)";
 
-                                 $statement = $connection->prepare($sql);
-                                 if ($statement) {
-                                    $statement->bind_param('isssssssissssis',
-                                    $geographyid, $specificlocality, $namedplace, $datum, $verbatimlat, $verbatimlong, $decimallat,
-                                    $decimallong, $coordinateuncertainty, $verbatimelevation, $minelevation, $maxelevation, $georeferencesource, $currentuserid, $latlongtype);
-                                    if ($statement->execute()) {
-                                       $newlocalityid = $statement->insert_id;
-                                       $adds .= "locality=[" . $newlocalityid . "]";
-                                    } else {
-                                       $fail = true;
-                                       $feedback.= "Unable to save locality: " . $connection->error;
-                                    }
-                                    $statement->free_result();
-                                    $statement->close();
-                                 } else {
-                                    $fail = true;
-                                    $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                 }
-
-                                $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
-                                $statement = $connection->prepare($sql);
-                                if ($statement) {
-                                     $statement->bind_param("ii", $newlocalityid, $collectingeventid);
-                                     $statement->execute();
-                                     $rows = $connection->affected_rows;
-                                     if ($rows==1) { $feedback .= " Linked CollectingEvent. "; }
-                                     if ($rows==0) { $feedback .= " Could not link Locality to CollectingEvent. "; }
-                                     $statement->free_result();
-                                     $statement->close();
-                                } else {
-                                   $fail = true;
-                                   $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                }
 
                                } else {
 
