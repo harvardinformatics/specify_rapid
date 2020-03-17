@@ -1092,7 +1092,7 @@ function ingest() {
                                if ($localityid == null) {
                                  // Locality + localitydetail + geocoorddetail
                                  $sql = "insert into locality (geographyid, localityname, namedplace, datum, lat1text, long1text, latitude1,
-                                                           longitude1, LatLongAccuracy, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid,
+                                                           longitude1, LatLongAccuracy, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid, 
                                                            latlongtype, disciplineid,timestampcreated,version,originallatlongunit,srclatlongunit)
                                                            values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,3,now(),0,0,0)";
 
@@ -1159,7 +1159,7 @@ function ingest() {
                                       $sql = <<<EOD
     insert into locality
     (TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID)
-    select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?
+    select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
     EOD;
                     		              $statement = $connection->prepare($sql);
                                       if ($statement) {
