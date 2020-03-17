@@ -1085,115 +1085,70 @@ function ingest() {
                              $latlongtype = null;
                            }
 
-                           if (!$fail) {
-
-                               if ($localityid == null) {
-                                 // Locality + localitydetail + geocoorddetail
-                                 $sql = "insert into locality (geographyid, localityname, namedplace, datum, lat1text, long1text, latitude1, " .
-                                                          " longitude1, LatLongAccuracy, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid, " .
-                                                          " latlongtype, disciplineid,timestampcreated,version,originallatlongunit,srclatlongunit) " .
-                                                          " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,3,now(),0,0,0)";
-
-                                 $statement = $connection->prepare($sql);
-                                 if ($statement) {
-                                    $statement->bind_param('isssssssissssis',
-                                    $geographyid,$specificlocality, $namedplace, $datum, $verbatimlat, $verbatimlong, $decimallat,
-                                    $decimallong, $coordinateuncertainty, $verbatimelevation, $minelevation, $maxelevation, $georeferencesource, $currentuserid,$latlongtype);
-                                    if ($statement->execute()) {
-                                       $newlocalityid = $statement->insert_id;
-                                       $adds .= "locality=[$newlocalityid]";
-                                    } else {
-                                       $fail = true;
-                                       $feedback.= "Unable to save locality: " . $connection->error;
-                                    }
-                                    $statement->free_result();
-                                    $statement->close();
-                                 } else {
-                                    $fail = true;
-                                    $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                 }
-
-                                $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
-                                $statement = $connection->prepare($sql);
-                                if ($statement) {
-                                     $statement->bind_param("ii", $newlocalityid, $collectingeventid);
-                                     $statement->execute();
-                                     $rows = $connection->affected_rows;
-                                     if ($rows==1) { $feedback = $feedback . " Linked CollectingEvent. "; }
-                                     if ($rows==0) { $feedback = $feedback . " Could not link Locality to CollectingEvent. "; }
-                                     $statement->free_result();
-                                     $statement->close();
-                                } else {
+                           if (!$fail && $localityid!=null) {
+                               $countco = countCollectionObjectsForLocality($localityid);
+                               if ($countco < 0) {
                                    $fail = true;
-                                   $feedback.= "Query error: " . $connection->error . " " . $sql;
-                                }
+                                   $feedback.= "Query Error looking up locality " . $connection->error .  " ";
+                               } elseif ($countco==0) {
+                                   $fail = true;
+                                   $feedback.= "Error: no collection objects found for locality. ";
+                               } elseif ($countco==1) {
+                                  $statement1 = $connection->stmt_init();
 
+                                  $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                		              $statement1 = $connection->prepare($sql);
+                                  if ($statement1) {
+                                      $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->execute();
+                                      $rows = $connection->affected_rows;
+                                      if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
+                                      if ($rows==0) { $feedback = $feedback . " Locality unchanged. "; }
+                                  } else {
+                                      $fail = true;
+                                      $feedback.= "Query Error modifying locality. " . $connection->error  . " ";
+                                  }
                                } else {
-
-                                   $countco = countCollectionObjectsForLocality($localityid);
-                                   if ($countco < 0) {
-                                       $fail = true;
-                                       $feedback.= "Query Error looking up locality " . $connection->error .  " ";
-                                   } elseif ($countco==0) {
-                                       $fail = true;
-                                       $feedback.= "Error: no collection objects found for locality. ";
-                                   } elseif ($countco==1) {
-                                      $statement1 = $connection->stmt_init();
-
-                                      $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
-                    		              $statement1 = $connection->prepare($sql);
-                                      if ($statement1) {
-                                          $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
-                                          $statement1->execute();
-                                          $rows = $connection->affected_rows;
-                                          if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
-                                          if ($rows==0) { $feedback = $feedback . " Locality unchanged. "; }
-                                      } else {
-                                          $fail = true;
-                                          $feedback.= "Query Error modifying locality. " . $connection->error  . " ";
+                                  // more than one collection object, need to create new locality
+                                  $sql = <<<EOD
+insert into locality
+(TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID)
+select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
+EOD;
+                		              $statement = $connection->prepare($sql);
+                                  if ($statement) {
+                                      $statement->bind_param("i", $localityid);
+                                      $statement->execute();
+                                      $rows = $connection->affected_rows;
+                                      if ($rows==1) {
+                                         $newlocalityid = $statement->insert_id;
+                                         $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                       }
-                                   } else {
-                                      // more than one collection object, need to create new locality
-                                      $sql = <<<EOD
-    insert into locality
-    (TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID)
-    select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
-    EOD;
-                    		              $statement = $connection->prepare($sql);
+                                      $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
+                		                  $statement = $connection->prepare($sql);
                                       if ($statement) {
-                                          $statement->bind_param("i", $localityid);
+                                          $statement->bind_param("ii", $newlocalityid, $collectingeventid);
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
-                                          if ($rows==1) {
-                                             $newlocalityid = $statement->insert_id;
-                                             $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
-                                          }
-                                          $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
-                    		                  $statement = $connection->prepare($sql);
+                                          if ($rows==1) { $feedback = $feedback . " Relinked collectingevent. "; }
+                                          $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
+                        		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement->bind_param("ii", $newlocalityid, $collectingeventid);
+                                              $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
-                                              if ($rows==1) { $feedback = $feedback . " Relinked collectingevent. "; }
-                                              $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
-                            		              $statement = $connection->prepare($sql);
-                                              if ($statement) {
-                                                  $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
-                                                  $statement->execute();
-                                                  $rows = $connection->affected_rows;
-                                                  if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
-                                                  if ($rows==0) { $feedback = $feedback . " Locality unchanged. "; }
-                                              } else {
-                                                  $fail = true;
-                                                  $feedback.= "Query Error splitting/modifying locality. " . $connection->error . " ";
-                                              }
-                                              $statement->free_result();
-                                              $statement->close();
+                                              if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
+                                              if ($rows==0) { $feedback = $feedback . " Locality unchanged. "; }
+                                          } else {
+                                              $fail = true;
+                                              $feedback.= "Query Error splitting/modifying locality. " . $connection->error . " ";
                                           }
-                                       } else {
-                                            $fail = true;
-                                            $feedback.= "Query Error splitting locality. " . $connection->error . " ";
-                                       }
+                                          $statement->free_result();
+                                          $statement->close();
+                                      }
+                                   } else {
+                                        $fail = true;
+                                        $feedback.= "Query Error splitting locality. " . $connection->error . " ";
                                    }
                                }
                            } // end localityid
