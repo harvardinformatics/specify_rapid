@@ -1068,8 +1068,6 @@ function ingest() {
                            }
 
 
-                           $adds = "";
-
                            // ensure that verbatim and decimal are either both set are neither set
                            if (isset($verbatimlat)!=isset($verbatimlong)) {
                              $fail = true;
@@ -1091,16 +1089,16 @@ function ingest() {
 
                                if ($localityid == null) {
                                  // Locality + localitydetail + geocoorddetail
-                                 $sql = "insert into locality (geographyid, localityname, namedplace, datum, lat1text, long1text, latitude1,
-                                                           longitude1, LatLongAccuracy, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid, 
-                                                           latlongtype, disciplineid,timestampcreated,version,originallatlongunit,srclatlongunit)
-                                                           values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,3,now(),0,0,0)";
+                                 $sql = "insert into locality (geographyid, localityname, namedplace, datum, lat1text, long1text, latitude1, " .
+                                                          " longitude1, LatLongAccuracy, verbatimelevation, minelevation, maxelevation, latlongmethod, createdbyagentid, " .
+                                                          " latlongtype, disciplineid,timestampcreated,version,originallatlongunit,srclatlongunit) " .
+                                                          " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,3,now(),0,0,0)";
 
                                  $statement = $connection->prepare($sql);
                                  if ($statement) {
                                     $statement->bind_param('isssssssissssis',
-                                    $geographyid, $specificlocality, $namedplace, $datum, $verbatimlat, $verbatimlong, $decimallat,
-                                    $decimallong, $coordinateuncertainty, $verbatimelevation, $minelevation, $maxelevation, $georeferencesource, $currentuserid, $latlongtype);
+                                    $geographyid,$specificlocality, $namedplace, $datum, $verbatimlat, $verbatimlong, $decimallat,
+                                    $decimallong, $coordinateuncertainty, $verbatimelevation, $minelevation, $maxelevation, $georeferencesource, $currentuserid,$latlongtype);
                                     if ($statement->execute()) {
                                        $newlocalityid = $statement->insert_id;
                                        $adds .= "locality=[$newlocalityid]";
@@ -1121,8 +1119,8 @@ function ingest() {
                                      $statement->bind_param("ii", $newlocalityid, $collectingeventid);
                                      $statement->execute();
                                      $rows = $connection->affected_rows;
-                                     if ($rows==1) { $feedback .= " Linked CollectingEvent. "; }
-                                     if ($rows==0) { $feedback .= " Could not link Locality to CollectingEvent. "; }
+                                     if ($rows==1) { $feedback = $feedback . " Linked CollectingEvent. "; }
+                                     if ($rows==0) { $feedback = $feedback . " Could not link Locality to CollectingEvent. "; }
                                      $statement->free_result();
                                      $statement->close();
                                 } else {
@@ -1168,7 +1166,7 @@ function ingest() {
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) {
                                              $newlocalityid = $statement->insert_id;
-                                             $feedback .= " Cloned Locality to [$newlocalityid]. ";
+                                             $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                           }
                                           $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
                     		                  $statement = $connection->prepare($sql);
@@ -1224,6 +1222,8 @@ function ingest() {
                           } else {
                              $filedundercurrent = 0;
                           }
+
+                          $adds = "";
 
                           // insert or update the current det
                           $current = huh_determination_custom::lookupCurrentDetermination($fragmentid);
