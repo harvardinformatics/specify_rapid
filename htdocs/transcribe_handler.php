@@ -1089,10 +1089,6 @@ function ingest() {
 
                            if (!$fail) {
 
-                               if ($localityid == null) {
-
-
-                               } else {
 
                                    $countco = countCollectionObjectsForLocality($localityid);
                                    if ($countco < 0) {
@@ -1159,7 +1155,6 @@ function ingest() {
                                             $feedback.= "Query Error splitting locality. " . $connection->error . " ";
                                        }
                                    }
-                               }
                            } // end localityid
 
                           // If id is -1, a det exists without a taxon - therefore we set values to null which should trigger an update of the existing records
