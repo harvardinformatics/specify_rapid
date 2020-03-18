@@ -344,12 +344,12 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
 
-     $sql = "select imlf.path, imlf.filename, tbi.barcode, imo2.uri
-             from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf
+     $sql = "select imlf.path, imlf.filename, tbi.barcode, imo2.object_name
+             from TR_BATCH_IMAGE tbi
+             join IMAGE_OBJECT imo on tbi.IMAGE_OBJECT_ID = imo.ID
+             join IMAGE_LOCAL_FILE imlf on imo.IMAGE_LOCAL_FILE_ID = imlf.ID
              left join IMAGE_OBJECT imo2 on imo.IMAGE_SET_ID = imo2.IMAGE_SET_ID and imo2.ACTIVE_FLAG = 1 and imo2.OBJECT_TYPE_ID = 3
-             where tbi.IMAGE_OBJECT_ID = imo.ID
-               and imo.IMAGE_LOCAL_FILE_ID = imlf.ID
-               and tbi.TR_BATCH_ID = ?
+             where tbi.TR_BATCH_ID = ?
                and tbi.POSITION = ? ;";
 
      if ($statement = $connection->prepare($sql)) {
