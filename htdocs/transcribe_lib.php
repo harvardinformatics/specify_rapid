@@ -1,5 +1,4 @@
 <?php
-AWS_BASE_PATH = 'huhspecimenimages.s3.amazonaws.com';
 
 include_once("imagehandler.php");
 include_once("connection_library.php");
@@ -364,7 +363,7 @@ class TR_Batch {
             $result->position = $position;
             $result->barcode = $barcode;
             if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34))) {
-              $result->awsPath = AWS_BASE_PATH . substr($awspath, 32);
+              $result->awsPath = 'huhspecimenimages.s3.amazonaws.com' . substr($awspath, 32);
             } else {
               $result->awsPath = null;
             }
