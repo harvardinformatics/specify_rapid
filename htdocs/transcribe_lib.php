@@ -363,7 +363,7 @@ class TR_Batch {
             $result->position = $position;
             $result->barcode = $barcode;
             //if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34))) {
-              $result->awsPath = 'huhspecimenimages.s3.amazonaws.com' . substr($awspath, 32);
+              $result->awsPath = 'http://huhspecimenimages.s3.amazonaws.com' . substr($awspath, 32);
             //} else {
             //  $result->awsPath = null;
             //}
