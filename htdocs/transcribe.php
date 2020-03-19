@@ -671,7 +671,7 @@ function form() {
 
    echo "<script>
         var transcriptionMode = '$transcriptionMode';
-        var imgSrc            = '$imgSrc';
+        var imgsrc            = '$imgSrc';
         var re_barcode = /^[0-9]{8}$/;
         var batchid = ".$currentBatch->getBatchID().";
         var batchpath = '".$currentBatch->getPath()."';
@@ -716,18 +716,18 @@ function form() {
 
          $('#imgSrcButton').click(function(event){
 
-             if (imgSrc == 'AWS') {
+             if (imgsrc == 'AWS') {
                $('#feedback').html( 'Switched to RC image delivery...');
                $('#imgSrcButton').html('RC');
-               imgSrc = 'RC';
+               imgsrc = 'RC';
              } else {
                $('#feedback').html( 'Switched to AWS image delivery...');
                $('#imgSrcButton').html('AWS');
-               imgSrc = 'AWS';
+               imgsrc = 'AWS';
              }
 
              var params = new URLSearchParams(window.location.search);
-             params.set('imgsrc', imgSrc);
+             params.set('imgsrc', imgsrc);
              window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
              event.preventDefault();
           });
@@ -1066,7 +1066,7 @@ function form() {
           }
 
           function loadRecord(position) {
-               console.log('called loadRecord() for batch ' + batchid + ' position ' + position);
+               console.log('called loadRecord() for batch ' + batchid + ' position ' + position + ' imgsrc ' + imgsrc);
 
                checkPosition(position);
 
@@ -1081,7 +1081,8 @@ function form() {
                    data: {
                        action: 'getrecord',
                        batch_id: batchid,
-                       position: position
+                       position: position,
+                       imgsrc: imgsrc
                    },
                    success: function(data) {
                      console.log(data);
