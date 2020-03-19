@@ -113,6 +113,7 @@ if ($connection && $authenticated) {
          $ok = false;
          @$id = $_GET['batch_id'];
          @$position = $_GET['position'];
+         @$imgsrc   = $_GET['imgsrc'];
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
@@ -131,8 +132,7 @@ if ($connection && $authenticated) {
          // Attach image data
          $dataarray['position'] = $position;
          $dataarray['filecount'] = $batch->getFileCount();
-         $dataarray['mediauri'] = $awspath;
-         if ($awspath) {
+         if ($awspath && $imgsrc == 'AWS') {
             $dataarray['mediauri'] = $awspath;
          } else {
             $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;

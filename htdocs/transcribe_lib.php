@@ -443,7 +443,7 @@ class TPage extends Page {
 
    function dosetuppath(batchpath,filepath,filename,position,mode) {
 
-      window.open('displayimage.php?mode=imagefile&path='+filepath+'&filename='+filename ,'_blank','modal=yes');
+      window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path='+filepath+'&filename='+filename ,'_blank','modal=yes');
 
       var added = '';
       if (mode=='test') { added = '&test=true'; }
