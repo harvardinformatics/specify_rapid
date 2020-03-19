@@ -132,11 +132,11 @@ if ($connection && $authenticated) {
          $dataarray['position'] = $position;
          $dataarray['filecount'] = $batch->getFileCount();
          $dataarray['mediauri'] = $awspath;
-         // if ($awspath) {
-         //   $dataarray['mediauri'] = $awspath;
-         // } else {
-         //   $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
-         // }
+         if ($awspath) {
+            $dataarray['mediauri'] = $awspath;
+         } else {
+            $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         }
          $dataarray['path'] = $pathfile->path;
          $dataarray['filename'] = $pathfile->filename;
 
