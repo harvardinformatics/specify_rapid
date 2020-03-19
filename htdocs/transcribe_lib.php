@@ -363,7 +363,7 @@ class TR_Batch {
             $result->position = $position;
             $result->barcode = $barcode;
             if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34)) == 0) {
-              $result->awsPath = 'http://huhspecimenimages.s3.amazonaws.com' . substr($awspath, 33); // TODO: move aws path to Docker
+              $result->awsPath = 'http://s3.amazonaws.com/huhspecimenimages' . substr($awspath, 33); // TODO: move aws path to Docker
             } else {
               $result->awsPath = null;
             }
