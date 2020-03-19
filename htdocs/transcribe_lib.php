@@ -362,11 +362,11 @@ class TR_Batch {
             $result->filename = $filename;
             $result->position = $position;
             $result->barcode = $barcode;
-            //if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34))) {
-              $result->awsPath = 'http://huhspecimenimages.s3.amazonaws.com' . substr($awspath, 33);
-            //} else {
-            //  $result->awsPath = null;
-            //}
+            if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34)) == 0) {
+              $result->awsPath = 'http://huhspecimenimages.s3.amazonaws.com' . substr($awspath, 33); // TODO: move aws path to Docker
+            } else {
+              $result->awsPath = null;
+            }
             $result->batch_id = $this->getBatchID();
             $result->filecount = $this->getFileCount();
         } else {
