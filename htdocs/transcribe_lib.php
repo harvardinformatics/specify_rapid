@@ -8,6 +8,7 @@ include_once("connection_library.php");
 class PathFile {
    public $path;  // path to batch
    public $filename;  // next file in batch
+   public $awsPath; // path to file served by AWS
    public $position; // numeric position of filename in batch
    public $barcode; // barcode for this position, null if none
    public $batch_id; // ID of the batch
@@ -343,18 +344,29 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
 
-     $sql = "select imlf.path, imlf.filename, tbi.barcode from TR_BATCH_IMAGE tbi, IMAGE_OBJECT imo, IMAGE_LOCAL_FILE imlf where tbi.IMAGE_OBJECT_ID = imo.ID and imo.IMAGE_LOCAL_FILE_ID = imlf.ID and tbi.TR_BATCH_ID = ? and tbi.POSITION = ? ;";
+     $sql = "select imlf.path, imlf.filename, tbi.barcode, imo2.object_name
+             from TR_BATCH_IMAGE tbi
+             join IMAGE_OBJECT imo on tbi.IMAGE_OBJECT_ID = imo.ID
+             join IMAGE_LOCAL_FILE imlf on imo.IMAGE_LOCAL_FILE_ID = imlf.ID
+             left join IMAGE_OBJECT imo2 on imo.IMAGE_SET_ID = imo2.IMAGE_SET_ID and imo2.ACTIVE_FLAG = 1 and imo2.OBJECT_TYPE_ID = 3
+             where tbi.TR_BATCH_ID = ?
+               and tbi.POSITION = ? ;";
 
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("ii", $this->getBatchID(), $position);
         $statement->execute();
-        $statement->bind_result($path, $filename, $barcode);
+        $statement->bind_result($path, $filename, $barcode, $awspath);
         $statement->store_result();
         if ($statement->fetch()) {
             $result->path = rtrim($path, '/') . '/';
             $result->filename = $filename;
             $result->position = $position;
             $result->barcode = $barcode;
+            if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34)) == 0) {
+              $result->awsPath = 'http://s3.amazonaws.com/huhspecimenimages' . substr($awspath, 33); // TODO: move aws path to Docker
+            } else {
+              $result->awsPath = null;
+            }
             $result->batch_id = $this->getBatchID();
             $result->filecount = $this->getFileCount();
         } else {
@@ -431,7 +443,7 @@ class TPage extends Page {
 
    function dosetuppath(batchpath,filepath,filename,position,mode) {
 
-      window.open('displayimage.php?mode=imagefile&path='+filepath+'&filename='+filename ,'_blank','modal=yes');
+      window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path='+filepath+'&filename='+filename ,'_blank','modal=yes');
 
       var added = '';
       if (mode=='test') { added = '&test=true'; }

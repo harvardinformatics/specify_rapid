@@ -20,12 +20,20 @@ if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
+@$imgSrc = substr(preg_replace('/[^a-z]/','',$_GET['imgsrc']),0,20);
+if ($imgSrc == 'AWS') {
+  $imgSrcLabel = 'AWS';
+} else {
+  $imgSrc = 'RC';
+  $imgSrcLabel = 'RC';
+}
+
 @$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
 if ($transcriptionMode == 'minimal') {
-  $modeLabel = 'Detailed';
+  $modeLabel = 'Minimal';
 } else {
   $transcriptionMode = 'detailed';
-  $modeLabel = 'Minimal';
+  $modeLabel = 'Detailed';
 }
 
 $display = '';
@@ -486,16 +494,17 @@ function imageForBarcode($barcode) {
 // ** Functions
 
 function navigation() {
-    global $transcriptionMode, $modeLabel;
+    global $transcriptionMode, $modeLabel, $imgSrc, $imgSrcLabel;
 
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
     echo "<button type='button' id='minimalButton' class='ui-button' >$modeLabel</button>";
+    echo "<button type='button' id='imgSrcButton' class='ui-button' >$imgSrcLabel</button>";
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
 }
 
 function form() {
-   global $user, $transcriptionMode;
+   global $user, $transcriptionMode, $imgSrc;
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
    @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
@@ -662,6 +671,7 @@ function form() {
 
    echo "<script>
         var transcriptionMode = '$transcriptionMode';
+        var imgsrc            = '$imgSrc';
         var re_barcode = /^[0-9]{8}$/;
         var batchid = ".$currentBatch->getBatchID().";
         var batchpath = '".$currentBatch->getPath()."';
@@ -670,7 +680,7 @@ function form() {
 
         var defaultHideFields = ['accessionnumber'];
         var soroHideFields = ['accessionnumber'];
-        var poeHideFields = ['currentqualifier','container','collectingtrip','specimendescription','specimenremarks'];
+        var poeHideFields = ['currentqualifier','container','collectingtrip', 'specimendescription']; // 'specimenremarks'
         var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','etal','stationfieldnumber','datecollected','verbatimdate','accessionnumber','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','collectors','specificlocality'];
 
         // Enable/disable buttons based on position
@@ -687,11 +697,11 @@ function form() {
 
             if (transcriptionMode == 'detailed') {
               $('#feedback').html( 'Switched to minimal data capture...');
-              $('#minimalButton').html('Detailed');
+              $('#minimalButton').html('Minimal');
               transcriptionMode = 'minimal';
             } else {
               $('#feedback').html( 'Switched to detailed data capture...');
-              $('#minimalButton').html('Minimal');
+              $('#minimalButton').html('Detailed');
               transcriptionMode = 'detailed';
             }
 
@@ -703,6 +713,24 @@ function form() {
 
             event.preventDefault();
          });
+
+         $('#imgSrcButton').click(function(event){
+
+             if (imgsrc == 'AWS') {
+               $('#feedback').html( 'Switched to RC image delivery...');
+               $('#imgSrcButton').html('RC');
+               imgsrc = 'RC';
+             } else {
+               $('#feedback').html( 'Switched to AWS image delivery...');
+               $('#imgSrcButton').html('AWS');
+               imgsrc = 'AWS';
+             }
+
+             var params = new URLSearchParams(window.location.search);
+             params.set('imgsrc', imgsrc);
+             window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+             event.preventDefault();
+          });
 
          $('#nextButton').click(function(event){
              $('#feedback').html( 'Loading next...');
@@ -1038,7 +1066,7 @@ function form() {
           }
 
           function loadRecord(position) {
-               console.log('called loadRecord() for batch ' + batchid + ' position ' + position);
+               console.log('called loadRecord() for batch ' + batchid + ' position ' + position + ' imgsrc ' + imgsrc);
 
                checkPosition(position);
 
@@ -1053,7 +1081,8 @@ function form() {
                    data: {
                        action: 'getrecord',
                        batch_id: batchid,
-                       position: position
+                       position: position,
+                       imgsrc: imgsrc
                    },
                    success: function(data) {
                      console.log(data);

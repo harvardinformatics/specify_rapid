@@ -113,12 +113,14 @@ if ($connection && $authenticated) {
          $ok = false;
          @$id = $_GET['batch_id'];
          @$position = $_GET['position'];
+         @$imgsrc   = $_GET['imgsrc'];
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
          $pathfile = $batch->movePosition($position);
          $position = $pathfile->position;
          $barcode = $pathfile->barcode;
+         $awspath = $pathfile->awsPath;
 
          // lookup the data for this barcode.
          $dataarray = lookupDataForBarcode($barcode);
@@ -130,7 +132,11 @@ if ($connection && $authenticated) {
          // Attach image data
          $dataarray['position'] = $position;
          $dataarray['filecount'] = $batch->getFileCount();
-         $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         if ($awspath && $imgsrc == 'AWS') {
+            $dataarray['mediauri'] = $awspath;
+         } else {
+            $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+         }
          $dataarray['path'] = $pathfile->path;
          $dataarray['filename'] = $pathfile->filename;
 
@@ -1085,7 +1091,11 @@ function ingest() {
                              $latlongtype = null;
                            }
 
-                           if (!$fail && $localityid!=null) {
+                           if (!$fail) {
+
+                             if ($localityid==null) {
+
+                             } else {
                                $countco = countCollectionObjectsForLocality($localityid);
                                if ($countco < 0) {
                                    $fail = true;
@@ -1113,7 +1123,7 @@ function ingest() {
                                   $sql = <<<EOD
 insert into locality
 (TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID)
-select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?";
+select TimestampCreated, TimestampModified, Version, Datum, ElevationAccuracy, ElevationMethod, GML, GUID, Lat1Text, Lat2Text, LatLongAccuracy, LatLongMethod, LatLongType, Latitude1, Latitude2, LocalityName, Long1Text, Long2Text, Longitude1, Longitude2, MaxElevation, MinElevation, NamedPlace, OriginalElevationUnit, OriginalLatLongUnit, RelationToNamedPlace, Remarks, ShortName, SrcLatLongUnit, VerbatimElevation, Visibility, DisciplineID, ModifiedByAgentID, VisibilitySetByID, CreatedByAgentID, GeographyID from locality where localityid = ?
 EOD;
                 		              $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1151,6 +1161,7 @@ EOD;
                                         $feedback.= "Query Error splitting locality. " . $connection->error . " ";
                                    }
                                }
+                             }
                            } // end localityid
 
                           // If id is -1, a det exists without a taxon - therefore we set values to null which should trigger an update of the existing records
