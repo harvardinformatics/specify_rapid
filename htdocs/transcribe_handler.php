@@ -1093,9 +1093,50 @@ function ingest() {
 
                            if (!$fail) {
 
-                             if ($localityid==null) {
+                             if ($localityid==null) { // create new locality record
 
-                             } else {
+                               $sql = "insert into locality (geographyid, localityname, namedplace, lat1text, long1text, latitude1, longitude1,
+                                       verbatimelevation, latlongmethod, latlongaccuracy, createdbyagentid, timestampcreated, version, originallatlongunit, srclatlongunit, disciplineid)
+                                       values (?,?,?,?,?,?,?,?,?,?,?,now(),0,0,0,3)";
+
+                               $statement = $connection->prepare($sql);
+                               if ($statement) {
+                                   $statement->bind_param("issssiisssi", $highergeographyid, $specificlocality, $namedplace, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $verbatimelevation, $georeferencesource, $coordinateuncertainty, $currentuserid);
+                                   $statement->execute();
+                                   $rows = $connection->affected_rows;
+                                   if ($rows==1) {
+                                      $localityid = $statement->insert_id;
+                                      $feedback = $feedback . " Created Locality record [$localityid]. ";
+                                   } else {
+                                     $fail = true;
+                                     $feedback .= " Failed to create Locality record. ";
+                                   }
+                                   $statement->free_result();
+                                   $statement->close();
+
+
+                                   $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
+                                   $statement = $connection->prepare($sql);
+                                   if ($statement) {
+                                       $statement->bind_param("ii", $localityid, $collectingeventid);
+                                       $statement->execute();
+                                       $rows = $connection->affected_rows;
+                                       if ($rows==1) {
+                                         $feedback = $feedback . " Linked collectingevent. "; }
+                                       else {
+                                         $fail = true;
+                                         $feedback .= " Linking locality record to collectingevent failed. ";
+                                       }
+                                       $statement->free_result();
+                                       $statement->close();
+                                   }
+                                } else {
+                                     $fail = true;
+                                     $feedback.= "Query Error creating locality record. " . $connection->error . " ";
+                                }
+
+
+                             } else { // update existing locality record
                                $countco = countCollectionObjectsForLocality($localityid);
                                if ($countco < 0) {
                                    $fail = true;
