@@ -23,8 +23,8 @@ class huh_locality implements  model , loadableModel, saveableModel, tableSchema
    const LATLONGACCURACY_SIZE = 24; //DOUBLE
    const LATLONGMETHOD_SIZE   = 20; //YEAR
    const LATLONGTYPE_SIZE     = 20; //YEAR
-   const LATITUDE1_SIZE       = 14; //13,10 (plus .)
-   const LATITUDE2_SIZE       = 14; //13,10 (plus .)
+   const LATITUDE1_SIZE       = 12; //12,10
+   const LATITUDE2_SIZE       = 12; //12,10
    const LOCALITYNAME_SIZE    = 255; //255
    const LONG1TEXT_SIZE       = 20; //YEAR
    const LONG2TEXT_SIZE       = 20; //YEAR
