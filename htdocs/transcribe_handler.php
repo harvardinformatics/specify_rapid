@@ -1101,7 +1101,7 @@ function ingest() {
 
                                $statement = $connection->prepare($sql);
                                if ($statement) {
-                                   $statement->bind_param("issssiisssi", $highergeographyid, $specificlocality, $namedplace, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $verbatimelevation, $georeferencesource, $coordinateuncertainty, $currentuserid);
+                                   $statement->bind_param("isssssssssi", $highergeographyid, $specificlocality, $namedplace, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $verbatimelevation, $georeferencesource, $coordinateuncertainty, $currentuserid);
                                    $statement->execute();
                                    $rows = $connection->affected_rows;
                                    if ($rows==1) {
@@ -1150,7 +1150,7 @@ function ingest() {
                                   $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                 		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
@@ -1185,7 +1185,7 @@ EOD;
                                           $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                         		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement1->bind_param("issiiisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
+                                              $statement1->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
