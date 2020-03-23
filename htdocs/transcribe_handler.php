@@ -266,6 +266,7 @@ if ($connection && $authenticated) {
          if ( @($verbatimlong!=$_POST['verbatimlong']) ) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
          if ( @($decimallat!=$_POST['decimallat']) ) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
          if ( @($decimallong!=$_POST['decimallong']) ) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
+
          //if ( @($datum!=$_POST['datum']) ) { $truncation = true; $truncated .= "datum : [$datum] "; }
          if ( @($coordinateuncertainty!=$_POST['coordinateuncertainty']) ) { $truncation = true; $truncated .= "coordinateuncertainty : [$coordinateuncertainty] "; }
          //if ( @($georeferencedby!=$_POST['georeferencedby']) ) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
@@ -509,6 +510,20 @@ function ingest() {
    $latlongtype = 'point';
    if ($decimallat==null && $decimallong==null) {
       $latlongtype=null;
+   }
+
+   if (isset($decimallat)) {
+     if ($decimallat > 90 || $decimallat < -90) {
+       $fail = true;
+       $feedback .= " Dec. Lat. out of range (-90 to 90)";
+     }
+   }
+
+   if (isset($decimallong)) {
+     if ($decimallong > 180 || $decimallat < -180) {
+       $fail = true;
+       $feedback .= " Dec. Long. out of range (-180 to 180)";
+     }
    }
 
    if ($highergeographyid==null) { // if higher geography is empty, use the node from the filter
@@ -1101,7 +1116,7 @@ function ingest() {
 
                                $statement = $connection->prepare($sql);
                                if ($statement) {
-                                   $statement->bind_param("issssddsssi", $highergeographyid, $specificlocality, $namedplace, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $verbatimelevation, $georeferencesource, $coordinateuncertainty, $currentuserid);
+                                   $statement->bind_param("isssssssssi", $highergeographyid, $specificlocality, $namedplace, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $verbatimelevation, $georeferencesource, $coordinateuncertainty, $currentuserid);
                                    $statement->execute();
                                    $rows = $connection->affected_rows;
                                    if ($rows==1) {
@@ -1150,7 +1165,7 @@ function ingest() {
                                   $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                 		              $statement1 = $connection->prepare($sql);
                                   if ($statement1) {
-                                      $statement1->bind_param("issddisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
+                                      $statement1->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $localityid);
                                       $statement1->execute();
                                       $rows = $connection->affected_rows;
                                       if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
@@ -1185,7 +1200,7 @@ EOD;
                                           $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                         		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement1->bind_param("issddisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
+                                              $statement1->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
