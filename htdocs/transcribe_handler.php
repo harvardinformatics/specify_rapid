@@ -161,7 +161,7 @@ if ($connection && $authenticated) {
          $truncated = "";
          @$collectors= $_POST['collectors'];
          @$collectorsid= substr(preg_replace('/[^0-9]/','',$_POST['collectorsid']),0,huh_agentvariant::AGENTID_SIZE);
-         @$etal= substr(preg_replace('/[^A-Za-z&\[\]\-\, \.0-9]/','',$_POST['etal']),0,huh_collector::ETAL_SIZE);
+         @$etal= substr($_POST['etal'],0,huh_collector::ETAL_SIZE);
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
@@ -184,7 +184,6 @@ if ($connection && $authenticated) {
          @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
          @$geographyfilter= $_POST['geographyfilter'];
          @$geographyfilterid= substr(preg_replace('/[^0-9]/','',$_POST['geographyfilterid']),0,huh_geography::GEOGRAPHYID_SIZE);
-         @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
          @$specificlocality = substr($_POST['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
          @$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_POST['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
          @$format = substr(preg_replace('/[^A-Za-z]/','',$_POST['preptype']),0,huh_preptype::NAME_SIZE);
@@ -214,8 +213,8 @@ if ($connection && $authenticated) {
          @$host = substr($_POST['host'],0,900);
          @$substrate= substr($_POST['substrate'],0,huh_fragment::TEXT2_SIZE);
          @$phenology= substr($_POST['phenology'],0,huh_fragment::PHENOLOGY_SIZE);
-         @$verbatimelevation= substr(preg_replace('/[^A-Za-z0-9\-\.\, \[\]\(\)\? \&\']/','',$_POST['verbatimelevation']),0,huh_locality::VERBATIMELEVATION_SIZE);
-         @$namedplace = substr(preg_replace('/[^A-Za-z0-9[:alpha:]\-\.\, \[\]\(\)\? \&\']/','',$_POST['namedplace']),0,huh_locality::NAMEDPLACE_SIZE);
+         @$verbatimelevation= substr($_POST['verbatimelevation'],0,huh_locality::VERBATIMELEVATION_SIZE);
+         @$namedplace = substr($_POST['namedplace'],0,huh_locality::NAMEDPLACE_SIZE);
          @$minelevation= substr(preg_replace('/[^0-9\.]/','',$_POST['minelevation']),0,huh_locality::MINELEVATION_SIZE);
          @$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_POST['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
          @$specimenremarks= substr($_POST['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
@@ -526,7 +525,7 @@ function ingest() {
      }
    }
 
-   if ($highergeographyid==null) { // if higher geography is empty, use the node from the filter
+   if (! isset($highergeographyid) && isset($geographyfilterid)) { // if higher geography is empty, use the node from the filter
      $highergeographyid=$geographyfilterid;
      $highergeography=$geographyfilter;
    }
@@ -1422,6 +1421,8 @@ EOD;
 
             } else {
                // create new specimen record
+
+               $highergeography = $highergeographyid; // set for older ingest code
 
                $feedback = ingestCollectionObject();
 
