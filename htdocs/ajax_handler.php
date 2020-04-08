@@ -140,7 +140,7 @@ if ($connection && $authenticated) {
         	@$etal= substr(preg_replace('/[^A-Za-z&\, \.\[\]0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
         	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
         	@$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-        	@$verbatimdate= substr(preg_replace('/[^A-Za-z:\- \/\.\,\:\;0-9\[\]\&\']/','',$_GET['verbatimdate']),0,huh_collectingevent::VERBATIMDATE_SIZE);
+        	@$verbatimdate= substr($_GET['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
         	@$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_GET['datecollected']),0,40);  // allow larger than date to parse ISO date range
         	@$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_GET['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
         	@$barcode= substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
@@ -184,7 +184,7 @@ if ($connection && $authenticated) {
         	@$verbatimelevation= substr(preg_replace('/[^A-Za-z0-9°\-\.\, \[\]\(\)\? \&\']/','',$_GET['verbatimelevation']),0,huh_locality::VERBATIMELEVATION_SIZE);
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
-        	@$specimenremarks= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['specimenremarks']),0,huh_collectionobject::REMARKS_SIZE);
+        	@$specimenremarks= substr($_GET['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
         	@$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
         	@$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
