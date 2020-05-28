@@ -514,9 +514,9 @@ class TPage extends Page {
      $returnvalue = "
        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
        <script src='/jquery/zoom-master/jquery.zoom.js'></script>
-       <link rel='stylesheet' href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css'>
-       <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
 
+       <script src='/jquery/jquery-ui-1.12.1.custom/jquery-ui.min.js'></script>
+       <link rel='stylesheet' type='text/css' href='/jquery/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css' />
        <script>
          $( ':submit' ).button({ classes: { 'ui-button': 'highlight' } });
        </script>
