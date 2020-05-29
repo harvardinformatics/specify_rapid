@@ -512,8 +512,9 @@ class TPage extends Page {
 
    public function getJQueryPageHead() {
      $returnvalue = "
-       <script src='/jquery/jquery-3.2.1.min.js'></script>
+       <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
        <script src='/jquery/zoom-master/jquery.zoom.js'></script>
+
        <script src='/jquery/jquery-ui-1.12.1.custom/jquery-ui.min.js'></script>
        <link rel='stylesheet' type='text/css' href='/jquery/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css' />
        <script>

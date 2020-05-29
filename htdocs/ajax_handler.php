@@ -740,7 +740,7 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         @$limit= substr(preg_replace('/[^A-Za-z\. &*%\[\]]/','',$_GET['name']),0,60);  // value to limit
+         @$limit= substr(preg_replace('/[^A-Za-z,\. &*%\[\]]/','',$_GET['name']),0,60);  // value to limit
 
          if (strlen($limit)>4) {
             $t = new huh_agentvariant_custom();

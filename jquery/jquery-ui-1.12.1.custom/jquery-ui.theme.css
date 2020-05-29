@@ -27,6 +27,7 @@
 .ui-widget button {
 	font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
 	font-size: 1em;
+	border: thin solid #d3d3d3;
 }
 .ui-widget.ui-widget-content {
 	border: 1px solid #aed0ea;
