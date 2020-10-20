@@ -21,11 +21,11 @@ if (!$connection) {
 }
 
 @$imgSrc = substr(preg_replace('/[^a-z]/','',$_GET['imgsrc']),0,20);
-if ($imgSrc == 'AWS') {
-  $imgSrcLabel = 'AWS';
-} else {
-  $imgSrc = 'RC';
+if ($imgSrc == 'RC') {
   $imgSrcLabel = 'RC';
+} else {
+  $imgSrc = 'AWS';
+  $imgSrcLabel = 'AWS';
 }
 
 @$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
