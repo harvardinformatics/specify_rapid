@@ -736,6 +736,7 @@ function form() {
              $('#feedback').html( 'Loading next...');
              logEvent('next_button_click',$('#batch_info').html());
              // clear fields
+             $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
@@ -748,6 +749,7 @@ function form() {
              $('#feedback').html( 'Loading previous...');
              logEvent('previous_button_click',$('#batch_info').html());
              // clear fields
+             $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
