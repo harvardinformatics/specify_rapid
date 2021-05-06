@@ -132,10 +132,10 @@ if ($connection && $authenticated) {
          // Attach image data
          $dataarray['position'] = $position;
          $dataarray['filecount'] = $batch->getFileCount();
-         if ($awspath && $imgsrc == 'AWS') {
-            $dataarray['mediauri'] = $awspath;
+         if ($awspath && $imgsrc == 'RC') {
+           $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
          } else {
-            $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+           $dataarray['mediauri'] = $awspath;
          }
          $dataarray['path'] = $pathfile->path;
          $dataarray['filename'] = $pathfile->filename;
