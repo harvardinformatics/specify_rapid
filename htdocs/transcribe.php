@@ -280,7 +280,7 @@ function target() {
          $w = round($width*$s);
          $medialink = "";
          $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
-         $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
+         $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h' style='background-color:lightgrey;'></div>";
          $result->medialink = $medialink;
        }
        $statement->close();
@@ -316,7 +316,7 @@ function targetfile($path,$filename) {
    $w = round($width*$s);
 
    // $medialink = "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
-   $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h'></div>";
+   $medialink = "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h' style='background-color:lightgrey;'></div>";
    $result->medialink = $medialink;
 
    return $result;
@@ -681,7 +681,7 @@ function form() {
         var defaultHideFields = ['accessionnumber'];
         var soroHideFields = ['accessionnumber'];
         var poeHideFields = ['currentqualifier','container','collectingtrip', 'specimendescription']; // 'specimenremarks'
-        var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','etal','datecollected','verbatimdate','accessionnumber','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','collectors','specificlocality'];
+        var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','etal','datecollected','verbatimdate','accessionnumber','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality'];
 
         // Enable/disable buttons based on position
         checkPosition($position);
@@ -736,6 +736,7 @@ function form() {
              $('#feedback').html( 'Loading next...');
              logEvent('next_button_click',$('#batch_info').html());
              // clear fields
+             $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
@@ -748,6 +749,7 @@ function form() {
              $('#feedback').html( 'Loading previous...');
              logEvent('previous_button_click',$('#batch_info').html());
              // clear fields
+             $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
@@ -1009,6 +1011,7 @@ function form() {
 
           function loadImage(data) {
             console.log('called loadImage(): ' + data.mediauri);
+            $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
             $('#image_div').attr('src',data.mediauri);
 
             var params = new URLSearchParams(window.location.search);
