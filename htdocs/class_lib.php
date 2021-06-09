@@ -1964,19 +1964,19 @@ function ingestCollectionObject() {
       $date = new DateRangeWithPrecision($datecollected);
       if ($date->isBadValue()) {
           $fail = true;
-          $feedback .= "Unrecognized date format: " . $datecollected;
+          $feedback .= "Invalid date format or value: " . $datecollected;
       } else {
          $startdate = $date->getStartDate();
-         if ($startdate=='0000-00-00' || strlen($startdate)==0 || substr($startdate,0,4)=='0000' || strpos($startdate,'-00')!==FALSE) {
-             $fail = true;
-             $feedback .= "Unrecognized start date [$startdate] in: " . $datecollected;
-         }
+         // if ($startdate=='0000-00-00' || strlen($startdate)==0 || substr($startdate,0,4)=='0000' || strpos($startdate,'-00')!==FALSE) {
+         //     $fail = true;
+         //     $feedback .= "Unrecognized start date [$startdate] in: " . $datecollected;
+         // }
          $startdateprecision = $date->getStartDatePrecision();
          $enddate = $date->getEndDate();
-         if ($enddate=='0000-00-00' || substr($enddate,0,4)=='0000' || strpos($enddate,'-00')!==FALSE) {
-             $fail = true;
-             $feedback .= "Unrecognized end date [$enddate] in: " . $datecollected;
-         }
+         // if ($enddate=='0000-00-00' || substr($enddate,0,4)=='0000' || strpos($enddate,'-00')!==FALSE) {
+         //     $fail = true;
+         //     $feedback .= "Unrecognized end date [$enddate] in: " . $datecollected;
+         // }
          $enddateprecision = $date->getEndDatePrecision();
       }
 
@@ -2064,23 +2064,32 @@ function ingestCollectionObject() {
       $dateidentifiedformatted=null;
       $dateidentifiedprecision = 1;
    } else {
-      if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
-         $dateidentifiedformatted = $dateidentified;
-         $dateidentifiedprecision = 1;
-      } else {
-         if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dateidentified)) {
-            $dateidentifiedformatted = $dateidentified . "-01";
-            $dateidentifiedprecision = 2;
-         } else {
-            if (preg_match("/^[1-2][0-9]{3}$/",$dateidentified)) {
-               $dateidentifiedformatted = $dateidentified . "-01-01";
-               $dateidentifiedprecision = 3;
-            } else {
-               $fail = true;
-               $feedback .= "Unrecognized date format: " . $dateidentified ;
-            }
-         }
-      }
+     $date = new DateWithPrecision($dateidentified);
+     if ($date->isBadValue()) {
+         $fail = true;
+         $feedback .= "Invalid date format or value: " . $dateidentified;
+     } else {
+        $dateidentifiedformatted = $date->getDate();
+        $dateidentifiedprecision = $date->getDatePrecision();
+     }
+
+      // if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
+      //    $dateidentifiedformatted = $dateidentified;
+      //    $dateidentifiedprecision = 1;
+      // } else {
+      //    if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dateidentified)) {
+      //       $dateidentifiedformatted = $dateidentified . "-01";
+      //       $dateidentifiedprecision = 2;
+      //    } else {
+      //       if (preg_match("/^[1-2][0-9]{3}$/",$dateidentified)) {
+      //          $dateidentifiedformatted = $dateidentified . "-01-01";
+      //          $dateidentifiedprecision = 3;
+      //       } else {
+      //          $fail = true;
+      //          $feedback .= "Unrecognized date format: " . $dateidentified ;
+      //       }
+      //    }
+      // }
    }
    if ($specimenremarks=='') { $specimenremarks = null; }
    if ($specimendescription=='') { $specimendescription = null; }
