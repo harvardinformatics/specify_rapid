@@ -441,7 +441,7 @@ class DateWithPrecision {
 	private $badValue = false;
 
   public function DateWithPrecision($aDate) {
-    parse($aDate);
+    $this->parse($aDate);
   }
 
 	public function setDate($aDate) {
