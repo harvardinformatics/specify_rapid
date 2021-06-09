@@ -513,13 +513,22 @@ class DateRangeWithPrecision {
          	$result->setDatePrecision(2);
       	} else {
       		if (preg_match("/^[1-2][0-9]{3}$/",$part)) {
-          	    $result->setDate($part . "-01-01");
+          	  $result->setDate($part . "-01-01");
          	    $result->setDatePrecision(3);
       		} else {
       		   $result->setBadValue(true);
       		}
       	}
       }
+
+      if (preg_match("/^([1-2][0-9]{3})-([0-9]{2})-([0-9]{2})$/", $result->getDate(), $matches)) {
+        if (!checkdate($matches[1], $matches[2], $matches[0])) {
+          $result->setBadValue(true);
+        }
+      } else {
+        $result->setBadValue(true);
+      }
+
       return $result;
    }
 
