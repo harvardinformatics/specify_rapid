@@ -440,6 +440,10 @@ class DateWithPrecision {
 	private $datePrecision = 1;
 	private $badValue = false;
 
+  public function DateWithPrecision($aDate) {
+    $this->parse($aDate);
+  }
+
 	public function setDate($aDate) {
 	   $this->date = $aDate;
 	}
@@ -459,6 +463,33 @@ class DateWithPrecision {
 	   $this->badValue = $isbadvalue;
 	}
 
+  public function parse($dt) {
+     if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dt)) {
+       $this->setDate($dt);
+       $this->setDatePrecision(1);
+     } else {
+       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dt)) {
+         $this->setDate($dt . "-01");
+         $this->setDatePrecision(2);
+       } else {
+         if (preg_match("/^[1-2][0-9]{3}$/",$dt)) {
+             $this->setDate($dt . "-01-01");
+             $this->setDatePrecision(3);
+         } else {
+            $this->setBadValue(true);
+         }
+       }
+     }
+
+     if (preg_match("/^([1-2][0-9]{3})-([0-9]{2})-([0-9]{2})$/", $this->getDate(), $matches)) {
+       if (!checkdate($matches[2], $matches[3], $matches[1])) {
+         $this->setBadValue(true);
+       }
+     } else {
+       $this->setBadValue(true);
+     }
+  }
+
 }
 
 class DateRangeWithPrecision {
@@ -473,7 +504,7 @@ class DateRangeWithPrecision {
       if (strpos($isodate,'/')>0) {
          $parts = explode('/',$isodate);
          if (sizeof($parts)>0) {
-            $startDateStr = $this->parsePart($parts[0]);
+            $startDateStr = new DateWithPrecision($parts[0]);
             if ($startDateStr->isBadValue()) {
             	$this->badValue = true;
             }
@@ -481,18 +512,18 @@ class DateRangeWithPrecision {
             $this->startDatePrecision = $startDateStr->getDatePrecision();
          }
          if (sizeof($parts)>1) {
-         	$startDateStr = $this->parsePart($parts[1]);
-         	if ($startDateStr->isBadValue()) {
+         	$endDateStr = new DateWithPrecision($parts[1]);
+         	if ($endDateStr->isBadValue()) {
          		$this->badValue = true;
          	}
-         	$this->endDate = $startDateStr->getDate();
-         	$this->endDatePrecision = $startDateStr->getDatePrecision();
+         	$this->endDate = $endDateStr->getDate();
+         	$this->endDatePrecision = $endDateStr->getDatePrecision();
          }
          if (sizeof($parts)>2) {
             $this->badValue = true;
          }
       } else {
-         $startDateStr = $this->parsePart($isodate);
+         $startDateStr = new DateWithPrecision($isodate);
          if ($startDateStr->isBadValue()) {
             $this->badValue = true;
          }
@@ -502,26 +533,35 @@ class DateRangeWithPrecision {
 
    }
 
-   public function parsePart($part) {
-      $result = new DateWithPrecision();
-      if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$part)) {
-      	$result->setDate($part);
-      	$result->setDatePrecision(1);
-      } else {
-      	if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$part)) {
-         	$result->setDate($part . "-01");
-         	$result->setDatePrecision(2);
-      	} else {
-      		if (preg_match("/^[1-2][0-9]{3}$/",$part)) {
-          	    $result->setDate($part . "-01-01");
-         	    $result->setDatePrecision(3);
-      		} else {
-      		   $result->setBadValue(true);
-      		}
-      	}
-      }
-      return $result;
-   }
+   // public function parsePart($part) {
+   //    $result = new DateWithPrecision();
+   //    if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$part)) {
+   //    	$result->setDate($part);
+   //    	$result->setDatePrecision(1);
+   //    } else {
+   //    	if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$part)) {
+   //       	$result->setDate($part . "-01");
+   //       	$result->setDatePrecision(2);
+   //    	} else {
+   //    		if (preg_match("/^[1-2][0-9]{3}$/",$part)) {
+   //        	  $result->setDate($part . "-01-01");
+   //       	    $result->setDatePrecision(3);
+   //    		} else {
+   //    		   $result->setBadValue(true);
+   //    		}
+   //    	}
+   //    }
+   //
+   //    if (preg_match("/^([1-2][0-9]{3})-([0-9]{2})-([0-9]{2})$/", $result->getDate(), $matches)) {
+   //      if (!checkdate($matches[2], $matches[3], $matches[1])) {
+   //        $result->setBadValue(true);
+   //      }
+   //    } else {
+   //      $result->setBadValue(true);
+   //    }
+   //
+   //    return $result;
+   // }
 
    public function hasEndDate() {
       $result = false;
