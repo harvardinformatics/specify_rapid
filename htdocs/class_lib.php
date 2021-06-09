@@ -522,7 +522,7 @@ class DateRangeWithPrecision {
       }
 
       if (preg_match("/^([1-2][0-9]{3})-([0-9]{2})-([0-9]{2})$/", $result->getDate(), $matches)) {
-        if (!checkdate($matches[1], $matches[2], $matches[0])) {
+        if (!checkdate($matches[2], $matches[3], $matches[1])) {
           $result->setBadValue(true);
         }
       } else {
