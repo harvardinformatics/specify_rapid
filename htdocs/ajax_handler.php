@@ -137,9 +137,9 @@ if ($connection && $authenticated) {
             $truncation = false;
             $truncated = "";
         	@$collectors= substr(preg_replace('/[^0-9]/','',$_GET['collectors']),0,huh_agentvariant::NAME_SIZE);
-        	@$etal= substr(preg_replace('/[^A-Za-z&\, \.\[\]0-9]/','',$_GET['etal']),0,huh_collector::ETAL_SIZE);
-        	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-        	@$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_GET['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+        	@$etal= substr($_GET['etal'],0,huh_collector::ETAL_SIZE);
+        	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+        	@$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_GET['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
         	@$verbatimdate= substr($_GET['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
         	@$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_GET['datecollected']),0,40);  // allow larger than date to parse ISO date range
         	@$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_GET['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
@@ -153,7 +153,7 @@ if ($connection && $authenticated) {
         	@$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['determinertext']),0,huh_determination::TEXT1_SIZE);
         	@$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
         	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
-        	@$specificlocality = substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['specificlocality']),0,huh_locality::LOCALITYNAME_SIZE);
+        	@$specificlocality = substr($_GET['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
         	@$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_GET['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
         	@$format = substr(preg_replace('/[^A-Za-z]/','',$_GET['format']),0,huh_preptype::NAME_SIZE);
 
@@ -181,7 +181,7 @@ if ($connection && $authenticated) {
         	@$host = substr($_GET['host'],0,900);
         	@$substrate= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['substrate']),0,huh_fragment::TEXT2_SIZE);
         	@$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_GET['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
-        	@$verbatimelevation= substr(preg_replace('/[^A-Za-z0-9°\-\.\, \[\]\(\)\? \&\']/','',$_GET['verbatimelevation']),0,huh_locality::VERBATIMELEVATION_SIZE);
+        	@$verbatimelevation= substr($_GET['verbatimelevation'],0,huh_locality::VERBATIMELEVATION_SIZE);
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
         	@$specimenremarks= substr($_GET['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
