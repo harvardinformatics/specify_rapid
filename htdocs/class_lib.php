@@ -830,7 +830,8 @@ class huh_taxon_CUSTOM extends huh_taxon {
     */
    public function keySelectTaxonTaxonIDJSON($term) {
       global $connection;
-      $returnvalue = '[';
+      //$returnvalue = '[';
+      $returnvalue = '';
       $preparemysql = " SELECT taxonid, fullname, concat(case when text1 = 'LaterHomonym' then 'INVALID: ' when text1 = 'NomInvalid' then 'INVALID: ' when text1 = 'NomRej' then 'INVALID: ' when text1 = 'NomSuperfl' then 'INVALID: ' when text1 = 'OrthVar' then 'INVALID: ' when text1 = 'Synonym' then 'INVALID: ' else '' end,fullname,if(author is null,'',concat(' ', author)), ' [',ifnull(groupnumber,''),']',if(remarks is null,'',concat('[',remarks,']'))) as label FROM taxon where fullname like ? order by fullname ASC, author ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
@@ -847,7 +848,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          }
          $stmt->close();
       }
-      $returnvalue .= ']';
+      //$returnvalue .= ']';
       return $returnvalue;
    }
 
@@ -1054,13 +1055,12 @@ class huh_collector_custom extends huh_collector {
       $returnvalue = '[';
       //$preparemysql = " SELECT agentvariant.agentid, concat(name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']') as label, name as value FROM agentvariant left join agent on agentvariant.agentid = agent.agentid where name like ? and vartype = 4 order by name ASC ";
       $preparemysql = "
-        SELECT agentvariant.agentid, concat(agentvariant.name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']',' (',coalesce(GROUP_CONCAT(geography.FullName SEPARATOR ', ')),')') as label, agentvariant.name as value
+        SELECT agentvariant.agentid, concat(agentvariant.name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']',' (',GROUP_CONCAT(coalesce(geography.FullName, '') SEPARATOR ', '),')') as label, agentvariant.name as value
         FROM agentvariant
         left join agent on agentvariant.agentid = agent.agentid
-        left join agentgeography on agentvariant.agentid = agentgeography.agentid
+        left join agentgeography on agentvariant.agentid = agentgeography.agentid and agentgeography.role = 'Collector'
         left join geography on geography.geographyid = agentgeography.geographyid
         where agentvariant.vartype = 4
-          and agentgeography.role = 'Collector'
           and agentvariant.name like ?
         group by agentvariant.agentid
         order by agentvariant.name ASC
