@@ -1061,7 +1061,7 @@ class huh_collector_custom extends huh_collector {
         left join geography on geography.geographyid = agentgeography.geographyid
         where agentvariant.vartype = 4
           and agentgeography.role = 'Collector'
-          and name like ?
+          and agentvariant.name like ?
         group by agentvariant.agentid
         order by agentvariant.name ASC
         ";
