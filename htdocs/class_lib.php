@@ -1055,7 +1055,7 @@ class huh_collector_custom extends huh_collector {
       $returnvalue = '[';
       //$preparemysql = " SELECT agentvariant.agentid, concat(name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']') as label, name as value FROM agentvariant left join agent on agentvariant.agentid = agent.agentid where name like ? and vartype = 4 order by name ASC ";
       $preparemysql = "
-        SELECT agentvariant.agentid, concat(agentvariant.name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']',' (',coalesce(GROUP_CONCAT(geography.FullName SEPARATOR ', ')),')') as label, agentvariant.name as value
+        SELECT agentvariant.agentid, concat(agentvariant.name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']',' (',GROUP_CONCAT(coalesce(geography.FullName) SEPARATOR ', '),')') as label, agentvariant.name as value
         FROM agentvariant
         left join agent on agentvariant.agentid = agent.agentid
         left join agentgeography on agentvariant.agentid = agentgeography.agentid and agentgeography.role = 'Collector'
