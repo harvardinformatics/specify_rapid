@@ -326,7 +326,8 @@ if ($connection && $authenticated) {
          $t = new huh_taxon_custom();
          if (strlen($term)>0) {
             try {
-               $values = $t->keySelectTaxonTaxonIDJSON("%$term%");
+               $values = $t->keySelectTaxonTaxonIDJSON("$term%");
+               $values = $values . $t->keySelectTaxonTaxonIDJSON("%$term%");
                $ok = true;
             } catch (Exception $e) {
                $ok = false;
