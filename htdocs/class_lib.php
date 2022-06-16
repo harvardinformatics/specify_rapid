@@ -1057,8 +1057,8 @@ class huh_collector_custom extends huh_collector {
       $preparemysql = "
         SELECT agentvariant.agentid, concat(agentvariant.name,' [',case agenttype when 0 then 'Organization' when 1 then 'Individual' when 2 then 'Other' when 3 then 'Team' end, ' ',coalesce(year(agent.dateofbirth),'?'),'-',coalesce(year(agent.dateofdeath),'?'),']',' (',coalesce(GROUP_CONCAT(geography.FullName SEPARATOR ', ')),')') as label, agentvariant.name as value
         FROM agentvariant
-        left join agent on agentvariant.agentid = agent.agentid and agentgeography.role = 'Collector'
-        left join agentgeography on agentvariant.agentid = agentgeography.agentid
+        left join agent on agentvariant.agentid = agent.agentid
+        left join agentgeography on agentvariant.agentid = agentgeography.agentid and agentgeography.role = 'Collector'
         left join geography on geography.geographyid = agentgeography.geographyid
         where agentvariant.vartype = 4
           and agentvariant.name like ?
