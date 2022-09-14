@@ -120,7 +120,7 @@ if ($connection && $authenticated) {
          $pathfile = $batch->movePosition($position);
          $position = $pathfile->position;
          $barcode = $pathfile->barcode;
-         $awspath = $pathfile->awsPath;
+         $webpath = $pathfile->webPath;
 
          // lookup the data for this barcode.
          $dataarray = lookupDataForBarcode($barcode);
@@ -132,10 +132,10 @@ if ($connection && $authenticated) {
          // Attach image data
          $dataarray['position'] = $position;
          $dataarray['filecount'] = $batch->getFileCount();
-         if ($imgsrc == 'RC' || !$awspath) {
+         if ($imgsrc == 'RC' || !$webpath) {
            $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
          } else {
-           $dataarray['mediauri'] = $awspath;
+           $dataarray['mediauri'] = $webpath;
          }
          $dataarray['path'] = $pathfile->path;
          $dataarray['filename'] = $pathfile->filename;
