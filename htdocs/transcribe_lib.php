@@ -366,7 +366,7 @@ class TR_Batch {
 
             if ($repoid && $repourl && $objecturi) {
               $result->webPath = $repourl . $objecturi;
-            } elsif (strcmp('huhimagestorage/huhspecimenimages/', substr($uri, 0, 34)) == 0) {
+            } elseif (strcmp('huhimagestorage/huhspecimenimages/', substr($uri, 0, 34)) == 0) {
               $result->webPath = 'http://s3.amazonaws.com/huhspecimenimages' . substr($uri, 33); // TODO: move aws path to Docker
             } else {
               $result->webPath = null;
