@@ -257,10 +257,9 @@ function imagefile($path,$filename) {
        //$h = $media->pixel_height;
        //$w = $media->pixel_width;
        list($width,$height) = getimagesize($pathfile);
-       if (intval($width) > 0 && intval($height) > 0) {
-         $h=$height;
-         $w=$width;
-       } else {
+       $h=intval($height);
+       $w=intval($width);
+       if ($h == 0 || $w == 0) {
          $h = 5616;
          $w = 3744;
        }
