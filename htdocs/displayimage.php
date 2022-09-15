@@ -266,6 +266,9 @@ function imagefile($path,$filename) {
        //$h = 5616;
        //$w = 3744;
        //echo @"[$barcode][$mediauri][$h]";
+   } else {
+     $h = 5616;
+     $w = 3744;
    }
    echo '<canvas id="viewport" style="border: 1px solid white; width: 1200px; height: 1000px; " ></canvas>';
    echo "<script>
