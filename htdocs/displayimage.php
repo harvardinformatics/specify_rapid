@@ -163,6 +163,7 @@ function image($barcode) {
      }
 
      function doZoom(x,y,h,w,oh,ow) {
+         logEvent('doZoom', 'x='+x+',y='+y+'h='+h+',w='+w+',oh='+oh+',ow='+ow);
          xnew =  (ow/w) * x;
          ynew =  (oh/h) * y;
 
@@ -290,6 +291,7 @@ function imagefile($path,$filename) {
      }
 
      function doZoom(x,y,h,w,oh,ow) {
+       logEvent('doZoom', 'x='+x+',y='+y+'h='+h+',w='+w+',oh='+oh+',ow='+ow);
        xnew =  (ow/w) * x;
        ynew =  (oh/h) * y;
 
