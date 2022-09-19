@@ -279,7 +279,7 @@ function target() {
          $h = round($height*$s);
          $w = round($width*$s);
          $medialink = "";
-         $medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
+         //$medialink .= "<a channel.postMessage(\"$barcode\"); '>$acronym $barcode</a>&nbsp; ";
          $medialink .= "<img id='image_div' onclick=' getClick(event,$h,$w,$height,$width,$mediaid);' src='$mediauri' width='$w' height='$h' style='background-color:lightgrey;'></div>";
          $result->medialink = $medialink;
        }
