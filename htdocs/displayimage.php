@@ -163,9 +163,8 @@ function image($barcode) {
      }
 
      function doZoom(x,y,h,w,oh,ow) {
-         logEvent('doZoom', 'x='+x+',y='+y+'h='+h+',w='+w+',oh='+oh+',ow='+ow);
-         xnew =  (ow/w) * x;
-         ynew =  (oh/h) * y;
+         xnew =  (base_image.naturalWidth/w) * x;
+         ynew =  (base_image.naturalHeight/h) * y;
 
          context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
 
@@ -291,9 +290,8 @@ function imagefile($path,$filename) {
      }
 
      function doZoom(x,y,h,w,oh,ow) {
-       logEvent('doZoom', 'x='+x+',y='+y+'h='+h+',w='+w+',oh='+oh+',ow='+ow);
-       xnew =  (ow/w) * x;
-       ynew =  (oh/h) * y;
+       xnew =  (base_image.naturalWidth/w) * x;
+       ynew =  (base_image.naturalHeight/h) * y;
 
        context.clearRect( 0, 0, context.canvas.width, context.canvas.height);
 
