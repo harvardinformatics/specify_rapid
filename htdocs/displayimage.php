@@ -182,7 +182,7 @@ function image($barcode) {
          magnification=1.5;
 
          startx = xnew-(window.innerWidth/(2*scalefactor*magnification));  if (startx < 1) { startx = 1; }
-         starty = ynew-(window.innerWidth/(2*scalefactor*magnification));  if (starty < 1) { starty = 1; }
+         starty = ynew-(window.innerHeight/(2*scalefactor*magnification));  if (starty < 1) { starty = 1; }
 
          context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
 
@@ -310,7 +310,7 @@ function imagefile($path,$filename) {
        magnification=1.5;
 
        startx = xnew-(window.innerWidth/(2*scalefactor*magnification));  if (startx < 1) { startx = 1; }
-       starty = ynew-(window.innerWidth/(2*scalefactor*magnification));  if (starty < 1) { starty = 1; }
+       starty = ynew-(window.innerHeight/(2*scalefactor*magnification));  if (starty < 1) { starty = 1; }
 
        context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
 
