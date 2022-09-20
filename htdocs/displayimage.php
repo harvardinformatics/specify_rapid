@@ -186,7 +186,7 @@ function image($barcode) {
 
          context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
 
-         var xy = \"\" + x + \",\" + y;
+         var xy = \"xy=\" + x + \",\" + y + \"startxy=\" + startx + \",\" + starty;
          logEvent('zoom',xy);
      }
 
