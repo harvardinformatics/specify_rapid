@@ -176,7 +176,7 @@ function image($barcode) {
          context.canvas.style.height = `\${window.innerHeight}px`;
 
          // calculate factor to rescale image to ~150ppi
-         scalefactor = 1800/base_image.naturalWidth;
+         scalefactor = 150*(20/base_image.naturalHeight);
 
          // based on 150ppi image, apply magnification level
          magnification=1.5;
@@ -303,7 +303,8 @@ function imagefile($path,$filename) {
        context.canvas.style.height = `\${window.innerHeight}px`;
 
        // calculate factor to rescale image to ~150ppi
-       scalefactor = 1800/base_image.naturalWidth;
+       // (images are ~20inches tall)
+       scalefactor = 150*(20/base_image.naturalHeight);
 
        // based on 150ppi image, apply magnification level
        magnification=1.5;
