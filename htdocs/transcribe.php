@@ -678,7 +678,7 @@ function form() {
 
         soroStates = ['Arizona','Colorado','Kansas','Nebraska','New Mexico','Oklahoma','South Dakota','Texas','Utah','Wyoming'];
 
-        var defaultHideFields = ['accessionnumber'];
+        var defaultHideFields = [];
         var soroHideFields = ['accessionnumber'];
         var poeHideFields = ['currentqualifier','container','collectingtrip', 'specimendescription']; // 'specimenremarks'
         var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality'];
@@ -844,6 +844,7 @@ function form() {
                 }
               } );
           }
+
 
           /* Enable or disable Save button
            */
