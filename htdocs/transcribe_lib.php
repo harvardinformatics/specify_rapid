@@ -8,7 +8,7 @@ include_once("connection_library.php");
 class PathFile {
    public $path;  // path to batch
    public $filename;  // next file in batch
-   public $awsPath; // path to file served by AWS
+   public $webPath; // path to file served by AWS, Cyverse, etc.
    public $position; // numeric position of filename in batch
    public $barcode; // barcode for this position, null if none
    public $batch_id; // ID of the batch
@@ -344,29 +344,40 @@ class TR_Batch {
      global $connection, $user;
      $result = new PathFile();
 
-     $sql = "select imlf.path, imlf.filename, tbi.barcode, imo2.object_name
+     $sql = "select imlf.path, imlf.filename, tbi.barcode, imo2.object_name, repo.ID, repo.URL_PREFIX, imo2.uri
              from TR_BATCH_IMAGE tbi
              join IMAGE_OBJECT imo on tbi.IMAGE_OBJECT_ID = imo.ID
-             join IMAGE_LOCAL_FILE imlf on imo.IMAGE_LOCAL_FILE_ID = imlf.ID
+             left join IMAGE_LOCAL_FILE imlf on imo.IMAGE_LOCAL_FILE_ID = imlf.ID
              left join IMAGE_OBJECT imo2 on imo.IMAGE_SET_ID = imo2.IMAGE_SET_ID and imo2.ACTIVE_FLAG = 1 and imo2.OBJECT_TYPE_ID = 3
+             left join REPOSITORY repo on imo2.REPOSITORY_ID = repo.ID
              where tbi.TR_BATCH_ID = ?
                and tbi.POSITION = ? ;";
 
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("ii", $this->getBatchID(), $position);
         $statement->execute();
-        $statement->bind_result($path, $filename, $barcode, $awspath);
+        $statement->bind_result($path, $filename, $barcode, $objectname, $repoid, $repourl, $objecturi);
         $statement->store_result();
         if ($statement->fetch()) {
             $result->path = rtrim($path, '/') . '/';
             $result->filename = $filename;
             $result->position = $position;
             $result->barcode = $barcode;
-            if (strcmp('huhimagestorage/huhspecimenimages/', substr($awspath, 0, 34)) == 0) {
-              $result->awsPath = 'http://s3.amazonaws.com/huhspecimenimages' . substr($awspath, 33); // TODO: move aws path to Docker
+
+            if ($repoid && $repourl && $objecturi) {
+              $result->webPath = $repourl . $objecturi;
+            } elseif (strcmp('huhimagestorage/huhspecimenimages/', substr($uri, 0, 34)) == 0) {
+              $result->webPath = 'http://s3.amazonaws.com/huhspecimenimages' . substr($uri, 33); // TODO: move aws path to Docker
             } else {
-              $result->awsPath = null;
+              $result->webPath = null;
             }
+
+            // if (strcmp('huhimagestorage/huhspecimenimages/', substr($uri, 0, 34)) == 0) {
+            //   $result->webPath = 'http://s3.amazonaws.com/huhspecimenimages' . substr($uri, 33); // TODO: move aws path to Docker
+            // } else {
+            //   $result->webPath = null;
+            // }
+
             $result->batch_id = $this->getBatchID();
             $result->filecount = $this->getFileCount();
         } else {
