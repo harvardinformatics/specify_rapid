@@ -818,7 +818,8 @@ function ingest() {
                                $statement->bind_param("s",$seriestype);
                                $statement->execute();
                                $statement->bind_result();
-                               if ($statement->fetch()) {
+                               $statement->store_result();
+                               if ($statement->num_rows > 0) {
                                  $validseriestype = true;
                                }
                                $statement->free_result();
