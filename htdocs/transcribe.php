@@ -579,7 +579,7 @@ function form() {
    @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
    @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
-   if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = 'US and Canada - Mass Digitization'; }
+   if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = ''; }
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
