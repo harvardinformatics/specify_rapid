@@ -637,9 +637,9 @@ function form() {
    @selectTaxon("filedundername","Filed Under",'','','true','true');
    @selectTaxon ("currentname","Current Name",'','','true','true');
    @selectQualifier("currentqualifier","ID Qualifier",'');
-   @selectCollectorsID("identifiedby","Identified By",'','','false','false');
-   @field ("dateidentified","Date Identified",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
-   @field ("determinertext","Det. Text",'','false');
+   //@selectCollectorsID("identifiedby","Identified By",'','','false','false');
+   //@field ("dateidentified","Date Identified",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd');
+   //@field ("determinertext","Det. Text",'','false');
    @field ("provenance","Provenance",'','false');
    @selectCollectorsID("collectors","Collectors",'','','true','false');
    @field ("etal","Et al.",'','false');
