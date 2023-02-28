@@ -824,40 +824,49 @@ function ingest() {
                                if ($statement->num_rows>1) {
                                  // do nothing
                                } elseif ($statement->num_rows==1) {
-                                 // update record (don't insert a second record from this app)
-                                 if ($statement->fetch()) {
-                                   $sqlup = "update otheridentifier set identifier = ?, institution = ?, timestampmodified = now() where otheridentifierid = ?";
-                                   $stmtup = $connection->prepare($sqlup);
-                                   if ($stmtup) {
-                                    $stmtup->bind_param("ssi", $seriesid, $seriestype, $otherid);
-                                    $stmtup->execute();
+                                 if (!$seriesid || !$seriestype) {
+                                   $fail = true;
+                                   $feedback .= "Cannot delete Series ID; use Specify";
+                                 } else {
+                                   // update record (don't insert a second record from this app)
+                                   if ($statement->fetch()) {
+                                     $sqlup = "update otheridentifier set identifier = ?, institution = ?, timestampmodified = now() where otheridentifierid = ?";
+                                     $stmtup = $connection->prepare($sqlup);
+                                     if ($stmtup) {
+                                      $stmtup->bind_param("ssi", $seriesid, $seriestype, $otherid);
+                                      $stmtup->execute();
+                                      $rows = $connection->affected_rows;
+                                      if ($rows==1) {
+                                        $feedback = $feedback . " Updated Series ID. ";
+                                      }
+                                      $stmtup->close();
+                                     } else {
+                                       $fail = true;
+                                       $feedback.= "Query Error " . $connection->error;
+                                     }
+                                   } else {
+                                    $fail = true;
+                                    $feedback.= "Query Error " . $connection->error;
+                                   }
+                                 }
+                               } else {
+                                 if (!$seriesid || !$seriestype) {
+                                   // do nothing
+                                 } else {
+                                   $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
+                                   $stmtins = $connection->prepare($sqlins);
+                                   if ($stmtins) {
+                                    $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
+                                    $stmtins->execute();
                                     $rows = $connection->affected_rows;
                                     if ($rows==1) {
-                                      $feedback = $feedback . " Updated Series ID. ";
+                                      $feedback = $feedback . " Added Series ID. ";
                                     }
-                                    $stmtup->close();
+                                    $stmtins->close();
                                    } else {
                                      $fail = true;
                                      $feedback.= "Query Error " . $connection->error;
                                    }
-                                 } else {
-                                  $fail = true;
-                                  $feedback.= "Query Error " . $connection->error;
-                                 }
-                               } else {
-                                 $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
-                                 $stmtins = $connection->prepare($sqlins);
-                                 if ($stmtins) {
-                                  $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
-                                  $stmtins->execute();
-                                  $rows = $connection->affected_rows;
-                                  if ($rows==1) {
-                                    $feedback = $feedback . " Added Series ID. ";
-                                  }
-                                  $stmtins->close();
-                                 } else {
-                                   $fail = true;
-                                   $feedback.= "Query Error " . $connection->error;
                                  }
 
                                }
