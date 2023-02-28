@@ -811,7 +811,7 @@ function ingest() {
 
                            // validate series type
                            $validseriestype = false;
-                           if ($seriestype && !fail) {
+                           if ($seriestype && !$fail) {
                              $sql = "select value from picklistitem where picklistid = 41 and value = ?";
                              $statement = $connection->prepare($sql);
                              if ($statement) {
