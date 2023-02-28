@@ -810,10 +810,6 @@ function ingest() {
                            }
 
 
-
-
-
-
                            // check for existing series id
                            if (!$fail) {
                              $sql = "select otheridentifierid from otheridentifier where collectionobjectid = ?";
@@ -831,7 +827,7 @@ function ingest() {
                                  // update record (don't insert a second record from this app)
                                  if ($statement->fetch()) {
                                    $sqlup = "update otheridentifier set identifier = ?, institution = ?, timestampmodified = now() where otheridentifierid = ?";
-                                   $stmtup = $connection->prepare($sql);
+                                   $stmtup = $connection->prepare($sqlup);
                                    if ($stmtup) {
                                     $stmtup->bind_param("ssi", $seriesid, $seriestype, $otherid);
                                     $stmtup->execute();
@@ -850,7 +846,7 @@ function ingest() {
                                  }
                                } else {
                                  $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
-                                 $stmtins = $connection->prepare($sql);
+                                 $stmtins = $connection->prepare($sqlins);
                                  if ($stmtins) {
                                   $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
                                   $stmtins->execute();
