@@ -165,8 +165,8 @@ if ($connection && $authenticated) {
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # unused?
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # collector number
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-         @$seriesid= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['seriesid']),0,huh_otheridentifier::IDENTIFIER_SIZE);
-         @$seriestype= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['seriestype']),0,huh_otheridentifier::INSTITUTION_SIZE);
+         @$seriesid= substr($_POST['seriesid'],0,huh_otheridentifier::IDENTIFIER_SIZE);
+         @$seriestype= substr($_POST['seriestype'],0,huh_otheridentifier::INSTITUTION_SIZE);
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
@@ -483,6 +483,8 @@ function ingest() {
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
+   if ($seriesid=='') { $seriesid = null; }
+   if ($seriestype=='') { $seriestype = null; }
    $dateidentifiedformatted=null;
    if ($dateidentified=='') {
       $dateidentified = null;
@@ -606,6 +608,8 @@ function ingest() {
       $df.= "specimenremarks=[$specimenremarks] ";
       $df.= "specimendescription=[$specimendescription] ";
       $df.= "itemdescription=[$itemdescription] ";
+      $df.= "seriesid=[$seriesid] ";
+      $df.= "seriestype=[$seriestype] ";
    }
 
    if ($barcode=='') {
@@ -644,6 +648,11 @@ function ingest() {
       if ($format=='') {
          $feedback.= "Format. ";
       }
+   }
+
+   if (($seriesid && !$seriestype) || ($seriestype && !seriesid)) {
+     $fail = true;
+     $feedback.="Series ID and Type must both be entered"
    }
 
    $currentuserid = $_SESSION["agentid"];
@@ -799,6 +808,72 @@ function ingest() {
                              $fail = true;
                              $feedback.= "Failed to lookup fragment (item) record.";
                            }
+
+
+
+
+
+
+                           // check for existing series id
+                           if (!$fail) {
+                             $sql = "select otheridentifierid from otheridentifier where collectionobjectid = ?";
+                             $statement = $connection->prepare($sql);
+
+                             if ($statement) {
+                               $statement->bind_param("s",$collectionobjectid);
+                               $statement->execute();
+                               $statement->bind_result($otherid);
+                               $statement->store_result();
+
+                               if ($statement->num_rows>1) {
+                                 // do nothing
+                               } elseif ($statement->num_rows==1) {
+                                 // update record (don't insert a second record from this app)
+                                 if ($statement->fetch()) {
+                                   $sqlup = "update otheridentifier set identifier = ?, institution = ?, timestampmodified = now() where otheridentifierid = ?";
+                                   $stmtup = $connection->prepare($sql);
+                                   if ($stmtup) {
+                                    $stmtup->bind_param("ssi", $seriesid, $seriestype, $otherid);
+                                    $stmtup->execute();
+                                    $rows = $connection->affected_rows;
+                                    if ($rows==1) {
+                                      $feedback = $feedback . " Updated Series ID. ";
+                                    }
+                                    $stmtup->close();
+                                   } else {
+                                     $fail = true;
+                                     $feedback.= "Query Error " . $connection->error;
+                                   }
+                                 } else {
+                                  $fail = true;
+                                  $feedback.= "Query Error " . $connection->error;
+                                 }
+                               } else {
+                                 $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
+                                 $stmtins = $connection->prepare($sql);
+                                 if ($stmtins) {
+                                  $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
+                                  $stmtins->execute();
+                                  $rows = $connection->affected_rows;
+                                  if ($rows==1) {
+                                    $feedback = $feedback . " Added Series ID. ";
+                                  }
+                                  $stmtins->close();
+                                 } else {
+                                   $fail = true;
+                                   $feedback.= "Query Error " . $connection->error;
+                                 }
+
+                               }
+
+                               $statement->free_result();
+                               $statement->close();
+                             } else {
+                               $fail = true;
+                               $feedback.= "Query Error " . $connection->error;
+                             }
+                           }
+
 
 
                            // check for existing collectingtrip if just name is supplied
