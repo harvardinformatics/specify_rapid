@@ -165,6 +165,8 @@ if ($connection && $authenticated) {
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # unused?
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # collector number
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+         @$seriesid= substr($_POST['seriesid'],0,huh_otheridentifier::IDENTIFIER_SIZE);
+         @$seriestype= substr($_POST['seriestype'],0,huh_otheridentifier::INSTITUTION_SIZE);
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
@@ -300,6 +302,9 @@ if ($connection && $authenticated) {
          if ( @($storagelocation!=$_POST['storagelocation']) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
          if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
          if ( @($storage!=$_POST['storage']) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
+         if ( @($seriesid!=$_POST['seriesid']) ) { $truncation = true; $truncated .= "seriesid : [$seriesid] "; }
+         if ( @($seriestype!=$_POST['seriestype']) ) { $truncation = true; $truncated .= "seriestype : [$seriestype] "; }
+
 
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
          if ($barcode=='' && strlen($barcodeval)>0 ) { $barcode = $barcodeval; }
@@ -367,7 +372,7 @@ function ingest() {
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,
    $project, $storagelocation, $storage, $namedplace,
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext, $seriesid, $seriestype;
 
    if ($debug) { echo "ingest()"; }
    $fail = false;
@@ -478,6 +483,8 @@ function ingest() {
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
+   if ($seriesid=='') { $seriesid = null; }
+   if ($seriestype=='') { $seriestype = null; }
    $dateidentifiedformatted=null;
    if ($dateidentified=='') {
       $dateidentified = null;
@@ -601,6 +608,8 @@ function ingest() {
       $df.= "specimenremarks=[$specimenremarks] ";
       $df.= "specimendescription=[$specimendescription] ";
       $df.= "itemdescription=[$itemdescription] ";
+      $df.= "seriesid=[$seriesid] ";
+      $df.= "seriestype=[$seriestype] ";
    }
 
    if ($barcode=='') {
@@ -639,6 +648,11 @@ function ingest() {
       if ($format=='') {
          $feedback.= "Format. ";
       }
+   }
+
+   if (($seriesid && !$seriestype) || ($seriestype && !$seriesid)) {
+     $fail = true;
+     $feedback.="Series ID and Type must both be entered";
    }
 
    $currentuserid = $_SESSION["agentid"];
@@ -794,6 +808,103 @@ function ingest() {
                              $fail = true;
                              $feedback.= "Failed to lookup fragment (item) record.";
                            }
+
+                           // validate series type
+                           $validseriestype = false;
+                           if ($seriestype && !$fail) {
+                             $sql = "select value from picklistitem where picklistid = 41 and value = ?";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                               $statement->bind_param("s",$seriestype);
+                               $statement->execute();
+                               $statement->bind_result();
+                               $statement->store_result();
+                               if ($statement->num_rows > 0) {
+                                 $validseriestype = true;
+                               }
+                               $statement->free_result();
+                               $statement->close();
+                             } else {
+                               $fail = true;
+                               $feedback.= "Query Error " . $connection->error;
+                             }
+                           }
+
+                           // check for existing series id
+                           if (!$fail) {
+                             $sql = "select otheridentifierid from otheridentifier where collectionobjectid = ?";
+                             $statement = $connection->prepare($sql);
+
+                             if ($statement) {
+                               $statement->bind_param("s",$collectionobjectid);
+                               $statement->execute();
+                               $statement->bind_result($otherid);
+                               $statement->store_result();
+
+                               if ($statement->num_rows>1) {
+                                 // do nothing
+                               } elseif ($statement->num_rows==1) {
+                                 if (!$seriesid || !$seriestype) {
+                                   $fail = true;
+                                   $feedback .= "Cannot delete Series ID; use Specify";
+                                 } elseif (!$validseriestype) {
+                                   $fail = true;
+                                   $feedback .= "Invalid Series Type [$seriestype]";
+                                 } else {
+                                   // update record (don't insert a second record from this app)
+                                   if ($statement->fetch()) {
+                                     $sqlup = "update otheridentifier set identifier = ?, institution = ?, timestampmodified = now() where otheridentifierid = ?";
+                                     $stmtup = $connection->prepare($sqlup);
+                                     if ($stmtup) {
+                                      $stmtup->bind_param("ssi", $seriesid, $seriestype, $otherid);
+                                      $stmtup->execute();
+                                      $rows = $connection->affected_rows;
+                                      if ($rows==1) {
+                                        $feedback = $feedback . " Updated Series ID. ";
+                                      }
+                                      $stmtup->close();
+                                     } else {
+                                       $fail = true;
+                                       $feedback.= "Query Error " . $connection->error;
+                                     }
+                                   } else {
+                                    $fail = true;
+                                    $feedback.= "Query Error " . $connection->error;
+                                   }
+                                 }
+                               } else {
+                                 if (!$seriesid || !$seriestype) {
+                                   // do nothing
+                                 } elseif (!$validseriestype) {
+                                   $fail = true;
+                                   $feedback .= "Invalid Series Type [$seriestype]";
+                                 } else {
+                                   $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
+                                   $stmtins = $connection->prepare($sqlins);
+                                   if ($stmtins) {
+                                    $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
+                                    $stmtins->execute();
+                                    $rows = $connection->affected_rows;
+                                    if ($rows==1) {
+                                      $feedback = $feedback . " Added Series ID. ";
+                                    }
+                                    $stmtins->close();
+                                   } else {
+                                     $fail = true;
+                                     $feedback.= "Query Error " . $connection->error;
+                                   }
+                                 }
+
+                               }
+
+                               $statement->free_result();
+                               $statement->close();
+                             } else {
+                               $fail = true;
+                               $feedback.= "Query Error " . $connection->error;
+                             }
+                           }
+
 
 
                            // check for existing collectingtrip if just name is supplied
@@ -1571,6 +1682,20 @@ function lookupDataForBarcode($barcode) {
        $result['decimallong'] = $rlocality->getLongitude1();
        $result['coordinateuncertainty'] = $rlocality->getLatLongAccuracy();
        $result['georeferencesource'] = $rlocality->getLatLongMethod();
+       // get other identifiers for series id
+       // if more than one, use [too many; use Specify]
+       $otherids = $rcolobj->loadLinkedFromotheridentifier();
+       if (sizeof($otherids) > 1) {
+         $result['seriesid'] = '[too many; use Specify]';
+         $result['seriestype'] = '[too many; use Specify]';
+       } elseif (sizeof($otherids) < 1) {
+         $result['seriesid'] = '';
+         $result['seriestype'] = '';
+       } else {
+         $result['seriesid'] = $otherids[0]->getIdentifier();
+         $result['seriestype'] = $otherids[0]->getInstitution();
+       }
+
 
        $result['error']="";
    } else {

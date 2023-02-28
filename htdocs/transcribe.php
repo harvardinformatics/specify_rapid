@@ -579,7 +579,7 @@ function form() {
    @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
    @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
-   if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = 'US and Canada - Mass Digitization'; }
+   if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = ''; }
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo navigation();
@@ -644,6 +644,8 @@ function form() {
    @selectCollectorsID("collectors","Collectors",'','','true','false');
    @field ("etal","Et al.",'','false');
    @field ("stationfieldnumber","Collector Number",'','false');
+   @selectSeriesType("seriestype","Series Type",'','false','false');
+   @field ("seriesid","Series Id",'','false');
    @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
    @field ("verbatimdate","Verbatim Date",'','false');
    @selectContainerID("container","Container",'','');
@@ -1003,6 +1005,8 @@ function form() {
                   setLoadedValue('decimallong',data.decimallong);
                   setLoadedValue('coordinateuncertainty',data.coordinateuncertainty);
                   setLoadedValue('georeferencesource',data.georeferencesource);
+                  setLoadedValue('seriesid',data.seriesid);
+                  setLoadedValue('seriestype',data.seriestype);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
@@ -1340,6 +1344,32 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
    echo $returnvalue;
 }
 
+function selectSeriesType($field,$label,$default,$required='false',$carryforward='false') {
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
+   $returnvalue = "
+  <script>
+  $( function() {
+    $( '#$field' ).autocomplete({
+      source: 'ajax_handler.php?druid_action=returndistinctseriestype',
+      minLength: 1,
+      delay: 500,
+      select: function( event, ui ) {
+         // alert( 'Selected: ' + ui.item.value + ' aka ' + ui.item.id );
+      }
+    });
+  } );
+  </script>
+  <tr><td>
+  <label for='$field'>$label</label>
+  </td><td>
+     <div class='ui-widget'>
+        <input id='$field' name='$field' value='$default'  style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='inputField $carryforward' >
+     </div>
+  </td></tr>
+   ";
+   echo $returnvalue;
+}
+
 
 function utm($utmzonedefault='', $utmeastingdefault='', $utmnorthingdefault='') {
 	echo "<tr><td>\n";
@@ -1616,7 +1646,6 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    ';
    echo $returnvalue;
 }
-
 
 function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }

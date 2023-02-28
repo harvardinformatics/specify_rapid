@@ -513,6 +513,36 @@ if ($connection && $authenticated) {
          }
          break;
 
+   case 'returndistinctseriestype':
+        $ok = false;
+        $values = '';
+        @$term = $_GET['term'];
+        $term = "%$term%";
+
+        // check that table is on allowed list
+        $schema = new database_schema();
+        $error = '';
+
+        $t = new huh_picklistitem_custom();
+
+         try {
+            $values = $t->keySelectDistinctJSONPicklist(41,$term,$required);
+            $ok = true;
+         } catch (Exception $e) {
+            $ok = false;
+         }
+
+        //header("Content-type application/json");
+        header("Content-type text/json-comment-filtered");
+        if ($ok) {
+           echo '[ ';
+           echo $values;
+           echo ' ]';
+        } else {
+           echo '[]';
+        }
+        break;
+
       case 'returndistinctjsonpicklist':
          // test call: druid_handler.php?action=returndistinctjsonpicklist&field=value&picklistid=55
          // use with dojo dojox.data.QueryReadDataStore and dijit.form.ComboBox to generate a pick list from the specify picklist table
@@ -535,7 +565,7 @@ if ($connection && $authenticated) {
          $t = new huh_picklistitem_custom();
          if ($t->hasField($field)) {
             try {
-               $values = $t->keySelectDistinctJSONPicklist($field,$limit,$required);
+               $values = $t->keySelectDistinctJSONPicklist($limit,'',$required);
                $ok = true;
             } catch (Exception $e) {
                $ok = false;

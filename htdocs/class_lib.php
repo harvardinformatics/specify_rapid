@@ -892,34 +892,35 @@ class huh_taxon_CUSTOM extends huh_taxon {
 
 class huh_picklistitem_custom extends huh_picklistitem {
 
-  	public function keySelectDistinctJSONPicklist($field,$picklistid,$required=false,$orderby='ASC') {
+  	public function keySelectDistinctJSONPicklist($picklistid,$limit,$required=false,$orderby='ASC') {
   	   global $connection;
   	   $returnvalue = '';
-  	   if ($this->hasField($field)) {
-  	      $order = '';
-  	      if ($orderby=='ASC') {
-  	         $order = 'ASC';
-  	      } else { $order = 'DESC';
-  	      }
-  	      $fielde = mysql_escape_string($field);
-  	      // note: using title for order rather than ordinal to support dojo combo box
-  	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? order by title asc ";
-  	      $comma = '';
-  	      if ($stmt = $connection->prepare($preparemysql)) {
-  	         $stmt->bind_param("i", $picklistid);
-  	         $stmt->execute();
-  	         $stmt->bind_result($name,$val);
-  	         while ($stmt->fetch()) {
-  	            $val = trim($val);
-  	            if ($val!='') {
-  	               $val = str_replace('"','&quot;',$val);
-  	               $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$name.'" } ';
-  	               $comma = ', ';
-  	            }
-  	         }
-  	         $stmt->close();
-  	      }
-  	   }
+
+	      $order = '';
+	      if ($orderby=='ASC') {
+	        $order = 'ASC';
+	      } else {
+          $order = 'DESC';
+	      }
+	      $limit = mysql_escape_string($limit);
+	      // note: using title for order rather than ordinal to support dojo combo box
+	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? and title like ? order by title $orderby ";
+	      $comma = '';
+	      if ($stmt = $connection->prepare($preparemysql)) {
+	         $stmt->bind_param("is", $picklistid, $limit);
+	         $stmt->execute();
+	         $stmt->bind_result($label,$val);
+	         while ($stmt->fetch()) {
+	            $val = trim($val);
+	            if ($val!='') {
+	               $val = str_replace('"','&quot;',$val);
+	               $returnvalue .= $comma . ' { "label":"'.$label.'", "value":"'.$val.'" } ';
+	               $comma = ', ';
+	            }
+	         }
+	         $stmt->close();
+	      }
+
   	   return $returnvalue;
 
   	}
@@ -982,6 +983,11 @@ class huh_referencework_custom extends huh_referencework {
    	return $returnvalue;
 
    }
+
+}
+
+class huh_otheridentifier_custom extends huh_otheridentifier {
+
 
 }
 
@@ -1876,7 +1882,7 @@ function ingestCollectionObject() {
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$seriesid,$seriestype;
 
    $fail = false;
    $feedback = "";
@@ -1915,6 +1921,14 @@ function ingestCollectionObject() {
       if ($barcode=='') {
          $feedback.= "Barcode.";
       }
+   }
+
+   if ($seriesid=='') { $seriesid = null; }
+   if ($seriestype=='') { $seriestype = null; }
+
+   if (($seriesid && !$seriestype) || ($seriestype && !$seriesid)) {
+     $fail = true;
+     $feedback.="Series ID and Type must both be entered";
    }
 
    // if either a typestatus or basionym is given, both must be.
@@ -2456,6 +2470,49 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
       }
+
+      // validate series type
+      $validseriestype = false;
+      if ($seriestype && !$fail) {
+        $sql = "select value from picklistitem where picklistid = 41 and value = ?";
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+          $statement->bind_param("s",$seriestype);
+          $statement->execute();
+          $statement->bind_result();
+          $statement->store_result();
+          if ($statement->num_rows > 0) {
+            $validseriestype = true;
+          }
+          $statement->free_result();
+          $statement->close();
+        } else {
+          $fail = true;
+          $feedback.= "Query Error " . $connection->error;
+        }
+      }
+
+      // Add seriesid
+      if (!$fail) {
+        if (!$seriesid || !$seriestype) {
+          // do nothing
+        } elseif (!$validseriestype) {
+          $fail = true;
+          $feedback .= "Invalid Series Type [$seriestype]";
+        } else {
+          $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
+          $stmtins = $connection->prepare($sqlins);
+          if ($stmtins) {
+           $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
+           $stmtins->execute();
+           $stmtins->close();
+          } else {
+            $fail = true;
+            $feedback.= "Query Error " . $connection->error;
+          }
+        }
+      }
+
 
       if (!$fail) {
          // container, collectionobject

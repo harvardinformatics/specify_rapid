@@ -1602,10 +1602,6 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
       // ForeignKey in: fragment
       $t = new fragment();
   }
-  public function loadLinkedFromotheridentifier() {
-      // ForeignKey in: otheridentifier
-      $t = new otheridentifier();
-  }
   public function loadLinkedFromproject_colobj() {
       // ForeignKey in: project_colobj
       $t = new project_colobj();
@@ -1655,8 +1651,15 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
       $t = new huh_agent();
       $t->load($this->getModifiedByAgentID());
       $returnvalue['ModifiedByAgentID'] = $t;
+
      return $returnvalue;
   }
+
+  public function loadLinkedFromotheridentifier() {
+    $t = new huh_otheridentifier();
+    return $t->loadArrayByCollectionObjectID($this->getCollectionObjectID());
+  }
+
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
    // wrapped as $values in: '{ "identifier":"id", "items": [ '.$values.' ] }';
    // when druid_handler.php is called with druid_action=returnfkjson
