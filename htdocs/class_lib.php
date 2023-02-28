@@ -1882,7 +1882,7 @@ function ingestCollectionObject() {
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$seriesid,$seriestype;
 
    $fail = false;
    $feedback = "";
@@ -1921,6 +1921,14 @@ function ingestCollectionObject() {
       if ($barcode=='') {
          $feedback.= "Barcode.";
       }
+   }
+
+   if ($seriesid=='') { $seriesid = null; }
+   if ($seriestype=='') { $seriestype = null; }
+
+   if (($seriesid && !$seriestype) || ($seriestype && !$seriesid)) {
+     $fail = true;
+     $feedback.="Series ID and Type must both be entered";
    }
 
    // if either a typestatus or basionym is given, both must be.
@@ -2462,6 +2470,29 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
       }
+
+      // Add seriesid
+      if (!$fail) {
+        if (!$seriesid || !$seriestype) {
+          // do nothing
+        } else {
+          $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
+          $stmtins = $connection->prepare($sqlins);
+          if ($stmtins) {
+           $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
+           $stmtins->execute();
+           $rows = $connection->affected_rows;
+           if ($rows==1) {
+             $feedback = $feedback . " Added Series ID. ";
+           }
+           $stmtins->close();
+          } else {
+            $fail = true;
+            $feedback.= "Query Error " . $connection->error;
+          }
+        }
+      }
+
 
       if (!$fail) {
          // container, collectionobject
