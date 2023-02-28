@@ -809,6 +809,24 @@ function ingest() {
                              $feedback.= "Failed to lookup fragment (item) record.";
                            }
 
+                           // validate series type
+                           $validseriestype = false;
+                           if ($seriestype && !fail) {
+                             $sql = "select value from picklistitem where picklistid = 41 and value = ?";
+                             $statement = $connection->prepare($sql);
+                             if ($statement) {
+                               $statement->bind_param("s",$seriestype);
+                               $statement->execute();
+                               if ($statement->fetch()) {
+                                 $validseriestype = true;
+                               }
+                               $statement->free_result();
+                               $statement->close();
+                             } else {
+                               $fail = true;
+                               $feedback.= "Query Error " . $connection->error;
+                             }
+                           }
 
                            // check for existing series id
                            if (!$fail) {
@@ -827,6 +845,9 @@ function ingest() {
                                  if (!$seriesid || !$seriestype) {
                                    $fail = true;
                                    $feedback .= "Cannot delete Series ID; use Specify";
+                                 } elseif (!$validseriestype) {
+                                   $fail = true;
+                                   $feedback .= "Invalid Series Type";
                                  } else {
                                    // update record (don't insert a second record from this app)
                                    if ($statement->fetch()) {
@@ -852,6 +873,9 @@ function ingest() {
                                } else {
                                  if (!$seriesid || !$seriestype) {
                                    // do nothing
+                                 } elseif (!$validseriestype) {
+                                   $fail = true;
+                                   $feedback .= "Invalid Series Type";
                                  } else {
                                    $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
                                    $stmtins = $connection->prepare($sqlins);

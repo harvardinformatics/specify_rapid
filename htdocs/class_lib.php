@@ -2471,10 +2471,32 @@ function ingestCollectionObject() {
          }
       }
 
+      // validate series type
+      $validseriestype = false;
+      if ($seriestype && !fail) {
+        $sql = "select value from picklistitem where picklistid = 41 and value = ?";
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+          $statement->bind_param("s",$seriestype);
+          $statement->execute();
+          if ($statement->fetch()) {
+            $validseriestype = true;
+          }
+          $statement->free_result();
+          $statement->close();
+        } else {
+          $fail = true;
+          $feedback.= "Query Error " . $connection->error;
+        }
+      }
+
       // Add seriesid
       if (!$fail) {
         if (!$seriesid || !$seriestype) {
           // do nothing
+        } elseif () {
+          $fail = true;
+          $feedback .= "Invalid Series Type";
         } else {
           $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
           $stmtins = $connection->prepare($sqlins);
