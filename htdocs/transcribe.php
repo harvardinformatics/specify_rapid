@@ -1349,7 +1349,8 @@ function selectSeriesType($field,$label,$default,$required='false',$carryforward
   $( function() {
     $( '#$field' ).autocomplete({
       source: 'ajax_handler.php?druid_action=returndistinctseriestype',
-      minLength: 0,
+      minLength: 1,
+      delay: 500,
       select: function( event, ui ) {
          // alert( 'Selected: ' + ui.item.value + ' aka ' + ui.item.id );
       }
