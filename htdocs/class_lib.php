@@ -904,7 +904,7 @@ class huh_picklistitem_custom extends huh_picklistitem {
 	      }
 	      $limit = mysql_escape_string($limit);
 	      // note: using title for order rather than ordinal to support dojo combo box
-	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? and value like ? order by title $orderby ";
+	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? and title like ? order by title $orderby ";
 	      $comma = '';
 	      if ($stmt = $connection->prepare($preparemysql)) {
 	         $stmt->bind_param("is", $picklistid, $limit);
