@@ -817,6 +817,7 @@ function ingest() {
                              if ($statement) {
                                $statement->bind_param("s",$seriestype);
                                $statement->execute();
+                               $statement->bind_result();
                                if ($statement->fetch()) {
                                  $validseriestype = true;
                                }
