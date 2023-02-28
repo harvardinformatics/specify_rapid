@@ -650,7 +650,7 @@ function ingest() {
       }
    }
 
-   if (($seriesid && !$seriestype) || ($seriestype && !seriesid)) {
+   if (($seriesid && !$seriestype) || ($seriestype && !$seriesid)) {
      $fail = true;
      $feedback.="Series ID and Type must both be entered";
    }
