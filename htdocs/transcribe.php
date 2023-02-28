@@ -1360,7 +1360,7 @@ function selectSeriesType($field,$label,$default,$required='false',$carryforward
   <label for='$field'>$label</label>
   </td><td>
      <div class='ui-widget'>
-        <input id='$field' name='$field' value='$default'  style='width: 9em; ' class='inputField $carryforward' >
+        <input id='$field' name='$field' value='$default'  style=' width: ". $GLOBALS['BASEWIDTH'] ."em; ' class='inputField $carryforward' >
      </div>
   </td></tr>
    ";

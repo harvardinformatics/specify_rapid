@@ -909,12 +909,12 @@ class huh_picklistitem_custom extends huh_picklistitem {
 	      if ($stmt = $connection->prepare($preparemysql)) {
 	         $stmt->bind_param("is", $picklistid, $limit);
 	         $stmt->execute();
-	         $stmt->bind_result($name,$val);
+	         $stmt->bind_result($label,$val);
 	         while ($stmt->fetch()) {
 	            $val = trim($val);
 	            if ($val!='') {
 	               $val = str_replace('"','&quot;',$val);
-	               $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$name.'" } ';
+	               $returnvalue .= $comma . ' { "label":"'.$label.'", "value":"'.$val.'" } ';
 	               $comma = ', ';
 	            }
 	         }
