@@ -644,8 +644,8 @@ function form() {
    @selectCollectorsID("collectors","Collectors",'','','true','false');
    @field ("etal","Et al.",'','false');
    @field ("stationfieldnumber","Collector Number",'','false');
+   @selectSeriesType("seriestype","Series Type",'','false','false');
    @field ("seriesid","Series Id",'','false');
-   selectSeriesType("seriestype","Series Type",'','false','false');
    @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
    @field ("verbatimdate","Verbatim Date",'','false');
    @selectContainerID("container","Container",'','');
