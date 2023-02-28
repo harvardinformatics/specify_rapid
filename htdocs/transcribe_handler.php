@@ -372,7 +372,7 @@ function ingest() {
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$containerid,$collectingtrip,$collectingtripid,
    $project, $storagelocation, $storage, $namedplace,
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext, $seriesid, $seriestype;
 
    if ($debug) { echo "ingest()"; }
    $fail = false;
