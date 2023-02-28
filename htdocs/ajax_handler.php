@@ -517,7 +517,7 @@ if ($connection && $authenticated) {
         $ok = false;
         $values = '';
         @$term = $_GET['term'];
-        $term = "$term%";
+        $term = "%$term%";
 
         // check that table is on allowed list
         $schema = new database_schema();
