@@ -644,6 +644,8 @@ function form() {
    @selectCollectorsID("collectors","Collectors",'','','true','false');
    @field ("etal","Et al.",'','false');
    @field ("stationfieldnumber","Collector Number",'','false');
+   @field ("seriesid","Series Id",'','false');
+   selectSeriesType("seriestype","Series Type",'','false','false');
    @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
    @field ("verbatimdate","Verbatim Date",'','false');
    @selectContainerID("container","Container",'','');
@@ -1340,6 +1342,31 @@ function selectPrepType($field,$label,$default,$required='true',$carryforward='t
    echo $returnvalue;
 }
 
+function selectSeriesType($field,$label,$default,$required='false',$carryforward='false') {
+   if ($carryforward=='true') { $carryforward = "carryforward"; } else { $carryforward=""; }
+   $returnvalue = "
+  <script>
+  $( function() {
+    $( '#$field' ).autocomplete({
+      source: 'ajax_handler.php?druid_action=returndistinctseriestype',
+      minLength: 0,
+      select: function( event, ui ) {
+         // alert( 'Selected: ' + ui.item.value + ' aka ' + ui.item.id );
+      }
+    });
+  } );
+  </script>
+  <tr><td>
+  <label for='$field'>$label</label>
+  </td><td>
+     <div class='ui-widget'>
+        <input id='$field' name='$field' value='$default'  style='width: 9em; ' class='inputField $carryforward' >
+     </div>
+  </td></tr>
+   ";
+   echo $returnvalue;
+}
+
 
 function utm($utmzonedefault='', $utmeastingdefault='', $utmnorthingdefault='') {
 	echo "<tr><td>\n";
@@ -1616,7 +1643,6 @@ function selectCollectorsID($field,$label,$value,$valueid,$required='false',$car
    ';
    echo $returnvalue;
 }
-
 
 function selectRefWorkID($field,$label,$required='false',$exsiccati='false') {
    if ($required=='true') { $req = " required='true' "; } else { $req = ''; }

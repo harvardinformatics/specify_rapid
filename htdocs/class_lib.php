@@ -892,34 +892,35 @@ class huh_taxon_CUSTOM extends huh_taxon {
 
 class huh_picklistitem_custom extends huh_picklistitem {
 
-  	public function keySelectDistinctJSONPicklist($field,$picklistid,$required=false,$orderby='ASC') {
+  	public function keySelectDistinctJSONPicklist($picklistid,$limit,$required=false,$orderby='ASC') {
   	   global $connection;
   	   $returnvalue = '';
-  	   if ($this->hasField($field)) {
-  	      $order = '';
-  	      if ($orderby=='ASC') {
-  	         $order = 'ASC';
-  	      } else { $order = 'DESC';
-  	      }
-  	      $fielde = mysql_escape_string($field);
-  	      // note: using title for order rather than ordinal to support dojo combo box
-  	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? order by title asc ";
-  	      $comma = '';
-  	      if ($stmt = $connection->prepare($preparemysql)) {
-  	         $stmt->bind_param("i", $picklistid);
-  	         $stmt->execute();
-  	         $stmt->bind_result($name,$val);
-  	         while ($stmt->fetch()) {
-  	            $val = trim($val);
-  	            if ($val!='') {
-  	               $val = str_replace('"','&quot;',$val);
-  	               $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$name.'" } ';
-  	               $comma = ', ';
-  	            }
-  	         }
-  	         $stmt->close();
-  	      }
-  	   }
+
+	      $order = '';
+	      if ($orderby=='ASC') {
+	        $order = 'ASC';
+	      } else {
+          $order = 'DESC';
+	      }
+	      $limit = mysql_escape_string($limit);
+	      // note: using title for order rather than ordinal to support dojo combo box
+	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? and value like ? order by title $orderby ";
+	      $comma = '';
+	      if ($stmt = $connection->prepare($preparemysql)) {
+	         $stmt->bind_param("is", $picklistid, $limit);
+	         $stmt->execute();
+	         $stmt->bind_result($name,$val);
+	         while ($stmt->fetch()) {
+	            $val = trim($val);
+	            if ($val!='') {
+	               $val = str_replace('"','&quot;',$val);
+	               $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$name.'" } ';
+	               $comma = ', ';
+	            }
+	         }
+	         $stmt->close();
+	      }
+
   	   return $returnvalue;
 
   	}
@@ -982,6 +983,11 @@ class huh_referencework_custom extends huh_referencework {
    	return $returnvalue;
 
    }
+
+}
+
+class huh_otheridentifier_custom extends huh_otheridentifier {
+
 
 }
 

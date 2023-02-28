@@ -165,6 +165,8 @@ if ($connection && $authenticated) {
          @$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # unused?
          @$stationfieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['stationfieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # collector number
          @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+         @$seriesid= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['seriesid']),0,huh_otheridentifier::IDENTIFIER_SIZE);
+         @$seriestype= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#]/','',$_POST['seriestype']),0,huh_otheridentifier::INSTITUTION_SIZE);
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
@@ -300,6 +302,9 @@ if ($connection && $authenticated) {
          if ( @($storagelocation!=$_POST['storagelocation']) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
          if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
          if ( @($storage!=$_POST['storage']) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
+         if ( @($seriesid!=$_POST['seriesid']) ) { $truncation = true; $truncated .= "seriesid : [$seriesid] "; }
+         if ( @($seriestype!=$_POST['seriestype']) ) { $truncation = true; $truncated .= "seriestype : [$seriestype] "; }
+
 
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
          if ($barcode=='' && strlen($barcodeval)>0 ) { $barcode = $barcodeval; }
