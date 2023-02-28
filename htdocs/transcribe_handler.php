@@ -1576,6 +1576,20 @@ function lookupDataForBarcode($barcode) {
        $result['decimallong'] = $rlocality->getLongitude1();
        $result['coordinateuncertainty'] = $rlocality->getLatLongAccuracy();
        $result['georeferencesource'] = $rlocality->getLatLongMethod();
+       // get other identifiers for series id
+       // if more than one, use [too many; use Specify]
+       $otherids = $rcolobj->loadLinkedFromotheridentifier();
+       if (sizeof($otherids) > 1) {
+         $result['seriesid'] = '[too many; use Specify]';
+         $result['seriestype'] = '[too many; use Specify]';
+       } elseif (sizeof($otherids) < 1) {
+         $result['seriesid'] = '';
+         $result['seriestype'] = '';
+       } else {
+         $result['seriesid'] = $otherids[0]->getIdentifier();
+         $result['seriestype'] = $otherids[0]->getInstitution();
+       }
+
 
        $result['error']="";
    } else {

@@ -1005,6 +1005,8 @@ function form() {
                   setLoadedValue('decimallong',data.decimallong);
                   setLoadedValue('coordinateuncertainty',data.coordinateuncertainty);
                   setLoadedValue('georeferencesource',data.georeferencesource);
+                  setLoadedValue('seriesid',data.seriesid);
+                  setLoadedValue('seriestype',data.seriestype);
 
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
