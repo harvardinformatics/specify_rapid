@@ -2473,14 +2473,15 @@ function ingestCollectionObject() {
 
       // validate series type
       $validseriestype = false;
-      if ($seriestype && !fail) {
+      if ($seriestype && !$fail) {
         $sql = "select value from picklistitem where picklistid = 41 and value = ?";
         $statement = $connection->prepare($sql);
         if ($statement) {
           $statement->bind_param("s",$seriestype);
           $statement->execute();
           $statement->bind_result();
-          if ($statement->fetch()) {
+          $statement->store_result();
+          if ($statement->num_rows > 0) {
             $validseriestype = true;
           }
           $statement->free_result();
