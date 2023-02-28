@@ -847,7 +847,7 @@ function ingest() {
                                    $feedback .= "Cannot delete Series ID; use Specify";
                                  } elseif (!$validseriestype) {
                                    $fail = true;
-                                   $feedback .= "Invalid Series Type";
+                                   $feedback .= "Invalid Series Type [$seriestype]";
                                  } else {
                                    // update record (don't insert a second record from this app)
                                    if ($statement->fetch()) {
@@ -875,7 +875,7 @@ function ingest() {
                                    // do nothing
                                  } elseif (!$validseriestype) {
                                    $fail = true;
-                                   $feedback .= "Invalid Series Type";
+                                   $feedback .= "Invalid Series Type [$seriestype]";
                                  } else {
                                    $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
                                    $stmtins = $connection->prepare($sqlins);

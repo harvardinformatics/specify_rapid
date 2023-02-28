@@ -2496,7 +2496,7 @@ function ingestCollectionObject() {
           // do nothing
         } elseif (!$validseriestype) {
           $fail = true;
-          $feedback .= "Invalid Series Type";
+          $feedback .= "Invalid Series Type [$seriestype]";
         } else {
           $sqlins = "insert into otheridentifier (timestampcreated, version, collectionmemberid, identifier, institution, collectionobjectid) values (now(), 0, 4, ?, ?, ?)";
           $stmtins = $connection->prepare($sqlins);
