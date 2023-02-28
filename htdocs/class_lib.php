@@ -2494,7 +2494,7 @@ function ingestCollectionObject() {
       if (!$fail) {
         if (!$seriesid || !$seriestype) {
           // do nothing
-        } elseif () {
+        } elseif (!$validseriestype) {
           $fail = true;
           $feedback .= "Invalid Series Type";
         } else {
