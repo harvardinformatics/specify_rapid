@@ -2481,10 +2481,6 @@ function ingestCollectionObject() {
           if ($stmtins) {
            $stmtins->bind_param("ssi", $seriesid, $seriestype, $collectionobjectid);
            $stmtins->execute();
-           $rows = $connection->affected_rows;
-           if ($rows==1) {
-             $feedback = $feedback . " Added Series ID. ";
-           }
            $stmtins->close();
           } else {
             $fail = true;
