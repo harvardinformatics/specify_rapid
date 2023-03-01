@@ -579,7 +579,7 @@ if ($connection && $authenticated) {
          header("Content-type text/json-comment-filtered");
          if ($ok) {
             $response = '';
-            echo '{ "identifier":"value", "label":"name",';
+            echo '{ "identifier":"label", "label":"value",';
             echo '"items": [ ';
             echo $values;
             echo ' ] }';
