@@ -448,7 +448,7 @@ function form() {
 
    staticvalue("","Type Specimen Information");
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
-   fieldselectpicklist("confidence",'Confidence','','false','confidencepl',47);
+   fieldselectpicklist("typeconfidence",'Confidence','','false','typeconfidencepl',47);
    selectCurrentID("basionym","Basionym");
    selectRefWorkID("publication","Publication");
    field ("page","Vol: Page");
@@ -579,7 +579,7 @@ function fieldselectpicklist($name,$label,$default,$required,$storeId,$picklisti
    $returnvalue .= "<label for=\"$name\">$label</label></td><td>
 	<input type=text name=$name id=$name dojoType='dijit.form.FilteringSelect'
 	store='$storeId' required='$required'
-	searchAttr='name' value='$default' ></td></tr>";
+	searchAttr='label' value='$default' ></td></tr>";
    echo $returnvalue;
 }
 

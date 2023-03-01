@@ -565,7 +565,7 @@ if ($connection && $authenticated) {
          $t = new huh_picklistitem_custom();
          if ($t->hasField($field)) {
             try {
-               $values = $t->keySelectDistinctJSONPicklist($limit,'',$required);
+               $values = $t->keySelectDistinctJSONPicklist($limit,'%',$required);
                $ok = true;
             } catch (Exception $e) {
                $ok = false;
@@ -579,7 +579,7 @@ if ($connection && $authenticated) {
          header("Content-type text/json-comment-filtered");
          if ($ok) {
             $response = '';
-            echo '{ "identifier":"value", "label":"name",';
+            echo '{ "identifier":"value", "label":"label",';
             echo '"items": [ ';
             echo $values;
             echo ' ] }';
