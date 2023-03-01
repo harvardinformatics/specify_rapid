@@ -448,7 +448,7 @@ function form() {
 
    staticvalue("","Type Specimen Information");
    fieldselectpicklist("typestatus",'Type status','','false','typestatuspl',56);
-   fieldselectpicklist("confidence",'Confidence','','false','confidencepl',47);
+   fieldselectpicklist("typeconfidence",'Confidence','','false','typeconfidencepl',47);
    selectCurrentID("basionym","Basionym");
    selectRefWorkID("publication","Publication");
    field ("page","Vol: Page");
