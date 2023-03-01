@@ -565,7 +565,7 @@ if ($connection && $authenticated) {
          $t = new huh_picklistitem_custom();
          if ($t->hasField($field)) {
             try {
-               $values = $t->keySelectDistinctJSONPicklist($limit,'',$required);
+               $values = $t->keySelectDistinctJSONPicklist($limit,'%',$required);
                $ok = true;
             } catch (Exception $e) {
                $ok = false;
