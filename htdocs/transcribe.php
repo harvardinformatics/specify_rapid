@@ -1561,6 +1561,7 @@ function selectTaxon($field,$label,$value,$valueid,$required='false',$carryforwa
             $( "#'.$field.'" ).autocomplete({
                minLength: 4,
                delay: 500,
+               searchAttr='label',
                source: function( request, response ) {
                   $.ajax( {
                     url: "ajax_handler.php",
