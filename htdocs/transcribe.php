@@ -270,6 +270,8 @@ function target() {
             $size = getImageSize($mediauri);
             $width = $size[0];
             $height = $size[1];
+            if (!$height) $height = 4344;
+            if (!$width ) $width = 2896;
          }
          $result->mediauri = $mediauri;
          //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
@@ -303,6 +305,8 @@ function targetfile($path,$filename) {
    }
    $pathfile = BASE_IMAGE_PATH.'/'.$localpathfile;
    list($width,$height) = getimagesize($pathfile);
+   if (!$height) $height = 4344;
+   if (!$width ) $width = 2896;
    $result->height=$height;
    $result->width=$width;
 
