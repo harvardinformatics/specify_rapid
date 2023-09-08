@@ -338,7 +338,7 @@ if ($connection && $authenticated) {
          } else {
             $values = "[]";
          }
-         header("Content-type application/json");
+         header("Content-Type: application/json; charset=UTF-8");
          if ($ok) {
             $response = '';
             //echo '{ "identifier":"value", "label":"name",';
