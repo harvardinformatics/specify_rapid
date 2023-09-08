@@ -338,7 +338,7 @@ if ($connection && $authenticated) {
          } else {
             $values = "[]";
          }
-         header("Content-type text/json-comment-filtered");
+         header("Content-Type application/json");
          if ($ok) {
             $response = '';
             //echo '{ "identifier":"value", "label":"name",';
