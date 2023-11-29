@@ -234,6 +234,7 @@ if ($connection && $authenticated) {
          @$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
 
          @$batchid = $_POST['batch_id'];
+         @$batchposition = $_POST['batch_position'];
          //@$= substr(preg_replace('/[^0-9]/','',$_POST['']),0,huh_);
 
          if ( @($collectors!=$_POST['collectors']) )  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
@@ -1347,6 +1348,23 @@ EOD;
                           if ($currentdeterminationid == -1) {
                             $currentdeterminationid = null;
                             $currentdetermination = null;
+                          }
+
+                          // Make sure taxon name matches id
+                          if ($currentdeterminationid!=null) {
+                              $idcheck = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
+                              if ($currentdeterminationid!=$idcheck) {
+                                  $fail = true;
+                                  $feedback.= "Taxon ID check failed for current name: [id: $currentdeterminationid, name: $currentdetermination, lookupid: $idcheck]";
+                              }
+                          }
+
+                          if ($filedundernameid!=null) {
+                              $idcheck = huh_taxon_custom::lookupTaxonIdForName($filedundername);
+                              if ($filedundernameid!=$idcheck) {
+                                  $fail = true;
+                                  $feedback.= "Taxon ID check failed for current name: [id: $filedundernameid, name: $filedundername, lookupid: $idcheck]";
+                              }
                           }
 
                           // make sure that we have taxonid values.

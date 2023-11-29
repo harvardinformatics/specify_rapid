@@ -665,6 +665,7 @@ function form() {
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
+   echo "<input type='hidden' name='batch_position' value='".$position."'>";
    echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
@@ -1099,6 +1100,7 @@ function form() {
                    success: function(data) {
                      console.log(data);
                      loadFormData(data);
+                     $('#batch_position').val(data.position);
                      $('#batch_info').html('[' + batchpath + '] file ' + data.position +' of $filecount.');
                      loadImage(data);
                      checkSoRo();
