@@ -796,7 +796,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
        $sql = "select taxonid from taxon where fullname = ? ";
        $statement = $connection->prepare($sql);
        if ($statement) {
-          $statement->bind_param("s",$filedundername);
+          $statement->bind_param("s",$fullname);
           $statement->execute();
           $statement->bind_result($taxonid);
           $statement->store_result();
@@ -809,7 +809,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
               }
           } else {
              $fail = true;
-             $feedback.= "No Match for taxon: " . $filedundername;
+             $feedback.= "No Match for taxon: " . $fullname;
           }
           $statement->free_result();
           $statement->close();
