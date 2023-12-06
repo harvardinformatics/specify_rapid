@@ -817,7 +817,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
           $fail = true;
           $feedback.= "Query error: " . $connection->error . " " . $sql;
        }
-       if ($fail===true) {
+       if ($fail) {
            throw new Exception($feedback);
        }
        return $taxonid;
@@ -2479,7 +2479,6 @@ function ingestCollectionObject() {
         if ($statement) {
           $statement->bind_param("s",$seriestype);
           $statement->execute();
-          $statement->bind_result();
           $statement->store_result();
           if ($statement->num_rows > 0) {
             $validseriestype = true;

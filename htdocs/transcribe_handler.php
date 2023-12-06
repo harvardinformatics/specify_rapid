@@ -1310,6 +1310,8 @@ EOD;
                                          $newlocalityid = $statement->insert_id;
                                          $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                       }
+                                      $statement->close();
+                                      
                                       $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
                 		                  $statement = $connection->prepare($sql);
                                       if ($statement) {
@@ -1317,20 +1319,21 @@ EOD;
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectingevent. "; }
+                                          $statement->close();
+
                                           $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                         		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement1->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
+                                              $statement->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
                                               if ($rows==0) { $feedback = $feedback . " Locality unchanged. "; }
+                                              $statement->close();
                                           } else {
                                               $fail = true;
                                               $feedback.= "Query Error splitting/modifying locality. " . $connection->error . " ";
                                           }
-                                          $statement->free_result();
-                                          $statement->close();
                                       }
                                    } else {
                                         $fail = true;
