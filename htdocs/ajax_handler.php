@@ -522,6 +522,7 @@ if ($connection && $authenticated) {
         // check that table is on allowed list
         $schema = new database_schema();
         $error = '';
+        $required = false;
 
         $t = new huh_picklistitem_custom();
 

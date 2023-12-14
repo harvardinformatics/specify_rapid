@@ -1,1 +1,3 @@
 phpincludes/connection_library.php
+*.icloud
+*.DS_Store

@@ -792,6 +792,8 @@ class huh_taxon_CUSTOM extends huh_taxon {
      */
     public static function lookupTaxonIdForName($fullname) {
        global $connection;
+       $fail=false;
+       $feedback="";
        $taxonid = null;
        $sql = "select taxonid from taxon where fullname = ? ";
        $statement = $connection->prepare($sql);
