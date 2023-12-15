@@ -662,6 +662,7 @@ function form() {
    @field ("specimendescription","Description",'','false');
    @field ("specimenremarks","Remarks",'','false');
    @selectProject("project","Project",$defaultproject);
+   @staticvalueid("Special chars:","° × ± Ø ♀ ♂","specialchars");
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
@@ -675,10 +676,6 @@ function form() {
    //echo "For the autocomplete fields, quickly type a substring (wildcards allowed, e.g. <i>Su%Gray</i>), press the down arrow to make a selection from the picklist, hit enter, then tab out of the field..";
    //echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
    //echo "</td></tr>";
-
-   echo "<tr><td colspan=2>";
-   echo "Special characters: ° × ± Ø ♀ ♂";
-   echo "</td></tr>";
 
    echo "<script>
         var transcriptionMode = '$transcriptionMode';
