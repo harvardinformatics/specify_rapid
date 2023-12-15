@@ -603,7 +603,7 @@ function form() {
    </script>';
    echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
    echo '<div style="width: 30em;" id="transcribediv" >';
-   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
+   //echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
    echo '<div>';
 
    echo "<table>";
@@ -1151,7 +1151,7 @@ function form() {
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
-   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
+   //echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
    echo '<div>';
 
    #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
