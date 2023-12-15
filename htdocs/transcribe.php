@@ -676,6 +676,10 @@ function form() {
    //echo "Once you have entered a specimen record you must hit Save to save the record before hitting Next or Done.";
    //echo "</td></tr>";
 
+   echo "<tr><td colspan=2>";
+   echo "Special characters: ° × ± Ø ♀ ♂";
+   echo "</td></tr>";
+
    echo "<script>
         var transcriptionMode = '$transcriptionMode';
         var imgsrc            = '$imgSrc';
