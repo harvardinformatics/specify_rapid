@@ -1857,7 +1857,7 @@ class huh_geography_custom extends huh_geography {
             $name = trim($name);
             if ($name!='') {
                setlocale(LC_ALL, 'C.UTF-8');
-               $name_ic = iconv("UTF8","ASCII//TRANSLIT", $name);
+               $name_ic = iconv("UTF8","ASCII//TRANSLIT//IGNORE", $name);
                if ($name_ic) {
                    $name = iconv("ASCII", "UTF8", $name_ic);
                }
