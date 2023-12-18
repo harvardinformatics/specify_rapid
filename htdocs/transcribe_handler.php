@@ -818,7 +818,6 @@ function ingest() {
                              if ($statement) {
                                $statement->bind_param("s",$seriestype);
                                $statement->execute();
-                               $statement->bind_result();
                                $statement->store_result();
                                if ($statement->num_rows > 0) {
                                  $validseriestype = true;
@@ -1311,7 +1310,7 @@ EOD;
                                          $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                       }
                                       $statement->close();
-                                      
+
                                       $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
                 		                  $statement = $connection->prepare($sql);
                                       if ($statement) {
