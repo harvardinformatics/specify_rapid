@@ -556,7 +556,7 @@ body {
     border-radius: 3px;
 }
 .flexbox  {
-    padding: 0.1em;
+    padding: 0em;
     display: flex;
     flex-direction: column;
     flex: 2;
