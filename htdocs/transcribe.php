@@ -602,9 +602,9 @@ function form() {
           });
    </script>';
    echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
-   echo '<div style="width: 30em;" id="transcribediv" >';
+   echo '<div class="flexbox" style="width: 30em;" id="transcribediv">';
    echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
-   echo '<div>';
+   echo '<div class="flexbox">';
 
    echo "<table>";
 
