@@ -270,6 +270,8 @@ function target() {
             $size = getImageSize($mediauri);
             $width = $size[0];
             $height = $size[1];
+            if (!$height) $height = 4344;
+            if (!$width ) $width = 2896;
          }
          $result->mediauri = $mediauri;
          //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
@@ -303,6 +305,8 @@ function targetfile($path,$filename) {
    }
    $pathfile = BASE_IMAGE_PATH.'/'.$localpathfile;
    list($width,$height) = getimagesize($pathfile);
+   if (!$height) $height = 4344;
+   if (!$width ) $width = 2896;
    $result->height=$height;
    $result->width=$width;
 
@@ -598,9 +602,9 @@ function form() {
           });
    </script>';
    echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
-   echo '<div style="width: 30em;" id="transcribediv" >';
-   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
-   echo '<div>';
+   echo '<div class="flexbox" style="width: 30em;" id="transcribediv">';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
+   echo '<div class="flexbox">';
 
    echo "<table>";
 
@@ -658,9 +662,11 @@ function form() {
    @field ("specimendescription","Description",'','false');
    @field ("specimenremarks","Remarks",'','false');
    @selectProject("project","Project",$defaultproject);
+   @staticvalueid("Special chars:","° × ± Ø ♀ ♂","specialchars");
 
    echo "<tr><td colspan=2>";
    echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
+   echo "<input type='hidden' name='batch_position' value='".$position."'>";
    echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
@@ -1095,6 +1101,7 @@ function form() {
                    success: function(data) {
                      console.log(data);
                      loadFormData(data);
+                     $('#batch_position').val(data.position);
                      $('#batch_info').html('[' + batchpath + '] file ' + data.position +' of $filecount.');
                      loadImage(data);
                      checkSoRo();
@@ -1145,7 +1152,7 @@ function form() {
           });
    </script>';
    echo '<div id="imagezoomdiv" >';
-   echo '<h3 style=" margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
    echo '<div>';
 
    #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
@@ -1414,7 +1421,7 @@ function selectHigherGeography($field,$label,$value,$valueid, $defaultcountry=''
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 4,
+               minLength: 3,
                delay: 500,
                source: function( request, response ) {
                   $.ajax( {
@@ -1453,7 +1460,7 @@ function selectHigherGeographyFiltered($field,$label,$value,$valueid, $defaultco
       <script>
          $(function() {
             $( "#'.$field.'" ).autocomplete({
-               minLength: 4,
+               minLength: 3,
                delay: 500,
                source: function( request, response ) {
                   $.ajax( {

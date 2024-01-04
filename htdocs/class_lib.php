@@ -793,11 +793,13 @@ class huh_taxon_CUSTOM extends huh_taxon {
      */
     public static function lookupTaxonIdForName($fullname) {
        global $connection;
+       $fail=false;
+       $feedback="";
        $taxonid = null;
        $sql = "select taxonid from taxon where fullname = ? ";
        $statement = $connection->prepare($sql);
        if ($statement) {
-          $statement->bind_param("s",$filedundername);
+          $statement->bind_param("s",$fullname);
           $statement->execute();
           $statement->bind_result($taxonid);
           $statement->store_result();
@@ -810,7 +812,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
               }
           } else {
              $fail = true;
-             $feedback.= "No Match for taxon: " . $filedundername;
+             $feedback.= "No Match for taxon: " . $fullname;
           }
           $statement->free_result();
           $statement->close();
@@ -818,7 +820,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
           $fail = true;
           $feedback.= "Query error: " . $connection->error . " " . $sql;
        }
-       if ($fail===true) {
+       if ($fail) {
            throw new Exception($feedback);
        }
        return $taxonid;
@@ -1856,7 +1858,7 @@ class huh_geography_custom extends huh_geography {
             $name = trim($name);
             if ($name!='') {
                setlocale(LC_ALL, 'C.UTF-8');
-               $name_ic = iconv("UTF8","ASCII//TRANSLIT", $name);
+               $name_ic = iconv("UTF8","ASCII//TRANSLIT//IGNORE", $name);
                if ($name_ic) {
                    $name = iconv("ASCII", "UTF8", $name_ic);
                }
@@ -2452,8 +2454,8 @@ function ingestCollectionObject() {
          $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
-              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,timestampmodified,text1,text2,description,text4) " .
-                   " values (?,4,4,?,?,now(),1,0,now(),?,?,now(),?,?,?,?)" ;
+              " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,text1,text2,description,text4) " .
+                   " values (?,4,4,?,?,now(),1,0,now(),?,?,?,?,?,?)" ;
          $statement = $connection->prepare($sql);
          if ($statement) {
             $statement->bind_param('iiiisssss',$collectingeventid, $currentuserid, $currentuserid, $iscultivated,$specimenremarks,$host,$substrate,$specimendescription,$frequency);
@@ -2480,7 +2482,6 @@ function ingestCollectionObject() {
         if ($statement) {
           $statement->bind_param("s",$seriestype);
           $statement->execute();
-          $statement->bind_result();
           $statement->store_result();
           if ($statement->num_rows > 0) {
             $validseriestype = true;

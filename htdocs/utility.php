@@ -18,9 +18,9 @@ if (!$connection) {
 
 $display = '';
 $display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
-if ($display=='') { 
+if ($display=='') {
    $display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
-} 
+}
 $tdisplay = $display;
 $showDefault = true;
 
@@ -63,7 +63,7 @@ if ($require_authentication) {
          $user->setAgentId($_SESSION["agentid"]);
          $user->setLastLogin($_SESSION["lastlogin"]);
          $user->setAbout($_SESSION["about"]);
-      } else { 
+      } else {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
          $display = 'logout';
@@ -95,7 +95,8 @@ switch ($display) {
       $user->logout();
    case "logindialog":
    default:
-      $email = $username;
+      // $email = $username; // causing errors, doesn't seem to be used
+      $username=null;
       if (@$_GET['email']!="") {
          $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_GET['email']),0,255);
       }
@@ -170,7 +171,7 @@ function pageheader($error="") {
              dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
              dojo.require("dojox.data.CsvStore");
              dojo.require("dojo.parser");
-        </script>        
+        </script>
         <style type="text/css">
             html, body { width: 100%; height: 100%; margin: 0; overflow:hidden; }
             #borderContainer { width: 100%; height: 100%; }
@@ -197,7 +198,7 @@ function form() {
 
                 dojo.connect(form, "onsubmit", function(event) {
                      dojo.stopEvent(event);
- 
+
                      var xhrArgs = {
                         form: dojo.byId("mergeForm"),
                         handleAs: "text",
@@ -212,7 +213,7 @@ function form() {
                     dojo.byId("feedback").innerHTML = "Checking..."
                     dojo.byId("mergeresult").innerHTML = "";
                     dojo.byId("checkresult").innerHTML = "";
-                    
+
                     var deferred = dojo.xhrGet(xhrArgs);
               });
             });
@@ -222,7 +223,7 @@ function form() {
 
                 dojo.connect(form, "onsubmit", function(event) {
                      dojo.stopEvent(event);
- 
+
                      var xhrArgs = {
                         form: dojo.byId("doMergeForm"),
                         handleAs: "text",
@@ -236,7 +237,7 @@ function form() {
                     }
                     dojo.byId("feedback").innerHTML = "Merging..."
                     dojo.byId("mergeresult").innerHTML = "";
-                    
+
                     var deferred = dojo.xhrGet(xhrArgs);
               });
             });
@@ -246,7 +247,7 @@ function form() {
 
                 dojo.connect(form, "onsubmit", function(event) {
                      dojo.stopEvent(event);
- 
+
                      var xhrArgs = {
                         form: dojo.byId("structureForm"),
                         handleAs: "text",
@@ -260,7 +261,7 @@ function form() {
                     }
                     dojo.byId("feedback").innerHTML = "Searching..."
                     dojo.byId("structureresult").innerHTML = "";
-                    
+
                     var deferred = dojo.xhrGet(xhrArgs);
               });
            });
@@ -269,19 +270,19 @@ function form() {
                 var defDialog = dijit.byId("defaultsDialog");
                 dojo.connect(dijit.byId("buttonDefaults"), "onClick", defDialog, "show");
                 dojo.connect(dijit.byId("buttonCancel"), "onClick", defDialog, "hide");
-            });           
+            });
         </script>
    ';
-   
-   
-   
+
+
+
    echo '<div dojoType="dijit.layout.AccordionContainer" region="center" layoutPriority="1">';
    //
    echo '<div dojoType="dijit.layout.ContentPane" title="Merge Preparations">';
    echo "<form action='ajax_handler.php' method='GET' id='mergeForm' >\n";
    echo "<input type=hidden name='druid_action' value='prepmergeprocessorpre'>";
    echo "<table>\n";
-   staticvalue("Instructions:","Enter the barcodes of two items that are on the same sheet, but which have different preparation records in Specify."); 
+   staticvalue("Instructions:","Enter the barcodes of two items that are on the same sheet, but which have different preparation records in Specify.");
    field ("targetbarcode","First Item Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    field ("movebarcode","Second Item Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    echo "<tr><td></td><td>";
@@ -298,7 +299,7 @@ function form() {
    echo "<form action='ajax_handler.php' method='GET' id='structureForm' >\n";
    echo "<input type=hidden name='druid_action' value='showstructure'>";
    echo "<table>\n";
-   staticvalue("Instructions:","Enter a barcode to see how it is related to other data."); 
+   staticvalue("Instructions:","Enter a barcode to see how it is related to other data.");
    field ("barcode","Item Barcode",$barcode,'true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    echo "<tr><td></td><td>";
    echo "<button type='submit' dojoType='dijit.form.Button' id='submitButton'>Search</button>";
@@ -309,8 +310,8 @@ function form() {
    echo '</div>'; // content pane
    //
    echo '</div>'; // accordion container
-   
-   
+
+
 }
 
 function field($name, $label, $default="", $required='false', $regex='', $placeholder='') {
@@ -341,7 +342,7 @@ function pagefooter() {
         <div id="feedback">Status</div>
 	</div>
 	<div dojoType="dijit.layout.ContentPane" region="bottom" layoutPriority="2" splitter="false">
-        Database: ' . $targethostdb . ' 
+        Database: ' . $targethostdb . '
 	</div>
 	';
    echo "</div>\n";

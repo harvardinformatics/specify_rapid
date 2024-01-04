@@ -338,7 +338,7 @@ if ($connection && $authenticated) {
          } else {
             $values = "[]";
          }
-         header("Content-Type application/json");
+         header("Content-Type: application/json; charset=UTF-8");
          if ($ok) {
             $response = '';
             //echo '{ "identifier":"value", "label":"name",';
@@ -522,6 +522,7 @@ if ($connection && $authenticated) {
         // check that table is on allowed list
         $schema = new database_schema();
         $error = '';
+        $required = false;
 
         $t = new huh_picklistitem_custom();
 

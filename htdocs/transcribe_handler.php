@@ -234,6 +234,7 @@ if ($connection && $authenticated) {
          @$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
 
          @$batchid = $_POST['batch_id'];
+         @$batchposition = $_POST['batch_position'];
          //@$= substr(preg_replace('/[^0-9]/','',$_POST['']),0,huh_);
 
          if ( @($collectors!=$_POST['collectors']) )  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
@@ -817,7 +818,6 @@ function ingest() {
                              if ($statement) {
                                $statement->bind_param("s",$seriestype);
                                $statement->execute();
-                               $statement->bind_result();
                                $statement->store_result();
                                if ($statement->num_rows > 0) {
                                  $validseriestype = true;
@@ -1309,6 +1309,8 @@ EOD;
                                          $newlocalityid = $statement->insert_id;
                                          $feedback = $feedback . " Cloned Locality to [$newlocalityid]. ";
                                       }
+                                      $statement->close();
+
                                       $sql = "update collectingevent set localityid = ? where collectingeventid = ?";
                 		                  $statement = $connection->prepare($sql);
                                       if ($statement) {
@@ -1316,20 +1318,21 @@ EOD;
                                           $statement->execute();
                                           $rows = $connection->affected_rows;
                                           if ($rows==1) { $feedback = $feedback . " Relinked collectingevent. "; }
+                                          $statement->close();
+
                                           $sql = "update locality set geographyid = ?, Lat1Text = ?, Long1Text = ?, Latitude1 = ?, Longitude1 = ?, LatLongAccuracy = ?, LatLongMethod = ?, LatLongType = ?, localityname = ?, verbatimelevation = ?, namedplace=?, version=version+1, modifiedbyagentid=?, timestampmodified=now() where localityid = ? ";
                         		              $statement = $connection->prepare($sql);
                                           if ($statement) {
-                                              $statement1->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
+                                              $statement->bind_param("issssisssssii", $highergeographyid, $verbatimlat, $verbatimlong, $decimallat, $decimallong, $coordinateuncertainty, $georeferencesource, $latlongtype, $specificlocality, $verbatimelevation, $namedplace, $currentuserid, $newlocalityid);
                                               $statement->execute();
                                               $rows = $connection->affected_rows;
                                               if ($rows==1) { $feedback = $feedback . " Updated Locality. "; }
                                               if ($rows==0) { $feedback = $feedback . " Locality unchanged. "; }
+                                              $statement->close();
                                           } else {
                                               $fail = true;
                                               $feedback.= "Query Error splitting/modifying locality. " . $connection->error . " ";
                                           }
-                                          $statement->free_result();
-                                          $statement->close();
                                       }
                                    } else {
                                         $fail = true;
@@ -1347,6 +1350,23 @@ EOD;
                           if ($currentdeterminationid == -1) {
                             $currentdeterminationid = null;
                             $currentdetermination = null;
+                          }
+
+                          // Make sure taxon name matches id
+                          if ($currentdeterminationid!=null) {
+                              $idcheck = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
+                              if ($currentdeterminationid!=$idcheck) {
+                                  $fail = true;
+                                  $feedback.= "Taxon ID check failed for current name: [id: $currentdeterminationid, name: $currentdetermination, lookupid: $idcheck]";
+                              }
+                          }
+
+                          if ($filedundernameid!=null) {
+                              $idcheck = huh_taxon_custom::lookupTaxonIdForName($filedundername);
+                              if ($filedundernameid!=$idcheck) {
+                                  $fail = true;
+                                  $feedback.= "Taxon ID check failed for current name: [id: $filedundernameid, name: $filedundername, lookupid: $idcheck]";
+                              }
                           }
 
                           // make sure that we have taxonid values.
