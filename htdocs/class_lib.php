@@ -621,12 +621,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename, t.author from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$determineddateprecision,$remarks,$alternatename);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$determineddateprecision,$remarks,$alternatename,$author);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -644,6 +644,7 @@ class huh_determination_custom extends huh_determination {
                $result["determineddateprecision"]=$determineddateprecision;
                $result["remarks"]=$remarks;
                $result["alternatename"]=$alternatename;
+               $result["author"]=$author;
                $result["status"]="Success";
                if ($statement->num_rows>1) {
                   $result["status"]="Error";
@@ -834,7 +835,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
       global $connection;
       //$returnvalue = '[';
       $returnvalue = '';
-      $preparemysql = " SELECT t.taxonid, t.fullname, concat(case when t.text1 = 'LaterHomonym' then 'INVALID: ' when t.text1 = 'NomInvalid' then 'INVALID: ' when t.text1 = 'NomRej' then 'INVALID: ' when t.text1 = 'NomSuperfl' then 'INVALID: ' when t.text1 = 'OrthVar' then 'INVALID: ' when t.text1 = 'Synonym' then 'INVALID: ' else '' end,t.fullname,if(t.author is null,'',concat(' ', t.author)), ' [',ifnull(t.groupnumber,''), if(t.rankid > 140, concat(', ', ifnull(tp.fullname,'')), ''),']',if(t.remarks is null,'',concat('[',t.remarks,']'))) as label FROM taxon t left join taxon tp on t.nodenumber < tp.HighestChildNodeNumber and t.NodeNumber > tp.NodeNumber and tp.rankid = 140 where t.fullname like ? order by t.fullname ASC, t.author ASC ";
+      $preparemysql = " SELECT t.taxonid, concat(t.fullname, if(t.author is null,'',concat(' ', t.author))), concat(case when t.text1 = 'LaterHomonym' then 'INVALID: ' when t.text1 = 'NomInvalid' then 'INVALID: ' when t.text1 = 'NomRej' then 'INVALID: ' when t.text1 = 'NomSuperfl' then 'INVALID: ' when t.text1 = 'OrthVar' then 'INVALID: ' when t.text1 = 'Synonym' then 'INVALID: ' else '' end,t.fullname,if(t.author is null,'',concat(' ', t.author)), ' [',ifnull(t.groupnumber,''), if(t.rankid > 140, concat(', ', ifnull(tp.fullname,'')), ''),']',if(t.remarks is null,'',concat('[',t.remarks,']'))) as label FROM taxon t left join taxon tp on t.nodenumber < tp.HighestChildNodeNumber and t.NodeNumber > tp.NodeNumber and tp.rankid = 140 where t.fullname like ? order by t.fullname ASC, t.author ASC ";
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
