@@ -1627,6 +1627,7 @@ function lookupDataForBarcode($barcode) {
        $current = huh_determination_custom::lookupCurrentDetermination($match->getFragmentID());
        $determinationid = $current["determinationid"];
        $currentname = $current["taxonname"];
+       if ($current["author"]) $currentname = $current["taxonname"] . ' ' . $current["author"];
        $currentalternatename = $current["alternatename"];
        $currentnameid = $current["taxonid"];
        if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
