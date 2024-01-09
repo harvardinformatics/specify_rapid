@@ -785,6 +785,27 @@ class huh_preptype_custom extends huh_preptype {
 class huh_taxon_CUSTOM extends huh_taxon {
 
 
+    /* Check that a name/author is correct(matches) a given a taxonid
+     */
+    public static function checkName($taxonid, $fullname) {
+      $t = new huh_taxon_custom();
+      $t.load($taxonid);
+      $t_fullname = $t.getFullName();
+
+      if ($fullname == $t_fullname)
+        return true;
+
+      // try with author appended
+      $t_author = $t.getAuthor();
+      $t_sciname = $t_fullname . ' ' . $author;
+
+      if ($fullname == $t_sciname)
+        return true;
+
+      return false;
+
+    }
+
     /* Given the fullname for a taxon, lookup the taxonid.
      *
      * @param fullname to lookup
