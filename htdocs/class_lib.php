@@ -797,7 +797,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
 
       // try with author appended
       $t_author = $t->getAuthor();
-      $t_sciname = $t_fullname . ' ' . $author;
+      $t_sciname = $t_fullname . ' ' . $t_author;
 
       if ($fullname == $t_sciname)
         return true;
