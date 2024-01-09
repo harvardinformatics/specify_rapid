@@ -856,10 +856,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
       global $connection;
       //$returnvalue = '[';
       $returnvalue = '';
-      $preparemysql = " SELECT t.taxonid, t.fullname, concat(case when t.text1 = 'LaterHomonym' then 'INVALID: ' when t.text1 = 'NomInvalid' then 'INVALID: ' when t.text1 = 'NomRej' then 'INVALID: ' when t.text1 = 'NomSuperfl' then 'INVALID: ' when t.text1 = 'OrthVar' then 'INVALID: ' when t.text1 = 'Synonym' then 'INVALID: ' else '' end,t.fullname,if(t.author is null,'',concat(' ', t.author)), ' [',ifnull(t.groupnumber,''), if(t.rankid > 140, concat(', ', ifnull(tp.fullname,'')), ''),']',if(t.remarks is null,'',concat('[',t.remarks,']'))) as label FROM taxon t left join taxon tp on t.nodenumber < tp.HighestChildNodeNumber and t.NodeNumber > tp.NodeNumber and tp.rankid = 140 where t.fullname like ? order by t.fullname ASC, t.author ASC ";
-/*
       $preparemysql = " SELECT t.taxonid, concat(t.fullname, if(t.author is null,'',concat(' ', t.author))), concat(case when t.text1 = 'LaterHomonym' then 'INVALID: ' when t.text1 = 'NomInvalid' then 'INVALID: ' when t.text1 = 'NomRej' then 'INVALID: ' when t.text1 = 'NomSuperfl' then 'INVALID: ' when t.text1 = 'OrthVar' then 'INVALID: ' when t.text1 = 'Synonym' then 'INVALID: ' else '' end,t.fullname,if(t.author is null,'',concat(' ', t.author)), ' [',ifnull(t.groupnumber,''), if(t.rankid > 140, concat(', ', ifnull(tp.fullname,'')), ''),']',if(t.remarks is null,'',concat('[',t.remarks,']'))) as label FROM taxon t left join taxon tp on t.nodenumber < tp.HighestChildNodeNumber and t.NodeNumber > tp.NodeNumber and tp.rankid = 140 where t.fullname like ? order by t.fullname ASC, t.author ASC ";
-*/
       $comma = '';
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param('s',$term);
