@@ -788,7 +788,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
     /* Check that a name/author is correct(matches) a given a taxonid
      */
     public static function checkName($taxonid, $fullname) {
-      $t = new huh_taxon_custom();
+      $t = new huh_taxon();
       $t.load($taxonid);
       $t_fullname = $t.getFullName();
 
