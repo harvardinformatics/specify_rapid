@@ -789,14 +789,14 @@ class huh_taxon_CUSTOM extends huh_taxon {
      */
     public static function checkName($taxonid, $fullname) {
       $t = new huh_taxon();
-      $t.load($taxonid);
-      $t_fullname = $t.getFullName();
+      $t->load($taxonid);
+      $t_fullname = $t->getFullName();
 
       if ($fullname == $t_fullname)
         return true;
 
       // try with author appended
-      $t_author = $t.getAuthor();
+      $t_author = $t->getAuthor();
       $t_sciname = $t_fullname . ' ' . $author;
 
       if ($fullname == $t_sciname)
