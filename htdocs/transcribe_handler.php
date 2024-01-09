@@ -1354,20 +1354,20 @@ EOD;
 
                           // make sure that we have taxonid values.
                           if (($filedundernameid==null || strlen(trim($filedundernameid))==0) && strlen(trim($filedundername))>0) {
-                              $filedundernameid = huh_taxon_custom::lookupTaxonIdForName($filedundername);
+                              $filedundernameid = huh_taxon_CUSTOM::lookupTaxonIdForName($filedundername);
                           } else {
                             // Make sure taxon name matches id
-                            if (! huh_taxon_custom.checkName($currentdeterminationid, $currentdetermination)) {
+                            if (! huh_taxon_CUSTOM::checkName($currentdeterminationid, $currentdetermination)) {
                               $fail = true;
                               $feedback.= "Taxon ID check failed for current name: [id: $currentdeterminationid, name: $currentdetermination]";
                             }
                           }
 
                           if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && strlen(trim($currentdetermination))>0) {
-                              $currentdeterminationid = huh_taxon_custom::lookupTaxonIdForName($currentdetermination);
+                              $currentdeterminationid = huh_taxon_CUSTOM::lookupTaxonIdForName($currentdetermination);
                           } else {
                             // Make sure taxon name matches id
-                            if (! huh_taxon_custom.checkName($filedundernameid, $filedundername)) {
+                            if (! huh_taxon_CUSTOM::checkName($filedundernameid, $filedundername)) {
                               $fail = true;
                               $feedback.= "Taxon ID check failed for filed under name: [id: $filedundernameid, name: $filedundername]";
                             }
