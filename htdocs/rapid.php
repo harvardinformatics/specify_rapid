@@ -354,6 +354,7 @@ function form() {
    if(inProfile($profile, 'identifiedby','main')) { selectCollectorsID("identifiedby","Identified by"); } // for current id
    if(inProfile($profile, 'determinertext','main')) {field ("determinertext", "Identified by (text)"); }
    if(inProfile($profile, 'dateidentified','main')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
+   if(inProfile($profile, 'annotationtext','main')) {field ("annotationtext", "Annotation text"); }
 
    fieldselectpicklist("prepmethod",'Preparation method',$defaultprepmethod,'true','prepmethodpl',55);
    preptypeselect("format","Format",$defaultformat,'true','formatStore','huh_preptype','Name');

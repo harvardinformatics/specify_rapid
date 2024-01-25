@@ -151,6 +151,7 @@ if ($connection && $authenticated) {
         	@$identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
         	@$identifiedby=      substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
         	@$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['determinertext']),0,huh_determination::TEXT1_SIZE);
+          @$annotationtext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['annotationtext']),0,huh_determination::TEXT2_SIZE);
         	@$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
         	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
         	@$specificlocality = substr($_GET['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
@@ -213,6 +214,7 @@ if ($connection && $authenticated) {
         	if ($identificationqualifier!=$_GET['identificationqualifier']) { $truncation = true; $truncated .= "identificationqualifier : [$identificationqualifier] "; }
         	if ($identifiedby!=$_GET['identifiedby']) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
         	if ($determinertext!=$_GET['determinertext']) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
+          if ($annotationtext!=$_GET['annotationtext']) { $truncation = true; $truncated .= "annotationtext : [$annotationtext] "; }
         	if ($dateidentified!=$_GET['dateidentified']) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
         	if ($highergeography!=$_GET['highergeography']) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
         	if ($specificlocality!=$_GET['specificlocality']) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }

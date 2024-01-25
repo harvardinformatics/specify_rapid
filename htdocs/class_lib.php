@@ -621,12 +621,12 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
-      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename, t.author from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
+      $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.text2 as annotationtext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename, t.author from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("i",$fragmentid);
          $statement->execute();
-         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$determinerid,$taxonname,$qualifier,$determineddate,$determineddateprecision,$remarks,$alternatename,$author);
+         $statement->bind_result($typestatusname,$determinationid,$taxonid,$isfiledunder,$iscurrent,$determinertext,$annotationtext,$determinerid,$taxonname,$qualifier,$determineddate,$determineddateprecision,$remarks,$alternatename,$author);
          $statement->store_result();
          $result["records"]=$statement->num_rows;
          if ($statement->num_rows>0) {
@@ -637,6 +637,7 @@ class huh_determination_custom extends huh_determination {
                $result["isfiledunder"]=$isfiledunder;
                $result["iscurrent"]=$iscurrent;
                $result["determinertext"]=$determinertext;
+               $result["annotationtext"]=$annotationtext;
                $result["determinerid"]=$determinerid;
                $result["taxonname"]=$taxonname;
                $result["qualifier"]=$qualifier;
@@ -1906,7 +1907,7 @@ function ingestCollectionObject() {
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$seriesid,$seriestype;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$annotationtext,$seriesid,$seriestype;
 
    $fail = false;
    $feedback = "";
@@ -2100,6 +2101,7 @@ function ingestCollectionObject() {
    if ($maxelevation=='') { $maxelevation = null; }
    if ($identifiedby=='') { $identifiedby = null; }
    if ($determinertext=='') { $determinertext = null; }
+   if ($annotationtext=='') { $annotationtext = null; }
    if ($container=='') { $container = null; }
    if ($collectingtrip=='') { $collectingtrip = null; }
    if ($storagelocation=='') { $storagelocation = null; }
@@ -2201,6 +2203,7 @@ function ingestCollectionObject() {
       $df.= "maxelevation=[$maxelevation] ";
       $df.= "identifiedby=[$identifiedby] ";
       $df.= "determinertext=[$determinertext] ";
+      $df.= "annotationtext=[$annotationtext] ";
       $df.= "dateidentified=[$dateidentified] ";
       $df.= "container=[$container] ";
       $df.= "collectingtrip=[$collectingtrip] ";
@@ -3154,11 +3157,11 @@ function ingestCollectionObject() {
            }
            // iscurrent = isCurrent (yes)
            $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
-                            " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1) " .
-                            " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?) ";
+                            " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1, text2) " .
+                            " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?,?) ";
            $statement = $connection->prepare($sql);
            if ($statement) {
-              $statement->bind_param('iiisisiiis', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext);
+              $statement->bind_param('iiisisiiiss', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext, $annotationtext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";
