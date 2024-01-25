@@ -1901,13 +1901,14 @@ function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated,
    $collectors,$collectorsid,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
-   $filedundername,$fiidentificationqualifier,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
+   $filedundername,$fiidentificationqualifier,$fiidentifiedby,$fiidentifiedbyid$fideterminertext,$fiannotationtext,$fidateidentified,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
-   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$annotationtext,$seriesid,$seriestype;
+   $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$annotationtext,$seriesid,$seriestype,
+   $label_name, $label_idqualifier, $label_identifiedby, $label_identifiedbyid, $label_determinertext, $label_annotationtext, $label_dateidentified;
 
    $fail = false;
    $feedback = "";
@@ -2116,14 +2117,42 @@ function ingestCollectionObject() {
       $dateidentifiedformatted=null;
       $dateidentifiedprecision = 1;
    } else {
-     $date = new DateWithPrecision($dateidentified);
-     if ($date->isBadValue()) {
+      $date = new DateWithPrecision($dateidentified);
+      if ($date->isBadValue()) {
          $fail = true;
          $feedback .= "Invalid date format or value: " . $dateidentified;
+    } else {
+         $dateidentifiedformatted = $date->getDate();
+         $dateidentifiedprecision = $date->getDatePrecision();
+    }
+
+    if ($fidateidentified=='') {
+       $fidateidentified = null;
+       $fidateidentifiedformatted=null;
+       $dfidateidentifiedprecision = 1;
+    } else {
+       $date = new DateWithPrecision($fidateidentified);
+       if ($date->isBadValue()) {
+          $fail = true;
+          $feedback .= "Invalid date format or value: " . $fidateidentified;
      } else {
-        $dateidentifiedformatted = $date->getDate();
-        $dateidentifiedprecision = $date->getDatePrecision();
+          $fidateidentifiedformatted = $date->getDate();
+          $fidateidentifiedprecision = $date->getDatePrecision();
      }
+
+     if ($label_dateidentified=='') {
+        $label_dateidentified = null;
+        $label_dateidentifiedformatted=null;
+        $label_dateidentifiedprecision = 1;
+     } else {
+        $date = new DateWithPrecision($label_dateidentified);
+        if ($date->isBadValue()) {
+           $fail = true;
+           $feedback .= "Invalid date format or value: " . $label_dateidentified;
+      } else {
+           $label_dateidentifiedformatted = $date->getDate();
+           $label_dateidentifiedprecision = $date->getDatePrecision();
+      }
 
       // if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
       //    $dateidentifiedformatted = $dateidentified;
@@ -2174,6 +2203,10 @@ function ingestCollectionObject() {
       $df.= "provenance=[$provenance] ";
       $df.= "filedundername=[$filedundername] ";  // required
       $df.= "fiidentificationqualifier=[$fiidentificationqualifier] ";
+      $df.= "fiidentifiedby=[$fiidentifiedby] ";
+      $df.= "fideterminertext=[$fideterminertext] ";
+      $df.= "fiannotationtext=[$fiannotationtext] ";
+      $df.= "fidateidentified=[$fidateidentified] ";
       $df.= "currentdetermination=[$currentdetermination] ";
       $df.= "identificationqualifier=[$identificationqualifier] ";
       $df.= "highergeography=[$highergeography] ";  // required
@@ -3005,6 +3038,44 @@ function ingestCollectionObject() {
          //    a determiner, and one current name with a determier and date determined.
       }
 
+      if (strlen(trim($fiidentifiedbyid)) > 0) {
+        $identifiedby = $fiidentifiedbyid;
+      }
+
+      $determinerid = null;
+      if (strlen(trim($fiidentifiedby))>0) {
+        if (preg_match("/^[0-9]+$/", $fiidentifiedby)) {
+           $sql = "select distinct agentid from agent where agentid = ? ";
+           $param = "i";
+        } else {
+           $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
+           $param = "s";
+        }
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+           $statement->bind_param($param,$fiidentifiedby);
+           $statement->execute();
+           $statement->bind_result($determinerid);
+           $statement->store_result();
+           if ($statement->num_rows==1) {
+              if ($statement->fetch()) {
+                 // retrieves determiner agentid
+              } else {
+                 $fail = true;
+                 $feedback.= "Query Error " . $connection->error;
+              }
+           } else {
+              $fail = true;
+              $feedback.= "No Match for agent: " . $fiidentifiedby;
+           }
+           $statement->free_result();
+           $statement->close();
+        } else {
+           $fail = true;
+           $feedback.= "Query error: " . $connection->error . " " . $sql;
+        }
+      }
+
       if (!$fail) {
        // Filed under name
        // Add only if there are different filed under and current determination names.
@@ -3051,12 +3122,13 @@ function ingestCollectionObject() {
             // Leaving this in, but we shouldn't end up in this block with the current logic.
             $iscurrent = 1;
          }
+
          $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
-                 " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid) " .
-                 " values (?,?,?,?,0,0,1,?,now(),0,4) ";
+                 " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid,determinerid,text1,text2,determineddate,determineddateprecision) " .
+                 " values (?,?,?,?,0,0,1,?,now(),0,4,?,?,?,?,?) ";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiisi', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$iscurrent);
+            $statement->bind_param('iiisiisssi', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$iscurrent,$determinerid,$fideterminertext,$fiannotationtext,$fidateidentifiedformatted,$fidateidentifiedprecision);
             if ($statement->execute()) {
                $determinationid = $statement->insert_id;
                $adds .= "det=[$determinationid]";
@@ -3111,8 +3183,9 @@ function ingestCollectionObject() {
            $identifiedby = $identifiedbyid;
          }
 
+
          $determinerid = null;
-         if (strlen(trim($identifiedby))>0) {
+         if (strlen(trim($labelidentifiedby))>0) {
            if (preg_match("/^[0-9]+$/", $identifiedby)) {
               $sql = "select distinct agentid from agent where agentid = ? ";
               $param = "i";
@@ -3162,6 +3235,108 @@ function ingestCollectionObject() {
            $statement = $connection->prepare($sql);
            if ($statement) {
               $statement->bind_param('iiisisiiiss', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext, $annotationtext);
+              if ($statement->execute()) {
+                 $determinationid = $statement->insert_id;
+                 $adds .= "det=[$determinationid]";
+              } else {
+                 $fail = true;
+                 $feedback.= "Unable to save current determination: " . $connection->error;
+              }
+              $statement->free_result();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
+        }
+
+      }
+
+
+      if (!$fail) {
+         // Label determination
+         // Always add.
+         $taxonid = null;
+         if (preg_match("/^[0-9]+$/", $label_name )) {
+            $sql = "select taxonid from taxon where taxonid = ? ";
+            $param = "i";
+         } else {
+            $sql = "select taxonid from taxon where fullname = ? ";
+            $param = "s";
+         }
+         $statement = $connection->prepare($sql);
+         if ($statement) {
+            $statement->bind_param($param,$label_name);
+            $statement->execute();
+            $statement->bind_result($taxonid);
+            $statement->store_result();
+            if ($statement->num_rows==1) {
+               if ($statement->fetch()) {
+                  // retrieves taxonid
+               } else {
+                  $fail = true;
+                  $feedback.= "Query Error " . $connection->error;
+               }
+            } else {
+               $fail = true;
+               $feedback.= "No Match for taxon: " . $label_name;
+            }
+            $statement->free_result();
+            $statement->close();
+         } else {
+            $fail = true;
+            $feedback.= "Query error: " . $connection->error . " " . $sql;
+         }
+
+         if (strlen(trim($label_identifiedbyid)) > 0) {
+           $label_identifiedby = $label_identifiedbyid;
+         }
+
+         $determinerid = null;
+         if (strlen(trim($label_identifiedby))>0) {
+           if (preg_match("/^[0-9]+$/", $label_identifiedby)) {
+              $sql = "select distinct agentid from agent where agentid = ? ";
+              $param = "i";
+           } else {
+              $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
+              $param = "s";
+           }
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param($param,$label_identifiedby);
+              $statement->execute();
+              $statement->bind_result($determinerid);
+              $statement->store_result();
+              if ($statement->num_rows==1) {
+                 if ($statement->fetch()) {
+                    // retrieves determiner agentid
+                 } else {
+                    $fail = true;
+                    $feedback.= "Query Error " . $connection->error;
+                 }
+              } else {
+                 $fail = true;
+                 $feedback.= "No Match for agent: " . $identifiedby;
+              }
+              $statement->free_result();
+              $statement->close();
+           } else {
+              $fail = true;
+              $feedback.= "Query error: " . $connection->error . " " . $sql;
+           }
+         }
+
+
+         if (!$fail) {
+           // yesno1 = isLabel (user) (yes)
+           // yesno2 = isFragment (of type) (no)
+           // yesno3 = isFiledUnder (no)
+           // iscurrent = isCurrent (no)
+           $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
+                            " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1, text2) " .
+                            " values (?,?,?,?,?,?,?,1,0,0,0,now(),0,4,?,?) ";
+           $statement = $connection->prepare($sql);
+           if ($statement) {
+              $statement->bind_param('iiisisiss', $taxonid, $fragmentid, $currentuserid, $label_identificationqualifier, $determinerid, $label_dateidentifiedformatted, $label_dateidentifiedprecision, $label_determinertext, $label_annotationtext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";
