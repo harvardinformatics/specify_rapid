@@ -1901,7 +1901,7 @@ function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated,
    $collectors,$collectorsid,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
-   $filedundername,$fiidentificationqualifier,$fiidentifiedby,$fiidentifiedbyid$fideterminertext,$fiannotationtext,$fidateidentified,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
+   $filedundername,$fiidentificationqualifier,$fiidentifiedby,$fiidentifiedbyid,$fideterminertext,$fiannotationtext,$fidateidentified,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
    $publication,$page,$datepublished,$isfragment,$habitat,$frequency,$phenology,$verbatimelevation,$minelevation,$maxelevation,
