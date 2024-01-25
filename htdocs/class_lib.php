@@ -2121,37 +2121,9 @@ function ingestCollectionObject() {
       if ($date->isBadValue()) {
          $fail = true;
          $feedback .= "Invalid date format or value: " . $dateidentified;
-    } else {
+      } else {
          $dateidentifiedformatted = $date->getDate();
          $dateidentifiedprecision = $date->getDatePrecision();
-    }
-
-    if ($fidateidentified=='') {
-       $fidateidentified = null;
-       $fidateidentifiedformatted=null;
-       $dfidateidentifiedprecision = 1;
-    } else {
-       $date = new DateWithPrecision($fidateidentified);
-       if ($date->isBadValue()) {
-          $fail = true;
-          $feedback .= "Invalid date format or value: " . $fidateidentified;
-     } else {
-          $fidateidentifiedformatted = $date->getDate();
-          $fidateidentifiedprecision = $date->getDatePrecision();
-     }
-
-     if ($label_dateidentified=='') {
-        $label_dateidentified = null;
-        $label_dateidentifiedformatted=null;
-        $label_dateidentifiedprecision = 1;
-     } else {
-        $date = new DateWithPrecision($label_dateidentified);
-        if ($date->isBadValue()) {
-           $fail = true;
-           $feedback .= "Invalid date format or value: " . $label_dateidentified;
-      } else {
-           $label_dateidentifiedformatted = $date->getDate();
-           $label_dateidentifiedprecision = $date->getDatePrecision();
       }
 
       // if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dateidentified)) {
@@ -2172,6 +2144,39 @@ function ingestCollectionObject() {
       //    }
       // }
    }
+
+   $fidateidentifiedformatted=null;
+   if ($fidateidentified=='') {
+      $fidateidentified = null;
+      $fidateidentifiedformatted=null;
+      $dfidateidentifiedprecision = 1;
+   } else {
+      $date = new DateWithPrecision($fidateidentified);
+      if ($date->isBadValue()) {
+         $fail = true;
+         $feedback .= "Invalid date format or value: " . $fidateidentified;
+      } else {
+         $fidateidentifiedformatted = $date->getDate();
+         $fidateidentifiedprecision = $date->getDatePrecision();
+      }
+    }
+
+    $label_dateidentifiedformatted=null;
+    if ($label_dateidentified=='') {
+       $label_dateidentified = null;
+       $label_dateidentifiedformatted=null;
+       $label_dateidentifiedprecision = 1;
+    } else {
+       $date = new DateWithPrecision($label_dateidentified);
+       if ($date->isBadValue()) {
+          $fail = true;
+          $feedback .= "Invalid date format or value: " . $label_dateidentified;
+       } else {
+          $label_dateidentifiedformatted = $date->getDate();
+          $label_dateidentifiedprecision = $date->getDatePrecision();
+       }
+    }
+
    if ($specimenremarks=='') { $specimenremarks = null; }
    if ($specimendescription=='') { $specimendescription = null; }
    if ($itemdescription=='') { $itemdescription = null; }
