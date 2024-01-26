@@ -296,6 +296,23 @@ function form() {
    				}
    			});
 
+        function setNamesToFiledUnder() {
+          var fun = dijit.byId("filedundername");
+          var fun_value = fun.get("value");
+          var curr = dijit.byId("currentdetermination");
+          var curr_value = curr.get("value");
+          var label = dijit.byId("label_name");
+          var label_value = label.get("value");
+
+          if (curr_value == null || curr_value == "") {
+            curr.set("value", fun_value);
+          }
+
+          if (label_value == null || label_value == "") {
+            label.set("value", fun_value);
+          }
+        }
+
         </script>
    ';
 
@@ -630,6 +647,9 @@ function selectAcronym($field,$default) {
 }
 
 function selectCurrentID($field,$label,$required='false') {
+   if ($field=="filedundername") {
+      $onchangeval = "onchange='setNamesToFiledUnder();'";
+   }
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
    $width = BASEWIDTH - 3;
@@ -637,7 +657,7 @@ function selectCurrentID($field,$label,$required='false') {
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
     style='width: ".$width."em; border-color: blue; '
-	searchAttr='name' value='' onchange='alert();'>
+	searchAttr='name' value='' $onchangeval>
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
       onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
