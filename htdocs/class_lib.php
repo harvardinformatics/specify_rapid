@@ -3107,12 +3107,12 @@ function ingestCollectionObject() {
        $isCurrent=0;
        $isLabel=0;
        if ($filedundername==$currentdetermination && !$identifiedby && !$determinertext && !$annotationtext && !$dateidentified) {
-        $isCurrent=1;
+        $isCurrent = 1;
         $currentdetermination = null; // clear so the addition det won't be created
        }
        if ($filedundername==$label_name && !$label_identifiedby && !$label_determinertext && !$label_annotationtext && !$label_dateidentified) {
-        $isLabel=1;
-        $label_name=null; // clear so the addition det won't be created
+        $isLabel = 1;
+        $label_name = null; // clear so the addition det won't be created
        }
 
          $taxonid = null;

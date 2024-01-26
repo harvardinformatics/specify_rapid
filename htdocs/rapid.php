@@ -297,6 +297,7 @@ function form() {
    			});
 
         function setNamesToFiledUnder() {
+          alert("in setNamesToFiledUnder");
           var fun = dijit.byId("filedundername");
           var fun_value = fun.get("value");
           var curr = dijit.byId("currentdetermination");
