@@ -1908,7 +1908,7 @@ function ingestCollectionObject() {
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$annotationtext,$seriesid,$seriestype,
-   $label_name, $label_idqualifier, $label_identifiedby, $label_identifiedbyid, $label_determinertext, $label_annotationtext, $label_dateidentified;
+   $label_name, $label_idqualifier, $label_identifiedby, $label_identifiedbyid, $label_determinertext, $label_annotationtext, $label_dateidentified, $label_determinationid;
 
    $fail = false;
    $feedback = "";
@@ -1923,6 +1923,9 @@ function ingestCollectionObject() {
    }
    if (strlen(trim($currentdeterminationid)) > 0) {
      $currentdetermination = $currentdeterminationid;
+   }
+   if (strlen(trim($label_determinationid)) > 0) {
+     $label_name = $label_determinationid;
    }
 
    // Test for required elements:
@@ -1998,6 +2001,26 @@ function ingestCollectionObject() {
       }
    }
    // handle nulls
+   if ($fiidentificationqualifier=='') { $fiidentificationqualifier = null; }
+   if ($fiidentifiedby=='') { $fiidentifiedby = null; }
+   if ($fiannotationtext=='') { $fiannotationtext = null; }
+   if ($fidateidentified=='') { $fidateidentified = null; }
+   if ($fideterminertext=='') { $fideterminertext = null; }
+
+   if ($currentdetermination=='') { $currentdetermination = null; }
+   if ($identificationqualifier=='') { $identificationqualifier = null; }
+   if ($identifiedby=='') { $identifiedby = null; }
+   if ($determinertext=='') { $determinertext = null; }
+   if ($annotationtext=='') { $annotationtext = null; }
+   if ($dateidentified=='') { $dateidentified = null; }
+
+   if ($label_name=='') { $label_name = null; }
+   if ($label_idqualifier=='') { $label_idqualifier = null; }
+   if ($label_identifiedby=='') { $label_identifiedby = null; }
+   if ($label_annotationtext=='') { $label_annotationtext = null; }
+   if ($label_dateidentified=='') { $label_dateidentified = null; }
+   if ($label_determinertext=='') { $label_determinertext = null; }
+
    if ($collectors=='') { $collectors = null; }
    if ($collectorsid=='') { $collectorsid = null; }
    if ($etal=='') { $etal = null; }
@@ -2006,6 +2029,7 @@ function ingestCollectionObject() {
    if ($accessionnumber=='') { $accessionnumber = null; }
    if ($provenance=='') { $provenance = null; }
    if ($verbatimdate=='') { $verbatimdate = null; }
+
    if ($datecollected=='') {
       $datecollected = null;
       $startdate = null;
@@ -2056,9 +2080,6 @@ function ingestCollectionObject() {
    }
 
    if ($herbariumacronym=='') { $herbariumacronym = null; }
-   if ($fiidentificationqualifier=='') { $fiidentificationqualifier = null; }
-   if ($currentdetermination=='') { $currentdetermination = null; }
-   if ($identificationqualifier=='') { $identificationqualifier = null; }
    if ($verbatimlat=='') { $verbatimlat = null; }
    if ($verbatimlong=='') { $verbatimlong = null; }
    if ($decimallat=='') { $decimallat = null; }
@@ -2100,9 +2121,6 @@ function ingestCollectionObject() {
    if ($verbatimelevation=='') { $verbatimelevation = null; }
    if ($minelevation=='') { $minelevation = null; }
    if ($maxelevation=='') { $maxelevation = null; }
-   if ($identifiedby=='') { $identifiedby = null; }
-   if ($determinertext=='') { $determinertext = null; }
-   if ($annotationtext=='') { $annotationtext = null; }
    if ($container=='') { $container = null; }
    if ($collectingtrip=='') { $collectingtrip = null; }
    if ($storagelocation=='') { $storagelocation = null; }
@@ -2111,12 +2129,10 @@ function ingestCollectionObject() {
    if ($exsiccati=='') { $exsiccati = null; }
    if ($fascicle=='') { $fascicle = null; }
    if ($exsiccatinumber=='') { $exsiccatinumber = null; }
+
    $dateidentifiedformatted=null;
-   if ($dateidentified=='') {
-      $dateidentified = null;
-      $dateidentifiedformatted=null;
-      $dateidentifiedprecision = 1;
-   } else {
+   $dateidentifiedprecision = 1;
+   if ($dateidentified) {
       $date = new DateWithPrecision($dateidentified);
       if ($date->isBadValue()) {
          $fail = true;
@@ -2146,11 +2162,8 @@ function ingestCollectionObject() {
    }
 
    $fidateidentifiedformatted=null;
-   if ($fidateidentified=='') {
-      $fidateidentified = null;
-      $fidateidentifiedformatted=null;
-      $fidateidentifiedprecision = 1;
-   } else {
+   $fidateidentifiedprecision = 1;
+   if ($fidateidentified) {
       $date = new DateWithPrecision($fidateidentified);
       if ($date->isBadValue()) {
          $fail = true;
@@ -2162,11 +2175,8 @@ function ingestCollectionObject() {
     }
 
     $label_dateidentifiedformatted=null;
-    if ($label_dateidentified=='') {
-       $label_dateidentified = null;
-       $label_dateidentifiedformatted=null;
-       $label_dateidentifiedprecision = 1;
-    } else {
+    $label_dateidentifiedprecision = 1;
+    if ($label_dateidentified) {
        $date = new DateWithPrecision($label_dateidentified);
        if ($date->isBadValue()) {
           $fail = true;
@@ -2255,6 +2265,12 @@ function ingestCollectionObject() {
       $df.= "specimenremarks=[$specimenremarks] ";
       $df.= "specimendescription=[$specimendescription] ";
       $df.= "itemdescription=[$itemdescription] ";
+      $df.= "label_name=[$label_name] ";  // required
+      $df.= "label_idqualifier=[$label_idqualifier] ";
+      $df.= "label_identifiedby=[$label_identifiedby] ";
+      $df.= "label_determinertext=[$label_determinertext] ";
+      $df.= "label_annotationtext=[$label_annotationtext] ";
+      $df.= "label_dateidentified=[$label_dateidentified] ";
    }
 
    $link = "";
@@ -3341,7 +3357,7 @@ function ingestCollectionObject() {
                             " values (?,?,?,?,?,?,?,1,0,0,0,now(),0,4,?,?) ";
            $statement = $connection->prepare($sql);
            if ($statement) {
-              $statement->bind_param('iiisisiss', $taxonid, $fragmentid, $currentuserid, $label_identificationqualifier, $determinerid, $label_dateidentifiedformatted, $label_dateidentifiedprecision, $label_determinertext, $label_annotationtext);
+              $statement->bind_param('iiisisiss', $taxonid, $fragmentid, $currentuserid, $label_idqualifier, $determinerid, $label_dateidentifiedformatted, $label_dateidentifiedprecision, $label_determinertext, $label_annotationtext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";
