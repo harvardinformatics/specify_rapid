@@ -3061,16 +3061,6 @@ function ingestCollectionObject() {
          }
       }
 
-      $namesidentical = FALSE;
-      if ($filedundername==$currentdetermination) {
-         // See BugID: 588 if both names are the same, only add filed under, and mark it as current.
-         $namesidentical = TRUE;
-         // Consequences:  If the names are the same: Create one record with a determiner,
-         //    date determined, filed under flag, and current flag set.
-         // If the names are different, create two records, one filed under name without
-         //    a determiner, and one current name with a determier and date determined.
-      }
-
       if (strlen(trim($fiidentifiedbyid)) > 0) {
         $identifiedby = $fiidentifiedbyid;
       }
@@ -3109,10 +3099,21 @@ function ingestCollectionObject() {
         }
       }
 
-      if (!$fail) {
+      if (!$fail && $filedundername) {
        // Filed under name
-       // Add only if there are different filed under and current determination names.
-       if ($namesidentical===FALSE) {
+
+       // Check other name fields to see if we should combine into one record
+       $isFiledUnder=1;
+       $isCurrent=0;
+       $isLabel=0;
+       if ($filedundername==$currentdetermination && !$identifiedby && !$determinertext && !$annotationtext && !$dateidentified) {
+        $isCurrent=1;
+        $currentdetermination = null; // clear so the addition det won't be created
+       }
+       if ($filedundername==$label_name && !$label_identifiedby && !$label_determinertext && !$label_annotationtext && !$label_dateidentified) {
+        $isLabel=1;
+        $label_name=null; // clear so the addition det won't be created
+       }
 
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $filedundername )) {
@@ -3146,22 +3147,17 @@ function ingestCollectionObject() {
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
 
-         // yesno1 = isLabel (no)
-         // yesno2 = isFragment (of type) (no)
-         // yesno3 = isFiledUnder (yes)
-         // iscurrent = isCurrent (no/yes)  // no if current det is supplied, yes if current det and filed under are the same.
-         $iscurrent = 0;
-         if ($namesidentical===TRUE) {
-            // Leaving this in, but we shouldn't end up in this block with the current logic.
-            $iscurrent = 1;
-         }
+         // yesno1 = isLabel
+         // yesno2 = isFragment (of type)
+         // yesno3 = isFiledUnder
+         // iscurrent = isCurrent
 
          $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, " .
                  " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid,determinerid,text1,text2,determineddate,determineddateprecision) " .
-                 " values (?,?,?,?,0,0,1,?,now(),0,4,?,?,?,?,?) ";
+                 " values (?,?,?,?,?,0,?,?,now(),0,4,?,?,?,?,?) ";
          $statement = $connection->prepare($sql);
          if ($statement) {
-            $statement->bind_param('iiisiisssi', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$iscurrent,$determinerid,$fideterminertext,$fiannotationtext,$fidateidentifiedformatted,$fidateidentifiedprecision);
+            $statement->bind_param('iiisiiiisssi', $taxonid,$fragmentid,$currentuserid,$fiidentificationqualifier,$isLabel,$isFiledUnder,$isCurrent,$determinerid,$fideterminertext,$fiannotationtext,$fidateidentifiedformatted,$fidateidentifiedprecision);
             if ($statement->execute()) {
                $determinationid = $statement->insert_id;
                $adds .= "det=[$determinationid]";
@@ -3174,10 +3170,9 @@ function ingestCollectionObject() {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
          }
-        }
       }
 
-      if (!$fail) {
+      if (!$fail && $currentdetermination) {
          // Current determination
          // Always add.  May also be filed under name.
          $taxonid = null;
@@ -3216,7 +3211,6 @@ function ingestCollectionObject() {
            $identifiedby = $identifiedbyid;
          }
 
-
          $determinerid = null;
          if (strlen(trim($labelidentifiedby))>0) {
            if (preg_match("/^[0-9]+$/", $identifiedby)) {
@@ -3251,23 +3245,27 @@ function ingestCollectionObject() {
            }
          }
 
-
          if (!$fail) {
-           // yesno1 = isLabel (user)
-           $islabel = 0;
-           // yesno2 = isFragment (of type) (no)
-           // yesno3 = isFiledUnder (no) unless namesidentical, then (yes)
-           $isfiledunder = 0;
-           if ($namesidentical===TRUE) {
-              $isfiledunder = 1;
+
+           // Check other name fields to see if we should combine into one record
+           $isFiledUnder=0;
+           $isCurrent=1;
+           $isLabel=0;
+           if ($currentname==$label_name && !$label_identifiedby && !$label_determinertext && !$label_annotationtext && !$label_dateidentified) {
+            $isLabel=1;
+            $label_name=null; // clear so the addition det won't be created
            }
-           // iscurrent = isCurrent (yes)
+
+           // yesno1 = isLabel
+           // yesno2 = isFragment (of type)
+           // yesno3 = isFiledUnder
+           // iscurrent = isCurrent
            $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
                             " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1, text2) " .
-                            " values (?,?,?,?,?,?,?,?,0,?,1,now(),0,4,?,?) ";
+                            " values (?,?,?,?,?,?,?,?,0,?,?,now(),0,4,?,?) ";
            $statement = $connection->prepare($sql);
            if ($statement) {
-              $statement->bind_param('iiisisiiiss', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $islabel, $isfiledunder, $determinertext, $annotationtext);
+              $statement->bind_param('iiisisiiiiss', $taxonid, $fragmentid, $currentuserid, $identificationqualifier, $determinerid, $dateidentifiedformatted, $dateidentifiedprecision, $isLabel, $isFiledUnder, $isCurrent, $determinertext, $annotationtext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";
