@@ -297,20 +297,16 @@ function form() {
    			});
 
         function setNamesToFiledUnder() {
-          alert("in setNamesToFiledUnder");
           var fun = dijit.byId("filedundername");
-          var fun_value = fun.get("value");
           var curr = dijit.byId("currentdetermination");
-          var curr_value = curr.get("value");
           var label = dijit.byId("label_name");
-          var label_value = label.get("value");
 
-          if (curr_value == null || curr_value == "") {
-            curr.set("value", fun_value);
+          if (curr.value == null || curr.value == "") {
+            curr.set("value", fun.value);
           }
 
-          if (label_value == null || label_value == "") {
-            label.set("value", fun_value);
+          if (label.value == null || label.value == "") {
+            label.set("value", fun.value);
           }
         }
 
