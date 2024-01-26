@@ -3165,7 +3165,7 @@ function ingestCollectionObject() {
         }
       }
 
-      if (!$fail && $label_name) {
+      if (!$fail) {
          // Current determination
          // Always add.  May also be filed under name.
          $taxonid = null;
@@ -3273,7 +3273,7 @@ function ingestCollectionObject() {
       }
 
 
-      if (!$fail) {
+      if (!$fail && $label_name) {
          // Label determination
          // Always add.
          $taxonid = null;
