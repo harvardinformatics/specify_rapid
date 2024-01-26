@@ -2006,9 +2006,9 @@ function ingestCollectionObject() {
    if ($fiannotationtext=='') { $fiannotationtext = null; }
    if ($fidateidentified=='') { $fidateidentified = null; }
    if ($fideterminertext=='') { $fideterminertext = null; }
-   if (!$filedundername && ($fiidentificationqualifier || $fiidentifiedby || $fideterminertext || $fiannotationtext || $fidateidentified)) {
+   if (!$filedundername && ($fiidentifiedby || $fideterminertext || $fiannotationtext || $fidateidentified)) {
       $fail = true;
-      $feedback .= "Filed under name is empty but other current det fields are populated";
+      $feedback .= "Filed under name is empty but other current det fields are populated. ";
    }
 
    if ($currentdetermination=='') { $currentdetermination = null; }
@@ -2017,9 +2017,9 @@ function ingestCollectionObject() {
    if ($determinertext=='') { $determinertext = null; }
    if ($annotationtext=='') { $annotationtext = null; }
    if ($dateidentified=='') { $dateidentified = null; }
-   if (!$currentdetermination && ($identificationqualifier || $identifiedby || $determinertext || $annotationtext || $dateidentified)) {
+   if (!$currentdetermination && ($identifiedby || $determinertext || $annotationtext || $dateidentified)) {
       $fail = true;
-      $feedback .= "Current name is empty but other current det fields are populated";
+      $feedback .= "Current name is empty but other current det fields are populated. ";
    }
 
    if ($label_name=='') { $label_name = null; }
@@ -2028,9 +2028,9 @@ function ingestCollectionObject() {
    if ($label_annotationtext=='') { $label_annotationtext = null; }
    if ($label_dateidentified=='') { $label_dateidentified = null; }
    if ($label_determinertext=='') { $label_determinertext = null; }
-   if (!$label_name && ($label_idqualifier || $label_identifiedby || $label_annotationtext || $label_dateidentified || $label_determinertext)) {
+   if (!$label_name && ($label_identifiedby || $label_annotationtext || $label_dateidentified || $label_determinertext)) {
       $fail = true;
-      $feedback .= "Label name is empty but other label det fields are populated";
+      $feedback .= "Label name is empty but other label det fields are populated. ";
    }
 
    if ($collectors=='') { $collectors = null; }
