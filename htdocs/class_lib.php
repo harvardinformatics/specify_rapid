@@ -2149,7 +2149,7 @@ function ingestCollectionObject() {
    if ($fidateidentified=='') {
       $fidateidentified = null;
       $fidateidentifiedformatted=null;
-      $dfidateidentifiedprecision = 1;
+      $fidateidentifiedprecision = 1;
    } else {
       $date = new DateWithPrecision($fidateidentified);
       if ($date->isBadValue()) {
@@ -3149,7 +3149,7 @@ function ingestCollectionObject() {
         }
       }
 
-      if (!$fail) {
+      if (!$fail && $label_name) {
          // Current determination
          // Always add.  May also be filed under name.
          $taxonid = null;

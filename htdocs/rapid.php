@@ -335,7 +335,7 @@ function form() {
    selectCurrentID("filedundername","Filed under name",'true');   // filed under
    if(inProfile($profile, 'fiidentificationqualifier','main')) { fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26); }
    if(inProfile($profile, 'fiidentifiedby','main')) { selectCollectorsID("fiidentifiedby","Identified by"); } // for current id
-   if(inProfile($profile, 'fideterminertext','main')) {field ("fideterminertext", "Identified by (text)"); }
+   if(inProfile($profile, 'fideterminertext','main')) {field ("fideterminertext", "Ident by (text)"); }
    if(inProfile($profile, 'fidateidentified','main')) {field ("fidateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
    if(inProfile($profile, 'fiannotationtext','main')) {field ("fiannotationtext", "Annotation text"); }
 
@@ -357,14 +357,14 @@ function form() {
    if(inProfile($profile, 'currentdetermination','main')) { selectCurrentID("currentdetermination","Current Id");  }  // current id
    if(inProfile($profile, 'identificationqualifier','main')) { fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26); }
    if(inProfile($profile, 'identifiedby','main')) { selectCollectorsID("identifiedby","Identified by"); } // for current id
-   if(inProfile($profile, 'determinertext','main')) {field ("determinertext", "Identified by (text)"); }
+   if(inProfile($profile, 'determinertext','main')) {field ("determinertext", "Ident by (text)"); }
    if(inProfile($profile, 'dateidentified','main')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
    if(inProfile($profile, 'annotationtext','main')) {field ("annotationtext", "Annotation text"); }
 
    if(inProfile($profile, 'label_name','main')) { selectCurrentID("label_name","Label Det");  }  // current id
    if(inProfile($profile, 'label_identificationqualifier','main')) { fieldselectpicklist("label_identificationqualifier",'Id qualifier (label)','','false','label_idqualifierpl',26); }
    if(inProfile($profile, 'label_identifiedby','main')) { selectCollectorsID("label_identifiedby","Identified by"); } // for current id
-   if(inProfile($profile, 'label_determinertext','main')) {field ("label_determinertext", "Identified by (text)"); }
+   if(inProfile($profile, 'label_determinertext','main')) {field ("label_determinertext", "Ident by (text)"); }
    if(inProfile($profile, 'label_dateidentified','main')) {field ("label_dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
    if(inProfile($profile, 'label_annotationtext','main')) {field ("label_annotationtext", "Annotation text"); }
 
