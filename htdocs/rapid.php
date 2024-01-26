@@ -361,7 +361,7 @@ function form() {
    if(inProfile($profile, 'dateidentified','main')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
    if(inProfile($profile, 'annotationtext','main')) {field ("annotationtext", "Annotation text"); }
 
-   if(inProfile($profile, 'label_name','main')) { selectCurrentID("label_name","Label Det");  }  // current id
+   if(inProfile($profile, 'label_name','main')) { selectCurrentID("label_name","Label Id");  }  // current id
    if(inProfile($profile, 'label_identificationqualifier','main')) { fieldselectpicklist("label_identificationqualifier",'Id qualifier (label)','','false','label_idqualifierpl',26); }
    if(inProfile($profile, 'label_identifiedby','main')) { selectCollectorsID("label_identifiedby","Identified by"); } // for current id
    if(inProfile($profile, 'label_determinertext','main')) {field ("label_determinertext", "Ident by (text)"); }
@@ -637,7 +637,7 @@ function selectCurrentID($field,$label,$required='false') {
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
     style='width: ".$width."em; border-color: blue; '
-	searchAttr='name' value='' >
+	searchAttr='name' value='' onchange='alert();'>
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
       onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
