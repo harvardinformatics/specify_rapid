@@ -302,11 +302,13 @@ function form() {
           var label = dijit.byId("label_name");
 
           if (curr.value == null || curr.value == "") {
-            curr.set("value", fun.value);
+            curr.displayValue = fun.displayValue;
+            curr.value = fun.value;
           }
 
           if (label.value == null || label.value == "") {
-            label.set("value", fun.value);
+            label.displayValue = fun.displayValue;
+            label.value = fun.value;
           }
         }
 
