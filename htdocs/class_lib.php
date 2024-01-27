@@ -1918,14 +1918,24 @@ function ingestCollectionObject() {
      $feedback = "Data truncation: $truncated";
    }
 
+   // Use IDs instead of text field if present
    if (strlen(trim($filedundernameid)) > 0) {
      $filedundername = $filedundernameid;
+   }
+   if (strlen(trim($fiidentifiedbyid)) > 0) {
+     $fiidentifiedby = $fiidentifiedbyid;
    }
    if (strlen(trim($currentdeterminationid)) > 0) {
      $currentdetermination = $currentdeterminationid;
    }
+   if (strlen(trim($identifiedbyid)) > 0) {
+     $identifiedby = $identifiedbyid;
+   }
    if (strlen(trim($label_determinationid)) > 0) {
      $label_name = $label_determinationid;
+   }
+   if (strlen(trim($label_identifiedbyid)) > 0) {
+     $label_identifiedby = $label_identifiedbyid;
    }
 
    // Test for required elements:
@@ -3052,10 +3062,6 @@ function ingestCollectionObject() {
          }
       }
 
-      if (strlen(trim($fiidentifiedbyid)) > 0) {
-        $identifiedby = $fiidentifiedbyid;
-      }
-
       $determinerid = null;
       if (strlen(trim($fiidentifiedby))>0) {
         if (preg_match("/^[0-9]+$/", $fiidentifiedby)) {
@@ -3090,9 +3096,8 @@ function ingestCollectionObject() {
         }
       }
 
+      // Filed under name
       if (!$fail && $filedundername) {
-       // Filed under name
-
        // Check other name fields to see if we should combine into one record
        $isFiledUnder=1;
        $isCurrent=0;
@@ -3163,9 +3168,8 @@ function ingestCollectionObject() {
          }
       }
 
+      // Current determination
       if (!$fail && $currentdetermination) {
-         // Current determination
-         // Always add.  May also be filed under name.
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $currentdetermination )) {
             $sql = "select taxonid from taxon where taxonid = ? ";
@@ -3196,10 +3200,6 @@ function ingestCollectionObject() {
          } else {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
-         }
-
-         if (strlen(trim($identifiedbyid)) > 0) {
-           $identifiedby = $identifiedbyid;
          }
 
          $determinerid = null;
@@ -3242,7 +3242,7 @@ function ingestCollectionObject() {
            $isFiledUnder=0;
            $isCurrent=1;
            $isLabel=0;
-           if ($currentname==$label_name && !$label_identifiedby && !$label_determinertext && !$label_annotationtext && !$label_dateidentified) {
+           if ($currentdetermination==$label_name && !$label_identifiedby && !$label_determinertext && !$label_annotationtext && !$label_dateidentified) {
             $isLabel=1;
             $label_name=null; // clear so the addition det won't be created
            }
@@ -3273,9 +3273,8 @@ function ingestCollectionObject() {
 
       }
 
-
+      // Label determination
       if (!$fail && $label_name) {
-         // Label determination
          // Always add.
          $taxonid = null;
          if (preg_match("/^[0-9]+$/", $label_name )) {
@@ -3307,10 +3306,6 @@ function ingestCollectionObject() {
          } else {
             $fail = true;
             $feedback.= "Query error: " . $connection->error . " " . $sql;
-         }
-
-         if (strlen(trim($label_identifiedbyid)) > 0) {
-           $label_identifiedby = $label_identifiedbyid;
          }
 
          $determinerid = null;
@@ -3349,10 +3344,10 @@ function ingestCollectionObject() {
 
 
          if (!$fail) {
-           // yesno1 = isLabel (user) (yes)
-           // yesno2 = isFragment (of type) (no)
-           // yesno3 = isFiledUnder (no)
-           // iscurrent = isCurrent (no)
+           // yesno1 = isLabel (user)
+           // yesno2 = isFragment (of type)
+           // yesno3 = isFiledUnder
+           // iscurrent = isCurrent
            $sql = "insert into determination (taxonid, fragmentid,createdbyagentid, qualifier, determinerid, determineddate, determineddateprecision, " .
                             " yesno1, yesno2, yesno3, iscurrent,timestampcreated, version,collectionmemberid, text1, text2) " .
                             " values (?,?,?,?,?,?,?,1,0,0,0,now(),0,4,?,?) ";
