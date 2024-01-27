@@ -302,12 +302,16 @@ function form() {
           var label = dijit.byId("label_name");
 
           if (curr.value == null || curr.value == "") {
-            curr.store.fetch({query:{name:fun._lastQuery}});
+            //curr.store.fetch({query:{name:fun._lastQuery}});
+            curr._items=fun._items;
+            curr._itemsByIdentity=fun._itemsByIdentity;
             curr.set("value", fun.get("value"));
           }
 
           if (label.value == null || label.value == "") {
-            label.store.fetch({query:{name:fun._lastQuery}});
+            //label.store.fetch({query:{name:fun._lastQuery}});
+            label._items=fun._items;
+            label._itemsByIdentity=fun._itemsByIdentity;
             label.set("value", fun.get("value"));
           }
         }
