@@ -1991,15 +1991,6 @@ function ingestCollectionObject() {
       $feedback .= "Barcode [$barcode] is invalid.  Must be zero padded with exactly 8 digits: ";
    }
 
-   // handle special case of filed under name with blank current id
-   if ($currentdetermination=='') {
-      // set a blank current determination to the filed under name
-      $currentdetermination = $filedundername;
-      // likewise if the identification qualifier is blank
-      if ($identificationqualifier=='') {
-         $identificationqualifier = $fiidentificationqualifier;
-      }
-   }
    // handle nulls
    if ($fiidentificationqualifier=='') { $fiidentificationqualifier = null; }
    if ($fiidentifiedby=='') { $fiidentifiedby = null; }
