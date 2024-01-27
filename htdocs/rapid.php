@@ -302,13 +302,13 @@ function form() {
           var label = dijit.byId("label_name");
 
           if (curr.value == null || curr.value == "") {
-            curr.displayedValue = fun.displayedValue;
-            curr.value = fun.value;
+            curr.store.fetch({query:{name:fun._lastQuery}});
+            curr.set("value", fun.get("value"))
           }
 
           if (label.value == null || label.value == "") {
-            label.displayedValue = fun.displayedValue;
-            label.value = fun.value;
+            label.store.fetch({query:{name:fun._lastQuery}});
+            label.set("value", fun.get("value"))
           }
         }
 
