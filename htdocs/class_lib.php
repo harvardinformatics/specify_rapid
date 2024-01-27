@@ -1908,7 +1908,7 @@ function ingestCollectionObject() {
    $identifiedby,$identifiedbyid,$dateidentified,$specimenremarks,$specimendescription,$itemdescription,$container,$collectingtrip,$utmzone,$utmeasting,$utmnorthing,
    $project, $storagelocation, $storage,
    $exsiccati,$fascicle,$exsiccatinumber, $host, $substrate, $typeconfidence, $determinertext,$annotationtext,$seriesid,$seriestype,
-   $label_name, $label_idqualifier, $label_identifiedby, $label_identifiedbyid, $label_determinertext, $label_annotationtext, $label_dateidentified, $label_determinationid;
+   $label_name, $label_identificationqualifier, $label_identifiedby, $label_identifiedbyid, $label_determinertext, $label_annotationtext, $label_dateidentified, $label_determinationid;
 
    $fail = false;
    $feedback = "";
@@ -2024,7 +2024,7 @@ function ingestCollectionObject() {
    }
 
    if ($label_name=='') { $label_name = null; }
-   if ($label_idqualifier=='') { $label_idqualifier = null; }
+   if ($label_identificationqualifier=='') { $label_identificationqualifier = null; }
    if ($label_identifiedby=='') { $label_identifiedby = null; }
    if ($label_annotationtext=='') { $label_annotationtext = null; }
    if ($label_dateidentified=='') { $label_dateidentified = null; }
@@ -2279,7 +2279,7 @@ function ingestCollectionObject() {
       $df.= "specimendescription=[$specimendescription] ";
       $df.= "itemdescription=[$itemdescription] ";
       $df.= "label_name=[$label_name] ";  // required
-      $df.= "label_idqualifier=[$label_idqualifier] ";
+      $df.= "label_identificationqualifier=[$label_identificationqualifier] ";
       $df.= "label_identifiedby=[$label_identifiedby] ";
       $df.= "label_determinertext=[$label_determinertext] ";
       $df.= "label_annotationtext=[$label_annotationtext] ";
@@ -3354,7 +3354,7 @@ function ingestCollectionObject() {
                             " values (?,?,?,?,?,?,?,1,0,0,0,now(),0,4,?,?) ";
            $statement = $connection->prepare($sql);
            if ($statement) {
-              $statement->bind_param('iiisisiss', $taxonid, $fragmentid, $currentuserid, $label_idqualifier, $determinerid, $label_dateidentifiedformatted, $label_dateidentifiedprecision, $label_determinertext, $label_annotationtext);
+              $statement->bind_param('iiisisiss', $taxonid, $fragmentid, $currentuserid, $label_identificationqualifier, $determinerid, $label_dateidentifiedformatted, $label_dateidentifiedprecision, $label_determinertext, $label_annotationtext);
               if ($statement->execute()) {
                  $determinationid = $statement->insert_id;
                  $adds .= "det=[$determinationid]";

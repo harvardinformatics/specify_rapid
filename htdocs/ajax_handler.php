@@ -202,7 +202,7 @@ if ($connection && $authenticated) {
         	@$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
         	@$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
           @$label_name= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['label_name']),0,huh_taxon::FULLNAME_SIZE);
-          @$label_idqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['label_idqualifier']),0,huh_determination::QUALIFIER_SIZE);
+          @$label_identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['label_identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
           @$label_identifiedby= substr(preg_replace('/[^0-9]/','',$_GET['label_identifiedby']),0,huh_determination::DETERMINERID_SIZE);
           @$label_determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['label_determinertext']),0,huh_determination::TEXT1_SIZE);
           @$label_annotationtext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['label_annotationtext']),0,huh_determination::TEXT2_SIZE);
@@ -236,7 +236,7 @@ if ($connection && $authenticated) {
         	if ($prepmethod!=$_GET['prepmethod']) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
         	if ($format!=$_GET['format']) { $truncation = true; $truncated .= "format : [$format] "; }
           if ($label_name!=$_GET['label_name']) { $truncation = true; $truncated .= "label_name : [$label_name] "; }
-          if ($label_idqualifier!=$_GET['label_idqualifier']) { $truncation = true; $truncated .= "label_idqualifier : [$label_idqualifier] "; }
+          if ($label_identificationqualifier!=$_GET['label_identificationqualifier']) { $truncation = true; $truncated .= "label_identificationqualifier : [$label_identificationqualifier] "; }
           if ($label_identifiedby!=$_GET['label_identifiedby']) { $truncation = true; $truncated .= "label_identifiedby : [$label_identifiedby] "; }
           if ($label_determinertext!=$_GET['label_determinertext']) { $truncation = true; $truncated .= "label_determinertext : [$label_determinertext] "; }
           if ($label_annotationtext!=$_GET['label_annotationtext']) { $truncation = true; $truncated .= "label_annotationtext : [$label_annotationtext] "; }
