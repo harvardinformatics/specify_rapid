@@ -3062,42 +3062,43 @@ function ingestCollectionObject() {
          }
       }
 
-      $determinerid = null;
-      if (strlen(trim($fiidentifiedby))>0) {
-        if (preg_match("/^[0-9]+$/", $fiidentifiedby)) {
-           $sql = "select distinct agentid from agent where agentid = ? ";
-           $param = "i";
-        } else {
-           $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
-           $param = "s";
-        }
-        $statement = $connection->prepare($sql);
-        if ($statement) {
-           $statement->bind_param($param,$fiidentifiedby);
-           $statement->execute();
-           $statement->bind_result($determinerid);
-           $statement->store_result();
-           if ($statement->num_rows==1) {
-              if ($statement->fetch()) {
-                 // retrieves determiner agentid
-              } else {
-                 $fail = true;
-                 $feedback.= "Query Error " . $connection->error;
-              }
-           } else {
-              $fail = true;
-              $feedback.= "No Match for agent: " . $fiidentifiedby;
-           }
-           $statement->free_result();
-           $statement->close();
-        } else {
-           $fail = true;
-           $feedback.= "Query error: " . $connection->error . " " . $sql;
-        }
-      }
-
       // Filed under name
       if (!$fail && $filedundername) {
+
+        $determinerid = null;
+        if (strlen(trim($fiidentifiedby))>0) {
+          if (preg_match("/^[0-9]+$/", $fiidentifiedby)) {
+             $sql = "select distinct agentid from agent where agentid = ? ";
+             $param = "i";
+          } else {
+             $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
+             $param = "s";
+          }
+          $statement = $connection->prepare($sql);
+          if ($statement) {
+             $statement->bind_param($param,$fiidentifiedby);
+             $statement->execute();
+             $statement->bind_result($determinerid);
+             $statement->store_result();
+             if ($statement->num_rows==1) {
+                if ($statement->fetch()) {
+                   // retrieves determiner agentid
+                } else {
+                   $fail = true;
+                   $feedback.= "Query Error " . $connection->error;
+                }
+             } else {
+                $fail = true;
+                $feedback.= "No Match for agent: " . $fiidentifiedby;
+             }
+             $statement->free_result();
+             $statement->close();
+          } else {
+             $fail = true;
+             $feedback.= "Query error: " . $connection->error . " " . $sql;
+          }
+        }
+
        // Check other name fields to see if we should combine into one record
        $isFiledUnder=1;
        $isCurrent=0;
@@ -3203,7 +3204,7 @@ function ingestCollectionObject() {
          }
 
          $determinerid = null;
-         if (strlen(trim($labelidentifiedby))>0) {
+         if (strlen(trim($identifiedby))>0) {
            if (preg_match("/^[0-9]+$/", $identifiedby)) {
               $sql = "select distinct agentid from agent where agentid = ? ";
               $param = "i";
