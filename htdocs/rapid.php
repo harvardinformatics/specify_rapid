@@ -303,16 +303,18 @@ function form() {
 
           if (curr.value == null || curr.value == "") {
             //curr.store.fetch({query:{name:fun._lastQuery}});
-            curr.store._items=fun.store._items;
-            curr.store._itemsByIdentity=fun.store._itemsByIdentity;
-            curr.set("value", fun.get("value"));
+            //curr.store._items=fun.store._items;
+            //curr.store._itemsByIdentity=fun.store._itemsByIdentity;
+            //curr.set("value", fun.get("value"));
+            dijit.byId("currentdetermination").store.fetch({query:{name:dijit.byId("filedundername")._lastQuery}, onComplete: function(items, findResult){ dijit.byId("currentdetermination").set("value",dijit.byId("filedundername").get("value"));}});
           }
 
           if (label.value == null || label.value == "") {
             //label.store.fetch({query:{name:fun._lastQuery}});
-            label.store._items=fun.store._items;
-            label.store._itemsByIdentity=fun.store._itemsByIdentity;
-            label.set("value", fun.get("value"));
+            //label.store._items=fun.store._items;
+            //label.store._itemsByIdentity=fun.store._itemsByIdentity;
+            //label.set("value", fun.get("value"));
+            dijit.byId("label_name").store.fetch({query:{name:dijit.byId("filedundername")._lastQuery}, onComplete: function(items, findResult){ dijit.byId("label_name").set("value",dijit.byId("filedundername").get("value"));}});
           }
         }
 
