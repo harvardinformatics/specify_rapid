@@ -303,12 +303,12 @@ function form() {
 
           if (curr.value == null || curr.value == "") {
             curr.store.fetch({query:{name:fun._lastQuery}});
-            curr.set("value", fun.get("value"))
+            curr.set("value", fun.get("value"));
           }
 
           if (label.value == null || label.value == "") {
             label.store.fetch({query:{name:fun._lastQuery}});
-            label.set("value", fun.get("value"))
+            label.set("value", fun.get("value"));
           }
         }
 
