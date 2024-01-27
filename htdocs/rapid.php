@@ -303,15 +303,15 @@ function form() {
 
           if (curr.value == null || curr.value == "") {
             //curr.store.fetch({query:{name:fun._lastQuery}});
-            curr._items=fun._items;
-            curr._itemsByIdentity=fun._itemsByIdentity;
+            curr.store._items=fun.store._items;
+            curr.store._itemsByIdentity=fun.store._itemsByIdentity;
             curr.set("value", fun.get("value"));
           }
 
           if (label.value == null || label.value == "") {
             //label.store.fetch({query:{name:fun._lastQuery}});
-            label._items=fun._items;
-            label._itemsByIdentity=fun._itemsByIdentity;
+            label.store._items=fun.store._items;
+            label.store._itemsByIdentity=fun.store._itemsByIdentity;
             label.set("value", fun.get("value"));
           }
         }
