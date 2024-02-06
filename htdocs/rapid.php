@@ -82,6 +82,7 @@ if ($require_authentication) {
 if ($display=="") {
    $display="mainform";
 }
+session_write_close();
 
 $apage = new Page();
 $apage->setTitle("HUH Rapid Data Entry Form");

@@ -96,6 +96,7 @@ if ($require_authentication) {
 if ($display=="") {
    $display="setup";
 }
+session_write_close();
 
 # Data Structures  *********************************
 

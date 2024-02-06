@@ -9,6 +9,7 @@
 // *******
 
 session_start();
+session_write_close();
 
 $debug = false;
 if ($debug) {
@@ -191,8 +192,8 @@ if ($connection && $authenticated) {
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
         	@$specimenremarks= substr($_GET['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
-        	@$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
-        	@$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
+        	@$specimendescription= substr($_GET['specimendescription'],0,huh_collectionobject::DESCRIPTION_SIZE);
+        	@$itemdescription= substr($_GET['itemdescription'],0,huh_fragment::DESCRIPTION_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
 			    @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
         	@$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_GET['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);

@@ -1,12 +1,13 @@
 <?php
 session_start();
+session_write_close();
 
 $debug = false;
 if ($debug) {
    echo  "[". $_SESSION["user_ticket"] . "][". $_SESSION["session_id"] ."]";
 	// See PHP documentation.
 	mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
-} else { 
+} else {
 	mysqli_report(MYSQLI_REPORT_OFF);
 }
 
@@ -55,9 +56,9 @@ if ($connection && $authenticated) {
     @$action = substr(preg_replace('/[^a-z]/','',$_POST['action']),0,50);
     $postjson = json_encode($_POST);
     $username = $_SESSION['username'];
-    if (strlen($action)==0) { 
+    if (strlen($action)==0) {
        $retval->errors .= "Logging Error: No action provided. ";
-    } else {       
+    } else {
        # log the action
        $sql = "insert into TR_ACTION_LOG (username, action, details) values (?, ?, ?)";
        $stmt = $connection->prepare($sql);
@@ -68,11 +69,11 @@ if ($connection && $authenticated) {
            $retval->errors .= "Logging Error: " . $stmt->error . "  ";
        }
        $stmt->close();
-    } 
-} else { 
+    }
+} else {
     $retval->errors .= "Logging Error: unable to connect. ";
 }
- 
+
 if ($retval->success) {
    $retval->html = "<strong>Success.</strong> Logged $action";
 } else {
