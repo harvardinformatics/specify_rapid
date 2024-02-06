@@ -539,6 +539,10 @@ function form() {
    echo "
    <script>
         function logEvent(eventaction,eventdetails){
+              if (!enableServerLog) {
+                return;
+              }
+
               if(eventdetails=='') { eventdetails = 'event'; }
               $.ajax({
                   type: 'POST',
@@ -679,6 +683,7 @@ function form() {
    //echo "</td></tr>";
 
    echo "<script>
+        var enableServerLog = false;
         var transcriptionMode = '$transcriptionMode';
         var imgsrc            = '$imgSrc';
         var re_barcode = /^[0-9]{8}$/;
