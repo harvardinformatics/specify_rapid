@@ -538,6 +538,8 @@ function form() {
    $targetwidth = $target->width;
    echo "
    <script>
+        var enableServerLog = false;
+
         function logEvent(eventaction,eventdetails){
               if (!enableServerLog) {
                 return;
@@ -683,7 +685,6 @@ function form() {
    //echo "</td></tr>";
 
    echo "<script>
-        var enableServerLog = false;
         var transcriptionMode = '$transcriptionMode';
         var imgsrc            = '$imgSrc';
         var re_barcode = /^[0-9]{8}$/;
