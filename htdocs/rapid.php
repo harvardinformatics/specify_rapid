@@ -641,9 +641,10 @@ function selectAcronym($field,$default) {
 }
 
 function selectCurrentID($field,$label,$required='false') {
-   if ($field=="filedundername") {
-      $onchangeval = "onchange='setNamesToFiledUnder();'";
-   }
+   // disabled for now, revisit in the future
+   //if ($field=="filedundername") {
+   //    $onchangeval = "onchange='setNamesToFiledUnder();'";
+   //}
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
    $width = BASEWIDTH - 3;
