@@ -74,6 +74,7 @@ if ($require_authentication) {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
          $display = 'logout';
+         $user->logout();
       }
    }
 } else {
@@ -105,7 +106,6 @@ switch ($display) {
       processspreadsheet();
       break;
    case 'logout':
-      $user->logout();
    case "logindialog":
    default:
       $email = $username;
