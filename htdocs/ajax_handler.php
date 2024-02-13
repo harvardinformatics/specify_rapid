@@ -149,16 +149,16 @@ if ($connection && $authenticated) {
         	@$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['filedundername']),0,huh_taxon::FULLNAME_SIZE);
         	@$fiidentificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['fiidentificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
           @$fiidentifiedby= substr(preg_replace('/[^0-9]/','',$_GET['fiidentifiedby']),0,huh_determination::DETERMINERID_SIZE);
-          @$fideterminertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['fideterminertext']),0,huh_determination::TEXT1_SIZE);
-          @$fiannotationtext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['fiannotationtext']),0,huh_determination::TEXT2_SIZE);
+          @$fideterminertext= substr($_GET['fideterminertext'],0,huh_determination::TEXT1_SIZE);
+          @$fiannotationtext= substr($_GET['fiannotationtext'],0,huh_determination::TEXT2_SIZE);
           @$fidateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['fidateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
 
         	@$currentdetermination= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['currentdetermination']),0,huh_taxon::FULLNAME_SIZE);
         	@$identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
         	@$identifiedby=      substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
         	@$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['determinertext']),0,huh_determination::TEXT1_SIZE);
-          @$annotationtext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['annotationtext']),0,huh_determination::TEXT2_SIZE);
-        	@$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
+          @$annotationtext= substr($_GET['annotationtext'],0,huh_determination::TEXT2_SIZE);
+        	@$dateidentified= substr($_GET['dateidentified'],0,huh_determination::DETERMINEDDATE_SIZE);
         	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
         	@$specificlocality = substr($_GET['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
         	@$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_GET['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
@@ -205,8 +205,8 @@ if ($connection && $authenticated) {
           @$label_name= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['label_name']),0,huh_taxon::FULLNAME_SIZE);
           @$label_identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['label_identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
           @$label_identifiedby= substr(preg_replace('/[^0-9]/','',$_GET['label_identifiedby']),0,huh_determination::DETERMINERID_SIZE);
-          @$label_determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['label_determinertext']),0,huh_determination::TEXT1_SIZE);
-          @$label_annotationtext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['label_annotationtext']),0,huh_determination::TEXT2_SIZE);
+          @$label_determinertext= substr($_GET['label_determinertext'],0,huh_determination::TEXT1_SIZE);
+          @$label_annotationtext= substr($_GET['label_annotationtext'],0,huh_determination::TEXT2_SIZE);
           @$label_dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['label_dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
 
         	//@$= substr(preg_replace('/[^0-9]/','',$_GET['']),0,huh_);
