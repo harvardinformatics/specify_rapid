@@ -9,6 +9,7 @@
 // *******
 
 session_start();
+session_write_close();
 
 $debug = false;
 if ($debug) {
@@ -147,11 +148,17 @@ if ($connection && $authenticated) {
         	@$provenance= substr(preg_replace('/^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_GET['provenance']),0,huh_fragment::PROVENANCE_SIZE);
         	@$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['filedundername']),0,huh_taxon::FULLNAME_SIZE);
         	@$fiidentificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['fiidentificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
+          @$fiidentifiedby= substr(preg_replace('/[^0-9]/','',$_GET['fiidentifiedby']),0,huh_determination::DETERMINERID_SIZE);
+          @$fideterminertext= substr($_GET['fideterminertext'],0,huh_determination::TEXT1_SIZE);
+          @$fiannotationtext= substr($_GET['fiannotationtext'],0,huh_determination::TEXT2_SIZE);
+          @$fidateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['fidateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
+
         	@$currentdetermination= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['currentdetermination']),0,huh_taxon::FULLNAME_SIZE);
         	@$identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
         	@$identifiedby=      substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
         	@$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['determinertext']),0,huh_determination::TEXT1_SIZE);
-        	@$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
+          @$annotationtext= substr($_GET['annotationtext'],0,huh_determination::TEXT2_SIZE);
+        	@$dateidentified= substr($_GET['dateidentified'],0,huh_determination::DETERMINEDDATE_SIZE);
         	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
         	@$specificlocality = substr($_GET['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
         	@$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_GET['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
@@ -185,16 +192,22 @@ if ($connection && $authenticated) {
         	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
         	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
         	@$specimenremarks= substr($_GET['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
-        	@$specimendescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['specimendescription']),0,huh_collectionobject::DESCRIPTION_SIZE);
-        	@$itemdescription= substr(preg_replace('/[^A-Za-z[:alpha:]0-9\- \.\,\;\:\&\'\]\[]/','',$_GET['itemdescription']),0,huh_fragment::DESCRIPTION_SIZE);
+        	@$specimendescription= substr($_GET['specimendescription'],0,huh_collectionobject::DESCRIPTION_SIZE);
+        	@$itemdescription= substr($_GET['itemdescription'],0,huh_fragment::DESCRIPTION_SIZE);
         	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
-			@$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
+			    @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
         	@$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_GET['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
         	@$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_GET['project']),0,huh_project::PROJECTNAME_SIZE);
         	@$storage= substr(preg_replace('/[^0-9]/','',$_GET['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
         	@$exsiccati= substr(preg_replace('/[^0-9]/','',$_GET['exsiccati']),0,huh_referencework::REFERENCEWORKID_SIZE);
         	@$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
         	@$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
+          @$label_name= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['label_name']),0,huh_taxon::FULLNAME_SIZE);
+          @$label_identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['label_identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
+          @$label_identifiedby= substr(preg_replace('/[^0-9]/','',$_GET['label_identifiedby']),0,huh_determination::DETERMINERID_SIZE);
+          @$label_determinertext= substr($_GET['label_determinertext'],0,huh_determination::TEXT1_SIZE);
+          @$label_annotationtext= substr($_GET['label_annotationtext'],0,huh_determination::TEXT2_SIZE);
+          @$label_dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['label_dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
 
         	//@$= substr(preg_replace('/[^0-9]/','',$_GET['']),0,huh_);
 
@@ -209,15 +222,26 @@ if ($connection && $authenticated) {
         	if ($provenance!=$_GET['provenance']) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
         	if ($filedundername!=$_GET['filedundername']) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
         	if ($fiidentificationqualifier!=$_GET['fiidentificationqualifier']) { $truncation = true; $truncated .= "fiidentificationqualifier : [$fiidentificationqualifier] "; }
+          if ($fiidentifiedby!=$_GET['fiidentifiedby']) { $truncation = true; $truncated .= "fiidentifiedby : [$fiidentifiedby] "; }
+          if ($fideterminertext!=$_GET['fideterminertext']) { $truncation = true; $truncated .= "fideterminertext : [$fideterminertext] "; }
+          if ($fiannotationtext!=$_GET['fiannotationtext']) { $truncation = true; $truncated .= "fiannotationtext : [$fiannotationtext] "; }
+          if ($fidateidentified!=$_GET['fidateidentified']) { $truncation = true; $truncated .= "fidateidentified : [$fidateidentified] "; }
         	if ($currentdetermination!=$_GET['currentdetermination']) { $truncation = true; $truncated .= "currentdetermination : [$currentdetermination] "; }
         	if ($identificationqualifier!=$_GET['identificationqualifier']) { $truncation = true; $truncated .= "identificationqualifier : [$identificationqualifier] "; }
         	if ($identifiedby!=$_GET['identifiedby']) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
         	if ($determinertext!=$_GET['determinertext']) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
+          if ($annotationtext!=$_GET['annotationtext']) { $truncation = true; $truncated .= "annotationtext : [$annotationtext] "; }
         	if ($dateidentified!=$_GET['dateidentified']) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
         	if ($highergeography!=$_GET['highergeography']) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
         	if ($specificlocality!=$_GET['specificlocality']) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
         	if ($prepmethod!=$_GET['prepmethod']) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
         	if ($format!=$_GET['format']) { $truncation = true; $truncated .= "format : [$format] "; }
+          if ($label_name!=$_GET['label_name']) { $truncation = true; $truncated .= "label_name : [$label_name] "; }
+          if ($label_identificationqualifier!=$_GET['label_identificationqualifier']) { $truncation = true; $truncated .= "label_identificationqualifier : [$label_identificationqualifier] "; }
+          if ($label_identifiedby!=$_GET['label_identifiedby']) { $truncation = true; $truncated .= "label_identifiedby : [$label_identifiedby] "; }
+          if ($label_determinertext!=$_GET['label_determinertext']) { $truncation = true; $truncated .= "label_determinertext : [$label_determinertext] "; }
+          if ($label_annotationtext!=$_GET['label_annotationtext']) { $truncation = true; $truncated .= "label_annotationtext : [$label_annotationtext] "; }
+          if ($label_dateidentified!=$_GET['label_dateidentified']) { $truncation = true; $truncated .= "label_dateidentified : [$label_dateidentified] "; }
 
         	if ($verbatimlat!=$_GET['verbatimlat']) { $truncation = true; $truncated .= "verbatimlat : [$verbatimlat] "; }
         	if ($verbatimlong!=$_GET['verbatimlong']) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }

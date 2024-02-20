@@ -88,6 +88,7 @@ if ($require_authentication) {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
          $display = 'logout';
+         $user->logout();
       }
    }
 } else {
@@ -96,6 +97,7 @@ if ($require_authentication) {
 if ($display=="") {
    $display="setup";
 }
+session_write_close();
 
 # Data Structures  *********************************
 
@@ -407,7 +409,6 @@ switch ($display) {
       doSetup();
       break;
    case 'logout':
-      $user->logout();
    case "logindialog":
    default:
       $email = $username;
@@ -537,7 +538,13 @@ function form() {
    $targetwidth = $target->width;
    echo "
    <script>
+        var enableServerLog = false;
+
         function logEvent(eventaction,eventdetails){
+              if (!enableServerLog) {
+                return;
+              }
+
               if(eventdetails=='') { eventdetails = 'event'; }
               $.ajax({
                   type: 'POST',

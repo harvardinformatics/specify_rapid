@@ -74,6 +74,7 @@ if ($require_authentication) {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
          $display = 'logout';
+         $user->logout();
       }
    }
 } else {
@@ -82,6 +83,7 @@ if ($require_authentication) {
 if ($display=="") {
    $display="mainform";
 }
+session_write_close();
 
 $apage = new Page();
 $apage->setTitle("HUH Rapid Data Entry Form");
@@ -104,7 +106,6 @@ switch ($display) {
       processspreadsheet();
       break;
    case 'logout':
-      $user->logout();
    case "logindialog":
    default:
       $email = $username;
@@ -296,6 +297,20 @@ function form() {
    				}
    			});
 
+        function setNamesToFiledUnder() {
+          var fun = dijit.byId("filedundername");
+          var curr = dijit.byId("currentdetermination");
+          var label = dijit.byId("label_name");
+
+          if (curr.value == null || curr.value == "") {
+            dijit.byId("currentdetermination").store.fetch({query:{name:dijit.byId("filedundername")._lastQuery}, onComplete: function(items, findResult){ dijit.byId("currentdetermination").set("value",dijit.byId("filedundername").get("value"));}});
+          }
+
+          if (label.value == null || label.value == "") {
+            dijit.byId("label_name").store.fetch({query:{name:dijit.byId("filedundername")._lastQuery}, onComplete: function(items, findResult){ dijit.byId("label_name").set("value",dijit.byId("filedundername").get("value"));}});
+          }
+        }
+
         </script>
    ';
 
@@ -332,29 +347,38 @@ function form() {
    echo "<table>\n";
    field ("barcode","Barcode",'','true','[0-9]{1,8}');   // not zero padded when coming off barcode scanner.
    selectAcronym("herbariumacronym",$defaultherbarium);
-   selectCurrentID("filedundername","Filed under name",'true');   // filed under
-   if(inProfile($profile, 'fiidentificationqualifier','main')) { fieldselectpicklist("fiidentificationqualifier",'Id qualifier (filed)','','false','fiidqualifierpl',26); }
    if(inProfile($profile, 'provenance','main')) { field ("provenance", "Provenance"); }
    if(inProfile($profile, 'container','main')) { selectContainerID ("container","Container"); }
    if(inProfile($profile, 'collectingtrip','main')) { selectCollectingTripID("collectingtrip","Collecting Trip"); }
+   selectCurrentID("filedundername","Filed under name",'true');   // filed under
+   if(inProfile($profile, 'fiidentificationqualifier','main')) { fieldselectpicklist("fiidentificationqualifier",'Id qualifier','','false','fiidqualifierpl',26); }
+   if(inProfile($profile, 'fiidentifiedby','main')) { selectCollectorsID("fiidentifiedby","Identified by"); } // for current id
+   if(inProfile($profile, 'fideterminertext','main')) {field ("fideterminertext", "Ident by (text)"); }
+   if(inProfile($profile, 'fidateidentified','main')) {field ("fidateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
+   if(inProfile($profile, 'fiannotationtext','main')) {field ("fiannotationtext", "Annotation text"); }
+   if(inProfile($profile, 'currentdetermination','main')) { selectCurrentID("currentdetermination","Current Id");  }  // current id
+   if(inProfile($profile, 'identificationqualifier','main')) { fieldselectpicklist("identificationqualifier",'Id qualifier','','false','idqualifierpl',26); }
+   if(inProfile($profile, 'identifiedby','main')) { selectCollectorsID("identifiedby","Identified by"); } // for current id
+   if(inProfile($profile, 'determinertext','main')) {field ("determinertext", "Ident by (text)"); }
+   if(inProfile($profile, 'dateidentified','main')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
+   if(inProfile($profile, 'annotationtext','main')) {field ("annotationtext", "Annotation text"); }
+   if(inProfile($profile, 'label_name','main')) { selectCurrentID("label_name","Label Id");  }  // current id
+   if(inProfile($profile, 'label_identificationqualifier','main')) { fieldselectpicklist("label_identificationqualifier",'Id qualifier (label)','','false','label_idqualifierpl',26); }
+   if(inProfile($profile, 'label_identifiedby','main')) { selectCollectorsID("label_identifiedby","Identified by"); } // for current id
+   if(inProfile($profile, 'label_determinertext','main')) {field ("label_determinertext", "Ident by (text)"); }
+   if(inProfile($profile, 'label_dateidentified','main')) {field ("label_dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
+   if(inProfile($profile, 'label_annotationtext','main')) {field ("label_annotationtext", "Annotation text"); }
+   if(inProfile($profile, 'collectors','main')) { selectCollectorsID('collectors','Collector(s)','true'); }
+   if(inProfile($profile, 'etal','main')) {field ("etal","et al."); }
+   if(inProfile($profile, 'fieldnumber','main')) {field ("fieldnumber","Collector number"); }
+   if(inProfile($profile, 'datecollected','main')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); }  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDatea
+   if(inProfile($profile, 'verbatimdate','main')) { field ("verbatimdate","Verb. date coll."); }
    if(inProfile($profile, 'highergeography','main')) { staticvalue("Country limit",$defaultcountry); }
    if(inProfile($profile, 'highergeography','main')) { staticvalue("State limit",$defaultprimary); }
    if(inProfile($profile, 'highergeography','main')) { selectHigherGeography ("highergeography","Higher Geography",$defaultcountry,$defaultprimary); } // higher picklist limited by country/primary
    if(inProfile($profile, 'specificlocality','main')) { field ("specificlocality","Verbatim locality",'','true'); }
    if(inProfile($profile, 'host','main')) { field ("host","Host"); }
    if(inProfile($profile, 'substrate','main')) { field ("substrate", "Substrate"); }
-   if(inProfile($profile, 'collectors','main')) { selectCollectorsID('collectors','Collector(s)','true'); }
-   if(inProfile($profile, 'etal','main')) {field ("etal","et al."); }
-   if(inProfile($profile, 'fieldnumber','main')) {field ("fieldnumber","Collector number"); }
-   if(inProfile($profile, 'datecollected','main')) { field ("datecollected","Date collected",'','false','[0-9-/]+','2010-03-18'); }  // ISO, see https://code.google.com/p/applecore/wiki/CollectionDatea
-   if(inProfile($profile, 'verbatimdate','main')) { field ("verbatimdate","Verb. date coll."); }
-
-   if(inProfile($profile, 'currentdetermination','main')) { selectCurrentID("currentdetermination","Current Id");  }  // current id
-   if(inProfile($profile, 'identificationqualifier','main')) { fieldselectpicklist("identificationqualifier",'Id qualifier (curr.)','','false','idqualifierpl',26); }
-   if(inProfile($profile, 'identifiedby','main')) { selectCollectorsID("identifiedby","Identified by"); } // for current id
-   if(inProfile($profile, 'determinertext','main')) {field ("determinertext", "Identified by (text)"); }
-   if(inProfile($profile, 'dateidentified','main')) {field ("dateidentified","Date identified",'','false','[0-9-]+','2010-03-18'); }  // for current id
-
    fieldselectpicklist("prepmethod",'Preparation method',$defaultprepmethod,'true','prepmethodpl',55);
    preptypeselect("format","Format",$defaultformat,'true','formatStore','huh_preptype','Name');
    selectProject("project","Project",$defaultproject);
@@ -617,6 +641,10 @@ function selectAcronym($field,$default) {
 }
 
 function selectCurrentID($field,$label,$required='false') {
+   // disabled for now, revisit in the future
+   //if ($field=="filedundername") {
+   //    $onchangeval = "onchange='setNamesToFiledUnder();'";
+   //}
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
    $width = BASEWIDTH - 3;
@@ -624,7 +652,7 @@ function selectCurrentID($field,$label,$required='false') {
 	<input type=text name=$field id=$field dojoType='dijit.form.FilteringSelect'
 	store='taxonStore$field' required='$required' searchDelay='900' hasDownArrow='false'
     style='width: ".$width."em; border-color: blue; '
-	searchAttr='name' value='' >
+	searchAttr='name' value='' $onchangeval>
     <button id='buttonReset$field' dojoType='dijit.form.Button' data-dojo-type='dijit/form/Button' type='button'
       onclick=\"dijit.byId('$field').reset();\"  data-dojo-props=\"iconClass:'dijitIconClear'\" ></button>
     </td></tr>";
