@@ -1135,9 +1135,11 @@ function form() {
                    data: $('#transcribeForm').serialize(),
                    success: function(data) {
                        $('#feedback').html( data ) ;
+                       checkSaveButton();
                    },
                    error: function() {
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       checkSaveButton();
                    }
                });
                event.preventDefault();
