@@ -1125,6 +1125,7 @@ function form() {
 
    echo "<script>
          $('#saveButton').click(function(event){
+               $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
                // handle disabled fields, copy data to val fields.
                $('#barcodeval').val($('#barcode').val());
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
