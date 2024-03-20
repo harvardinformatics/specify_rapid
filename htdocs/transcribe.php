@@ -1125,6 +1125,7 @@ function form() {
 
    echo "<script>
          $('#saveButton').click(function(event){
+               $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
                // handle disabled fields, copy data to val fields.
                $('#barcodeval').val($('#barcode').val());
                $('#feedback').html( 'Submitting: ' + ($('#barcode').val()) ) ;
@@ -1134,9 +1135,11 @@ function form() {
                    data: $('#transcribeForm').serialize(),
                    success: function(data) {
                        $('#feedback').html( data ) ;
+                       checkSaveButton();
                    },
                    error: function() {
                        $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                       checkSaveButton();
                    }
                });
                event.preventDefault();
