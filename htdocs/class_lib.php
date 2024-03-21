@@ -2295,6 +2295,24 @@ function ingestCollectionObject() {
       // begin transaction
       $connection->autocommit(false);
 
+      // lock barcode for insertion to avoid duplicates
+      // process will wait if another thread has inserted the same barcode
+      $sql = "insert into proc_add_barcode values (?)";
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param('i',$barcode);
+         if (! $statement->execute()) {
+            $fail = true;
+            $feedback.= $connection->error;
+         }
+      } else {
+         $fail = true;
+         $feedback.= $connection->error;
+      }
+      $statement->free_result();
+      $statement->close();
+
+
       // allow for higher geography as string or id.
       if (preg_match("/^[0-9]+$/",$highergeography)>0) {
          $geographyid = $highergeography;
@@ -3403,6 +3421,22 @@ function ingestCollectionObject() {
       $connection->rollback();
       @$feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
    } else {
+      // unlock barcode
+      $sql = "delete from proc_add_barcode where barcode = ?";
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param('i',$barcode);
+         if (! $statement->execute()) {
+            $fail = true;
+            $feedback.= $connection->error;
+         }
+      } else {
+         $fail = true;
+         $feedback.= $connection->error;
+      }
+      $statement->free_result();
+      $statement->close();
+
       $connection->commit();
       if ($debug) {
          $feedback .= " $adds";

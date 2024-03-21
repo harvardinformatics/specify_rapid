@@ -1137,8 +1137,8 @@ function form() {
                        $('#feedback').html( data ) ;
                        checkSaveButton();
                    },
-                   error: function() {
-                       $('#feedback').html( 'Failed.  Ajax Error.  Barcode: ' + ($('#barcode').val()) ) ;
+                   error: function(jqXHR, textStatus, errorThrown) {
+                       $('#feedback').html('Ajax Error: ' +  textStatus + '; ' + errorThrown) ;
                        checkSaveButton();
                    }
                });
