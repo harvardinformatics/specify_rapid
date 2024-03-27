@@ -567,7 +567,9 @@ function form() {
       $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
 
       window.onpopstate = function(e){
-        console.log(e);
+        var params = new URLSearchParams(window.location.search);
+        var position = params.get('position');
+        loadRecord(position);
       }
    </script>";
 
