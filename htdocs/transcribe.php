@@ -565,6 +565,8 @@ function form() {
          };
 
       $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
+
+      window.onpopstate = function(e){ location.reload(); }
    </script>";
 
 /*
@@ -722,7 +724,7 @@ function form() {
 
             var params = new URLSearchParams(window.location.search);
             params.set('mode', transcriptionMode);
-            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
 
             projectConfig();
 
@@ -743,7 +745,7 @@ function form() {
 
              var params = new URLSearchParams(window.location.search);
              params.set('imgsrc', imgsrc);
-             window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+             window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
              event.preventDefault();
           });
 
@@ -1035,7 +1037,7 @@ function form() {
             var params = new URLSearchParams(window.location.search);
             params.set('filepath', data.path);
             params.set('filename', data.filename);
-            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
 
             var imagesource = data.mediauri;
             var imagepath = data.path;
