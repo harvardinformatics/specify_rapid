@@ -566,7 +566,9 @@ function form() {
 
       $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
 
-      window.onpopstate = function(e){ location.reload(); }
+      window.onpopstate = function(e){
+        console.log(e);
+      }
    </script>";
 
 /*
