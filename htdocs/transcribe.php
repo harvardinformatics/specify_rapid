@@ -728,7 +728,7 @@ function form() {
 
             var params = new URLSearchParams(window.location.search);
             params.set('mode', transcriptionMode);
-            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+            updateLocation();
 
             projectConfig();
 
@@ -749,7 +749,7 @@ function form() {
 
              var params = new URLSearchParams(window.location.search);
              params.set('imgsrc', imgsrc);
-             window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+             updateLocation();
              event.preventDefault();
           });
 
@@ -762,6 +762,7 @@ function form() {
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
              loadRecord(position+1);
+             pushLocation();
              event.preventDefault();
           });
 
@@ -775,6 +776,7 @@ function form() {
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
              loadRecord(position-1);
+             pushLocation();
              event.preventDefault();
           });
 
@@ -817,6 +819,7 @@ function form() {
           function jumpto(position) {
             if (isNaN(position)) return;
             loadRecord(position);
+            pushLocation();
           }
 
           $('#project').on( 'blur', function () {
@@ -1041,7 +1044,7 @@ function form() {
             var params = new URLSearchParams(window.location.search);
             params.set('filepath', data.path);
             params.set('filename', data.filename);
-            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+            updateLocation();
 
             var imagesource = data.mediauri;
             var imagepath = data.path;
@@ -1092,6 +1095,15 @@ function form() {
                });
           }
 
+          function updateLocation() {
+            var params = new URLSearchParams(window.location.search);
+            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+          }
+          function pushLocation() {
+            var params = new URLSearchParams(window.location.search);
+            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+          }
+
           function loadRecord(position) {
                console.log('called loadRecord() for batch ' + batchid + ' position ' + position + ' imgsrc ' + imgsrc);
 
@@ -1099,7 +1111,6 @@ function form() {
 
                var params = new URLSearchParams(window.location.search);
                params.set('position', position);
-               window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
 
                 $.ajax({
                    type: 'GET',
