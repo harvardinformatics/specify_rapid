@@ -722,7 +722,7 @@ function form() {
 
             var params = new URLSearchParams(window.location.search);
             params.set('mode', transcriptionMode);
-            window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
 
             projectConfig();
 
@@ -743,7 +743,7 @@ function form() {
 
              var params = new URLSearchParams(window.location.search);
              params.set('imgsrc', imgsrc);
-             window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+             window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
              event.preventDefault();
           });
 
@@ -1035,7 +1035,7 @@ function form() {
             var params = new URLSearchParams(window.location.search);
             params.set('filepath', data.path);
             params.set('filename', data.filename);
-            window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
 
             var imagesource = data.mediauri;
             var imagepath = data.path;
@@ -1093,7 +1093,7 @@ function form() {
 
                var params = new URLSearchParams(window.location.search);
                params.set('position', position);
-               window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+               window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
 
                 $.ajax({
                    type: 'GET',
