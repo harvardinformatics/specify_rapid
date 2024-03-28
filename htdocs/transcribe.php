@@ -512,7 +512,6 @@ function form() {
    global $user, $transcriptionMode, $imgSrc;
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
-   @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$batchpath = urldecode($_GET['batch']);
    $position = 1;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
@@ -533,7 +532,7 @@ function form() {
    } else {
       $target = targetfile($filepath,$filename);
    }
-   $targetbarcode = $file->barcode;
+
    $targetheight = $target->height;
    $targetwidth = $target->width;
    echo "
@@ -564,7 +563,7 @@ function form() {
               });
          };
 
-      $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
+      $(document).ready(logEvent('start_transcription','$batchpath, $position'));
 
       window.onpopstate = function(e){
         var params = new URLSearchParams(window.location.search);
@@ -630,7 +629,7 @@ function form() {
    ';
 
    fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true');   // not zero padded when coming off barcode scanner.
-   echo "<input type='hidden' name='barcodeval' id='barcodeval' value='$targetbarcode'>"; // to carry submission of barcode with disabled barcode input.
+   echo "<input type='hidden' name='barcodeval' id='barcodeval' value=''>"; // to carry submission of barcode with disabled barcode input.
    // TODO: on loss of focus, check database for record and reload data.
    // ******************
    echo '<script>
@@ -728,7 +727,7 @@ function form() {
 
             var params = new URLSearchParams(window.location.search);
             params.set('mode', transcriptionMode);
-            updateLocation();
+            updateLocation(params);
 
             projectConfig();
 
@@ -749,7 +748,7 @@ function form() {
 
              var params = new URLSearchParams(window.location.search);
              params.set('imgsrc', imgsrc);
-             updateLocation();
+             updateLocation(params);
              event.preventDefault();
           });
 
@@ -761,8 +760,7 @@ function form() {
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
-             loadRecord(position+1);
-             pushLocation();
+             movePosition(position+1);
              event.preventDefault();
           });
 
@@ -775,8 +773,7 @@ function form() {
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
-             loadRecord(position-1);
-             pushLocation();
+             movePosition(position-1);
              event.preventDefault();
           });
 
@@ -818,7 +815,7 @@ function form() {
 
           function jumpto(position) {
             if (isNaN(position)) return;
-            loadRecord(position);
+            movePosition(position);
             pushLocation();
           }
 
@@ -1041,11 +1038,6 @@ function form() {
             $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
             $('#image_div').attr('src',data.mediauri);
 
-            var params = new URLSearchParams(window.location.search);
-            params.set('filepath', data.path);
-            params.set('filename', data.filename);
-            updateLocation();
-
             var imagesource = data.mediauri;
             var imagepath = data.path;
             var imagefilename = data.filename;
@@ -1095,22 +1087,25 @@ function form() {
                });
           }
 
-          function updateLocation() {
-            var params = new URLSearchParams(window.location.search);
+          function updateLocation(params) {
             window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
           }
-          function pushLocation() {
-            var params = new URLSearchParams(window.location.search);
+          function pushLocation(params) {
             window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+          }
+
+          function movePosition(position) {
+            checkPosition(position);
+
+            var params = new URLSearchParams(window.location.search);
+            params.set('position', position);
+            pushLocation(params);
+
+            loadRecord(position);
           }
 
           function loadRecord(position) {
                console.log('called loadRecord() for batch ' + batchid + ' position ' + position + ' imgsrc ' + imgsrc);
-
-               checkPosition(position);
-
-               var params = new URLSearchParams(window.location.search);
-               params.set('position', position);
 
                 $.ajax({
                    type: 'GET',
@@ -1181,10 +1176,6 @@ function form() {
    echo '<div id="imagezoomdiv" >';
    echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
    echo '<div>';
-
-   #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
-   #$mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
-   #$mediauri = imageForBarcode($targetbarcode);
 
    echo '<div class=flexbox>';
     $medialink = $target->medialink;
