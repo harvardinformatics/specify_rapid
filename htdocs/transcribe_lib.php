@@ -459,7 +459,7 @@ class TPage extends Page {
       var added = '';
       if (mode=='test') { added = '&test=true'; }
       if (mode=='testminimal') { added = '&test=true&config=minimal'; }
-      window.location.href = 'transcribe.php?display=mainform&batch='+batchpath+'&filepath='+filepath+'&filename='+filename+'&position='+position+added;
+      window.location.href = 'transcribe.php?display=mainform&batch='+batchpath+'&position='+position+added;
    }
    function doclear() {
       channel.postMessage('close');
