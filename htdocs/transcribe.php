@@ -816,7 +816,6 @@ function form() {
           function jumpto(position) {
             if (isNaN(position)) return;
             movePosition(position);
-            pushLocation();
           }
 
           $('#project').on( 'blur', function () {
