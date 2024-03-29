@@ -668,6 +668,10 @@ function ingest() {
       // begin transaction
       $connection->autocommit(false);
 
+      // Check if we should add barcode to the transcription record
+      // e.g. if it wasn't correctly picked up in preprocessing
+      
+
          $exists = FALSE;
 
          // check for existing barcode in prep table

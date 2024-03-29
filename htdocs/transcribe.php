@@ -677,8 +677,8 @@ function form() {
    @staticvalueid("Special chars:","° × ± Ø ♀ ♂","specialchars");
 
    echo "<tr><td colspan=2>";
-   echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
-   echo "<input type='hidden' name='batch_position' value='".$position."'>";
+   echo "<input type='hidden' id='batch_id' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
+   echo "<input type='hidden' id='batch_position' name='batch_position' value='".$position."'>";
    echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
