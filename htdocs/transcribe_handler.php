@@ -234,10 +234,12 @@ if ($connection && $authenticated) {
          @$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
          @$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
 
-         @$batchid = $_POST['batch_id'];
-         @$batchposition = $_POST['batch_position'];
+         @$batchid = preg_replace('/[^0-9]/','',$_POST['batch_id']);
+         @$batchposition = preg_replace('/[^0-9]/','',$_POST['batch_position']);
          //@$= substr(preg_replace('/[^0-9]/','',$_POST['']),0,huh_);
 
+         if ( @($batchid!=$_POST['batch_id']) )  { $truncation = true; $truncated .= "Batch ID: [$batchid] "; }
+         if ( @($batchposition!=$_POST['batch_position']) )  { $truncation = true; $truncated .= "Batch Position: [$batchposition] "; }
          if ( @($collectors!=$_POST['collectors']) )  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
          if ( @($collectorsid!=$_POST['collectorsid']) )  { $truncation = true; $truncated .= "CollectorsID: [$collectorsid] "; }
          if ( @($etal!=$_POST['etal']) ) { $truncation = true; $truncated .= "etal : [$etal] "; }
@@ -364,8 +366,8 @@ function storeImageObject ($batchid,$barcode) {
 
 function ingest() {
    global $connection, $debug,
-   $truncation, $truncated, $collectorsid,
-   $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
+   $truncation, $truncated, $batchid, $batchposition,
+   $collectorsid,$collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
    $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
    $highergeography,$highergeographyid,$geographyfilter,$geographyfilterid,
@@ -670,7 +672,53 @@ function ingest() {
 
       // Check if we should add barcode to the transcription record
       // e.g. if it wasn't correctly picked up in preprocessing
-      
+      $update_tr_batch=false;
+      $sql = "select count(*) from TR_BATCH_IMAGE where tr_batch_id = ? and position = ? and barcode is NULL";
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param("ii", $batchid, $batchposition);
+         $statement->execute();
+         $statement->bind_result($matchcount);
+         $statement->store_result();
+         if ($statement->num_rows==1) {
+            if ($statement->fetch()) {
+               if ($matchcount=='1') {
+                  // update record with barcode; see below
+                  $update_tr_batch=true;
+                }
+            } else {
+               $fail = true;
+               $feedback.= "Query Error " . $connection->error . " " . $sql;
+            }
+         } else {
+            $fail = true;
+            $feedback.= "Query error. Returned other than one row [" . $statement->num_rows . "] on check for NULL barcode in batch.";
+         }
+         $statement->free_result();
+      } else {
+         $fail = true;
+         $feedback.= "Query error: " . $connection->error . " " . $sql;
+      }
+
+      if ($update_tr_batch) { // update the TR_IMAGE_BATCH record with the barcode
+        $sql = "update TR_BATCH_IMAGE set barcode=? where tr_batch_id=? and position=? and barcode is NULL";
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+           $statement->bind_param("sii", $barcode, $batchid, $batchposition);
+           $statement->execute();
+           $rows = $connection->affected_rows;
+           if ($rows==1) {
+             $feedback.= "Barcode [$barcode] added to transcription image.";
+           } else {
+             $fail = true;
+             $feedback.= "Incorrect number of records updated [$rows] when adding barcode to TR_BATCH_IMAGE[batch: $batchid, pos: $batchposition]";
+           }
+           $statement->free_result();
+        } else {
+           $fail = true;
+           $feedback.= "Query error: " . $connection->error . " " . $sql;
+        }
+      }      
 
          $exists = FALSE;
 
