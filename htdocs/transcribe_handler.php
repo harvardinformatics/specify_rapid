@@ -679,7 +679,7 @@ function ingest() {
       $update_tr_batch=false;
       $imsid=0;
       $sql = <<<EOT
-              select distinct imo.IMAGE_SET_ID
+              select imo.IMAGE_SET_ID
                 from TR_BATCH_IMAGE trbi
                 join IMAGE_OBJECT imo on trbi.image_object_id = imo.id
               where trbi.tr_batch_id = ?
@@ -699,9 +699,6 @@ EOT;
                $fail = true;
                $feedback.= "Query Error " . $connection->error . " " . $sql;
             }
-         } else {
-            $fail = true;
-            $feedback.= "Query error. Returned other than one row [" . $statement->num_rows . "] on check for NULL barcode in batch.";
          }
          $statement->free_result();
       } else {
