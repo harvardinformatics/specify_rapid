@@ -171,7 +171,7 @@ if ($connection && $authenticated) {
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
-         @$iscultivated= preg_replace('/[^0-9/','',$_POST['iscultivated']);
+         @$iscultivated=preg_replace('/[^0-9]/','',$_POST['iscultivated']);
          @$barcode= substr(preg_replace('/[^0-9]/','',$_POST['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
          @$barcodeval= substr(preg_replace('/[^0-9]/','',$_POST['barcodeval']),0,huh_fragment::IDENTIFIER_SIZE);
          @$provenance= substr($_POST['provenance'],0,huh_fragment::PROVENANCE_SIZE);
