@@ -678,14 +678,14 @@ function ingest() {
       // e.g. if it wasn't correctly picked up in preprocessing
       $update_tr_batch=false;
       $imsid=0;
-      $sql = '''
+      $sql = <<<EOT
               select imo.IMAGE_SET_ID
                 from TR_BATCH_IMAGE trbi
                 join IMAGE_OBJECT imo on trbi.image_object_id = imo.id
               where trbi.tr_batch_id = ?
                 and trbi.position = ?
                 and trbi.barcode is NULL
-              ''';
+              EOT;
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("ii", $batchid, $batchposition);
@@ -711,13 +711,14 @@ function ingest() {
 
       if ($update_tr_batch) {
         // update the TR_IMAGE_BATCH record with the barcode
-        $sql = '''update TR_BATCH_IMAGE trbi
+        $sql = <<<EOT
+                  update TR_BATCH_IMAGE trbi
                   set trbi.barcode=?
                   where trbi.tr_batch_id=?
                     and trbi.position=?
                     and trbi.barcode is NULL
                     and imlf.barcode is NULL
-               '''
+               EOT;
         $statement = $connection->prepare($sql);
         if ($statement) {
            $statement->bind_param("sii", $barcode, $batchid, $batchposition);
@@ -736,13 +737,14 @@ function ingest() {
         }
 
         // update the IMAGE_OBJECT and IMAGE_LOCAL_FILE records
-        $sql = '''update IMAGE_OBJECT imo
+        $sql = <<<EOT
+                  update IMAGE_OBJECT imo
                     join IMAGE_LOCAL_FILE imlf on imo.image_local_file_id = imlf.id
                   set imo.barcodes=CONCAT_WS(';',barcodes,?),
                       imlf.barcode=?
                   where imo.image_set_id=?
                     and imlf.barcode is NULL
-               ''';
+               EOT;
         $statement = $connection->prepare($sql);
         if ($statement) {
            $statement->bind_param("ssi", $barcode, $barcode, $imsid);
