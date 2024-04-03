@@ -649,6 +649,7 @@ function form() {
    ';
 
    @selectAcronym("herbariumacronym",$defaultherbarium);
+   @selectCultivated("iscultivated");
    @field ("accessionnumber","Accession Num.",'','false');
    @selectTaxon("filedundername","Filed Under",'','','true','true');
    @selectTaxon ("currentname","Current Name",'','','true','true');
@@ -729,7 +730,7 @@ function form() {
             params.set('mode', transcriptionMode);
             updateLocation(params);
 
-            projectConfig();
+            //projectConfig();
 
             event.preventDefault();
          });
@@ -853,10 +854,10 @@ function form() {
                 },
                 success: function( data ) {
                   if (soroStates.includes(data.value)) {
-                    hideFields(soroHideFields);
+                    //hideFields(soroHideFields);
                     $('#feedback').html( '<mark>SoRo State; Please transcribe all fields</mark>' ) ;
                   } else {
-                    projectConfig();
+                    //projectConfig();
                   }
                 },
                 error: function() {
@@ -1012,6 +1013,7 @@ function form() {
                   setLoadedValue('verbatimdate',data.verbatimdate);
                   setLoadedValue('datecollected',data.datecollected);
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
+                  setLoadedValue('iscultivated',data.iscultivated);
                   setLoadedValue('provenance',data.provenance);
                   setLoadedValue('specimendescription',data.specimendescription);
                   setLoadedValue('specimenremarks',data.specimenremarks);
@@ -1566,6 +1568,17 @@ function selectAcronym($field,$default) {
 	<option value=\"FH\" $fhs>FH</option>
 	<option value=\"AMES\" $amess>AMES</option>
 	<option value=\"ECON\" $econs>ECON</option>
+	</select>";
+   echo "</td></tr>\n";
+}
+
+function selectCultivated($field) {
+   echo "<tr><td>\n";
+   echo "<label for='$field'>Cultivated</label>";
+   echo "</td><td>\n";
+   echo "<select id=\"$field\" name=\"$field\" class='inputField'>
+	<option value=\"0\" selected="selected">NO</option>
+	<option value=\"1\">YES</option>
 	</select>";
    echo "</td></tr>\n";
 }

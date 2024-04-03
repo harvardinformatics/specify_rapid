@@ -1900,7 +1900,7 @@ class huh_geography_custom extends huh_geography {
 function ingestCollectionObject() {
    global $connection, $debug,
    $truncation, $truncated,
-   $collectors,$collectorsid,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
+   $collectors,$collectorsid,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$iscultivated,$barcode,$provenance,
    $filedundername,$fiidentificationqualifier,$fiidentifiedby,$fiidentifiedbyid,$fideterminertext,$fiannotationtext,$fidateidentified,$currentdetermination,$identificationqualifier,$filedundernameid,$currentdeterminationid,$highergeography,
    $specificlocality,$prepmethod,$format,$verbatimlat,$verbatimlong,$decimallat,$decimallong,$datum,
    $coordinateuncertanty,$georeferencedby,$georeferencedate,$georeferencesource,$typestatus, $basionym,
@@ -1962,6 +1962,7 @@ function ingestCollectionObject() {
       }
    }
 
+   if (! $iscultivated) { $iscultivated=0; }
    if ($seriesid=='') { $seriesid = null; }
    if ($seriestype=='') { $seriestype = null; }
 
@@ -2227,6 +2228,7 @@ function ingestCollectionObject() {
       $df.= "verbatimdate=[$verbatimdate] ";
       $df.= "datecollected=[$datecollected] ";
       $df.= "herbariumacronym=[$herbariumacronym] ";
+      $df.= "iscultivated=[$iscultivated] ";
       $df.= "barcode=[$barcode] ";  // required
       $df.= "provenance=[$provenance] ";
       $df.= "filedundername=[$filedundername] ";  // required
@@ -2557,10 +2559,6 @@ function ingestCollectionObject() {
       }
 
       if (!$fail) {
-
-
-         // Collection object
-         $iscultivated = 0;
 
          $sql = "insert into collectionobject (collectingeventid, collectionid,collectionmemberid,createdbyagentid,CatalogerID, " .
               " CatalogedDate,catalogeddateprecision,version,timestampcreated,yesno1,remarks,text1,text2,description,text4) " .
