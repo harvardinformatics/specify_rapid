@@ -717,7 +717,6 @@ EOT;
                   where trbi.tr_batch_id=?
                     and trbi.position=?
                     and trbi.barcode is NULL
-                    and imlf.barcode is NULL
 EOT;
         $statement = $connection->prepare($sql);
         if ($statement) {
