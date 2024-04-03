@@ -1577,7 +1577,7 @@ function selectCultivated($field) {
    echo "<label for='$field'>Cultivated</label>";
    echo "</td><td>\n";
    echo "<select id=\"$field\" name=\"$field\" class='inputField'>
-	<option value=\"0\" selected="selected">NO</option>
+	<option value=\"0\" selected=\"selected\">NO</option>
 	<option value=\"1\">YES</option>
 	</select>";
    echo "</td></tr>\n";
