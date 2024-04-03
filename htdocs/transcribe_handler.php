@@ -679,7 +679,7 @@ function ingest() {
       $update_tr_batch=false;
       $imsid=0;
       $sql = <<<EOT
-              select imo.IMAGE_SET_ID
+              select distinct imo.IMAGE_SET_ID
                 from TR_BATCH_IMAGE trbi
                 join IMAGE_OBJECT imo on trbi.image_object_id = imo.id
               where trbi.tr_batch_id = ?
