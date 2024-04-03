@@ -685,7 +685,7 @@ function ingest() {
               where trbi.tr_batch_id = ?
                 and trbi.position = ?
                 and trbi.barcode is NULL
-              EOT;
+EOT;
       $statement = $connection->prepare($sql);
       if ($statement) {
          $statement->bind_param("ii", $batchid, $batchposition);
@@ -718,7 +718,7 @@ function ingest() {
                     and trbi.position=?
                     and trbi.barcode is NULL
                     and imlf.barcode is NULL
-               EOT;
+EOT;
         $statement = $connection->prepare($sql);
         if ($statement) {
            $statement->bind_param("sii", $barcode, $batchid, $batchposition);
@@ -744,7 +744,7 @@ function ingest() {
                       imlf.barcode=?
                   where imo.image_set_id=?
                     and imlf.barcode is NULL
-               EOT;
+EOT;
         $statement = $connection->prepare($sql);
         if ($statement) {
            $statement->bind_param("ssi", $barcode, $barcode, $imsid);
