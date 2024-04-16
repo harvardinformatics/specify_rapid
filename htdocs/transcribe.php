@@ -649,7 +649,6 @@ function form() {
    ';
 
    @selectAcronym("herbariumacronym",$defaultherbarium);
-   @selectCultivated("iscultivated");
    @field ("accessionnumber","Accession Num.",'','false');
    @selectTaxon("filedundername","Filed Under",'','','true','true');
    @selectTaxon ("currentname","Current Name",'','','true','true');
@@ -1215,6 +1214,7 @@ function form() {
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method",$defaultprepmethod,'true','true');
    selectPrepType("preptype","Format",$defaultformat,'true','true');
+   @selectCultivated("iscultivated");
    echo '</table>';
    echo '</div>';
    echo '</div>';
