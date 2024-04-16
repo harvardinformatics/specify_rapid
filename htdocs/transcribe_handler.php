@@ -171,6 +171,7 @@ if ($connection && $authenticated) {
          @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
          @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
          @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
+         @$iscultivated=preg_replace('/[^0-9]/','',$_POST['iscultivated']);
          @$barcode= substr(preg_replace('/[^0-9]/','',$_POST['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
          @$barcodeval= substr(preg_replace('/[^0-9]/','',$_POST['barcodeval']),0,huh_fragment::IDENTIFIER_SIZE);
          @$provenance= substr($_POST['provenance'],0,huh_fragment::PROVENANCE_SIZE);
@@ -234,10 +235,12 @@ if ($connection && $authenticated) {
          @$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
          @$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
 
-         @$batchid = $_POST['batch_id'];
-         @$batchposition = $_POST['batch_position'];
+         @$batchid = preg_replace('/[^0-9]/','',$_POST['batch_id']);
+         @$batchposition = preg_replace('/[^0-9]/','',$_POST['batch_position']);
          //@$= substr(preg_replace('/[^0-9]/','',$_POST['']),0,huh_);
 
+         if ( @($batchid!=$_POST['batch_id']) )  { $truncation = true; $truncated .= "Batch ID: [$batchid] "; }
+         if ( @($batchposition!=$_POST['batch_position']) )  { $truncation = true; $truncated .= "Batch Position: [$batchposition] "; }
          if ( @($collectors!=$_POST['collectors']) )  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
          if ( @($collectorsid!=$_POST['collectorsid']) )  { $truncation = true; $truncated .= "CollectorsID: [$collectorsid] "; }
          if ( @($etal!=$_POST['etal']) ) { $truncation = true; $truncated .= "etal : [$etal] "; }
@@ -247,6 +250,7 @@ if ($connection && $authenticated) {
          if ( @($verbatimdate!=$_POST['verbatimdate']) ) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
          if ( @($datecollected!=$_POST['datecollected']) ) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
          if ( @($herbariumacronym!=$_POST['herbariumacronym']) ) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
+         if ( @($iscultivated!=$_POST['iscultivated']) ) { $truncation = true; $truncated .= "iscultivated : [$iscultivated] "; }
          if ( @($barcode!=$_POST['barcode']) ) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
          if ( @($provenance!=$_POST['provenance']) ) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
          if ( @($filedundername!=$_POST['filedundername']) ) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
@@ -364,8 +368,8 @@ function storeImageObject ($batchid,$barcode) {
 
 function ingest() {
    global $connection, $debug,
-   $truncation, $truncated, $collectorsid,
-   $collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$barcode,$provenance,
+   $truncation, $truncated, $batchid, $batchposition,
+   $collectorsid,$collectors,$etal,$fieldnumber,$stationfieldnumber,$accessionnumber,$verbatimdate,$datecollected,$herbariumacronym,$iscultivated,$barcode,$provenance,
    $filedundername,$currentdetermination,$identificationqualifier,
    $filedundernameid, $currentdeterminationid,
    $highergeography,$highergeographyid,$geographyfilter,$geographyfilterid,
@@ -421,6 +425,7 @@ function ingest() {
          $enddateprecision = $date->getEndDatePrecision();
       }
    }
+   if (! $iscultivated) { $iscultivated = 0; }
    if ($herbariumacronym=='') { $herbariumacronym = null; }
    if ($currentdetermination=='') { $currentdetermination = null; }
    if ($currentdeterminationid=='') { $currentdeterminationid = null; }
@@ -560,6 +565,7 @@ function ingest() {
       $df.= "verbatimdate=[$verbatimdate] ";
       $df.= "datecollected=[$datecollected] ";
       $df.= "herbariumacronym=[$herbariumacronym] ";
+      $df.= "iscultivated=[$iscultivated] ";
       $df.= "barcode=[$barcode] ";  // required
       $df.= "provenance=[$provenance] ";
       $df.= "filedundername=[$filedundername] ";  // required
@@ -667,6 +673,85 @@ function ingest() {
 
       // begin transaction
       $connection->autocommit(false);
+
+      // Check if we should add barcode to the transcription record
+      // e.g. if it wasn't correctly picked up in preprocessing
+      $update_tr_batch=false;
+      $imsid=0;
+      $sql = <<<EOT
+              select imo.IMAGE_SET_ID
+                from TR_BATCH_IMAGE trbi
+                join IMAGE_OBJECT imo on trbi.image_object_id = imo.id
+              where trbi.tr_batch_id = ?
+                and trbi.position = ?
+                and trbi.barcode is NULL
+EOT;
+      $statement = $connection->prepare($sql);
+      if ($statement) {
+         $statement->bind_param("ii", $batchid, $batchposition);
+         $statement->execute();
+         $statement->bind_result($imsid);
+         $statement->store_result();
+         if ($statement->num_rows==1) {
+            if ($statement->fetch()) {
+              $update_tr_batch=true;
+            } else {
+               $fail = true;
+               $feedback.= "Query Error " . $connection->error . " " . $sql;
+            }
+         }
+         $statement->free_result();
+      } else {
+         $fail = true;
+         $feedback.= "Query error: " . $connection->error . " " . $sql;
+      }
+
+      if ($update_tr_batch) {
+        // update the TR_IMAGE_BATCH record with the barcode
+        $sql = <<<EOT
+                  update TR_BATCH_IMAGE trbi
+                  set trbi.barcode=?
+                  where trbi.tr_batch_id=?
+                    and trbi.position=?
+                    and trbi.barcode is NULL
+EOT;
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+           $statement->bind_param("sii", $barcode, $batchid, $batchposition);
+           $statement->execute();
+           $rows = $connection->affected_rows;
+           if ($rows==1) {
+             $feedback.= "Barcode [$barcode] added to transcription image.";
+           } else {
+             $fail = true;
+             $feedback.= "Incorrect number of records updated [$rows] when adding barcode to TR_BATCH_IMAGE[batch: $batchid, pos: $batchposition]";
+           }
+           $statement->free_result();
+        } else {
+           $fail = true;
+           $feedback.= "Query error: " . $connection->error . " " . $sql;
+        }
+
+        // update the IMAGE_OBJECT and IMAGE_LOCAL_FILE records
+        $sql = <<<EOT
+                  update IMAGE_OBJECT imo
+                    join IMAGE_LOCAL_FILE imlf on imo.image_local_file_id = imlf.id
+                  set imo.barcodes=CONCAT_WS(';',barcodes,?),
+                      imlf.barcode=?
+                  where imo.image_set_id=?
+                    and imlf.barcode is NULL
+EOT;
+        $statement = $connection->prepare($sql);
+        if ($statement) {
+           $statement->bind_param("ssi", $barcode, $barcode, $imsid);
+           $statement->execute();
+           $rows = $connection->affected_rows;
+           $statement->free_result();
+        } else {
+           $fail = true;
+           $feedback.= "Query error: " . $connection->error . " " . $sql;
+        }
+      }
 
          $exists = FALSE;
 
@@ -1072,10 +1157,10 @@ function ingest() {
 
                               // update Collectionobject, includes container and description fields
                               if (!$fail) {
-                                $sql = "update collectionobject set remarks=?, description=?, text4=?, containerid=?, version=version+1, timestampmodified=now(), modifiedbyagentid=? where collectionobjectid=?";
+                                $sql = "update collectionobject set remarks=?, yesno1=?, description=?, text4=?, containerid=?, version=version+1, timestampmodified=now(), modifiedbyagentid=? where collectionobjectid=?";
                                 $statement = $connection->prepare($sql);
                                 if ($statement) {
-                                    $statement->bind_param("sssiii",$specimenremarks,$specimendescription,$frequency,$containerid,$currentuserid,$collectionobjectid);
+                                    $statement->bind_param("sissiii",$specimenremarks,$iscultivated,$specimendescription,$frequency,$containerid,$currentuserid,$collectionobjectid);
                                     $statement->execute();
                                     $rows = $connection->affected_rows;
                                     if ($rows==1) { $feedback = $feedback . " Updated container. "; }
@@ -1653,6 +1738,7 @@ function lookupDataForBarcode($barcode) {
        $rcolobj = $related['CollectionObjectID'];
        $result['specimendescription'] = $rcolobj->getDescription();
        $result['specimenremarks'] = $rcolobj->getRemarks();
+       $result['iscultivated'] = $rcolobj->getYesNo1();
        $result['frequency'] = $rcolobj->getText4();
        $rprep = $related['PreparationID'];
        //$rcolobj->load($rcolobj->getCollectionObjectID());

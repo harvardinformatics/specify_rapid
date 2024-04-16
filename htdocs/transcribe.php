@@ -512,7 +512,6 @@ function form() {
    global $user, $transcriptionMode, $imgSrc;
 
    @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
-   @$filename = preg_replace('/[^-a-zA-Z0-9._]/','',urldecode($_GET['filename']));
    @$batchpath = urldecode($_GET['batch']);
    $position = 1;
    @$position= preg_replace('/[^0-9]/','',$_GET['position']);
@@ -533,7 +532,7 @@ function form() {
    } else {
       $target = targetfile($filepath,$filename);
    }
-   $targetbarcode = $file->barcode;
+
    $targetheight = $target->height;
    $targetwidth = $target->width;
    echo "
@@ -564,7 +563,13 @@ function form() {
               });
          };
 
-      $(document).ready(logEvent('start_transcription','$filepath, $filename, $position'));
+      $(document).ready(logEvent('start_transcription','$batchpath, $position'));
+
+      window.onpopstate = function(e){
+        var params = new URLSearchParams(window.location.search);
+        var position = params.get('position');
+        loadRecord(position);
+      }
    </script>";
 
 /*
@@ -624,7 +629,7 @@ function form() {
    ';
 
    fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true');   // not zero padded when coming off barcode scanner.
-   echo "<input type='hidden' name='barcodeval' id='barcodeval' value='$targetbarcode'>"; // to carry submission of barcode with disabled barcode input.
+   echo "<input type='hidden' name='barcodeval' id='barcodeval' value=''>"; // to carry submission of barcode with disabled barcode input.
    // TODO: on loss of focus, check database for record and reload data.
    // ******************
    echo '<script>
@@ -672,8 +677,8 @@ function form() {
    @staticvalueid("Special chars:","° × ± Ø ♀ ♂","specialchars");
 
    echo "<tr><td colspan=2>";
-   echo "<input type='hidden' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
-   echo "<input type='hidden' name='batch_position' value='".$position."'>";
+   echo "<input type='hidden' id='batch_id' name='batch_id' value='".$currentBatch->getBatchID()."' class='carryforward'>";
+   echo "<input type='hidden' id='batch_position' name='batch_position' value='".$position."'>";
    echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button'> ";
    echo "<input type='button' value='Next', id='nextButton' class='carryforward ui-button ui-state-disabled'>";
    echo "<input type='button' value='Done', disabled='true' id='doneButton' class='carryforward ui-button ui-state-disabled'>";
@@ -722,9 +727,9 @@ function form() {
 
             var params = new URLSearchParams(window.location.search);
             params.set('mode', transcriptionMode);
-            window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+            updateLocation(params);
 
-            projectConfig();
+            //projectConfig();
 
             event.preventDefault();
          });
@@ -743,7 +748,7 @@ function form() {
 
              var params = new URLSearchParams(window.location.search);
              params.set('imgsrc', imgsrc);
-             window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
+             updateLocation(params);
              event.preventDefault();
           });
 
@@ -755,7 +760,7 @@ function form() {
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
-             loadRecord(position+1);
+             movePosition(position+1);
              event.preventDefault();
           });
 
@@ -768,7 +773,7 @@ function form() {
              $('#transcribeForm  input:not(.carryforward)').val('');
              var params = new URLSearchParams(window.location.search);
              var position = parseInt(params.get('position'));
-             loadRecord(position-1);
+             movePosition(position-1);
              event.preventDefault();
           });
 
@@ -810,7 +815,7 @@ function form() {
 
           function jumpto(position) {
             if (isNaN(position)) return;
-            loadRecord(position);
+            movePosition(position);
           }
 
           $('#project').on( 'blur', function () {
@@ -848,10 +853,10 @@ function form() {
                 },
                 success: function( data ) {
                   if (soroStates.includes(data.value)) {
-                    hideFields(soroHideFields);
+                    //hideFields(soroHideFields);
                     $('#feedback').html( '<mark>SoRo State; Please transcribe all fields</mark>' ) ;
                   } else {
-                    projectConfig();
+                    //projectConfig();
                   }
                 },
                 error: function() {
@@ -1007,6 +1012,7 @@ function form() {
                   setLoadedValue('verbatimdate',data.verbatimdate);
                   setLoadedValue('datecollected',data.datecollected);
                   setLoadedValue('herbariumacronym',data.herbariumacronym);
+                  setLoadedValue('iscultivated',data.iscultivated);
                   setLoadedValue('provenance',data.provenance);
                   setLoadedValue('specimendescription',data.specimendescription);
                   setLoadedValue('specimenremarks',data.specimenremarks);
@@ -1031,11 +1037,6 @@ function form() {
             console.log('called loadImage(): ' + data.mediauri);
             $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
             $('#image_div').attr('src',data.mediauri);
-
-            var params = new URLSearchParams(window.location.search);
-            params.set('filepath', data.path);
-            params.set('filename', data.filename);
-            window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
 
             var imagesource = data.mediauri;
             var imagepath = data.path;
@@ -1086,14 +1087,25 @@ function form() {
                });
           }
 
+          function updateLocation(params) {
+            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+          }
+          function pushLocation(params) {
+            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+          }
+
+          function movePosition(position) {
+            checkPosition(position);
+
+            var params = new URLSearchParams(window.location.search);
+            params.set('position', position);
+            pushLocation(params);
+
+            loadRecord(position);
+          }
+
           function loadRecord(position) {
                console.log('called loadRecord() for batch ' + batchid + ' position ' + position + ' imgsrc ' + imgsrc);
-
-               checkPosition(position);
-
-               var params = new URLSearchParams(window.location.search);
-               params.set('position', position);
-               window.history.pushState({}, '', decodeURIComponent(`\${location.pathname}?\${params}`));
 
                 $.ajax({
                    type: 'GET',
@@ -1165,10 +1177,6 @@ function form() {
    echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
    echo '<div>';
 
-   #$mediauri = "http://nrs.harvard.edu/urn-3:FMUS.HUH:s19-00000001-315971-2";
-   #$mediauri = "https://s3.amazonaws.com/huhwebimages/94A28BC927D6407/type/full/460286.jpg";
-   #$mediauri = imageForBarcode($targetbarcode);
-
    echo '<div class=flexbox>';
     $medialink = $target->medialink;
     echo "
@@ -1206,6 +1214,7 @@ function form() {
    @staticvalueid("Record Created:",$created,"recordcreated");
    selectPrepMethod("prepmethod","Prep Method",$defaultprepmethod,'true','true');
    selectPrepType("preptype","Format",$defaultformat,'true','true');
+   @selectCultivated("iscultivated");
    echo '</table>';
    echo '</div>';
    echo '</div>';
@@ -1559,6 +1568,17 @@ function selectAcronym($field,$default) {
 	<option value=\"FH\" $fhs>FH</option>
 	<option value=\"AMES\" $amess>AMES</option>
 	<option value=\"ECON\" $econs>ECON</option>
+	</select>";
+   echo "</td></tr>\n";
+}
+
+function selectCultivated($field) {
+   echo "<tr><td>\n";
+   echo "<label for='$field'>Cultivated</label>";
+   echo "</td><td>\n";
+   echo "<select id=\"$field\" name=\"$field\" class='inputField'>
+	<option value=\"0\" selected=\"selected\">NO</option>
+	<option value=\"1\">YES</option>
 	</select>";
    echo "</td></tr>\n";
 }
