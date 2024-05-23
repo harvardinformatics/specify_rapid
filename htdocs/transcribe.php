@@ -1088,10 +1088,10 @@ function form() {
           }
 
           function updateLocation(params) {
-            window.history.replaceState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+            window.history.replaceState({}, '', window.location.origin + decodeURI(`\${location.pathname}?\${params}`));
           }
           function pushLocation(params) {
-            window.history.pushState({}, '', decodeURI(`\${location.pathname}?\${params}`));
+            window.history.pushState({}, '', window.location.origin + decodeURI(`\${location.pathname}?\${params}`));
           }
 
           function movePosition(position) {
