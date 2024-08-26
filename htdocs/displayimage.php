@@ -187,7 +187,7 @@ function image($barcode) {
          context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
 
          var xy = \"xy=\" + x + \",\" + y + \"startxy=\" + startx + \",\" + starty;
-         logEvent('zoom',xy);
+         //logEvent('zoom',xy);
      }
 
      // unused for now, might be useful for scaling images for different screens
@@ -286,7 +286,7 @@ function imagefile($path,$filename) {
              context.drawImage(base_image, 1, 1,w,h,1,1,800,1200);
              channel.postMessage('loaded');
          }
-         logEvent('setupcanvas',uri);
+         //logEvent('setupcanvas',uri);
      }
 
      function doZoom(x,y,h,w,oh,ow) {
@@ -315,7 +315,7 @@ function imagefile($path,$filename) {
        context.drawImage(base_image, startx, starty, base_image.naturalWidth, base_image.naturalHeight, 0, 0, base_image.naturalWidth*scalefactor*magnification, base_image.naturalHeight*scalefactor*magnification);
 
        var xy = \"xy=\" + x + \",\" + y + \"startxy=\" + startx + \",\" + starty;
-       logEvent('zoom',xy);
+       //logEvent('zoom',xy);
      }
 
      function logEvent(eventaction,eventdetails){
