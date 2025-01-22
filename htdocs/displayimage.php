@@ -250,21 +250,18 @@ function imagefile($path,$filename) {
    $mediauri = BASE_IMAGE_URI.$localpathfile;
 
    if ($filename!="") {
-       // TODO: Lookup values from IMAGE_LOCAL_FILE
-       //$media = imageDataForBarcode($barcode);
-       //$mediauri = $media->url;
-       //$mediaid = $media->image_set_id;
-       //$h = $media->pixel_height;
-       //$w = $media->pixel_width;
+       $media = imageDataForBarcode($barcode);
+       $mediauri = $media->url;
+       $mediaid = $media->image_set_id;
+       $h = $media->pixel_height;
+       $w = $media->pixel_width;
        // list($width,$height) = getimagesize($pathfile);
        // $h=intval($height);
        // $w=intval($width);
-       // if ($h == 0 || $w == 0) {
-       //   $h = 5616;
-       //   $w = 3744;
-       // }
-       $h = 5616;
-       $w = 3744;
+       if (!$h || !$w) {
+          $h = 5616;
+          $w = 3744;
+       }
        //echo @"[$barcode][$mediauri][$h]";
    } else {
      $h = 5616;

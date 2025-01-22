@@ -268,7 +268,7 @@ function target() {
          $mediaid = $media->image_set_id;
          $height = $media->pixel_height;
          $width = $media->pixel_width;
-         if ($height==0||$height==null) {
+         if (!$height||!$width) {
             // $size = getImageSize($mediauri);
             // $width = $size[0];
             // $height = $size[1];
