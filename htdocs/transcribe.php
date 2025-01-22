@@ -269,11 +269,14 @@ function target() {
          $height = $media->pixel_height;
          $width = $media->pixel_width;
          if ($height==0||$height==null) {
-            $size = getImageSize($mediauri);
-            $width = $size[0];
-            $height = $size[1];
-            if (!$height) $height = 4344;
-            if (!$width ) $width = 2896;
+            // $size = getImageSize($mediauri);
+            // $width = $size[0];
+            // $height = $size[1];
+            // if (!$height) $height = 4344;
+            // if (!$width ) $width = 2896;
+
+            $height = 4344;
+            $width = 2896;
          }
          $result->mediauri = $mediauri;
          //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
@@ -306,9 +309,11 @@ function targetfile($path,$filename) {
        $localpathfile = "$path/$filename";
    }
    $pathfile = BASE_IMAGE_PATH.'/'.$localpathfile;
-   list($width,$height) = getimagesize($pathfile);
-   if (!$height) $height = 4344;
-   if (!$width ) $width = 2896;
+   // list($width,$height) = getimagesize($pathfile);
+   // if (!$height) $height = 4344;
+   // if (!$width ) $width = 2896;
+   $height = 4344;
+   $width = 2896;
    $result->height=$height;
    $result->width=$width;
 
