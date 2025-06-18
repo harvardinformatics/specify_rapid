@@ -724,10 +724,12 @@ function form() {
               $('#feedback').html( 'Switched to minimal data capture...');
               $('#minimalButton').html('Minimal');
               transcriptionMode = 'minimal';
+              hideFields(minimalHideFields);
             } else {
               $('#feedback').html( 'Switched to detailed data capture...');
               $('#minimalButton').html('Detailed');
               transcriptionMode = 'detailed';
+              hideFields(defaultHideFields);
             }
 
             var params = new URLSearchParams(window.location.search);
