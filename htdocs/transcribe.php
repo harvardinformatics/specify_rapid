@@ -706,7 +706,7 @@ function form() {
         var defaultHideFields = [];
         var soroHideFields = ['accessionnumber'];
         var poeHideFields = ['currentqualifier','container','collectingtrip', 'specimendescription']; // 'specimenremarks'
-        var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','specimenremarks','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','specimendescription','specimenremarks','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality'];
+        var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality']; // 'specimenremarks'
 
         // Enable/disable buttons based on position
         checkPosition($position);
