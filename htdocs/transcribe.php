@@ -706,7 +706,9 @@ function form() {
         var defaultHideFields = [];
         var soroHideFields = ['accessionnumber'];
         var poeHideFields = ['currentqualifier','container','collectingtrip', 'specimendescription']; // 'specimenremarks'
+        // var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality']; // 'specimenremarks'
         var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality']; // 'specimenremarks'
+        var minimalFields = ['barcode','herbariumacronym','filedundername','currentname','currentqualifier','geographyfilter','highergeography','specimenremarks','project'];
 
         // Enable/disable buttons based on position
         checkPosition($position);
@@ -724,7 +726,7 @@ function form() {
               $('#feedback').html( 'Switched to minimal data capture...');
               $('#minimalButton').html('Minimal');
               transcriptionMode = 'minimal';
-              hideFields(minimalHideFields);
+              showOnlyFields(minimalFields);
             } else {
               $('#feedback').html( 'Switched to detailed data capture...');
               $('#minimalButton').html('Detailed');
@@ -922,6 +924,16 @@ function form() {
                 $(this).closest('tr').show();
               }
             });
+
+            function showOnlyFields(arr) {
+              $('.inputField').each(function(){
+                var idname = $(this).attr('id');
+                if (arr.includes(idname)) {
+                  $(this).closest('tr').show();
+                } else {
+                  $(this).closest('tr').hide();
+                }
+              });
           }
 
 
