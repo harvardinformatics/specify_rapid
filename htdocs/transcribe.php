@@ -924,8 +924,9 @@ function form() {
                 $(this).closest('tr').show();
               }
             });
+          }
 
-            function showOnlyFields(arr) {
+          function showOnlyFields(arr) {
               $('.inputField').each(function(){
                 var idname = $(this).attr('id');
                 if (arr.includes(idname)) {
