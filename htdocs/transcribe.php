@@ -708,7 +708,7 @@ function form() {
         var poeHideFields = ['currentqualifier','container','collectingtrip', 'specimendescription']; // 'specimenremarks'
         // var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality']; // 'specimenremarks'
         var minimalHideFields = ['currentqualifier','provenance','container','collectingtrip','specimendescription','identifiedby','dateidentified','determinertext','accessionnumber','collectingtrip','habitat','frequency','verbatimelevation','verbatimlat','verbatimlong','decimallat','decimallong','georeferencesource','coordinateuncertainty','specificlocality']; // 'specimenremarks'
-        var minimalFields = ['barcode','herbariumacronym','filedundername','currentname','currentqualifier','geographyfilter','highergeography','specimenremarks','project'];
+        var minimalFields = ['barcode','herbariumacronym','filedundername','currentname','currentqualifier','geographyfilter','highergeography','specimenremarks','project','prepmethod','preptype'];
 
         // Enable/disable buttons based on position
         checkPosition($position);
