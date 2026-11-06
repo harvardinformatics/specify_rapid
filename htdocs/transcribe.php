@@ -596,7 +596,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     global $transcriptionMode, $modeLabel, $imgSrc, $imgSrcLabel;
 
-    echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
+    echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Home</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
     echo "<button type='button' id='minimalButton' class='ui-button' >$modeLabel</button>";
     echo "<button type='button' id='imgSrcButton' class='ui-button' >$imgSrcLabel</button>";
@@ -1393,7 +1393,7 @@ function newRecordForm() {
    );
 
    echo "<div class='hfbox' style='height: 1em;'>";
-   echo "<button type='button' onclick='doclear();' class='ui-button' >Back to Batches</button>";
+   echo "<button type='button' onclick='doclear();' class='ui-button' >Home</button>";
    echo "<button type='button' id='newBlankButton' class='ui-button newRecordButton' >New Record</button>";
    echo "<button type='button' id='openImageWindowButton' class='ui-button' >Open Image Window</button>";
    echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
@@ -1717,11 +1717,11 @@ function newRecordForm() {
       });
    }
 
-   /* Describe where an image came from (linked to the specimen record, or from a transcription batch) and when it was added. */
+   /* Describe where an image came from (noted only when it is from a transcription batch rather than linked to the record) and when it was added. */
    function imageSourceHtml(index) {
       var img = currentImages[index];
       var sources = [];
-      sources.push(img.linked ? 'Linked to record' : 'From a transcription batch');
+      if (!img.linked) { sources.push('From a transcription batch'); }
       if (img.create_date) { sources.push('Added ' + escapeHtml(String(img.create_date).substring(0,10))); }
       return sources.join('; ');
    }
