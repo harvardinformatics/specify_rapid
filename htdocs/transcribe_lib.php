@@ -412,7 +412,7 @@ function echoCurrentBatchControls($targetBatch) {
    }
    $targetBatchCurrent = $targetBatch->getCurrentFile();
    $targetBatchFirst = $targetBatch->getFile(1);
-   echo " <strong>Current Batch: [$batchPath]</strong>";
+   echo " <strong>Current Batch:</strong> [$batchPath]";
    if ($targetBatchFirst!=null) {
       echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
    }
