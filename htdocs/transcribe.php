@@ -1394,7 +1394,7 @@ function newRecordForm() {
 
    echo "<div class='hfbox' style='height: 1em;'>";
    echo "<button type='button' onclick='doclear();' class='ui-button' >Back to Batches</button>";
-   echo "<button type='button' id='newBlankButton' class='ui-button' >New Blank Record</button>";
+   echo "<button type='button' id='newBlankButton' class='ui-button newRecordButton' >New Record</button>";
    echo "<button type='button' id='openImageWindowButton' class='ui-button' >Open Image Window</button>";
    echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
    echo "&nbsp;<span id='record_info'>Add or edit a record by barcode.</span>";
@@ -1451,6 +1451,7 @@ function newRecordForm() {
 
    echo "<tr><td colspan=2>";
    echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button ui-state-disabled' disabled='true'> ";
+   echo "<input type='button' value='New Record' id='newRecordBottomButton' class='carryforward ui-button newRecordButton'> ";
    echo "</td></tr>";
 
    echo "</table>";
@@ -1704,6 +1705,7 @@ function newRecordForm() {
             }
             currentImages = data.images;  // sorted newest first by the server
             if (currentImages.length>0) {
+               ensureImageWindow();
                showImage(0);
             } else {
                $('#noimagemessage').html('No images found for this barcode.');
@@ -1715,16 +1717,11 @@ function newRecordForm() {
       });
    }
 
-   /* Describe where an image came from, with links to edit it in its batch(es). */
+   /* Describe where an image came from (linked to the specimen record, or from a transcription batch) and when it was added. */
    function imageSourceHtml(index) {
       var img = currentImages[index];
       var sources = [];
-      if (img.linked) { sources.push('Linked to record'); }
-      for (var j=0; j<img.batches.length; j++) {
-         var b = img.batches[j];
-         sources.push('Batch ' + escapeHtml(b.batch_path) + ' position ' + escapeHtml(b.position) +
-            " <a href='#' class='openinbatch' data-image='" + index + "' data-batch='" + j + "'>[edit in batch]</a>");
-      }
+      sources.push(img.linked ? 'Linked to record' : 'From a transcription batch');
       if (img.create_date) { sources.push('Added ' + escapeHtml(String(img.create_date).substring(0,10))); }
       return sources.join('; ');
    }
@@ -1768,7 +1765,6 @@ function newRecordForm() {
       $('#imagepickertitle').html('Choose an image for ' + escapeHtml($('#barcode').val()) + ' (' + currentImages.length + ' available)');
       $('#imagepickertiles').html(html);
       $('.imagepickertile').on('click', function(event) {
-         if ($(event.target).hasClass('openinbatch')) { return; }
          closeImagePicker();
          showImage($(this).data('index'));
       });
@@ -1784,6 +1780,7 @@ function newRecordForm() {
     */
    var imageWindowAcknowledged = false;
    var imageWindowRetries = 0;
+   var imageWindowOpenedAt = 0;   // a newly opened window may report 'loaded' for its own blank start-up image
    function sendImageToWindow() {
       if (selectedImage==null) { return; }
       imageWindowAcknowledged = false;
@@ -1791,7 +1788,8 @@ function newRecordForm() {
       postImageToWindow();
    }
    function postImageToWindow() {
-      if (selectedImage==null || imageWindowAcknowledged) { return; }
+      var windowIsNew = (Date.now() - imageWindowOpenedAt) < 5000;
+      if (selectedImage==null || (imageWindowAcknowledged && !windowIsNew)) { return; }
       var path = '';
       var filename = '';
       if (selectedImage.batches.length>0) {
@@ -1803,20 +1801,33 @@ function newRecordForm() {
       if (imageWindowRetries < 6) { setTimeout(postImageToWindow, 1500); }
    }
 
-   /* Reopen the magnified image window if it was closed. */
-   function openImageWindow() {
-      window.open('displayimage.php?mode=imagefile&imgsrc=' + encodeURIComponent(newRecordConfig.imgsrc) + '&path=&filename=', '_blank', 'modal=yes');
-      sendImageToWindow();
+   /* Open the magnified image window, unless it is already open.  It is opened only once a barcode
+    * with images is entered (not for a new/blank record).  A named window is used so that an existing
+    * window is reused, even after this page has been reloaded.
+    */
+   function ensureImageWindow() {
+      if (imageWindow!=null && !imageWindow.closed) { return true; }
+      var w = window.open('', 'transcribeimagewindow', 'modal=yes');
+      if (!w) {
+         $('#feedback').html('The browser blocked the magnified image window.  Allow pop-ups for this site, or click Open Image Window.');
+         return false;
+      }
+      var needsLoad = true;
+      try { needsLoad = (w.location.href.indexOf('displayimage.php')<0); } catch (e) { needsLoad = false; }
+      if (needsLoad) {
+         w.location.href = 'displayimage.php?mode=imagefile&imgsrc=' + encodeURIComponent(newRecordConfig.imgsrc) + '&path=&filename=';
+         imageWindowOpenedAt = Date.now();
+      }
+      imageWindow = w;
+      return true;
    }
 
-   /* Links to work on an image in its batch: close this form's image window first, dosetuppath opens a new one. */
-   $(document).on('click', '.openinbatch', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      var b = currentImages[$(this).data('image')].batches[$(this).data('batch')];
-      channel.postMessage('close');
-      dosetuppath(encodeURIComponent(b.batch_path), encodeURIComponent(b.path), encodeURIComponent(b.filename), b.position, 'standard');
-   });
+   function openImageWindow() {
+      if (ensureImageWindow()) {
+         try { imageWindow.focus(); } catch (e) { }
+         sendImageToWindow();
+      }
+   }
 
    $('#imagepickerclose').on('click', function(event) { event.preventDefault(); closeImagePicker(); });
    $('#imagepickeroverlay').on('click', function(event) { if (event.target===this) { closeImagePicker(); } });
@@ -1851,7 +1862,7 @@ function newRecordForm() {
 
    $('#openImageWindowButton').on('click', function(event) { openImageWindow(); event.preventDefault(); });
 
-   $('#newBlankButton').on('click', function(event) {
+   $('.newRecordButton').on('click', function(event) {
       resetRecordFields(false);
       lastLookedUpBarcode = null;
       currentImages = [];

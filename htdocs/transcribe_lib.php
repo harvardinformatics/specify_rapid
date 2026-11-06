@@ -209,10 +209,13 @@ function lookupImageUrlsForImageSet($image_set_id) {
     return $result;
 }
 
-/** usort comparison function, orders image sets from lookupImagesForBarcode() newest first. */
+/** usort comparison function, orders image sets from lookupImagesForBarcode() newest first.
+  * IMAGE_SET ids are assigned in insertion order, so the highest id is the most recently added.
+  * (IMAGE_OBJECT.CREATE_DATE is empty for most image objects, so it is only used to break ties.)
+  */
 function compareImagesNewestFirst($a, $b) {
-    $c = strcmp((string)$b['create_date'], (string)$a['create_date']);
-    if ($c==0) { $c = intval($b['image_set_id']) - intval($a['image_set_id']); }
+    $c = intval($b['image_set_id']) - intval($a['image_set_id']);
+    if ($c==0) { $c = strcmp((string)$b['create_date'], (string)$a['create_date']); }
     return $c;
 }
 
@@ -292,7 +295,7 @@ function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
         unset($set['localuri']);
         $result[] = $set;
     }
-    // most recently added image first: latest create date, then highest image set id.
+    // most recently added image first (highest image set id).
     usort($result, 'compareImagesNewestFirst');
     return $result;
 }
@@ -656,9 +659,8 @@ class TPage extends Page {
       if (mode=='testminimal') { added = '&test=true&config=minimal'; }
       window.location.href = 'transcribe.php?display=mainform&batch='+batchpath+'&position='+position+added;
    }
-   // Open the magnified image window and the Add/Edit Records form (as dosetuppath does for batches).
+   // Open the Add/Edit Records form.  The form opens the magnified image window itself once a barcode with images is entered.
    function dosetupnewrecord(barcode) {
-      window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path=&filename=' ,'_blank','modal=yes');
       var added = '';
       if (barcode) { added = '&barcode=' + encodeURIComponent(barcode); }
       window.location.href = 'transcribe.php?display=newrecord' + added;
