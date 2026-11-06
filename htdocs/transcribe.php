@@ -712,7 +712,7 @@ function form() {
    </script>
    ';
 
-   fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true');   // not zero padded when coming off barcode scanner.
+   fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true','8',barcodeLinkIcon());   // not zero padded when coming off barcode scanner.
    echo "<input type='hidden' name='barcodeval' id='barcodeval' value=''>"; // to carry submission of barcode with disabled barcode input.
    // TODO: on loss of focus, check database for record and reload data.
    // ******************
@@ -723,6 +723,7 @@ function form() {
        });
        $("#barcode").on( "input", function () {
            this.setCustomValidity("");
+           updateBarcodeLink("", false);
        });
        $("#barcode").on( "blur", function () {
            loadDataForBarcode($("#barcode").val());
@@ -1129,6 +1130,7 @@ function form() {
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
 
+              updateBarcodeLink(barcodeval, barcodeval.length>0 && (data.num_matches > 0 || data.preparation_matches > 0));
               checkSaveButton();
           }
 
@@ -1166,6 +1168,8 @@ function form() {
                         $('#barcode').val(data.barcode);
                         $('#barcode').prop('disabled', true);
                      }
+
+                     updateBarcodeLink($('#barcode').val(), $('#barcode').val().length>0 && (data.num_matches > 0 || data.preparation_matches > 0));
 
                      // interate through the elements in data
                      if (data.num_matches == 0) {
@@ -1410,7 +1414,7 @@ function newRecordForm() {
 
    echo "<table>";
 
-   @field("barcode","Barcode",'','required','[0-9]{1,8}','','Barcode must be a 1 to 8 digit number.','true');
+   @field("barcode","Barcode",'','required','[0-9]{1,8}','','Barcode must be a 1 to 8 digit number.','true','8',barcodeLinkIcon());
    echo "<input type='hidden' name='barcodeval' id='barcodeval' value='' class='fixedvalue'>";
 
    @selectAcronym("herbariumacronym",$defaultherbarium);
@@ -1524,6 +1528,7 @@ function newRecordForm() {
    var selectedImage = null;   // the image currently displayed
    var imageWindow = null;     // the zoom window
    var lastLookedUpBarcode = null;
+   var lastBarcodeFound = false;   // whether lastLookedUpBarcode was found in fragment or preparation
 
    function escapeHtml(value) {
       return String(value == null ? '' : value).replace(/[&<>"']/g, function(c) {
@@ -1629,11 +1634,12 @@ function newRecordForm() {
       var barcode = padBarcode(rawvalue);
       if (!re_barcode.test(barcode)) {
          $('#feedback').html('Barcode must be a 1 to 8 digit number.');
+         updateBarcodeLink('', false);
          lastLookedUpBarcode = null;
          checkSaveButton();
          return;
       }
-      if (barcode==lastLookedUpBarcode) { return; }
+      if (barcode==lastLookedUpBarcode) { updateBarcodeLink(barcode, lastBarcodeFound); return; }
       $('#barcode').val(barcode);
       $('#feedback').html('Looking up ' + barcode + '...');
       $.ajax({
@@ -1644,6 +1650,8 @@ function newRecordForm() {
          success: function(data) {
             lastLookedUpBarcode = barcode;
             updateLocationBarcode(barcode);
+            lastBarcodeFound = (data.num_matches > 0 || data.preparation_matches > 0);
+            updateBarcodeLink(barcode, lastBarcodeFound);
             if (data.preparation_matches > 0) {
                // Barcode belongs to a preparation (unbarcoded item): saving here would be refused.
                resetRecordFields(true);
@@ -1669,6 +1677,7 @@ function newRecordForm() {
          },
          error: function() {
             lastLookedUpBarcode = null;
+            updateBarcodeLink('', false);
             checkSaveButton();
             $('#feedback').html('Failed.  Ajax Error.  Barcode: ' + escapeHtml(barcode));
          }
@@ -1834,7 +1843,7 @@ function newRecordForm() {
    $('#barcode').on('blur', function () { lookupBarcode($('#barcode').val()); });
    $('#barcode').on('keyup', function (event) {
       if (event.keyCode === 13) { lookupBarcode($('#barcode').val()); }
-      else if ($('#barcode').val()!=lastLookedUpBarcode) { checkSaveButton(); }
+      else if ($('#barcode').val()!=lastLookedUpBarcode) { updateBarcodeLink('', false); checkSaveButton(); }
    });
    $('#barcode').on('invalid', function () { this.setCustomValidity('Barcode must be a 1 to 8 digit number.'); });
    $('#barcode').on('input', function () { this.setCustomValidity(''); });
@@ -1843,6 +1852,7 @@ function newRecordForm() {
 
    $('.newRecordButton').on('click', function(event) {
       resetRecordFields(false);
+      updateBarcodeLink('', false);
       lastLookedUpBarcode = null;
       currentImages = [];
       showImage(null);
@@ -1893,7 +1903,7 @@ function newRecordForm() {
 EOT;
 }
 
-function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true') {
+function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true', $width='', $after='') {
    echo "<tr><td>\n";
    echo "<label for='$name'>$label</label>";
    echo "</td><td>\n";
@@ -1911,19 +1921,21 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
    } else {
       $disabled = '';
    }
+   if ($width=='') { $width = $GLOBALS['BASEWIDTH']; }
    if ($required=='false') {
-      echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$width."em; ' $disabled >";
    }
+   echo $after;
    echo "</td></tr>\n";
 }
 
 
-function fieldEnabalable($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true') {
+function fieldEnabalable($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true', $width='', $after='') {
    echo "<tr><td>\n";
    echo "<label for='$name'>$label</label>";
    echo "</td><td>\n";
@@ -1942,7 +1954,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       $disabled = '';
    }
    //$width = BASEWIDTH - 2;
-   $width = $GLOBALS['BASEWIDTH'];
+   if ($width=='') { $width = $GLOBALS['BASEWIDTH']; }
    if ($required=='false') {
       echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
@@ -1951,6 +1963,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       }
       echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    }
+   echo $after;
    //echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
    echo "<script>
          function doEnable$name(){

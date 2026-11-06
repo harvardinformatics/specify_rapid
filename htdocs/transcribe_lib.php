@@ -307,6 +307,15 @@ function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
     return $result;
 }
 
+/** Return the markup for the barcode link icon (an external link to the specimen page on the HUH website).
+ *  Starts greyed out; updateBarcodeLink() in the page header activates it when the barcode is found.
+ */
+function barcodeLinkIcon() {
+   return "<a id='barcodelink' class='barcodelink' target='_blank' rel='noopener' aria-disabled='true' tabindex='-1' title='Barcode not found in the database'>"
+        . "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>"
+        . "<path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/><polyline points='15 3 21 3 21 9'/><line x1='10' y1='14' x2='21' y2='3'/></svg></a>";
+}
+
 /** Echo the "Current Batch" controls shown on the batch selection page.
  *
  *  @param targetBatch a TR_Batch, or null if there is no current batch.
@@ -731,6 +740,32 @@ class TPage extends Page {
   }
 </style>
               ";
+             $returnvalue .= <<<'EOT'
+<style>
+  .barcodelink { display: inline-block; vertical-align: middle; margin-left: 4px; line-height: 0; color: #b0b0b0; cursor: default; pointer-events: none; }
+  .barcodelink.active { color: #2e6da4; cursor: pointer; pointer-events: auto; }
+  .barcodelink svg { width: 16px; height: 16px; }
+</style>
+<script>
+   /* Activate the barcode link icon (linking to the specimen page on the HUH website) when the barcode
+    * was found in the database (fragment or preparation table); otherwise show it greyed out.
+    */
+   function updateBarcodeLink(barcode, found) {
+      var link = $('#barcodelink');
+      var digits = String(barcode == null ? '' : barcode).replace(/[^0-9]/g, '');
+      if (found && digits.length > 0 && digits.length <= 8) {
+         var padded = ('00000000' + digits).slice(-8);
+         link.attr('href', 'https://data.huh.harvard.edu/databases/specimen_search.php?barcode=' + encodeURIComponent(padded));
+         link.attr('title', 'Open specimen ' + padded + ' on the HUH website');
+         link.attr('aria-disabled', 'false').attr('tabindex', '0').addClass('active');
+      } else {
+         link.removeAttr('href');
+         link.attr('title', 'Barcode not found in the database');
+         link.attr('aria-disabled', 'true').attr('tabindex', '-1').removeClass('active');
+      }
+   }
+</script>
+EOT;
          }
       }
       $returnvalue .= '</header>';
