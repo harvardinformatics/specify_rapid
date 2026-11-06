@@ -154,6 +154,49 @@ if ($connection && $authenticated) {
          echo json_encode($result);
          break;
 
+      case 'findbarcode':
+         // Find all transcription batches (and positions within them) containing a barcode.
+         @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+         $toencode = array();
+         $toencode['barcode'] = $barcode;
+         $toencode['error'] = '';
+         $toencode['batches'] = array();
+         if (strlen($barcode)==0) {
+            $toencode['error'] = 'No barcode provided.';
+         } else {
+            try {
+               $toencode['barcode'] = str_pad($barcode,8,"0",STR_PAD_LEFT);
+               $toencode['batches'] = lookupBatchesForBarcode($barcode);
+            } catch (Exception $e) {
+               $toencode['error'] = $e->getMessage();
+            }
+         }
+         header("Content-type: application/json");
+         echo json_encode($toencode);
+         break;
+
+      case 'getimagesforbarcode':
+         // Find images for a barcode, from IMAGE_SET_collectionobject and from TR_BATCH_IMAGE.
+         @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+         @$imgsrc = substr(preg_replace('/[^A-Z]/','',$_GET['imgsrc']),0,5);
+         $toencode = array();
+         $toencode['barcode'] = $barcode;
+         $toencode['error'] = '';
+         $toencode['images'] = array();
+         if (strlen($barcode)==0) {
+            $toencode['error'] = 'No barcode provided.';
+         } else {
+            try {
+               $toencode['barcode'] = str_pad($barcode,8,"0",STR_PAD_LEFT);
+               $toencode['images'] = lookupImagesForBarcode($barcode,$imgsrc);
+            } catch (Exception $e) {
+               $toencode['error'] = $e->getMessage();
+            }
+         }
+         header("Content-type: application/json");
+         echo json_encode($toencode);
+         break;
+
       case 'transcribe':
          $feedback = "";
 

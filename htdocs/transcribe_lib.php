@@ -102,6 +102,187 @@ function getBarcodeForFilename($pathbelowbase, $filename) {
     return $result;
 }
 
+/** Normalize a barcode string into the forms it may be stored in.
+  *
+  * @param barcode a barcode as entered by a user (may lack leading zeros).
+  * @return an array of distinct candidate values: the 8 digit zero padded form
+  *   and the form with leading zeros removed, empty array if no digits are present.
+  */
+function barcodeVariants($barcode) {
+    $digits = substr(preg_replace('/[^0-9]/','',$barcode),0,20);
+    if (strlen($digits)==0) { return array(); }
+    $padded = str_pad($digits,8,"0",STR_PAD_LEFT);
+    $unpadded = ltrim($digits,"0");
+    // Note: strict comparisons are required, "12345"=="00012345" is true in PHP (numeric strings).
+    $result = array($padded);
+    if (strlen($unpadded)>0 && $unpadded!==$padded) { $result[] = $unpadded; }
+    if ($digits!==$padded && $digits!==$unpadded) { $result[] = $digits; }
+    return $result;
+}
+
+/** Find every place a barcode occurs in transcription batches (TR_BATCH_IMAGE.barcode).
+  *
+  * @param barcode the barcode to search for (zero padding is optional).
+  * @return an array of associative arrays, one for each batch position where the barcode is found,
+  *   with keys batch_id, batch_path, completed, position, filecount, path, filename, image_set_id, barcode.
+  */
+function lookupBatchesForBarcode($barcode) {
+    global $connection;
+    $result = array();
+    $variants = barcodeVariants($barcode);
+    if (count($variants)==0) { return $result; }
+    // pad the variant list to exactly three values so that a single prepared statement can be used.
+    while (count($variants)<3) { $variants[] = $variants[0]; }
+    $sql = "select tbi.tr_batch_id, trb.path, IF(trb.completed_date is not null, 1, 0) as completed,
+                   tbi.position, tbi.barcode, imo.image_set_id, imlf.path, imlf.filename,
+                   (select count(*) from TR_BATCH_IMAGE c where c.tr_batch_id = tbi.tr_batch_id) as filecount
+              from TR_BATCH_IMAGE tbi
+              join TR_BATCH trb on tbi.tr_batch_id = trb.tr_batch_id
+              left join IMAGE_OBJECT imo on tbi.image_object_id = imo.id
+              left join IMAGE_LOCAL_FILE imlf on imo.image_local_file_id = imlf.id
+             where tbi.barcode in (?,?,?)
+             order by completed, trb.path, tbi.position";
+    if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("sss",$variants[0],$variants[1],$variants[2]);
+        $statement->execute();
+        $statement->bind_result($batch_id,$batch_path,$completed,$position,$foundbarcode,$image_set_id,$path,$filename,$filecount);
+        $statement->store_result();
+        while ($statement->fetch()) {
+            $row = array();
+            $row['batch_id'] = $batch_id;
+            $row['batch_path'] = $batch_path;
+            $row['completed'] = $completed;
+            $row['position'] = $position;
+            $row['filecount'] = $filecount;
+            $row['barcode'] = $foundbarcode;
+            $row['image_set_id'] = $image_set_id;
+            $row['path'] = ($path===null) ? '' : rtrim($path,'/').'/';
+            $row['filename'] = ($filename===null) ? '' : $filename;
+            $result[] = $row;
+        }
+        $statement->free_result();
+        $statement->close();
+    } else {
+        throw new Exception("Query preparation failed: ".$connection->error);
+    }
+    return $result;
+}
+
+/** Find the images available for display for an image set.
+  *
+  * @param image_set_id the IMAGE_SET to look up.
+  * @return an associative array with keys url, thumbnail, pixel_height, pixel_width
+  *   (url/thumbnail are null if no web accessible image object is known).
+  */
+function lookupImageUrlsForImageSet($image_set_id) {
+    global $connection;
+    $result = array('url'=>null,'thumbnail'=>null,'pixel_height'=>null,'pixel_width'=>null);
+    // object_type_id 3 is the web jpeg used by the edit form (see TR_Batch::getFile()), 2 is a thumbnail.
+    $sql = "select io.object_type_id, repo.url_prefix, io.uri, io.pixel_height, io.pixel_width
+              from IMAGE_OBJECT io
+              left join REPOSITORY repo on io.repository_id = repo.id
+             where io.image_set_id = ? and io.active_flag = 1 and io.object_type_id in (2,3)
+             order by io.object_type_id";
+    if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("i",$image_set_id);
+        $statement->execute();
+        $statement->bind_result($object_type_id,$url_prefix,$uri,$pixel_height,$pixel_width);
+        $statement->store_result();
+        while ($statement->fetch()) {
+            if ($url_prefix==null || $uri==null) { continue; }
+            if ($object_type_id==3 && $result['url']==null) {
+                $result['url'] = $url_prefix.$uri;
+                $result['pixel_height'] = $pixel_height;
+                $result['pixel_width'] = $pixel_width;
+            }
+            if ($object_type_id==2 && $result['thumbnail']==null) {
+                $result['thumbnail'] = $url_prefix.$uri;
+            }
+        }
+        $statement->free_result();
+        $statement->close();
+    }
+    return $result;
+}
+
+/** Find all images associated with a barcode, either linked to the specimen record
+  * through IMAGE_SET_collectionobject, or present in a transcription batch (TR_BATCH_IMAGE).
+  *
+  * @param barcode the barcode to look up.
+  * @param imgsrc 'RC' to prefer local files served from BASE_IMAGE_URI for batch images, otherwise web images.
+  * @return an array of associative arrays, one per image set, each with keys image_set_id, url,
+  *   thumbnail, pixel_height, pixel_width, linked (true if linked to the specimen record) and
+  *   batches (array of batch positions from lookupBatchesForBarcode() in which the image occurs).
+  */
+function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
+    global $connection;
+    $sets = array();
+    $variants = barcodeVariants($barcode);
+    if (count($variants)==0) { return array(); }
+    $padded = $variants[0];
+
+    // images linked to the specimen record
+    $sql = "select distinct isco.imagesetid
+              from fragment f
+              join IMAGE_SET_collectionobject isco on f.collectionobjectid = isco.collectionobjectid
+             where f.identifier = ?
+             order by isco.imagesetid";
+    if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("s",$padded);
+        $statement->execute();
+        $statement->bind_result($image_set_id);
+        $statement->store_result();
+        while ($statement->fetch()) {
+            $sets[$image_set_id] = array('image_set_id'=>$image_set_id, 'linked'=>true, 'batches'=>array(), 'localuri'=>null);
+        }
+        $statement->free_result();
+        $statement->close();
+    } else {
+        throw new Exception("Query preparation failed: ".$connection->error);
+    }
+
+    // images in transcription batches
+    $batches = lookupBatchesForBarcode($barcode);
+    foreach ($batches as $batchrow) {
+        $id = $batchrow['image_set_id'];
+        if ($id==null) { $id = 'batch'.$batchrow['batch_id'].'_'.$batchrow['position']; }
+        if (!array_key_exists($id,$sets)) {
+            $sets[$id] = array('image_set_id'=>$batchrow['image_set_id'], 'linked'=>false, 'batches'=>array(), 'localuri'=>null);
+        }
+        $sets[$id]['batches'][] = $batchrow;
+        if ($sets[$id]['localuri']==null && strlen($batchrow['filename'])>0 && defined('BASE_IMAGE_URI')) {
+            $sets[$id]['localuri'] = BASE_IMAGE_URI.$batchrow['path'].$batchrow['filename'];
+        }
+    }
+
+    // attach display urls
+    $result = array();
+    foreach ($sets as $set) {
+        $urls = array('url'=>null,'thumbnail'=>null,'pixel_height'=>null,'pixel_width'=>null);
+        if ($set['image_set_id']!=null) {
+            $urls = lookupImageUrlsForImageSet($set['image_set_id']);
+        }
+        // same fallback as the getrecord action: use the local file if requested or if no web image is known.
+        if (($imgsrc=='RC' || $urls['url']==null) && $set['localuri']!=null) {
+            $urls['url'] = $set['localuri'];
+        }
+        if ($urls['url']==null) { continue; }  // nothing displayable
+        if ($urls['thumbnail']==null) { $urls['thumbnail'] = $urls['url']; }
+        if (!$urls['pixel_height'] || !$urls['pixel_width']) {
+            // same defaults as targetfile() in transcribe.php
+            $urls['pixel_height'] = 4344;
+            $urls['pixel_width'] = 2896;
+        }
+        $set['url'] = $urls['url'];
+        $set['thumbnail'] = $urls['thumbnail'];
+        $set['pixel_height'] = $urls['pixel_height'];
+        $set['pixel_width'] = $urls['pixel_width'];
+        unset($set['localuri']);
+        $result[] = $set;
+    }
+    return $result;
+}
+
 # Classes *******************************************
 
 class TR_Batch {
