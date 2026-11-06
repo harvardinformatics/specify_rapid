@@ -17,27 +17,34 @@ class PathFile {
 
 # Supporting functions *****************************
 
-/** Find out what the next batch is for the current user
+/** Find out what the next batch is for the current user: the open (not completed) batch
+ *  the user most recently worked on, by TR_USER_BATCH.last_accessed, falling back to the
+ *  highest position for rows that have no last_accessed value.
  *
- *  @return a TR_BATCH object.
+ *  @return a TR_BATCH object, or null if the user has no open batch.
  */
 function getNextBatch() {
      global $connection, $user;
-     // find the next batch to be worked on
-     // TODO: db should be improved to record the last batch the user worked on
-     $sql = 'select trub.tr_batch_id from TR_USER_BATCH trub, TR_BATCH trb where trub.tr_batch_id = trb.tr_batch_id and trub.username = ? and trb.completed_date is null order by trub.position desc limit 1';
+     $batch_id = null;
+     // MySQL sorts NULL last_accessed values last in descending order.
+     $sql = 'select trub.tr_batch_id from TR_USER_BATCH trub, TR_BATCH trb where trub.tr_batch_id = trb.tr_batch_id and trub.username = ? and trb.completed_date is null order by trub.last_accessed desc, trub.position desc limit 1';
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("s",$_SESSION["username"]);
         $statement->execute();
-        $statement->bind_result($batch_id);
+        $statement->bind_result($found_batch_id);
         $statement->store_result();
         if ($statement->fetch()) {
-          // nothing
-        } else {
-          $batch_id = 1;
+          $batch_id = $found_batch_id;
         }
+        $statement->free_result();
+        $statement->close();
      } else {
        throw new Exception("Connection to database failed");
+     }
+
+     if ($batch_id==null) {
+        // no open batch for this user
+        return null;
      }
 
      $batch = new TR_BATCH();
@@ -300,6 +307,31 @@ function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
     return $result;
 }
 
+/** Echo the "Current Batch" controls shown on the batch selection page.
+ *
+ *  @param targetBatch a TR_Batch, or null if there is no current batch.
+ */
+function echoCurrentBatchControls($targetBatch) {
+   $batchPath = null;
+   if ($targetBatch!=null) {
+      $batchPath = $targetBatch->getPath();
+   }
+   if ($batchPath==null || strlen($batchPath)==0) {
+     echo " <strong>No Current Batch.</strong>";
+     return;
+   }
+   $targetBatchCurrent = $targetBatch->getCurrentFile();
+   $targetBatchFirst = $targetBatch->getFile(1);
+   echo " <strong>Current Batch: [$batchPath]</strong>";
+   if ($targetBatchFirst!=null) {
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
+   }
+   if ($targetBatchCurrent!=null && $targetBatchCurrent->position > 1) {
+      $position = $targetBatchCurrent->position;
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+   }
+}
+
 # Classes *******************************************
 
 class TR_Batch {
@@ -328,7 +360,7 @@ class TR_Batch {
            // make sure there is a TR_USER_BATCH entry for this batch for the current user.
            $this->selectOrCreateUserForBatch();
        } else {
-         throw new Exception('Batch not found for path '. $path);
+         throw new Exception('Batch not found for path '. $a_path);
        }
        $statement->close();
     } else {
@@ -357,7 +389,7 @@ class TR_Batch {
            }
            $statement->close();
            if (strlen($this->batch_id)==0) {
-               throw new Exception('Batch not found for path '. $path);
+               throw new Exception('Batch not found for id '. $id);
            }
         } else {
             throw new Exception('Problem with database connection or query preparation.');
@@ -469,7 +501,7 @@ class TR_Batch {
       throw new Exception("Database connection failed");
     }
 
-    return movePosition($position + $i);
+    return $this->movePosition($position + $i);
   }
 
   /** Move current position in batch to $i

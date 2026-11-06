@@ -149,22 +149,11 @@ function doSetup() {
       $targetBatch = getBatch($targetBatchDir);
    }
 
-   $batchPath = $targetBatch->getPath();
-   $targetBatchCurrent = $targetBatch->getCurrentFile();
-   $targetBatchFirst = $targetBatch->getFile(1);
-   $position = $targetBatchCurrent->position;
+   // $targetBatch is null when the user has no open batch.
+   $batchPath = ($targetBatch==null) ? null : $targetBatch->getPath();
    echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
-   if ($batchPath==null || strlen($batchPath)==0) {
-     echo " <strong>No Current Batch.</strong>";
-   } else {
-      echo " <strong>Current Batch: [$batchPath]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
-      if ($position > 1) {
-        echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
-      }
-      //echo " First File: [$targetBatchFirst->filename]";
-   }
+   echoCurrentBatchControls($targetBatch);
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
