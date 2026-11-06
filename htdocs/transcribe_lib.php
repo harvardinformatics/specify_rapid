@@ -532,7 +532,8 @@ class TR_Batch {
      }
 
      // Update position
-     $sql = "update TR_USER_BATCH set position = ? where username = ? and tr_batch_id = ?";
+     // Record when the user last worked in this batch; getNextBatch() uses this to find the current batch.
+     $sql = "update TR_USER_BATCH set position = ?, last_accessed = now() where username = ? and tr_batch_id = ?";
      if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("isi",$nextposition,$username,$batch_id);
         $statement->execute();
