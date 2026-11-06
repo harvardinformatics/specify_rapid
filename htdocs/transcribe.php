@@ -157,7 +157,7 @@ function doSetup() {
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
-   echo " <strong>Work on another batch:</strong>";
+   echo " <strong>Select batch:</strong> ";
    echo "<select id='targetBatch' name='targetBatch'>";
    $sql = "select trb.path, IF(trb.completed_date is not null, 1, 0) as completed, group_concat(trub.username separator ',') as users from TR_BATCH trb left join TR_USER_BATCH trub on trb.tr_batch_id = trub.tr_batch_id and trub.position > 1 group by trb.tr_batch_id order by completed, path asc";
    if ($statement = $connection->prepare($sql)) {
