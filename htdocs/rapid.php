@@ -36,6 +36,21 @@ $user = new User();
 $username = "";
 
 if ($require_authentication) {
+   // Bug fix: previously an existing session always took precedence, so clicking
+   // Logout (display=logout) or submitting the login form as a different user left
+   // the previous user's session in place and the app kept acting as that user.
+   if ($display=='logout') {
+      // Explicit logout request: destroy the session and start a fresh, empty one.
+      $user->logout();
+      session_start();
+      session_regenerate_id(true);
+      $_SESSION = array();
+   } elseif (@$_POST['password']!="" && @$_POST['username']!="") {
+      // New login attempt: discard any existing session data (possibly for another
+      // user) so that the credentials just submitted are the ones authenticated.
+      $_SESSION = array();
+      session_regenerate_id(true);
+   }
    if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
       $display = "logindialog";
       if (@$_POST['password']!="" && $_POST['username']!="") {
@@ -50,7 +65,8 @@ if ($require_authentication) {
             $_SESSION["fullname"]=$user->getFullName();
             $_SESSION["lastlogin"]=$user->getLastLogin();
             $_SESSION["about"]=$user->getAbout();
-            if ($tdisplay == "") {
+            $authenticated = true;
+            if ($tdisplay == "" || $tdisplay == "logout" || $tdisplay == "logindialog") {
                $display = "mainform";
             } else {
                $display = $tdisplay;
