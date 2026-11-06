@@ -50,6 +50,21 @@ $authenticated = false;
 $user = new User();
 
 if ($require_authentication) {
+   // Bug fix: previously an existing session always took precedence, so clicking
+   // Logout (display=logout) or submitting the login form as a different user left
+   // the previous user's session in place and the app kept acting as that user.
+   if ($display=='logout') {
+      // Explicit logout request: destroy the session and start a fresh, empty one.
+      $user->logout();
+      session_start();
+      session_regenerate_id(true);
+      $_SESSION = array();
+   } elseif (@$_POST['password']!="" && @$_POST['username']!="") {
+      // New login attempt: discard any existing session data (possibly for another
+      // user) so that the credentials just submitted are the ones authenticated.
+      $_SESSION = array();
+      session_regenerate_id(true);
+   }
    if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
       $display = "logindialog";
       if (@$_POST['password']!="" && $_POST['username']!="") {
@@ -64,7 +79,8 @@ if ($require_authentication) {
             $_SESSION["fullname"]=$user->getFullName();
             $_SESSION["lastlogin"]=$user->getLastLogin();
             $_SESSION["about"]=$user->getAbout();
-            if ($tdisplay == "") {
+            $authenticated = true;
+            if ($tdisplay == "" || $tdisplay == "logout" || $tdisplay == "logindialog") {
                $display = "setup";
             } else {
                $display = $tdisplay;
@@ -133,26 +149,15 @@ function doSetup() {
       $targetBatch = getBatch($targetBatchDir);
    }
 
-   $batchPath = $targetBatch->getPath();
-   $targetBatchCurrent = $targetBatch->getCurrentFile();
-   $targetBatchFirst = $targetBatch->getFile(1);
-   $position = $targetBatchCurrent->position;
-   echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
+   // $targetBatch is null when the user has no open batch.
+   $batchPath = ($targetBatch==null) ? null : $targetBatch->getPath();
+   echo "<div style='padding: 0.4em 0.7em; margin: 0.3em 0.3em 0.6em 0.3em; background-color: #d7ebf9; border: 1px solid #aed0ea; border-radius: 4px;'><h2 style='margin: 0;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
-   if ($batchPath==null || strlen($batchPath)==0) {
-     echo " <strong>No Current Batch.</strong>";
-   } else {
-      echo " <strong>Batch: [$batchPath]</strong>";
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
-      if ($position > 1) {
-        echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
-      }
-      //echo " First File: [$targetBatchFirst->filename]";
-   }
+   echoCurrentBatchControls($targetBatch);
    echo "</div>";
 //   echo "<form method='GET' action='transcribe.php'><div id='pickbatch' style='padding: 0.5em;' >";
    echo "<div id='pickbatch' style='padding: 0.5em;' >";
-   echo " <strong>Work on another batch:</strong>";
+   echo " <strong>Select batch:</strong> ";
    echo "<select id='targetBatch' name='targetBatch'>";
    $sql = "select trb.path, IF(trb.completed_date is not null, 1, 0) as completed, group_concat(trub.username separator ',') as users from TR_BATCH trb left join TR_USER_BATCH trub on trb.tr_batch_id = trub.tr_batch_id and trub.position > 1 group by trb.tr_batch_id order by completed, path asc";
    if ($statement = $connection->prepare($sql)) {
@@ -188,6 +193,77 @@ function doSetup() {
    }
 
    echo "</select></div>";
+
+   // Search for a barcode across the transcription batches.
+   echo "<div id='findbarcodediv' style='padding: 0.5em;' >";
+   echo " <strong>Find a barcode:</strong> ";
+   echo "<input type='text' id='findbarcode' name='findbarcode' size='10' maxlength='20' placeholder='Barcode' autocomplete='off'>";
+   echo "<button type='button' id='findbarcodebutton' class='ui-button' style='margin-left: 0.4em;'>Find</button>";
+   echo "<div id='findbarcoderesults' style='padding-top: 0.5em;'></div>";
+   echo "</div>";
+   echo "<script type='text/javascript'>
+      function escapeHtml(value) {
+         return String(value == null ? '' : value).replace(/[&<>\"']/g, function(c) {
+            return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;', \"'\":'&#39;' }[c];
+         });
+      }
+      function findBarcode() {
+         var barcode = $('#findbarcode').val().replace(/[^0-9]/g,'');
+         if (barcode.length==0) {
+            $('#findbarcoderesults').html('Enter a barcode (digits only) to search for.');
+            return;
+         }
+         $('#findbarcoderesults').html('Searching...');
+         $.ajax({
+            type: 'GET',
+            url: 'transcribe_handler.php',
+            dataType: 'json',
+            data: { action: 'findbarcode', barcode: barcode },
+            success: function(data) {
+               if (data.error) {
+                  $('#findbarcoderesults').html('Error: ' + escapeHtml(data.error));
+                  return;
+               }
+               if (data.batches.length==0) {
+                  $('#findbarcoderesults').html('Barcode ' + escapeHtml(data.barcode) + ' was not found in any batch.');
+                  return;
+               }
+               var html = '<div>Barcode ' + escapeHtml(data.barcode) + ' found in ' + data.batches.length + ' batch position(s).</div>';
+               html += \"<table class='findbarcodetable' style='border-collapse: collapse;'>\";
+               html += '<tr><th align=left>Batch</th><th align=left>Status</th><th align=left>Position</th><th align=left>File</th><th></th></tr>';
+               for (var i=0; i<data.batches.length; i++) {
+                  var b = data.batches[i];
+                  html += '<tr>';
+                  html += '<td style=\"padding-right: 1em;\">' + escapeHtml(b.batch_path) + '</td>';
+                  html += '<td style=\"padding-right: 1em;\">' + (b.completed==1 ? 'Done' : 'Open') + '</td>';
+                  html += '<td style=\"padding-right: 1em;\">' + escapeHtml(b.position) + ' of ' + escapeHtml(b.filecount) + '</td>';
+                  html += '<td style=\"padding-right: 1em;\">' + escapeHtml(b.filename) + '</td>';
+                  html += \"<td><button type='button' class='ui-button findbarcodego' data-index='\" + i + \"'>Edit in batch</button></td>\";
+                  html += '</tr>';
+               }
+               html += '</table>';
+               $('#findbarcoderesults').html(html);
+               $('.findbarcodego').on('click', function() {
+                  var b = data.batches[$(this).data('index')];
+                  $('#cover').fadeIn(100);
+                  dosetuppath(encodeURIComponent(b.batch_path), encodeURIComponent(b.path), encodeURIComponent(b.filename), b.position, 'standard');
+               });
+            },
+            error: function() {
+               $('#findbarcoderesults').html('Search failed.  Ajax Error.');
+            }
+         });
+      }
+      $('#findbarcodebutton').on('click', findBarcode);
+      $('#findbarcode').on('keyup', function(event) {
+         if (event.keyCode === 13) { findBarcode(); }
+      });
+   </script>";
+
+   // Add a new record (or edit an existing one by barcode) outside of a batch.
+   echo "<div id='addrecord' style='padding: 0.5em;' >";
+   echo "<button type='button' class='ui-button' onclick='dosetupnewrecord(\"\");'>Add/Edit Records</button>";
+   echo "</div>";
 //   echo "</select><button type='submit' value='Pick Batch' class='ui-button'>Pick Batch</button></div></form>";
    echo "<script type='text/javascript'>
       $('#targetBatch').on('change', function() {
@@ -335,7 +411,7 @@ function targetfile($path,$filename) {
 function imageForBarcode($barcode) {
    global $connection;
    $result = "";
-   $sql = " select concat(url_prefix,uri) as url
+   $sql = " select url_prefix, uri
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
@@ -344,9 +420,10 @@ function imageForBarcode($barcode) {
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
        $statement->execute();
-       $statement->bind_result($url);
+       $statement->bind_result($url_prefix, $uri);
+       $statement->store_result();
        if ($statement->fetch()) {
-         $result .= $url;
+         $result .= resolveImageUrl($url_prefix, $uri);  // kiki image.php URLs converted to S3
        } else {
           echo $connection->error;
        }
@@ -360,7 +437,7 @@ function imageForBarcode($barcode) {
 function imageDataForBarcode($barcode) {
    global $connection;
    $result = new ImageReturn();
-   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width
+   $sql = " select image_set_id, url_prefix, uri, pixel_height, pixel_width
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
@@ -369,10 +446,11 @@ function imageDataForBarcode($barcode) {
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
        $statement->execute();
-       $statement->bind_result($image_set_id, $url, $pixel_height, $pixel_width);
+       $statement->bind_result($image_set_id, $url_prefix, $uri, $pixel_height, $pixel_width);
+       $statement->store_result();
        if ($statement->fetch()) {
          $result->image_set_id = $image_set_id;
-         $result->url = $url;
+         $result->url = resolveImageUrl($url_prefix, $uri);  // kiki image.php URLs converted to S3
          $result->pixel_height = $pixel_height;
          $result->pixel_width = $pixel_width;
        } else {
@@ -409,6 +487,9 @@ switch ($display) {
       break;
    case 'preparebatch':
       doPrepareBatch();
+      break;
+   case 'newrecord':
+      newRecordForm();
       break;
    case 'setup':
       doSetup();
@@ -506,7 +587,7 @@ function imageForBarcode($barcode) {
 function navigation() {
     global $transcriptionMode, $modeLabel, $imgSrc, $imgSrcLabel;
 
-    echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Restart</button>";
+    echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Home</button>";
     echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
     echo "<button type='button' id='minimalButton' class='ui-button' >$modeLabel</button>";
     echo "<button type='button' id='imgSrcButton' class='ui-button' >$imgSrcLabel</button>";
@@ -633,7 +714,7 @@ function form() {
    </script>
    ';
 
-   fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true');   // not zero padded when coming off barcode scanner.
+   fieldEnabalable("barcode","Barcode",'','required','[0-9]{8}','','Barcode must be an 8 digit number.','true','8',barcodeLinkIcon());   // not zero padded when coming off barcode scanner.
    echo "<input type='hidden' name='barcodeval' id='barcodeval' value=''>"; // to carry submission of barcode with disabled barcode input.
    // TODO: on loss of focus, check database for record and reload data.
    // ******************
@@ -644,6 +725,7 @@ function form() {
        });
        $("#barcode").on( "input", function () {
            this.setCustomValidity("");
+           updateBarcodeLink("", false);
        });
        $("#barcode").on( "blur", function () {
            loadDataForBarcode($("#barcode").val());
@@ -1050,6 +1132,7 @@ function form() {
                   $('#feedback').html( data.barcode + ' Loaded. Ready.' + data.error);
               }
 
+              updateBarcodeLink(barcodeval, barcodeval.length>0 && (data.num_matches > 0 || data.preparation_matches > 0));
               checkSaveButton();
           }
 
@@ -1087,6 +1170,8 @@ function form() {
                         $('#barcode').val(data.barcode);
                         $('#barcode').prop('disabled', true);
                      }
+
+                     updateBarcodeLink($('#barcode').val(), $('#barcode').val().length>0 && (data.num_matches > 0 || data.preparation_matches > 0));
 
                      // interate through the elements in data
                      if (data.num_matches == 0) {
@@ -1273,7 +1358,554 @@ function form() {
 
 }
 
-function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true') {
+/** Display a form for adding a new record (or editing an existing record) by barcode,
+ *  outside of the context of a transcription batch.  Modeled on form().
+ *
+ *  The form starts blank.  When a barcode is entered, any existing record for that barcode
+ *  is loaded into the form, and any images for that barcode (linked to the specimen through
+ *  IMAGE_SET_collectionobject, or found in TR_BATCH_IMAGE) are offered for display.
+ */
+function newRecordForm() {
+   global $user, $imgSrc;
+
+   @$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+
+   @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
+   @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
+   if ($defaultformat=='') { $defaultformat = "Sheet"; }
+   @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
+   if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
+   @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
+   if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = ''; }
+
+   // values passed to the javascript below
+   $config = array(
+      'startbarcode' => $startbarcode,
+      'imgsrc' => $imgSrc,
+      'username' => $_SESSION["username"],
+      'defaultheight' => 4344,
+      'defaultwidth' => 2896
+   );
+
+   echo "<div class='hfbox' style='height: 1em;'>";
+   echo "<button type='button' onclick='doclear();' class='ui-button' >Home</button>";
+   echo "<button type='button' id='newBlankButton' class='ui-button newRecordButton' >New Record</button>";
+   echo "<button type='button' id='openImageWindowButton' class='ui-button' >Open Image Window</button>";
+   echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
+   echo "&nbsp;<span id='record_info'>Add or edit a record by barcode.</span>";
+   echo "</div>";
+   echo "</div>";
+
+   echo "<div class='flex-main hfbox' style='min-width: 1000px; padding: 0em;'>";
+   echo "<form action='transcribe_handler.php' method='POST' id='transcribeForm' autocomplete='off' >\n";
+
+   echo "<input type=hidden name='action' value='transcribe' class='carryforward fixedvalue'>";
+   echo "<input type=hidden name='operator' value='".$user->getAgentId()."' class='carryforward fixedvalue'>";
+   // Not working in a batch: empty batch id and position mean no TR_BATCH_IMAGE record is updated on save.
+   echo "<input type='hidden' id='batch_id' name='batch_id' value='' class='carryforward fixedvalue'>";
+   echo "<input type='hidden' id='batch_position' name='batch_position' value='' class='carryforward fixedvalue'>";
+   echo '<script>
+         $( function(){
+            $("#transcribediv").accordion( { heightStyle: "fill" } ) ;
+          });
+   </script>';
+   echo '<div style="display: inline-block; float: left; margin-right: 5px;" id="leftside">';
+   echo '<div class="flexbox" style="width: 30em;" id="transcribediv">';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Transcribe into Fields</h3>';
+   echo '<div class="flexbox">';
+
+   echo "<table>";
+
+   @field("barcode","Barcode",'','required','[0-9]{1,8}','','Barcode must be a 1 to 8 digit number.','true','8',barcodeLinkIcon());
+   echo "<input type='hidden' name='barcodeval' id='barcodeval' value='' class='fixedvalue'>";
+
+   @selectAcronym("herbariumacronym",$defaultherbarium);
+   @field ("accessionnumber","Accession Num.",'','false');
+   @selectTaxon("filedundername","Filed Under",'','','true','false');
+   @selectTaxon ("currentname","Current Name",'','','true','false');
+   @selectQualifier("currentqualifier","ID Qualifier",'');
+   @field ("provenance","Provenance",'','false');
+   @selectCollectorsID("collectors","Collectors",'','','true','false');
+   @field ("etal","Et al.",'','false');
+   @field ("stationfieldnumber","Collector Number",'','false');
+   @selectSeriesType("seriestype","Series Type",'','false','false');
+   @field ("seriesid","Series Id",'','false');
+   @field ("datecollected","Date Collected",'','false','([0-9]{4}(-[0-9]{2}){0,2}){1}(/([0-9]{4}(-[0-9]{2}){0,2}){1}){0,1}','','Use of an ISO format is required: yyyy, yyyy-mm, yyyy-mm-dd, or yyyy-mm-dd/yyyy-mm-dd','true');
+   @field ("verbatimdate","Verbatim Date",'','false');
+   @selectContainerID("container","Container",'','');
+   @selectCollectingTripID("collectingtrip","Collecting Trip",'','','false');
+   @selectHigherGeography ("geographyfilter","Geography Within",'','','','','false','false');
+   @selectHigherGeographyFiltered ("highergeography","Higher Geography",'','','','','true');
+   @field ("specificlocality","Verbatim locality",'','true');
+   @field ("habitat","Habitat",'');
+   @field ("frequency", "Frequency", '');
+   @field ("specimendescription","Description",'','false');
+   @field ("specimenremarks","Remarks",'','false');
+   @selectProject("project","Project",$defaultproject);
+   @staticvalueid("Special chars:","° × ± Ø ♀ ♂","specialchars");
+
+   echo "<tr><td colspan=2>";
+   echo "<input type='button' value='Save' id='saveButton' class='carryforward ui-button ui-state-disabled' disabled='true'> ";
+   echo "<input type='button' value='New Record' id='newRecordBottomButton' class='carryforward ui-button newRecordButton'> ";
+   echo "</td></tr>";
+
+   echo "</table>";
+   echo '</div>';  // end of accordion
+   echo '</div>';
+   echo '</div>'; //end leftside
+
+   echo '<div style="display: inline-block; float: right;" id="rightside">';
+   echo '<script>
+         $( function(){
+            $("#imagezoomdiv").accordion( { heightStyle: "content" } ) ;
+            $("#extrafieldsdiv").accordion( { heightStyle: "content" } ) ;
+            $("#geofieldsdiv").accordion( { heightStyle: "content" } ) ;
+          });
+   </script>';
+
+   // Selected image, click to zoom in the image window (as in form()).
+   echo '<div id="imagezoomdiv" >';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Click to zoom in other window.</h3>';
+   echo '<div>';
+   echo '<div class=flexbox>';
+   echo "<div id='noimagemessage' style='width: 265px; height: 400px; background-color: lightgrey; display: flex; align-items: center; justify-content: center; text-align: center;'>Enter a barcode to find images.</div>";
+   echo "<img id='image_div' src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' height='400' style='background-color:lightgrey; display: none; cursor: crosshair;'>";
+   // under the image: only a link to choose among other images, when there is more than one.
+   echo "<div id='imageinfo' style='font-size: 0.8em; max-width: 30em; padding-top: 2px;'></div>";
+   echo '</div>';
+   echo '</div>';
+   echo '</div>';
+
+   echo '<div id="extrafieldsdiv" style="margin-top: 5px;">';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Additional fields</h3>';
+   echo '<div>';
+   echo '<table>';
+   @staticvalueid("Record Created:","New Record","recordcreated");
+   selectPrepMethod("prepmethod","Prep Method",$defaultprepmethod,'true','false');
+   selectPrepType("preptype","Format",$defaultformat,'true','false');
+   @selectCultivated("iscultivated");
+   echo '</table>';
+   echo '</div>';
+   echo '</div>';
+
+   $bak_basewidth = $GLOBALS['BASEWIDTH'];
+   $GLOBALS['BASEWIDTH'] = 11;
+   echo '<div id="geofieldsdiv" style="margin-top: 5px;">';
+   echo '<h3 style="display: none; margin-top: 1px; margin-bottom: 0px;">Geodata fields</h3>';
+   echo '<div>';
+   echo '<table>';
+   @field ("verbatimelevation","Verb. Elev.",'','false');
+   @field ("verbatimlat","Verb. Lat.",'');
+   @field ("verbatimlong","Verb. Long.",'');
+   @field ("decimallat","Dec. Lat.",'','false','\-?[0-9]{1,2}(\.{1}[0-9]*)?');
+   @field ("decimallong","Dec. Long.",'','false','\-?[0-1]?[0-9]{1,2}(\.{1}[0-9]*)?');
+   @field ("georeferencesource",'Method','','false');
+   @field ("coordinateuncertainty","Uncertainty",'','false','[0-9]*');
+   echo '</table>';
+   echo '</div>';
+   echo '</div>';
+   $GLOBALS['BASEWIDTH'] = $bak_basewidth;
+
+   echo "</form>\n";
+   echo '</div>'; //end rightside
+   echo '</div>';
+
+   // Layover for choosing among several images for the barcode.
+   echo "<div id='imagepickeroverlay' style='display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; overflow: auto;'>";
+   echo "<div style='background: white; margin: 2em auto; width: 90%; padding: 1em; border-radius: 4px;'>";
+   echo "<div style='display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5em;'>";
+   echo "<strong id='imagepickertitle'>Choose an image</strong>";
+   echo "<button type='button' id='imagepickerclose' class='ui-button'>Close</button>";
+   echo "</div>";
+   echo "<div id='imagepickertiles' style='display: flex; flex-wrap: wrap; gap: 10px;'></div>";
+   echo "</div>";
+   echo "</div>";
+
+   echo "<script>var newRecordConfig = ".json_encode($config).";</script>\n";
+   echo <<<'EOT'
+<script>
+   var re_barcode = /^[0-9]{1,8}$/;
+   var initialValues = {};     // field id -> value when the page was loaded (the blank form)
+   var currentImages = [];     // images for the current barcode, from getimagesforbarcode
+   var selectedImage = null;   // the image currently displayed
+   var imageWindow = null;     // the zoom window
+   var lastLookedUpBarcode = null;
+   var lastBarcodeFound = false;   // whether lastLookedUpBarcode was found in fragment or preparation
+
+   function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, function(c) {
+         return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+   }
+
+   function padBarcode(value) {
+      var digits = String(value).replace(/[^0-9]/g,'');
+      if (digits.length==0 || digits.length>8) { return digits; }
+      return ('00000000' + digits).slice(-8);
+   }
+
+   /* Record the initial (blank/default) value of each record field so the form can be reset. */
+   function storeInitialValues() {
+      $('#transcribeForm input[id], #transcribeForm select[id]').not('.fixedvalue').not('[type=button]').each(function() {
+         initialValues[$(this).attr('id')] = $(this).val();
+      });
+   }
+
+   /* Reset all record fields (except optionally the barcode) to their initial values. */
+   function resetRecordFields(keepBarcode) {
+      $.each(initialValues, function(id, value) {
+         if (keepBarcode && id=='barcode') { return; }
+         $('#'+id).val(value).css({'color':'black'});
+      });
+      $('#recordcreated').html('New Record');
+   }
+
+   function setLoadedValue(field,value) {
+      if (value==null) { value = ''; }
+      $('#'+field).css({'color':'black'});
+      $('#'+field).val(value);
+   }
+
+   /* Load data from an existing record (getdataforbarcode response) into the form.  Mirrors loadFormData() in the batch form. */
+   function loadFormData(data) {
+      if (! data.collectors && ! data.collectoragentid) {
+         data.collectors = '[data not captured]';
+         data.collectoragentid = 97236;
+      }
+      if (! data.specificlocality) {
+         data.specificlocality = '[data not captured]';
+      }
+      $('#recordcreated').html(escapeHtml(data.created));
+      setLoadedValue('container',data.container);
+      setLoadedValue('containerid',data.containerid);
+      setLoadedValue('prepmethod',data.prepmethod);
+      setLoadedValue('preptype',data.format);
+      setLoadedValue('accessionnumber',data.accessionnumber);
+      setLoadedValue('filedundername',data.filedundername);
+      setLoadedValue('filedundernameid',data.filedundernameid);
+      setLoadedValue('currentname',data.currentname);
+      setLoadedValue('currentnameid',data.currentnameid);
+      setLoadedValue('currentqualifier',data.currentqualifier);
+      setLoadedValue('specificlocality',data.specificlocality);
+      setLoadedValue('habitat',data.habitat);
+      setLoadedValue('frequency',data.frequency);
+      setLoadedValue('highergeography',data.geography);
+      setLoadedValue('highergeographyid',data.geographyid);
+      setLoadedValue('verbatimelevation',data.verbatimelevation);
+      setLoadedValue('collectors',data.collectors);
+      setLoadedValue('collectorsid',data.collectoragentid);
+      setLoadedValue('etal',data.etal);
+      setLoadedValue('stationfieldnumber',data.stationfieldnumber);
+      setLoadedValue('verbatimdate',data.verbatimdate);
+      setLoadedValue('datecollected',data.datecollected);
+      if (data.herbariumacronym) { setLoadedValue('herbariumacronym',data.herbariumacronym); }
+      setLoadedValue('iscultivated',data.iscultivated==null ? '0' : data.iscultivated);
+      setLoadedValue('provenance',data.provenance);
+      setLoadedValue('specimendescription',data.specimendescription);
+      setLoadedValue('specimenremarks',data.specimenremarks);
+      setLoadedValue('collectingtrip',data.collectingtrip);
+      setLoadedValue('collectingtripid',data.collectingtripid);
+      setLoadedValue('verbatimlat',data.verbatimlat);
+      setLoadedValue('verbatimlong',data.verbatimlong);
+      setLoadedValue('decimallat',data.decimallat);
+      setLoadedValue('decimallong',data.decimallong);
+      setLoadedValue('coordinateuncertainty',data.coordinateuncertainty);
+      setLoadedValue('georeferencesource',data.georeferencesource);
+      setLoadedValue('seriesid',data.seriesid);
+      setLoadedValue('seriestype',data.seriestype);
+   }
+
+   function checkSaveButton() {
+      var barcode = $('#barcode').val();
+      if (re_barcode.test(barcode) && barcode==lastLookedUpBarcode) {
+         $('#saveButton').attr('disabled', false).removeClass('ui-state-disabled');
+      } else {
+         $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
+      }
+   }
+
+   function updateLocationBarcode(barcode) {
+      var params = new URLSearchParams(window.location.search);
+      params.set('display', 'newrecord');
+      if (barcode) { params.set('barcode', barcode); } else { params.delete('barcode'); }
+      window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+   }
+
+   /* Look up an existing record and images for a barcode. */
+   function lookupBarcode(rawvalue) {
+      var barcode = padBarcode(rawvalue);
+      if (!re_barcode.test(barcode)) {
+         $('#feedback').html('Barcode must be a 1 to 8 digit number.');
+         updateBarcodeLink('', false);
+         lastLookedUpBarcode = null;
+         checkSaveButton();
+         return;
+      }
+      if (barcode==lastLookedUpBarcode) { updateBarcodeLink(barcode, lastBarcodeFound); return; }
+      $('#barcode').val(barcode);
+      $('#feedback').html('Looking up ' + barcode + '...');
+      $.ajax({
+         type: 'GET',
+         url: 'transcribe_handler.php',
+         dataType: 'json',
+         data: { action: 'getdataforbarcode', barcode: barcode },
+         success: function(data) {
+            lastLookedUpBarcode = barcode;
+            updateLocationBarcode(barcode);
+            lastBarcodeFound = (data.num_matches > 0 || data.preparation_matches > 0);
+            updateBarcodeLink(barcode, lastBarcodeFound);
+            if (data.preparation_matches > 0) {
+               // Barcode belongs to a preparation (unbarcoded item): saving here would be refused.
+               resetRecordFields(true);
+               lastLookedUpBarcode = null;  // do not allow saving
+               $('#record_info').html('<strong>Edit ' + escapeHtml(barcode) + ' in Specify.</strong>');
+               $('#feedback').html('<mark><strong>Warning:</strong> Barcode ' + escapeHtml(barcode) + ' is on a preparation (unbarcoded item) in the database. Edit this record in Specify; it cannot be saved from this form.</mark>');
+            } else if (data.num_matches == 1) {
+               resetRecordFields(true);
+               loadFormData(data);
+               $('#record_info').html('Editing existing record ' + escapeHtml(barcode) + '.');
+               $('#feedback').html(escapeHtml(barcode) + ' Loaded. Ready.' + escapeHtml(data.error));
+            } else if (data.num_matches > 1) {
+               resetRecordFields(true);
+               lastLookedUpBarcode = null;  // do not allow saving
+               $('#record_info').html('Multiple records for ' + escapeHtml(barcode) + '.');
+               $('#feedback').html('<strong>Warning:</strong> more than one match for Barcode: ' + escapeHtml(barcode) + ' Enter in Specify.');
+            } else {
+               resetRecordFields(true);
+               $('#record_info').html('New record ' + escapeHtml(barcode) + '.');
+               $('#feedback').html('No existing record for ' + escapeHtml(barcode) + '. Ready to add a new record.');
+            }
+            checkSaveButton();
+         },
+         error: function() {
+            lastLookedUpBarcode = null;
+            updateBarcodeLink('', false);
+            checkSaveButton();
+            $('#feedback').html('Failed.  Ajax Error.  Barcode: ' + escapeHtml(barcode));
+         }
+      });
+      loadImagesForBarcode(barcode);
+   }
+
+   /* Find images for a barcode; display the most recent one, and offer the rest in the image picker. */
+   function loadImagesForBarcode(barcode) {
+      currentImages = [];
+      showImage(null);
+      $('#noimagemessage').html('Searching for images...');
+      $.ajax({
+         type: 'GET',
+         url: 'transcribe_handler.php',
+         dataType: 'json',
+         data: { action: 'getimagesforbarcode', barcode: barcode, imgsrc: newRecordConfig.imgsrc },
+         success: function(data) {
+            if ($('#barcode').val()!=barcode) { return; }  // barcode changed while waiting
+            if (data.error) {
+               $('#noimagemessage').html('Error: ' + escapeHtml(data.error));
+               return;
+            }
+            currentImages = data.images;  // sorted newest first by the server
+            if (currentImages.length>0) {
+               ensureImageWindow();
+               showImage(0);
+            } else {
+               $('#noimagemessage').html('No images found for this barcode.');
+            }
+         },
+         error: function() {
+            $('#noimagemessage').html('Image lookup failed.  Ajax Error.');
+         }
+      });
+   }
+
+   /* Display an image (index into currentImages, or null to clear) and send it to the image window. */
+   function showImage(index) {
+      if (index==null || index>=currentImages.length) {
+         selectedImage = null;
+         $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=').hide();
+         $('#noimagemessage').html('Enter a barcode to find images.').show();
+         $('#imageinfo').html('');
+         return;
+      }
+      selectedImage = currentImages[index];
+      var h = 400;
+      var w = Math.round(selectedImage.pixel_width * (400/selectedImage.pixel_height));
+      $('#noimagemessage').hide();
+      $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+      $('#image_div').attr({ 'src': selectedImage.url, 'height': h, 'width': w }).show();
+      var info = '';
+      var others = currentImages.length - 1;
+      if (others > 0) {
+         info += "<div><a href='#' id='moreimageslink'>" + others + ' more image' + (others==1 ? '' : 's') + ' available to choose from</a></div>';
+      }
+      $('#imageinfo').html(info);
+      $('#moreimageslink').on('click', function(event) { event.preventDefault(); openImagePicker(); });
+      sendImageToWindow();
+   }
+
+   /* Show a layover with a tiled view of all images for the barcode; clicking one selects it. */
+   function openImagePicker() {
+      var html = '';
+      for (var i=0; i<currentImages.length; i++) {
+         var img = currentImages[i];
+         var current = (img===selectedImage);
+         html += '<div class="imagepickertile" data-index="' + i + '" style="width: 220px; padding: 6px; border: 3px solid ' + (current ? 'steelblue' : '#ddd') + '; border-radius: 4px; cursor: pointer; font-size: 0.8em; background: white;">';
+         html += '<img src="' + escapeHtml(img.thumbnail) + '" style="display: block; height: 300px; max-width: 220px; margin: 0 auto; background-color: lightgrey;" alt="image ' + (i+1) + '">';
+         html += '</div>';
+      }
+      $('#imagepickertitle').html('Choose an image for ' + escapeHtml($('#barcode').val()) + ' (' + currentImages.length + ' available)');
+      $('#imagepickertiles').html(html);
+      $('.imagepickertile').on('click', function(event) {
+         closeImagePicker();
+         showImage($(this).data('index'));
+      });
+      $('#imagepickeroverlay').fadeIn(100);
+   }
+
+   function closeImagePicker() {
+      $('#imagepickeroverlay').fadeOut(100);
+   }
+
+   /* Send the selected image to the magnified image window.  The window may still be loading
+    * (it is opened just before this page), so resend until it reports the image has loaded.
+    */
+   var imageWindowAcknowledged = false;
+   var imageWindowRetries = 0;
+   var imageWindowOpenedAt = 0;   // a newly opened window may report 'loaded' for its own blank start-up image
+   function sendImageToWindow() {
+      if (selectedImage==null) { return; }
+      imageWindowAcknowledged = false;
+      imageWindowRetries = 0;
+      postImageToWindow();
+   }
+   function postImageToWindow() {
+      var windowIsNew = (Date.now() - imageWindowOpenedAt) < 5000;
+      if (selectedImage==null || (imageWindowAcknowledged && !windowIsNew)) { return; }
+      var path = '';
+      var filename = '';
+      if (selectedImage.batches.length>0) {
+         path = selectedImage.batches[0].path;
+         filename = selectedImage.batches[0].filename;
+      }
+      channel.postMessage( { action:'load', origheight: String(selectedImage.pixel_height), origwidth: String(selectedImage.pixel_width), uri: selectedImage.url, path: path, filename: filename } );
+      imageWindowRetries++;
+      if (imageWindowRetries < 6) { setTimeout(postImageToWindow, 1500); }
+   }
+
+   /* Open the magnified image window, unless it is already open.  It is opened only once a barcode
+    * with images is entered (not for a new/blank record).  A named window is used so that an existing
+    * window is reused, even after this page has been reloaded.
+    */
+   function ensureImageWindow() {
+      if (imageWindow!=null && !imageWindow.closed) { return true; }
+      var w = window.open('', 'transcribeimagewindow', 'modal=yes');
+      if (!w) {
+         $('#feedback').html('The browser blocked the magnified image window.  Allow pop-ups for this site, or click Open Image Window.');
+         return false;
+      }
+      var needsLoad = true;
+      try { needsLoad = (w.location.href.indexOf('displayimage.php')<0); } catch (e) { needsLoad = false; }
+      if (needsLoad) {
+         w.location.href = 'displayimage.php?mode=imagefile&imgsrc=' + encodeURIComponent(newRecordConfig.imgsrc) + '&path=&filename=';
+         imageWindowOpenedAt = Date.now();
+      }
+      imageWindow = w;
+      return true;
+   }
+
+   function openImageWindow() {
+      if (ensureImageWindow()) {
+         try { imageWindow.focus(); } catch (e) { }
+         sendImageToWindow();
+      }
+   }
+
+   $('#imagepickerclose').on('click', function(event) { event.preventDefault(); closeImagePicker(); });
+   $('#imagepickeroverlay').on('click', function(event) { if (event.target===this) { closeImagePicker(); } });
+   $(document).on('keyup', function(event) { if (event.keyCode === 27) { closeImagePicker(); } });
+
+   /* Clicks on the displayed image zoom the image window (same message as getClick() in the batch form). */
+   $('#image_div').on('click', function(event) {
+      if (selectedImage==null) { return; }
+      var h = $('#image_div').height();
+      var w = $('#image_div').width();
+      channel.postMessage( { x: event.offsetX, y: event.offsetY, h: h, w: w, oh: selectedImage.pixel_height, ow: selectedImage.pixel_width, id: selectedImage.image_set_id } );
+   });
+
+   channel.onmessage = function (e) {
+      console.log(e);
+      if (e.data=='loaded') {
+         // image window finished loading an image, zoom onto the label area as the batch form does.
+         imageWindowAcknowledged = true;
+         if (selectedImage!=null) {
+            channel.postMessage( { x:'353', y:'614', oh: String(selectedImage.pixel_height), ow: String(selectedImage.pixel_width), h:'700', w:'467', id:'' } );
+         }
+      }
+   };
+
+   $('#barcode').on('blur', function () { lookupBarcode($('#barcode').val()); });
+   $('#barcode').on('keyup', function (event) {
+      if (event.keyCode === 13) { lookupBarcode($('#barcode').val()); }
+      else if ($('#barcode').val()!=lastLookedUpBarcode) { updateBarcodeLink('', false); checkSaveButton(); }
+   });
+   $('#barcode').on('invalid', function () { this.setCustomValidity('Barcode must be a 1 to 8 digit number.'); });
+   $('#barcode').on('input', function () { this.setCustomValidity(''); });
+
+   $('#openImageWindowButton').on('click', function(event) { openImageWindow(); event.preventDefault(); });
+
+   $('.newRecordButton').on('click', function(event) {
+      resetRecordFields(false);
+      updateBarcodeLink('', false);
+      lastLookedUpBarcode = null;
+      currentImages = [];
+      showImage(null);
+      $('#record_info').html('Add or edit a record by barcode.');
+      $('#feedback').html('Ready.');
+      updateLocationBarcode('');
+      checkSaveButton();
+      $('#barcode').focus();
+      event.preventDefault();
+   });
+
+   $('#saveButton').on('click', function(event){
+      event.preventDefault();
+      var barcode = $('#barcode').val();
+      if (!re_barcode.test(barcode) || barcode!=lastLookedUpBarcode) {
+         $('#feedback').html('Enter a barcode and tab out of the field before saving.');
+         return;
+      }
+      $('#saveButton').attr('disabled', true).addClass('ui-state-disabled');
+      $('#barcodeval').val(barcode);
+      $('#feedback').html('Submitting: ' + escapeHtml(barcode));
+      $.ajax({
+         type: 'POST',
+         url: 'transcribe_handler.php',
+         data: $('#transcribeForm').serialize(),
+         success: function(data) {
+            $('#feedback').html( data );
+            checkSaveButton();
+         },
+         error: function(jqXHR, textStatus, errorThrown) {
+            $('#feedback').html('Ajax Error: ' +  escapeHtml(textStatus) + '; ' + escapeHtml(errorThrown));
+            checkSaveButton();
+         }
+      });
+   });
+
+   $(document).ready(function() {
+      storeInitialValues();
+      checkSaveButton();
+      if (newRecordConfig.startbarcode) {
+         $('#barcode').val(newRecordConfig.startbarcode);
+         lookupBarcode(newRecordConfig.startbarcode);
+      } else {
+         $('#barcode').focus();
+      }
+   });
+</script>
+EOT;
+}
+
+function field($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true', $width='', $after='') {
    echo "<tr><td>\n";
    echo "<label for='$name'>$label</label>";
    echo "</td><td>\n";
@@ -1291,19 +1923,21 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
    } else {
       $disabled = '';
    }
+   if ($width=='') { $width = $GLOBALS['BASEWIDTH']; }
    if ($required=='false') {
-      echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$width."em; ' $disabled >";
    }
+   echo $after;
    echo "</td></tr>\n";
 }
 
 
-function fieldEnabalable($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true') {
+function fieldEnabalable($name, $label, $default="", $required='false', $regex='', $placeholder='', $validationmessage='', $enabled='true', $width='', $after='') {
    echo "<tr><td>\n";
    echo "<label for='$name'>$label</label>";
    echo "</td><td>\n";
@@ -1322,7 +1956,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       $disabled = '';
    }
    //$width = BASEWIDTH - 2;
-   $width = $GLOBALS['BASEWIDTH'];
+   if ($width=='') { $width = $GLOBALS['BASEWIDTH']; }
    if ($required=='false') {
       echo "<input id=$name name=$name class='inputField' value='$default' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    } else {
@@ -1331,6 +1965,7 @@ function fieldEnabalable($name, $label, $default="", $required='false', $regex='
       }
       echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    }
+   echo $after;
    //echo "<input type='button' value='Δ' id='enable$name' onclick=' doEnable$name(); event.preventDefault();' class='carryforward ui-button'>";
    echo "<script>
          function doEnable$name(){

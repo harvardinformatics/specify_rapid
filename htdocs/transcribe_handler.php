@@ -98,16 +98,8 @@ if ($connection && $authenticated) {
             $targetBatch = getBatch($targetBatchDir);
          }
 
-         $batchPath = $targetBatch->getPath();
-         $targetBatchCurrent = $targetBatch->getCurrentFile();
-         $targetBatchFirst = $targetBatch->getFile(1);
-         $position = $targetBatchCurrent->position;
-         echo " <strong>Batch: [$batchPath]</strong>";
-         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
-         if ($position > 1) {
-              echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
-         }
-         //echo " First File: [$targetBatchFirst->filename]";
+         // $targetBatch is null when the user has no open batch.
+         echoCurrentBatchControls($targetBatch);
          break;
 
       case 'getrecord':
@@ -152,6 +144,49 @@ if ($connection && $authenticated) {
          @$barcode = $_GET['barcode'];
          $result = lookupDataForBarcode($barcode);
          echo json_encode($result);
+         break;
+
+      case 'findbarcode':
+         // Find all transcription batches (and positions within them) containing a barcode.
+         @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+         $toencode = array();
+         $toencode['barcode'] = $barcode;
+         $toencode['error'] = '';
+         $toencode['batches'] = array();
+         if (strlen($barcode)==0) {
+            $toencode['error'] = 'No barcode provided.';
+         } else {
+            try {
+               $toencode['barcode'] = str_pad($barcode,8,"0",STR_PAD_LEFT);
+               $toencode['batches'] = lookupBatchesForBarcode($barcode);
+            } catch (Exception $e) {
+               $toencode['error'] = $e->getMessage();
+            }
+         }
+         header("Content-type: application/json");
+         echo json_encode($toencode);
+         break;
+
+      case 'getimagesforbarcode':
+         // Find images for a barcode, from IMAGE_SET_collectionobject and from TR_BATCH_IMAGE.
+         @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+         @$imgsrc = substr(preg_replace('/[^A-Z]/','',$_GET['imgsrc']),0,5);
+         $toencode = array();
+         $toencode['barcode'] = $barcode;
+         $toencode['error'] = '';
+         $toencode['images'] = array();
+         if (strlen($barcode)==0) {
+            $toencode['error'] = 'No barcode provided.';
+         } else {
+            try {
+               $toencode['barcode'] = str_pad($barcode,8,"0",STR_PAD_LEFT);
+               $toencode['images'] = lookupImagesForBarcode($barcode,$imgsrc);
+            } catch (Exception $e) {
+               $toencode['error'] = $e->getMessage();
+            }
+         }
+         header("Content-type: application/json");
+         echo json_encode($toencode);
          break;
 
       case 'transcribe':
@@ -1678,6 +1713,25 @@ function lookupDataForBarcode($barcode) {
    $barcode = str_pad($barcode,8,"0",STR_PAD_LEFT);
 
    $result['barcode']=$barcode;
+
+   // Count matches in preparation.identifier: a barcode there belongs to an unbarcoded
+   // item (barcoded preparation), which ingest() refuses to save; such records must be
+   // edited in Specify.  Reported so forms can warn before the user enters data.
+   $result['preparation_matches'] = 0;
+   try {
+      $sql = "select count(*) from preparation where identifier = ?";
+      if ($statement = $connection->prepare($sql)) {
+         $statement->bind_param("s", $barcode);
+         $statement->execute();
+         $statement->bind_result($preparationmatches);
+         if ($statement->fetch()) {
+            $result['preparation_matches'] = $preparationmatches;
+         }
+         $statement->close();
+      }
+   } catch (Exception $e) {
+      $result['preparation_matches'] = 0;
+   }
 
    $huh_fragment = new huh_fragment();
    $matches = $huh_fragment->loadArrayByIdentifier($barcode);
