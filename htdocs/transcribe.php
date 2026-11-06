@@ -1624,9 +1624,10 @@ function newRecordForm() {
       }
    }
 
-   /* Browser history: each existing record looked up, each new record saved, and each New Record
-    * form gets its own history entry (?display=newrecord&barcode=...), so that the browser's Back and
-    * Forward buttons move between the records entered on this page (see the popstate handler below).
+   /* Browser history: each New Record form gets its own history entry (?display=newrecord).  When a
+    * barcode entered there finds an existing record, or a new record is saved, that entry is replaced
+    * by one for the record (?display=newrecord&barcode=...).  The browser's Back and Forward buttons
+    * then move between the records entered on this page (see the popstate handler below).
     */
    function locationBarcode() {
       var barcode = new URLSearchParams(window.location.search).get('barcode');
@@ -1640,6 +1641,20 @@ function newRecordForm() {
       params.set('display', 'newrecord');
       if (barcode) { params.set('barcode', barcode); } else { params.delete('barcode'); }
       window.history.pushState({ barcode: barcode }, '', window.location.pathname + '?' + params.toString());
+   }
+
+   /* Replace the current history entry (e.g. the blank form) with one for a barcode. */
+   function replaceLocationBarcode(barcode) {
+      if (locationBarcode() === barcode) { return; }
+      var params = new URLSearchParams(window.location.search);
+      params.set('display', 'newrecord');
+      if (barcode) { params.set('barcode', barcode); } else { params.delete('barcode'); }
+      window.history.replaceState({ barcode: barcode }, '', window.location.pathname + '?' + params.toString());
+   }
+
+   /* Once a record exists, its barcode can't be changed here; New Record clears the form for another one. */
+   function lockBarcode(locked) {
+      $('#barcode').prop('disabled', locked);
    }
 
    /* Look up an existing record and images for a barcode. */
@@ -1664,8 +1679,9 @@ function newRecordForm() {
             lastLookedUpBarcode = barcode;
             lastBarcodeFound = (data.num_matches > 0 || data.preparation_matches > 0);
             if (lastBarcodeFound) {
-               // an existing record: give it its own entry in the browser history
-               pushLocationBarcode(barcode);
+               // an existing record: it replaces the blank form in the browser history, and its barcode is locked
+               replaceLocationBarcode(barcode);
+               lockBarcode(true);
             }
             updateBarcodeLink(barcode, lastBarcodeFound);
             if (data.preparation_matches > 0) {
@@ -1869,6 +1885,7 @@ function newRecordForm() {
    /* Clear the form for a new record.  pushHistory adds a history entry for the blank form, so that
     * Back returns to the record that was being shown. */
    function newRecord(pushHistory) {
+      lockBarcode(false);
       resetRecordFields(false);
       updateBarcodeLink('', false);
       lastLookedUpBarcode = null;
@@ -1892,6 +1909,7 @@ function newRecordForm() {
       var barcode = locationBarcode();
       if (barcode) {
          lastLookedUpBarcode = null;  // always reload the record
+         lockBarcode(false);
          $('#barcode').val(barcode);
          lookupBarcode(barcode);
       } else {
@@ -1921,7 +1939,8 @@ function newRecordForm() {
                lastBarcodeFound = true;
                updateBarcodeLink(barcode, true);
                $('#record_info').html('Editing existing record ' + escapeHtml(barcode) + '.');
-               pushLocationBarcode(barcode);
+               replaceLocationBarcode(barcode);
+               lockBarcode(true);
             }
             checkSaveButton();
          },
