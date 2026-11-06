@@ -158,7 +158,7 @@ function doSetup() {
    if ($batchPath==null || strlen($batchPath)==0) {
      echo " <strong>No Current Batch.</strong>";
    } else {
-      echo " <strong>Batch: [$batchPath]</strong>";
+      echo " <strong>Current Batch: [$batchPath]</strong>";
       echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
       if ($position > 1) {
         echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$targetBatchCurrent->position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
@@ -205,15 +205,9 @@ function doSetup() {
 
    echo "</select></div>";
 
-   // Add a new record (or edit an existing one by barcode) outside of a batch.
-   echo "<div id='addrecord' style='padding: 0.5em;' >";
-   echo " <strong>Add a new record:</strong> ";
-   echo "<a href='transcribe.php?display=newrecord' class='ui-button'>Add/Edit Record by Barcode</a>";
-   echo "</div>";
-
    // Search for a barcode across the transcription batches.
    echo "<div id='findbarcodediv' style='padding: 0.5em;' >";
-   echo " <strong>Find a barcode in batches:</strong> ";
+   echo " <strong>Find a barcode:</strong> ";
    echo "<input type='text' id='findbarcode' name='findbarcode' size='10' maxlength='20' placeholder='Barcode' autocomplete='off'>";
    echo "<button type='button' id='findbarcodebutton' class='ui-button'>Find</button>";
    echo "<div id='findbarcoderesults' style='padding-top: 0.5em;'></div>";
@@ -241,12 +235,11 @@ function doSetup() {
                   $('#findbarcoderesults').html('Error: ' + escapeHtml(data.error));
                   return;
                }
-               var editlink = \"<a href='transcribe.php?display=newrecord&barcode=\" + encodeURIComponent(data.barcode) + \"' class='ui-button'>Open \" + escapeHtml(data.barcode) + \" in Add/Edit Record form</a>\";
                if (data.batches.length==0) {
-                  $('#findbarcoderesults').html('Barcode ' + escapeHtml(data.barcode) + ' was not found in any batch. ' + editlink);
+                  $('#findbarcoderesults').html('Barcode ' + escapeHtml(data.barcode) + ' was not found in any batch.');
                   return;
                }
-               var html = '<div>Barcode ' + escapeHtml(data.barcode) + ' found in ' + data.batches.length + ' batch position(s). ' + editlink + '</div>';
+               var html = '<div>Barcode ' + escapeHtml(data.barcode) + ' found in ' + data.batches.length + ' batch position(s).</div>';
                html += \"<table class='findbarcodetable' style='border-collapse: collapse;'>\";
                html += '<tr><th align=left>Batch</th><th align=left>Status</th><th align=left>Position</th><th align=left>File</th><th></th></tr>';
                for (var i=0; i<data.batches.length; i++) {
@@ -277,6 +270,11 @@ function doSetup() {
          if (event.keyCode === 13) { findBarcode(); }
       });
    </script>";
+
+   // Add a new record (or edit an existing one by barcode) outside of a batch.
+   echo "<div id='addrecord' style='padding: 0.5em;' >";
+   echo "<button type='button' class='ui-button' onclick='dosetupnewrecord(\"\");'>Add/Edit Records</button>";
+   echo "</div>";
 //   echo "</select><button type='submit' value='Pick Batch' class='ui-button'>Pick Batch</button></div></form>";
    echo "<script type='text/javascript'>
       $('#targetBatch').on('change', function() {
@@ -1464,7 +1462,6 @@ function newRecordForm() {
    echo '<script>
          $( function(){
             $("#imagezoomdiv").accordion( { heightStyle: "content" } ) ;
-            $("#imageoptionsdiv").accordion( { heightStyle: "content" } ) ;
             $("#extrafieldsdiv").accordion( { heightStyle: "content" } ) ;
             $("#geofieldsdiv").accordion( { heightStyle: "content" } ) ;
           });
@@ -1477,14 +1474,10 @@ function newRecordForm() {
    echo '<div class=flexbox>';
    echo "<div id='noimagemessage' style='width: 265px; height: 400px; background-color: lightgrey; display: flex; align-items: center; justify-content: center; text-align: center;'>Enter a barcode to find images.</div>";
    echo "<img id='image_div' src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' height='400' style='background-color:lightgrey; display: none; cursor: crosshair;'>";
+   // one short line under the image: where the image came from, and a link to choose among other images.
+   echo "<div id='imageinfo' style='font-size: 0.8em; max-width: 30em; padding-top: 2px;'></div>";
    echo '</div>';
    echo '</div>';
-   echo '</div>';
-
-   // All images known for the barcode, click one to select it.
-   echo '<div id="imageoptionsdiv" style="margin-top: 5px;">';
-   echo '<h3 style="margin-top: 1px; margin-bottom: 0px;">Images for this barcode</h3>';
-   echo "<div id='imageoptions' style='max-width: 32em;'>None.</div>";
    echo '</div>';
 
    echo '<div id="extrafieldsdiv" style="margin-top: 5px;">';
@@ -1520,6 +1513,17 @@ function newRecordForm() {
    echo "</form>\n";
    echo '</div>'; //end rightside
    echo '</div>';
+
+   // Layover for choosing among several images for the barcode.
+   echo "<div id='imagepickeroverlay' style='display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; overflow: auto;'>";
+   echo "<div style='background: white; margin: 2em auto; width: 90%; padding: 1em; border-radius: 4px;'>";
+   echo "<div style='display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5em;'>";
+   echo "<strong id='imagepickertitle'>Choose an image</strong>";
+   echo "<button type='button' id='imagepickerclose' class='ui-button'>Close</button>";
+   echo "</div>";
+   echo "<div id='imagepickertiles' style='display: flex; flex-wrap: wrap; gap: 10px;'></div>";
+   echo "</div>";
+   echo "</div>";
 
    echo "<script>var newRecordConfig = ".json_encode($config).";</script>\n";
    echo <<<'EOT'
@@ -1682,11 +1686,11 @@ function newRecordForm() {
       loadImagesForBarcode(barcode);
    }
 
-   /* Find images for a barcode and display them as options. */
+   /* Find images for a barcode; display the most recent one, and offer the rest in the image picker. */
    function loadImagesForBarcode(barcode) {
       currentImages = [];
       showImage(null);
-      $('#imageoptions').html('Searching for images...');
+      $('#noimagemessage').html('Searching for images...');
       $.ajax({
          type: 'GET',
          url: 'transcribe_handler.php',
@@ -1695,74 +1699,99 @@ function newRecordForm() {
          success: function(data) {
             if ($('#barcode').val()!=barcode) { return; }  // barcode changed while waiting
             if (data.error) {
-               $('#imageoptions').html('Error: ' + escapeHtml(data.error));
+               $('#noimagemessage').html('Error: ' + escapeHtml(data.error));
                return;
             }
-            currentImages = data.images;
-            renderImageOptions();
+            currentImages = data.images;  // sorted newest first by the server
             if (currentImages.length>0) {
                showImage(0);
+            } else {
+               $('#noimagemessage').html('No images found for this barcode.');
             }
          },
          error: function() {
-            $('#imageoptions').html('Image lookup failed.  Ajax Error.');
+            $('#noimagemessage').html('Image lookup failed.  Ajax Error.');
          }
       });
    }
 
-   function renderImageOptions() {
-      if (currentImages.length==0) {
-         $('#imageoptions').html('No images found for this barcode.');
-         $('#noimagemessage').html('No images found for this barcode.');
-         return;
+   /* Describe where an image came from, with links to edit it in its batch(es). */
+   function imageSourceHtml(index) {
+      var img = currentImages[index];
+      var sources = [];
+      if (img.linked) { sources.push('Linked to record'); }
+      for (var j=0; j<img.batches.length; j++) {
+         var b = img.batches[j];
+         sources.push('Batch ' + escapeHtml(b.batch_path) + ' position ' + escapeHtml(b.position) +
+            " <a href='#' class='openinbatch' data-image='" + index + "' data-batch='" + j + "'>[edit in batch]</a>");
       }
-      var html = '<div>' + currentImages.length + ' image(s) found. Click an image to display it.</div>';
-      html += '<div style="display: flex; flex-wrap: wrap;">';
-      for (var i=0; i<currentImages.length; i++) {
-         var img = currentImages[i];
-         var sources = [];
-         if (img.linked) { sources.push('Linked to record'); }
-         for (var j=0; j<img.batches.length; j++) {
-            var b = img.batches[j];
-            sources.push('Batch ' + escapeHtml(b.batch_path) + ' position ' + escapeHtml(b.position) +
-               " <a href='#' class='openinbatch' data-image='" + i + "' data-batch='" + j + "'>[edit in batch]</a>");
-         }
-         html += '<div class="imageoption" data-index="' + i + '" style="margin: 3px; padding: 3px; border: 2px solid transparent; width: 9em; font-size: 0.8em;">';
-         html += '<img src="' + escapeHtml(img.thumbnail) + '" class="imageoptionthumb" data-index="' + i + '" style="height: 110px; max-width: 9em; background-color: lightgrey; cursor: pointer;" alt="image ' + (i+1) + '">';
-         html += '<div>' + sources.join('<br>') + '</div>';
-         html += '</div>';
-      }
-      html += '</div>';
-      $('#imageoptions').html(html);
-      $('.imageoptionthumb').on('click', function() { showImage($(this).data('index')); });
-      $('.openinbatch').on('click', function(event) {
-         event.preventDefault();
-         var b = currentImages[$(this).data('image')].batches[$(this).data('batch')];
-         dosetuppath(encodeURIComponent(b.batch_path), encodeURIComponent(b.path), encodeURIComponent(b.filename), b.position, 'standard');
-      });
+      if (img.create_date) { sources.push('Added ' + escapeHtml(String(img.create_date).substring(0,10))); }
+      return sources.join('; ');
    }
 
    /* Display an image (index into currentImages, or null to clear) and send it to the image window. */
    function showImage(index) {
-      $('.imageoption').css({'border-color':'transparent'});
       if (index==null || index>=currentImages.length) {
          selectedImage = null;
          $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=').hide();
          $('#noimagemessage').html('Enter a barcode to find images.').show();
+         $('#imageinfo').html('');
          return;
       }
       selectedImage = currentImages[index];
-      $('.imageoption[data-index=' + index + ']').css({'border-color':'steelblue'});
       var h = 400;
       var w = Math.round(selectedImage.pixel_width * (400/selectedImage.pixel_height));
       $('#noimagemessage').hide();
       $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
       $('#image_div').attr({ 'src': selectedImage.url, 'height': h, 'width': w }).show();
+      var info = '<div>' + imageSourceHtml(index) + '</div>';
+      var others = currentImages.length - 1;
+      if (others > 0) {
+         info += "<div><a href='#' id='moreimageslink'>" + others + ' more image' + (others==1 ? '' : 's') + ' available to choose from</a></div>';
+      }
+      $('#imageinfo').html(info);
+      $('#moreimageslink').on('click', function(event) { event.preventDefault(); openImagePicker(); });
       sendImageToWindow();
    }
 
+   /* Show a layover with a tiled view of all images for the barcode; clicking one selects it. */
+   function openImagePicker() {
+      var html = '';
+      for (var i=0; i<currentImages.length; i++) {
+         var img = currentImages[i];
+         var current = (img===selectedImage);
+         html += '<div class="imagepickertile" data-index="' + i + '" style="width: 220px; padding: 6px; border: 3px solid ' + (current ? 'steelblue' : '#ddd') + '; border-radius: 4px; cursor: pointer; font-size: 0.8em; background: white;">';
+         html += '<img src="' + escapeHtml(img.thumbnail) + '" style="display: block; height: 300px; max-width: 220px; margin: 0 auto; background-color: lightgrey;" alt="image ' + (i+1) + '">';
+         html += '<div style="padding-top: 4px;">' + (current ? '<strong>Currently displayed.</strong> ' : '') + imageSourceHtml(i) + '</div>';
+         html += '</div>';
+      }
+      $('#imagepickertitle').html('Choose an image for ' + escapeHtml($('#barcode').val()) + ' (' + currentImages.length + ' available)');
+      $('#imagepickertiles').html(html);
+      $('.imagepickertile').on('click', function(event) {
+         if ($(event.target).hasClass('openinbatch')) { return; }
+         closeImagePicker();
+         showImage($(this).data('index'));
+      });
+      $('#imagepickeroverlay').fadeIn(100);
+   }
+
+   function closeImagePicker() {
+      $('#imagepickeroverlay').fadeOut(100);
+   }
+
+   /* Send the selected image to the magnified image window.  The window may still be loading
+    * (it is opened just before this page), so resend until it reports the image has loaded.
+    */
+   var imageWindowAcknowledged = false;
+   var imageWindowRetries = 0;
    function sendImageToWindow() {
       if (selectedImage==null) { return; }
+      imageWindowAcknowledged = false;
+      imageWindowRetries = 0;
+      postImageToWindow();
+   }
+   function postImageToWindow() {
+      if (selectedImage==null || imageWindowAcknowledged) { return; }
       var path = '';
       var filename = '';
       if (selectedImage.batches.length>0) {
@@ -1770,14 +1799,28 @@ function newRecordForm() {
          filename = selectedImage.batches[0].filename;
       }
       channel.postMessage( { action:'load', origheight: String(selectedImage.pixel_height), origwidth: String(selectedImage.pixel_width), uri: selectedImage.url, path: path, filename: filename } );
+      imageWindowRetries++;
+      if (imageWindowRetries < 6) { setTimeout(postImageToWindow, 1500); }
    }
 
+   /* Reopen the magnified image window if it was closed. */
    function openImageWindow() {
-      imageWindow = window.open('displayimage.php?mode=imagefile&imgsrc=' + encodeURIComponent(newRecordConfig.imgsrc) + '&path=&filename=', '_blank', 'modal=yes');
-      // give the new window time to set up its channel listener, then send it the selected image.
-      setTimeout(sendImageToWindow, 1500);
-      setTimeout(sendImageToWindow, 4000);
+      window.open('displayimage.php?mode=imagefile&imgsrc=' + encodeURIComponent(newRecordConfig.imgsrc) + '&path=&filename=', '_blank', 'modal=yes');
+      sendImageToWindow();
    }
+
+   /* Links to work on an image in its batch: close this form's image window first, dosetuppath opens a new one. */
+   $(document).on('click', '.openinbatch', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      var b = currentImages[$(this).data('image')].batches[$(this).data('batch')];
+      channel.postMessage('close');
+      dosetuppath(encodeURIComponent(b.batch_path), encodeURIComponent(b.path), encodeURIComponent(b.filename), b.position, 'standard');
+   });
+
+   $('#imagepickerclose').on('click', function(event) { event.preventDefault(); closeImagePicker(); });
+   $('#imagepickeroverlay').on('click', function(event) { if (event.target===this) { closeImagePicker(); } });
+   $(document).on('keyup', function(event) { if (event.keyCode === 27) { closeImagePicker(); } });
 
    /* Clicks on the displayed image zoom the image window (same message as getClick() in the batch form). */
    $('#image_div').on('click', function(event) {
@@ -1791,6 +1834,7 @@ function newRecordForm() {
       console.log(e);
       if (e.data=='loaded') {
          // image window finished loading an image, zoom onto the label area as the batch form does.
+         imageWindowAcknowledged = true;
          if (selectedImage!=null) {
             channel.postMessage( { x:'353', y:'614', oh: String(selectedImage.pixel_height), ow: String(selectedImage.pixel_width), h:'700', w:'467', id:'' } );
          }
@@ -1812,7 +1856,6 @@ function newRecordForm() {
       lastLookedUpBarcode = null;
       currentImages = [];
       showImage(null);
-      $('#imageoptions').html('None.');
       $('#record_info').html('Add or edit a record by barcode.');
       $('#feedback').html('Ready.');
       updateLocationBarcode('');

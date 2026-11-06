@@ -176,19 +176,23 @@ function lookupBatchesForBarcode($barcode) {
   */
 function lookupImageUrlsForImageSet($image_set_id) {
     global $connection;
-    $result = array('url'=>null,'thumbnail'=>null,'pixel_height'=>null,'pixel_width'=>null);
+    $result = array('url'=>null,'thumbnail'=>null,'pixel_height'=>null,'pixel_width'=>null,'create_date'=>null);
     // object_type_id 3 is the web jpeg used by the edit form (see TR_Batch::getFile()), 2 is a thumbnail.
-    $sql = "select io.object_type_id, repo.url_prefix, io.uri, io.pixel_height, io.pixel_width
+    $sql = "select io.object_type_id, repo.url_prefix, io.uri, io.pixel_height, io.pixel_width, io.create_date
               from IMAGE_OBJECT io
               left join REPOSITORY repo on io.repository_id = repo.id
-             where io.image_set_id = ? and io.active_flag = 1 and io.object_type_id in (2,3)
+             where io.image_set_id = ? and io.active_flag = 1
              order by io.object_type_id";
     if ($statement = $connection->prepare($sql)) {
         $statement->bind_param("i",$image_set_id);
         $statement->execute();
-        $statement->bind_result($object_type_id,$url_prefix,$uri,$pixel_height,$pixel_width);
+        $statement->bind_result($object_type_id,$url_prefix,$uri,$pixel_height,$pixel_width,$create_date);
         $statement->store_result();
         while ($statement->fetch()) {
+            // the image set's date is the latest create date of any of its image objects
+            if ($create_date!=null && ($result['create_date']==null || strcmp($create_date,$result['create_date'])>0)) {
+                $result['create_date'] = $create_date;
+            }
             if ($url_prefix==null || $uri==null) { continue; }
             if ($object_type_id==3 && $result['url']==null) {
                 $result['url'] = $url_prefix.$uri;
@@ -203,6 +207,13 @@ function lookupImageUrlsForImageSet($image_set_id) {
         $statement->close();
     }
     return $result;
+}
+
+/** usort comparison function, orders image sets from lookupImagesForBarcode() newest first. */
+function compareImagesNewestFirst($a, $b) {
+    $c = strcmp((string)$b['create_date'], (string)$a['create_date']);
+    if ($c==0) { $c = intval($b['image_set_id']) - intval($a['image_set_id']); }
+    return $c;
 }
 
 /** Find all images associated with a barcode, either linked to the specimen record
@@ -258,7 +269,7 @@ function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
     // attach display urls
     $result = array();
     foreach ($sets as $set) {
-        $urls = array('url'=>null,'thumbnail'=>null,'pixel_height'=>null,'pixel_width'=>null);
+        $urls = array('url'=>null,'thumbnail'=>null,'pixel_height'=>null,'pixel_width'=>null,'create_date'=>null);
         if ($set['image_set_id']!=null) {
             $urls = lookupImageUrlsForImageSet($set['image_set_id']);
         }
@@ -277,9 +288,12 @@ function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
         $set['thumbnail'] = $urls['thumbnail'];
         $set['pixel_height'] = $urls['pixel_height'];
         $set['pixel_width'] = $urls['pixel_width'];
+        $set['create_date'] = $urls['create_date'];
         unset($set['localuri']);
         $result[] = $set;
     }
+    // most recently added image first: latest create date, then highest image set id.
+    usort($result, 'compareImagesNewestFirst');
     return $result;
 }
 
@@ -641,6 +655,13 @@ class TPage extends Page {
       if (mode=='test') { added = '&test=true'; }
       if (mode=='testminimal') { added = '&test=true&config=minimal'; }
       window.location.href = 'transcribe.php?display=mainform&batch='+batchpath+'&position='+position+added;
+   }
+   // Open the magnified image window and the Add/Edit Records form (as dosetuppath does for batches).
+   function dosetupnewrecord(barcode) {
+      window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path=&filename=' ,'_blank','modal=yes');
+      var added = '';
+      if (barcode) { added = '&barcode=' + encodeURIComponent(barcode); }
+      window.location.href = 'transcribe.php?display=newrecord' + added;
    }
    function doclear() {
       channel.postMessage('close');
