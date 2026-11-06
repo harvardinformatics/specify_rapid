@@ -198,7 +198,7 @@ function doSetup() {
    echo "<div id='findbarcodediv' style='padding: 0.5em;' >";
    echo " <strong>Find a barcode:</strong> ";
    echo "<input type='text' id='findbarcode' name='findbarcode' size='10' maxlength='20' placeholder='Barcode' autocomplete='off'>";
-   echo "<button type='button' id='findbarcodebutton' class='ui-button'>Find</button>";
+   echo "<button type='button' id='findbarcodebutton' class='ui-button' style='margin-left: 0.4em;'>Find</button>";
    echo "<div id='findbarcoderesults' style='padding-top: 0.5em;'></div>";
    echo "</div>";
    echo "<script type='text/javascript'>

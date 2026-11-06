@@ -414,11 +414,11 @@ function echoCurrentBatchControls($targetBatch) {
    $targetBatchFirst = $targetBatch->getFile(1);
    echo " <strong>Current Batch:</strong> <span style=\"font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace; font-size: 0.85em;\">[$batchPath]</span>";
    if ($targetBatchFirst!=null) {
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first.</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first</button>";
    }
    if ($targetBatchCurrent!=null && $targetBatchCurrent->position > 1) {
       $position = $targetBatchCurrent->position;
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$position\",\"standard\");' class='ui-button ui' >Start from $position</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$position\",\"standard\");' class='ui-button ui' style='margin-left: 0.4em;' >Start from $position</button>";
    }
 }
 
