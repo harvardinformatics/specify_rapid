@@ -238,7 +238,7 @@ function doSetup() {
                   html += '<td style=\"padding-right: 1em;\">' + (b.completed==1 ? 'Done' : 'Open') + '</td>';
                   html += '<td style=\"padding-right: 1em;\">' + escapeHtml(b.position) + ' of ' + escapeHtml(b.filecount) + '</td>';
                   html += '<td style=\"padding-right: 1em;\">' + escapeHtml(b.filename) + '</td>';
-                  html += \"<td><button type='button' class='ui-button findbarcodego' data-index='\" + i + \"'>Edit in batch at position \" + escapeHtml(b.position) + '</button></td>';
+                  html += \"<td><button type='button' class='ui-button findbarcodego' data-index='\" + i + \"'>Edit in batch</button></td>\";
                   html += '</tr>';
                }
                html += '</table>';
