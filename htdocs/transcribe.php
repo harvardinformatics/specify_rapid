@@ -1650,7 +1650,13 @@ function newRecordForm() {
          success: function(data) {
             lastLookedUpBarcode = barcode;
             updateLocationBarcode(barcode);
-            if (data.num_matches == 1) {
+            if (data.preparation_matches > 0) {
+               // Barcode belongs to a preparation (unbarcoded item): saving here would be refused.
+               resetRecordFields(true);
+               lastLookedUpBarcode = null;  // do not allow saving
+               $('#record_info').html('<strong>Edit ' + escapeHtml(barcode) + ' in Specify.</strong>');
+               $('#feedback').html('<mark><strong>Warning:</strong> Barcode ' + escapeHtml(barcode) + ' is on a preparation (unbarcoded item) in the database. Edit this record in Specify; it cannot be saved from this form.</mark>');
+            } else if (data.num_matches == 1) {
                resetRecordFields(true);
                loadFormData(data);
                $('#record_info').html('Editing existing record ' + escapeHtml(barcode) + '.');

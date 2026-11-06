@@ -1722,6 +1722,25 @@ function lookupDataForBarcode($barcode) {
 
    $result['barcode']=$barcode;
 
+   // Count matches in preparation.identifier: a barcode there belongs to an unbarcoded
+   // item (barcoded preparation), which ingest() refuses to save; such records must be
+   // edited in Specify.  Reported so forms can warn before the user enters data.
+   $result['preparation_matches'] = 0;
+   try {
+      $sql = "select count(*) from preparation where identifier = ?";
+      if ($statement = $connection->prepare($sql)) {
+         $statement->bind_param("s", $barcode);
+         $statement->execute();
+         $statement->bind_result($preparationmatches);
+         if ($statement->fetch()) {
+            $result['preparation_matches'] = $preparationmatches;
+         }
+         $statement->close();
+      }
+   } catch (Exception $e) {
+      $result['preparation_matches'] = 0;
+   }
+
    $huh_fragment = new huh_fragment();
    $matches = $huh_fragment->loadArrayByIdentifier($barcode);
    $num_matches = count($matches);
