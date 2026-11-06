@@ -175,6 +175,80 @@ function lookupBatchesForBarcode($barcode) {
     return $result;
 }
 
+/** Image URLs without depending on kiki.
+  *
+  * Image objects in the "huhimagestorage" repository have URLs of the form
+  * http://kiki.huh.harvard.edu/databases/image.php?id=<IMAGE_LOCAL_FILE.id>[&convert=jpeg].
+  * kiki's image.php (specify_web project) looks up that IMAGE_LOCAL_FILE row and redirects to
+  * the copy of the file on S3, or, for TIFF files or convert=jpeg, returns a text notice instead
+  * of an image.  resolveImageUrl() does the same conversion here, so images are loaded from S3
+  * directly.
+  */
+
+/** True if a REPOSITORY.URL_PREFIX points at an image.php service like kiki's. */
+function isImagePhpUrlPrefix($url_prefix) {
+    return preg_match('#/databases/image\.php\?$#', (string)$url_prefix) == 1;
+}
+
+/** The S3 URL for a file in huh image storage, using the same path mapping as kiki's image.php:
+  * huhimagestorage/HerbariaN/... becomes herbariaN/..., and huhimagestorage/huhspecimenimages/...
+  * becomes huhspecimenimages/....
+  *
+  * @param path IMAGE_LOCAL_FILE.path (e.g. huhimagestorage/huhspecimenimages/JPG-Preview/)
+  * @param filename IMAGE_LOCAL_FILE.filename
+  */
+function s3UrlForLocalFile($path, $filename) {
+    $path = preg_replace("/huhimagestorage\/Herbaria/", "herbaria", (string)$path);
+    $path = preg_replace("/huhimagestorage\/huhspecimenimages/", "huhspecimenimages", $path);
+    if (strlen($path)>0 && substr($path,-1)!='/') { $path .= '/'; }
+    return "https://s3.amazonaws.com/" . $path . $filename;
+}
+
+/** Look up path, filename and mimetype of an IMAGE_LOCAL_FILE row, caching results for the request.
+  * @return an associative array with keys path, filename, mimetype, or null if not found.
+  */
+function lookupImageLocalFile($image_local_file_id) {
+    global $connection;
+    static $cache = array();
+    if (array_key_exists($image_local_file_id, $cache)) { return $cache[$image_local_file_id]; }
+    $result = null;
+    $sql = "select path, filename, mimetype from IMAGE_LOCAL_FILE where id = ?";
+    if ($statement = $connection->prepare($sql)) {
+        $statement->bind_param("i", $image_local_file_id);
+        $statement->execute();
+        $statement->bind_result($path, $filename, $mimetype);
+        $statement->store_result();
+        if ($statement->fetch()) {
+            $result = array('path'=>$path, 'filename'=>$filename, 'mimetype'=>$mimetype);
+        }
+        $statement->free_result();
+        $statement->close();
+    }
+    $cache[$image_local_file_id] = $result;
+    return $result;
+}
+
+/** The URL to use for an image object, given its REPOSITORY.URL_PREFIX and IMAGE_OBJECT.URI.
+  * URLs through kiki's image.php are converted to the S3 URL kiki would redirect to; other
+  * URLs are returned unchanged.
+  *
+  * @return the URL, or null if there is no displayable image (no URI, IMAGE_LOCAL_FILE row
+  *   not found, or a TIFF / convert=jpeg request, for which kiki returns a text notice).
+  */
+function resolveImageUrl($url_prefix, $uri) {
+    if ($url_prefix===null || $uri===null || $uri==='') { return null; }
+    if (!isImagePhpUrlPrefix($url_prefix)) { return $url_prefix . $uri; }
+    $params = array();
+    parse_str((string)$uri, $params);
+    $id = isset($params['id']) ? preg_replace('/[^0-9]/', '', $params['id']) : '';
+    $convert = isset($params['convert']) ? preg_replace('/[^a-z]/', '', $params['convert']) : '';
+    if (strlen($id)==0) { return null; }
+    $file = lookupImageLocalFile(intval($id));
+    if ($file==null) { return null; }
+    if ($file['mimetype']=='image/tiff' || $convert=='jpeg' || $convert=='jpg') { return null; }
+    return s3UrlForLocalFile($file['path'], $file['filename']);
+}
+
 /** Find the images available for display for an image set.
   *
   * @param image_set_id the IMAGE_SET to look up.
@@ -195,23 +269,30 @@ function lookupImageUrlsForImageSet($image_set_id) {
         $statement->execute();
         $statement->bind_result($object_type_id,$url_prefix,$uri,$pixel_height,$pixel_width,$create_date);
         $statement->store_result();
+        $rows = array();
         while ($statement->fetch()) {
+            $rows[] = array($object_type_id,$url_prefix,$uri,$pixel_height,$pixel_width,$create_date);
+        }
+        $statement->free_result();
+        $statement->close();
+        foreach ($rows as $row) {
+            list($object_type_id,$url_prefix,$uri,$pixel_height,$pixel_width,$create_date) = $row;
             // the image set's date is the latest create date of any of its image objects
             if ($create_date!=null && ($result['create_date']==null || strcmp($create_date,$result['create_date'])>0)) {
                 $result['create_date'] = $create_date;
             }
-            if ($url_prefix==null || $uri==null) { continue; }
             if ($object_type_id==3 && $result['url']==null) {
-                $result['url'] = $url_prefix.$uri;
-                $result['pixel_height'] = $pixel_height;
-                $result['pixel_width'] = $pixel_width;
+                $url = resolveImageUrl($url_prefix, $uri);
+                if ($url!=null) {
+                    $result['url'] = $url;
+                    $result['pixel_height'] = $pixel_height;
+                    $result['pixel_width'] = $pixel_width;
+                }
             }
             if ($object_type_id==2 && $result['thumbnail']==null) {
-                $result['thumbnail'] = $url_prefix.$uri;
+                $result['thumbnail'] = resolveImageUrl($url_prefix, $uri);
             }
         }
-        $statement->free_result();
-        $statement->close();
     }
     return $result;
 }
@@ -611,13 +692,14 @@ class TR_Batch {
 
             // local path and filename of the image, below BASE_IMAGE_PATH
             $localuri = $result->path . $filename;
+            $result->webPath = null;
             if ($repoid && $repourl && $objecturi) {
-              $result->webPath = $repourl . $objecturi;
-            } elseif (strncmp('huhimagestorage/huhspecimenimages/', $localuri, 34) == 0) {
+              // web image object, with kiki image.php URLs converted to S3
+              $result->webPath = resolveImageUrl($repourl, $objecturi);
+            }
+            if ($result->webPath==null && strncmp('huhimagestorage/huhspecimenimages/', $localuri, 34) == 0) {
               // images stored under huhspecimenimages are also served from S3
-              $result->webPath = 'https://s3.amazonaws.com/huhspecimenimages' . substr($localuri, 33); // TODO: move aws path to Docker
-            } else {
-              $result->webPath = null;
+              $result->webPath = s3UrlForLocalFile($result->path, $filename);
             }
 
             $result->batch_id = $this->getBatchID();

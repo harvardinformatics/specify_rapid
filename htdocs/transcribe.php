@@ -411,7 +411,7 @@ function targetfile($path,$filename) {
 function imageForBarcode($barcode) {
    global $connection;
    $result = "";
-   $sql = " select concat(url_prefix,uri) as url
+   $sql = " select url_prefix, uri
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
@@ -420,9 +420,10 @@ function imageForBarcode($barcode) {
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
        $statement->execute();
-       $statement->bind_result($url);
+       $statement->bind_result($url_prefix, $uri);
+       $statement->store_result();
        if ($statement->fetch()) {
-         $result .= $url;
+         $result .= resolveImageUrl($url_prefix, $uri);  // kiki image.php URLs converted to S3
        } else {
           echo $connection->error;
        }
@@ -436,7 +437,7 @@ function imageForBarcode($barcode) {
 function imageDataForBarcode($barcode) {
    global $connection;
    $result = new ImageReturn();
-   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width
+   $sql = " select image_set_id, url_prefix, uri, pixel_height, pixel_width
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
@@ -445,10 +446,11 @@ function imageDataForBarcode($barcode) {
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
        $statement->execute();
-       $statement->bind_result($image_set_id, $url, $pixel_height, $pixel_width);
+       $statement->bind_result($image_set_id, $url_prefix, $uri, $pixel_height, $pixel_width);
+       $statement->store_result();
        if ($statement->fetch()) {
          $result->image_set_id = $image_set_id;
-         $result->url = $url;
+         $result->url = resolveImageUrl($url_prefix, $uri);  // kiki image.php URLs converted to S3
          $result->pixel_height = $pixel_height;
          $result->pixel_width = $pixel_width;
        } else {

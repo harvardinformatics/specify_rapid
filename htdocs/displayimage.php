@@ -16,7 +16,7 @@ $mode= '';
 function imageDataForBarcode($barcode) {
    global $connection;
    $result = new ImageReturn();
-   $sql = " select image_set_id, concat(url_prefix,uri) as url, pixel_height, pixel_width
+   $sql = " select image_set_id, url_prefix, uri, pixel_height, pixel_width
             from IMAGE_OBJECT io left join REPOSITORY on io.repository_id = REPOSITORY.id
             left join IMAGE_SET_collectionobject isco on io.image_set_id = isco.imagesetid
             left join fragment f on f.collectionobjectid = isco.collectionobjectid
@@ -25,11 +25,13 @@ function imageDataForBarcode($barcode) {
    if ($statement = $connection->prepare($sql)) {
        $statement->bind_param("s", $barcode);
        $statement->execute();
-       $statement->bind_result($image_set_id, $url, $pixel_height, $pixel_width);
+       $statement->bind_result($image_set_id, $url_prefix, $uri, $pixel_height, $pixel_width);
+       $statement->store_result();
        if ($statement->fetch()) {
          $result->image_set_id = $image_set_id;
+         $url = resolveImageUrl($url_prefix, $uri);  // kiki image.php URLs converted to S3
          $result->url = $url;
-         if ($pixel_height==0||$pixel_height==null) {
+         if ($url!=null && ($pixel_height==0||$pixel_height==null)) {
             $size = getImageSize($url);
             $pixel_width = $size[0];
             $pixel_height = $size[1];
