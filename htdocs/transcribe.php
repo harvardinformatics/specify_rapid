@@ -1624,11 +1624,22 @@ function newRecordForm() {
       }
    }
 
-   function updateLocationBarcode(barcode) {
+   /* Browser history: each existing record looked up, each new record saved, and each New Record
+    * form gets its own history entry (?display=newrecord&barcode=...), so that the browser's Back and
+    * Forward buttons move between the records entered on this page (see the popstate handler below).
+    */
+   function locationBarcode() {
+      var barcode = new URLSearchParams(window.location.search).get('barcode');
+      return barcode ? padBarcode(barcode) : '';
+   }
+
+   /* Add a history entry for a barcode ('' for a new record), unless the current entry is already for it. */
+   function pushLocationBarcode(barcode) {
+      if (locationBarcode() === barcode) { return; }
       var params = new URLSearchParams(window.location.search);
       params.set('display', 'newrecord');
       if (barcode) { params.set('barcode', barcode); } else { params.delete('barcode'); }
-      window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+      window.history.pushState({ barcode: barcode }, '', window.location.pathname + '?' + params.toString());
    }
 
    /* Look up an existing record and images for a barcode. */
@@ -1651,8 +1662,11 @@ function newRecordForm() {
          data: { action: 'getdataforbarcode', barcode: barcode },
          success: function(data) {
             lastLookedUpBarcode = barcode;
-            updateLocationBarcode(barcode);
             lastBarcodeFound = (data.num_matches > 0 || data.preparation_matches > 0);
+            if (lastBarcodeFound) {
+               // an existing record: give it its own entry in the browser history
+               pushLocationBarcode(barcode);
+            }
             updateBarcodeLink(barcode, lastBarcodeFound);
             if (data.preparation_matches > 0) {
                // Barcode belongs to a preparation (unbarcoded item): saving here would be refused.
@@ -1852,18 +1866,37 @@ function newRecordForm() {
 
    $('#openImageWindowButton').on('click', function(event) { openImageWindow(); event.preventDefault(); });
 
-   $('.newRecordButton').on('click', function(event) {
+   /* Clear the form for a new record.  pushHistory adds a history entry for the blank form, so that
+    * Back returns to the record that was being shown. */
+   function newRecord(pushHistory) {
       resetRecordFields(false);
       updateBarcodeLink('', false);
       lastLookedUpBarcode = null;
+      lastBarcodeFound = false;
       currentImages = [];
       showImage(null);
       $('#record_info').html('Add or edit a record by barcode.');
       $('#feedback').html('Ready.');
-      updateLocationBarcode('');
+      if (pushHistory) { pushLocationBarcode(''); }
       checkSaveButton();
       $('#barcode').focus();
+   }
+
+   $('.newRecordButton').on('click', function(event) {
+      newRecord(true);
       event.preventDefault();
+   });
+
+   /* Back/Forward in the browser: show the record for the barcode in the URL, or a new record. */
+   window.addEventListener('popstate', function() {
+      var barcode = locationBarcode();
+      if (barcode) {
+         lastLookedUpBarcode = null;  // always reload the record
+         $('#barcode').val(barcode);
+         lookupBarcode(barcode);
+      } else {
+         newRecord(false);
+      }
    });
 
    $('#saveButton').on('click', function(event){
@@ -1882,6 +1915,14 @@ function newRecordForm() {
          data: $('#transcribeForm').serialize(),
          success: function(data) {
             $('#feedback').html( data );
+            var saved = String(data).indexOf('#B3FF9F') >= 0 && String(data).indexOf('Save Failed') < 0;
+            if (saved && !lastBarcodeFound) {
+               // a new record was saved: it now exists, and gets its own entry in the browser history
+               lastBarcodeFound = true;
+               updateBarcodeLink(barcode, true);
+               $('#record_info').html('Editing existing record ' + escapeHtml(barcode) + '.');
+               pushLocationBarcode(barcode);
+            }
             checkSaveButton();
          },
          error: function(jqXHR, textStatus, errorThrown) {
