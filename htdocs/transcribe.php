@@ -1475,7 +1475,7 @@ function newRecordForm() {
    echo '<div class=flexbox>';
    echo "<div id='noimagemessage' style='width: 265px; height: 400px; background-color: lightgrey; display: flex; align-items: center; justify-content: center; text-align: center;'>Enter a barcode to find images.</div>";
    echo "<img id='image_div' src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' height='400' style='background-color:lightgrey; display: none; cursor: crosshair;'>";
-   // one short line under the image: where the image came from, and a link to choose among other images.
+   // under the image: only a link to choose among other images, when there is more than one.
    echo "<div id='imageinfo' style='font-size: 0.8em; max-width: 30em; padding-top: 2px;'></div>";
    echo '</div>';
    echo '</div>';
@@ -1717,15 +1717,6 @@ function newRecordForm() {
       });
    }
 
-   /* Describe where an image came from (noted only when it is from a transcription batch rather than linked to the record) and when it was added. */
-   function imageSourceHtml(index) {
-      var img = currentImages[index];
-      var sources = [];
-      if (!img.linked) { sources.push('From a transcription batch'); }
-      if (img.create_date) { sources.push('Added ' + escapeHtml(String(img.create_date).substring(0,10))); }
-      return sources.join('; ');
-   }
-
    /* Display an image (index into currentImages, or null to clear) and send it to the image window. */
    function showImage(index) {
       if (index==null || index>=currentImages.length) {
@@ -1741,7 +1732,7 @@ function newRecordForm() {
       $('#noimagemessage').hide();
       $('#image_div').attr('src','data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
       $('#image_div').attr({ 'src': selectedImage.url, 'height': h, 'width': w }).show();
-      var info = '<div>' + imageSourceHtml(index) + '</div>';
+      var info = '';
       var others = currentImages.length - 1;
       if (others > 0) {
          info += "<div><a href='#' id='moreimageslink'>" + others + ' more image' + (others==1 ? '' : 's') + ' available to choose from</a></div>';
@@ -1759,7 +1750,6 @@ function newRecordForm() {
          var current = (img===selectedImage);
          html += '<div class="imagepickertile" data-index="' + i + '" style="width: 220px; padding: 6px; border: 3px solid ' + (current ? 'steelblue' : '#ddd') + '; border-radius: 4px; cursor: pointer; font-size: 0.8em; background: white;">';
          html += '<img src="' + escapeHtml(img.thumbnail) + '" style="display: block; height: 300px; max-width: 220px; margin: 0 auto; background-color: lightgrey;" alt="image ' + (i+1) + '">';
-         html += '<div style="padding-top: 4px;">' + (current ? '<strong>Currently displayed.</strong> ' : '') + imageSourceHtml(i) + '</div>';
          html += '</div>';
       }
       $('#imagepickertitle').html('Choose an image for ' + escapeHtml($('#barcode').val()) + ' (' + currentImages.length + ' available)');
