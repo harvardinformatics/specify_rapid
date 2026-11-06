@@ -151,7 +151,7 @@ function doSetup() {
 
    // $targetBatch is null when the user has no open batch.
    $batchPath = ($targetBatch==null) ? null : $targetBatch->getPath();
-   echo "<div style='padding-left: 0.5em;'><h2 style='margin: 0.2em;'>Transcribe data from Images into Specify-HUH</h2></div>";
+   echo "<div style='padding: 0.4em 0.7em; margin: 0.3em 0.3em 0.6em 0.3em; background-color: #d7ebf9; border: 1px solid #aed0ea; border-radius: 4px;'><h2 style='margin: 0;'>Transcribe data from Images into Specify-HUH</h2></div>";
    echo "<div style='padding: 0.5em;' id='setupBatchControls'>";
    echoCurrentBatchControls($targetBatch);
    echo "</div>";
