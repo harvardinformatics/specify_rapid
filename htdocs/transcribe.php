@@ -1839,7 +1839,7 @@ function newRecordForm() {
     */
    function ensureImageWindow() {
       if (imageWindow!=null && !imageWindow.closed) { return true; }
-      var w = window.open('', 'transcribeimagewindow', 'modal=yes');
+      var w = window.open('', 'transcribeimagewindow', imageWindowFeatures());
       if (!w) {
          $('#feedback').html('The browser blocked the magnified image window.  Allow pop-ups for this site, or click Open Image Window.');
          return false;
