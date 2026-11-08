@@ -785,10 +785,17 @@ class TPage extends Page {
       if (mode=='testminimal') { added = '&test=true&config=minimal'; }
       window.location.href = 'transcribe.php?display=mainform&batch='+batchpath+'&position='+position+added;
    }
-   // Open the Add/Edit Records form.  The form opens the magnified image window itself once a barcode with images is entered.
+   // Open the Add/Edit Records form, for a barcode (an existing record) or blank.  For a blank form, the form opens
+   // the magnified image window itself once a barcode with images is entered.
    function dosetupnewrecord(barcode) {
       var added = '';
-      if (barcode) { added = '&barcode=' + encodeURIComponent(barcode); }
+      if (barcode) {
+         added = '&barcode=' + encodeURIComponent(barcode);
+         // Opening an existing record: open the magnified image window now, while handling the click,
+         // as dosetuppath() does for batches.  A window opened later by the form (after its lookup)
+         // is not part of a click and would be blocked.  The form reuses this window by its name.
+         window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path=&filename=', 'transcribeimagewindow', 'modal=yes');
+      }
       window.location.href = 'transcribe.php?display=newrecord' + added;
    }
    function doclear() {
