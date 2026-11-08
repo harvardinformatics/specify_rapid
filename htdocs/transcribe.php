@@ -1850,7 +1850,6 @@ function newRecordForm() {
          w.location.href = 'displayimage.php?mode=imagefile&imgsrc=' + encodeURIComponent(newRecordConfig.imgsrc) + '&path=&filename=';
          imageWindowOpenedAt = Date.now();
       }
-      placeImageWindow(w);
       imageWindow = w;
       return true;
    }
