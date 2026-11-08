@@ -147,17 +147,22 @@ if ($connection && $authenticated) {
          break;
 
       case 'findbarcode':
-         // Find all transcription batches (and positions within them) containing a barcode.
+         // Find a barcode in the database (fragment and preparation identifiers), and all
+         // transcription batches (and positions within them) containing it.
          @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
          $toencode = array();
          $toencode['barcode'] = $barcode;
          $toencode['error'] = '';
+         $toencode['fragment_matches'] = 0;
+         $toencode['preparation_matches'] = 0;
          $toencode['batches'] = array();
          if (strlen($barcode)==0) {
             $toencode['error'] = 'No barcode provided.';
          } else {
             try {
                $toencode['barcode'] = str_pad($barcode,8,"0",STR_PAD_LEFT);
+               $toencode['fragment_matches'] = countIdentifierMatches('fragment', $toencode['barcode']);
+               $toencode['preparation_matches'] = countIdentifierMatches('preparation', $toencode['barcode']);
                $toencode['batches'] = lookupBatchesForBarcode($barcode);
             } catch (Exception $e) {
                $toencode['error'] = $e->getMessage();
@@ -1705,6 +1710,31 @@ EOD;
 
 }  // end ingest
 
+
+/**
+ * Count the records in fragment or preparation with identifier equal to a barcode.
+ *
+ * @param table 'fragment' or 'preparation'
+ * @param barcode the zero padded barcode
+ * @return the number of matching records
+ */
+function countIdentifierMatches($table, $barcode) {
+   global $connection;
+   if ($table!='fragment' && $table!='preparation') { throw new Exception("Unsupported table [$table]"); }
+   $count = 0;
+   $sql = "select count(*) from $table where identifier = ?";
+   $statement = $connection->prepare($sql);
+   if ($statement) {
+      $statement->bind_param("s", $barcode);
+      $statement->execute();
+      $statement->bind_result($count);
+      $statement->fetch();
+      $statement->close();
+   } else {
+      throw new Exception("Query error: " . $connection->error);
+   }
+   return $count;
+}
 
 function lookupDataForBarcode($barcode) {
    global $connection;

@@ -224,11 +224,22 @@ function doSetup() {
                   $('#findbarcoderesults').html('Error: ' + escapeHtml(data.error));
                   return;
                }
+               // first, where the barcode is in the database
+               var html = '';
+               if (data.preparation_matches > 0) {
+                  html += '<div>Barcode ' + escapeHtml(data.barcode) + ' is attached to a preparation and must be edited in Specify.</div>';
+               }
+               if (data.fragment_matches > 0) {
+                  html += \"<div>Barcode \" + escapeHtml(data.barcode) + \" found in database <button type='button' class='ui-button' id='findbarcodeedit' style='margin-left: 0.4em;'>Edit Record</button></div>\";
+               }
+               // then, the image batches containing it
                if (data.batches.length==0) {
-                  $('#findbarcoderesults').html('Barcode ' + escapeHtml(data.barcode) + ' was not found in any batch.');
+                  html += '<div>Barcode ' + escapeHtml(data.barcode) + ' was not found in any batch.</div>';
+                  $('#findbarcoderesults').html(html);
+                  $('#findbarcodeedit').on('click', function() { dosetupnewrecord(data.barcode); });
                   return;
                }
-               var html = '<div>Barcode ' + escapeHtml(data.barcode) + ' found in ' + data.batches.length + ' batch position(s).</div>';
+               html += '<div>Barcode ' + escapeHtml(data.barcode) + ' found in ' + data.batches.length + ' batch position(s).</div>';
                html += \"<table class='findbarcodetable' style='border-collapse: collapse;'>\";
                html += '<tr><th align=left>Batch</th><th align=left>Status</th><th align=left>Position</th><th align=left>File</th><th></th></tr>';
                for (var i=0; i<data.batches.length; i++) {
@@ -243,6 +254,7 @@ function doSetup() {
                }
                html += '</table>';
                $('#findbarcoderesults').html(html);
+               $('#findbarcodeedit').on('click', function() { dosetupnewrecord(data.barcode); });
                $('.findbarcodego').on('click', function() {
                   var b = data.batches[$(this).data('index')];
                   $('#cover').fadeIn(100);
