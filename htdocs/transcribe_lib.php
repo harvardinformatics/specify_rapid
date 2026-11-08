@@ -768,9 +768,32 @@ class TPage extends Page {
    const channel = new BroadcastChannel('imageclicks');
    const pingchannel = new BroadcastChannel('ping');
 
+   // Window features for the magnified image window: a popup filling the right half of the
+   // user's screen (the screen this page is on), so that it does not cover the form.
+   function imageWindowFeatures() {
+      var availLeft = (typeof screen.availLeft === 'number') ? screen.availLeft : 0;
+      var availTop = (typeof screen.availTop === 'number') ? screen.availTop : 0;
+      var width = Math.max(500, Math.round(screen.availWidth / 2));
+      var height = screen.availHeight;
+      var left = availLeft + screen.availWidth - width;
+      return 'popup=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + availTop;
+   }
+   // Move an already open image window to the right half of the screen (window.open() does not
+   // reposition a named window that is already open).  Browsers may ignore this for tabs.
+   function placeImageWindow(w) {
+      if (!w) { return; }
+      try {
+         var availLeft = (typeof screen.availLeft === 'number') ? screen.availLeft : 0;
+         var availTop = (typeof screen.availTop === 'number') ? screen.availTop : 0;
+         var width = Math.max(500, Math.round(screen.availWidth / 2));
+         w.resizeTo(width, screen.availHeight);
+         w.moveTo(availLeft + screen.availWidth - width, availTop);
+      } catch (e) { }
+   }
+
    function dosetup(barcode) {
 
-      window.open('displayimage.php?mode=image&startbarcode='+barcode ,'_blank','modal=yes');
+      window.open('displayimage.php?mode=image&startbarcode='+barcode ,'_blank',imageWindowFeatures());
 
       window.location.href = 'transcribe.php?display=mainform&barcode='+barcode;
 
@@ -778,7 +801,7 @@ class TPage extends Page {
 
    function dosetuppath(batchpath,filepath,filename,position,mode) {
 
-      window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path='+filepath+'&filename='+filename ,'_blank','modal=yes');
+      window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path='+filepath+'&filename='+filename ,'_blank',imageWindowFeatures());
 
       var added = '';
       if (mode=='test') { added = '&test=true'; }
@@ -794,7 +817,7 @@ class TPage extends Page {
          // Opening an existing record: open the magnified image window now, while handling the click,
          // as dosetuppath() does for batches.  A window opened later by the form (after its lookup)
          // is not part of a click and would be blocked.  The form reuses this window by its name.
-         window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path=&filename=', 'transcribeimagewindow', 'modal=yes');
+         placeImageWindow(window.open('displayimage.php?mode=imagefile&imgsrc=AWS&path=&filename=', 'transcribeimagewindow', imageWindowFeatures()));
       }
       window.location.href = 'transcribe.php?display=newrecord' + added;
    }
