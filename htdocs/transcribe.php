@@ -600,7 +600,7 @@ function navigation() {
     global $transcriptionMode, $modeLabel, $imgSrc, $imgSrcLabel;
 
     echo "<button type='button' onclick='$(\"#cover\").fadeIn(100);   doclear();' class='ui-button' >Home</button>";
-    echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
+    echo "<button type='button' onclick='ping();' class='ui-button' style='display: none;' >Ping</button>";
     echo "<button type='button' id='minimalButton' class='ui-button' >$modeLabel</button>";
     echo "<button type='button' id='imgSrcButton' class='ui-button' >$imgSrcLabel</button>";
     echo "<button type='button' id='jumpButton' class='ui-button' >Jump to:</button><input id='jumpto' type='text' size=4 />";
@@ -1403,7 +1403,8 @@ function newRecordForm() {
    echo "<button type='button' onclick='doclear();' class='ui-button' >Home</button>";
    echo "<button type='button' id='newBlankButton' class='ui-button newRecordButton' >New Record</button>";
    echo "<button type='button' id='openImageWindowButton' class='ui-button' >Open Image Window</button>";
-   echo "<button type='button' onclick='ping();' class='ui-button' >Ping</button>";
+   echo "<button type='button' onclick='ping();' class='ui-button' style='display: none;' >Ping</button>";
+   echo "<button type='button' id='editCarryoverButton' class='ui-button' >Edit Carryover</button>";
    echo "&nbsp;<span id='record_info'>Add or edit a record by barcode.</span>";
    echo "</div>";
    echo "</div>";
@@ -1533,6 +1534,21 @@ function newRecordForm() {
    echo "</div>";
    echo "</div>";
 
+   // Layover for choosing the fields carried over to a new record by the New Record buttons.
+   echo "<div id='carryoveroverlay' style='display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; overflow: auto;'>";
+   echo "<div style='background: white; margin: 2em auto; width: 40em; max-width: 90%; padding: 1em; border-radius: 4px;'>";
+   echo "<div style='display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5em;'>";
+   echo "<strong>Fields carried over to a new record</strong>";
+   echo "<button type='button' id='carryoverclose' class='ui-button'>Close</button>";
+   echo "</div>";
+   echo "<div id='carryoverfields' style='columns: 2; padding: 0.5em 0;'></div>";
+   echo "<div style='padding-top: 0.5em;'>";
+   echo "<button type='button' id='carryoverdefaults' class='ui-button'>Defaults</button> ";
+   echo "<button type='button' id='carryovernone' class='ui-button'>Clear All</button>";
+   echo "</div>";
+   echo "</div>";
+   echo "</div>";
+
    echo "<script>var newRecordConfig = ".json_encode($config).";</script>\n";
    echo <<<'EOT'
 <script>
@@ -1564,13 +1580,110 @@ function newRecordForm() {
    }
 
    /* Reset all record fields (except optionally the barcode) to their initial values. */
-   function resetRecordFields(keepBarcode) {
+   function resetRecordFields(keepBarcode, applyCarryover) {
       $.each(initialValues, function(id, value) {
          if (keepBarcode && id=='barcode') { return; }
          $('#'+id).val(value).css({'color':'black'});
       });
       $('#recordcreated').html('New Record');
+      if (applyCarryover) { applyCarriedValues(); }
    }
+
+   /* ** Carryover: as in the batch form, the New Record buttons keep the values of the chosen
+    * fields from the record on screen.  Carried values are shown in darksalmon, as in Batch Edit,
+    * until edited.  They apply to a new record only; an existing record shows its own data.
+    */
+   var defaultCarryoverFields = ['herbariumacronym','filedundername','currentname','geographyfilter','highergeography','project','prepmethod','preptype'];
+   var carryoverFields = defaultCarryoverFields.slice();
+   var carriedValues = {};   // field id -> value carried from the previous record
+
+   function carryoverStorageKey() { return 'transcribeCarryover:' + newRecordConfig.username; }
+
+   function loadCarryoverFields() {
+      try {
+         var stored = window.localStorage.getItem(carryoverStorageKey());
+         if (stored) {
+            var parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) { carryoverFields = parsed; }
+         }
+      } catch (e) { }
+   }
+
+   function saveCarryoverFields() {
+      try { window.localStorage.setItem(carryoverStorageKey(), JSON.stringify(carryoverFields)); } catch (e) { }
+   }
+
+   /* The fields that can be carried over: the record fields on the form, in form order, except the barcode. */
+   function carryoverCandidates() {
+      var result = [];
+      $('#transcribeForm .inputField[id]').each(function() {
+         var id = $(this).attr('id');
+         if (id=='barcode' || $(this).hasClass('fixedvalue')) { return; }
+         var label = $.trim($('label[for="' + id + '"]').first().text()) || id;
+         result.push({ id: id, label: label });
+      });
+      return result;
+   }
+
+   /* Remember the values of the carryover fields (and their hidden id fields) on screen. */
+   function captureCarriedValues() {
+      carriedValues = {};
+      $.each(carryoverFields, function(i, id) {
+         if (!$('#'+id).length) { return; }
+         carriedValues[id] = $('#'+id).val();
+         if ($('#'+id+'id').length) { carriedValues[id+'id'] = $('#'+id+'id').val(); }
+      });
+   }
+
+   function applyCarriedValues() {
+      $.each(carriedValues, function(id, value) {
+         $('#'+id).val(value);
+         if (value!=null && value!=='' && $('#'+id).hasClass('inputField')) {
+            $('#'+id).css({'color':'darksalmon'});
+         }
+      });
+   }
+
+   function renderCarryoverChoices() {
+      var html = '';
+      $.each(carryoverCandidates(), function(i, field) {
+         var checked = carryoverFields.indexOf(field.id) >= 0 ? ' checked' : '';
+         html += '<label style="display: block; break-inside: avoid; padding: 2px 0;"><input type="checkbox" class="carryoverchoice" value="' +
+                 escapeHtml(field.id) + '"' + checked + '> ' + escapeHtml(field.label) + '</label>';
+      });
+      $('#carryoverfields').html(html);
+   }
+
+   $('#editCarryoverButton').on('click', function(event) {
+      renderCarryoverChoices();
+      $('#carryoveroverlay').show();
+      event.preventDefault();
+   });
+   $('#carryoverfields').on('change', '.carryoverchoice', function() {
+      carryoverFields = $('#carryoverfields .carryoverchoice:checked').map(function() { return $(this).val(); }).get();
+      saveCarryoverFields();
+   });
+   $('#carryoverdefaults').on('click', function() {
+      carryoverFields = defaultCarryoverFields.slice();
+      saveCarryoverFields();
+      renderCarryoverChoices();
+   });
+   $('#carryovernone').on('click', function() {
+      carryoverFields = [];
+      saveCarryoverFields();
+      renderCarryoverChoices();
+   });
+   $('#carryoverclose').on('click', function() { $('#carryoveroverlay').hide(); });
+   $('#carryoveroverlay').on('click', function(event) {
+      if (event.target === this) { $(this).hide(); }
+   });
+   $(document).on('keydown', function(event) {
+      if (event.key === 'Escape' && $('#carryoveroverlay').is(':visible')) { $('#carryoveroverlay').hide(); }
+   });
+   // A carried value that the user edits is no longer shown as carried.
+   $('#transcribeForm').on('input change', '.inputField', function() {
+      if ($(this).attr('id')!='barcode') { $(this).css({'color':'black'}); }
+   });
 
    function setLoadedValue(field,value) {
       if (value==null) { value = ''; }
@@ -1713,7 +1826,7 @@ function newRecordForm() {
                $('#record_info').html('Multiple records for ' + escapeHtml(barcode) + '.');
                $('#feedback').html('<strong>Warning:</strong> more than one match for Barcode: ' + escapeHtml(barcode) + ' Enter in Specify.');
             } else {
-               resetRecordFields(true);
+               resetRecordFields(true, true);
                $('#record_info').html('New record ' + escapeHtml(barcode) + '.');
                $('#feedback').html('No existing record for ' + escapeHtml(barcode) + '. Ready to add a new record.');
             }
@@ -1897,8 +2010,9 @@ function newRecordForm() {
    /* Clear the form for a new record.  pushHistory adds a history entry for the blank form, so that
     * Back returns to the record that was being shown. */
    function newRecord(pushHistory) {
+      captureCarriedValues();
       lockBarcode(false);
-      resetRecordFields(false);
+      resetRecordFields(false, true);
       updateBarcodeLink('', false);
       lastLookedUpBarcode = null;
       lastBarcodeFound = false;
@@ -1965,6 +2079,7 @@ function newRecordForm() {
 
    $(document).ready(function() {
       storeInitialValues();
+      loadCarryoverFields();
       checkSaveButton();
       if (newRecordConfig.startbarcode) {
          $('#barcode').val(newRecordConfig.startbarcode);
