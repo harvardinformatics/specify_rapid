@@ -1390,9 +1390,18 @@ function newRecordForm() {
    @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
    if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = ''; }
 
+   // The user's saved choice of carryover fields (null: use the defaults).
+   $carryoverfields = null;
+   try {
+      $carryoverfields = getCarryoverFields($_SESSION["username"]);
+   } catch (Exception $e) {
+      $carryoverfields = null;
+   }
+
    // values passed to the javascript below
    $config = array(
       'startbarcode' => $startbarcode,
+      'carryoverfields' => $carryoverfields,
       'imgsrc' => $imgSrc,
       'username' => $_SESSION["username"],
       'defaultheight' => 4344,
@@ -1539,12 +1548,17 @@ function newRecordForm() {
    echo "<div style='background: white; margin: 2em auto; width: 40em; max-width: 90%; padding: 1em; border-radius: 4px;'>";
    echo "<div style='display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5em;'>";
    echo "<strong>Fields carried over to a new record</strong>";
-   echo "<button type='button' id='carryoverclose' class='ui-button'>Close</button>";
+   echo "<button type='button' id='carryoverclose' title='Close without saving' aria-label='Close without saving' style='border: none; background: none; font-size: 1.3em; line-height: 1; cursor: pointer; padding: 0 0.2em; color: #555;'>&times;</button>";
+   echo "</div>";
+   echo "<div style='padding-bottom: 0.5em;'>";
+   echo "<button type='button' id='carryoverdefaults' class='ui-button'>Defaults</button> ";
+   echo "<button type='button' id='carryoverall' class='ui-button'>Select All</button> ";
+   echo "<button type='button' id='carryovernone' class='ui-button'>Clear All</button>";
    echo "</div>";
    echo "<div id='carryoverfields' style='columns: 2; padding: 0.5em 0;'></div>";
    echo "<div style='padding-top: 0.5em;'>";
-   echo "<button type='button' id='carryoverdefaults' class='ui-button'>Defaults</button> ";
-   echo "<button type='button' id='carryovernone' class='ui-button'>Clear All</button>";
+   echo "<button type='button' id='carryoversave' class='ui-button'>Save</button> ";
+   echo "<span id='carryovermessage'></span>";
    echo "</div>";
    echo "</div>";
    echo "</div>";
@@ -1597,20 +1611,58 @@ function newRecordForm() {
    var carryoverFields = defaultCarryoverFields.slice();
    var carriedValues = {};   // field id -> value carried from the previous record
 
-   function carryoverStorageKey() { return 'transcribeCarryover:' + newRecordConfig.username; }
-
+   /* The user's saved choice (TR_USER_SETTING), passed in with the page; null means the defaults. */
    function loadCarryoverFields() {
-      try {
-         var stored = window.localStorage.getItem(carryoverStorageKey());
-         if (stored) {
-            var parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) { carryoverFields = parsed; }
-         }
-      } catch (e) { }
+      if (Array.isArray(newRecordConfig.carryoverfields)) {
+         carryoverFields = newRecordConfig.carryoverfields.slice();
+      }
    }
 
-   function saveCarryoverFields() {
-      try { window.localStorage.setItem(carryoverStorageKey(), JSON.stringify(carryoverFields)); } catch (e) { }
+   function sameFields(a, b) {
+      if (a.length != b.length) { return false; }
+      var sortedA = a.slice().sort(), sortedB = b.slice().sort();
+      for (var i = 0; i < sortedA.length; i++) { if (sortedA[i] !== sortedB[i]) { return false; } }
+      return true;
+   }
+
+   /* Save the choice in the layover.  Choosing exactly the defaults removes the saved choice, so the
+    * user follows the defaults if they change.  The choice applies only once it has been saved.
+    */
+   function saveCarryoverChoice() {
+      var chosen = checkedCarryoverChoices();
+      var usedefault = sameFields(chosen, defaultCarryoverFields);
+      $('#carryoversave').attr('disabled', true).addClass('ui-state-disabled');
+      $('#carryovermessage').html('Saving...');
+      $.ajax({
+         type: 'POST',
+         url: 'transcribe_handler.php',
+         dataType: 'json',
+         data: { action: 'savecarryover', usedefault: usedefault ? '1' : '0', fields: JSON.stringify(chosen) },
+         success: function(data) {
+            $('#carryoversave').attr('disabled', false).removeClass('ui-state-disabled');
+            if (data.error) {
+               $('#carryovermessage').html('Not saved: ' + escapeHtml(data.error));
+               return;
+            }
+            carryoverFields = usedefault ? defaultCarryoverFields.slice() : chosen;
+            $('#carryoveroverlay').hide();
+            $('#feedback').html('Carryover fields saved.');
+         },
+         error: function() {
+            $('#carryoversave').attr('disabled', false).removeClass('ui-state-disabled');
+            $('#carryovermessage').html('Not saved: Ajax Error.');
+         }
+      });
+   }
+
+   function checkedCarryoverChoices() {
+      return $('#carryoverfields .carryoverchoice:checked').map(function() { return $(this).val(); }).get();
+   }
+
+   function setCarryoverChoices(fields) {
+      $('#carryoverfields .carryoverchoice').each(function() {
+         $(this).prop('checked', fields.indexOf($(this).val()) >= 0);
+      });
    }
 
    /* The fields that can be carried over: the record fields on the form, in form order, except the barcode. */
@@ -1654,32 +1706,20 @@ function newRecordForm() {
       $('#carryoverfields').html(html);
    }
 
+   // The layover shows the current (saved) choice each time it opens; the buttons and checkboxes
+   // only change the layover until Save is clicked.  The X closes it without saving.
    $('#editCarryoverButton').on('click', function(event) {
       renderCarryoverChoices();
+      $('#carryovermessage').html('');
+      $('#carryoversave').attr('disabled', false).removeClass('ui-state-disabled');
       $('#carryoveroverlay').show();
       event.preventDefault();
    });
-   $('#carryoverfields').on('change', '.carryoverchoice', function() {
-      carryoverFields = $('#carryoverfields .carryoverchoice:checked').map(function() { return $(this).val(); }).get();
-      saveCarryoverFields();
-   });
-   $('#carryoverdefaults').on('click', function() {
-      carryoverFields = defaultCarryoverFields.slice();
-      saveCarryoverFields();
-      renderCarryoverChoices();
-   });
-   $('#carryovernone').on('click', function() {
-      carryoverFields = [];
-      saveCarryoverFields();
-      renderCarryoverChoices();
-   });
+   $('#carryoverdefaults').on('click', function() { setCarryoverChoices(defaultCarryoverFields); });
+   $('#carryoverall').on('click', function() { $('#carryoverfields .carryoverchoice').prop('checked', true); });
+   $('#carryovernone').on('click', function() { $('#carryoverfields .carryoverchoice').prop('checked', false); });
+   $('#carryoversave').on('click', function() { saveCarryoverChoice(); });
    $('#carryoverclose').on('click', function() { $('#carryoveroverlay').hide(); });
-   $('#carryoveroverlay').on('click', function(event) {
-      if (event.target === this) { $(this).hide(); }
-   });
-   $(document).on('keydown', function(event) {
-      if (event.key === 'Escape' && $('#carryoveroverlay').is(':visible')) { $('#carryoveroverlay').hide(); }
-   });
    // A carried value that the user edits is no longer shown as carried.
    $('#transcribeForm').on('input change', '.inputField', function() {
       if ($(this).attr('id')!='barcode') { $(this).css({'color':'black'}); }

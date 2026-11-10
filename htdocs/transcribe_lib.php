@@ -941,4 +941,72 @@ body {
 
 }
 
+
+/* ** Per-user settings, stored in TR_USER_SETTING (username, setting_name, setting_value, updated).
+ *  A user with no row for a setting uses the default for that setting.
+ */
+
+/** Return the value of a setting for a user, or null if the user has not saved it. */
+function getUserSetting($username, $settingname) {
+   global $connection;
+   $value = null;
+   $sql = 'select setting_value from TR_USER_SETTING where username = ? and setting_name = ?';
+   $statement = $connection->prepare($sql);
+   if (!$statement) { throw new Exception('Query error: ' . $connection->error); }
+   $statement->bind_param('ss', $username, $settingname);
+   $statement->execute();
+   $statement->bind_result($found);
+   $statement->store_result();
+   if ($statement->fetch()) { $value = $found; }
+   $statement->free_result();
+   $statement->close();
+   return $value;
+}
+
+/** Save the value of a setting for a user, replacing any existing value. */
+function setUserSetting($username, $settingname, $value) {
+   global $connection;
+   $sql = 'insert into TR_USER_SETTING (username, setting_name, setting_value) values (?, ?, ?) ' .
+          'on duplicate key update setting_value = values(setting_value)';
+   $statement = $connection->prepare($sql);
+   if (!$statement) { throw new Exception('Query error: ' . $connection->error); }
+   $statement->bind_param('sss', $username, $settingname, $value);
+   if (!$statement->execute()) {
+      $error = $statement->error;
+      $statement->close();
+      throw new Exception('Unable to save setting: ' . $error);
+   }
+   $statement->close();
+}
+
+/** Remove a setting for a user, so that the default applies. */
+function deleteUserSetting($username, $settingname) {
+   global $connection;
+   $sql = 'delete from TR_USER_SETTING where username = ? and setting_name = ?';
+   $statement = $connection->prepare($sql);
+   if (!$statement) { throw new Exception('Query error: ' . $connection->error); }
+   $statement->bind_param('ss', $username, $settingname);
+   if (!$statement->execute()) {
+      $error = $statement->error;
+      $statement->close();
+      throw new Exception('Unable to remove setting: ' . $error);
+   }
+   $statement->close();
+}
+
+/** The fields carried over by New Record on the Add/Edit Records form, as saved by the user,
+ *  or null if the user uses the defaults (no saved setting, or an unreadable one).
+ */
+function getCarryoverFields($username) {
+   $value = getUserSetting($username, 'carryover_fields');
+   if ($value===null) { return null; }
+   $fields = json_decode($value, true);
+   if (!is_array($fields)) { return null; }
+   return array_values(array_filter($fields, 'isValidFieldName'));
+}
+
+function isValidFieldName($name) {
+   return is_string($name) && preg_match('/^[a-z_]{1,64}$/', $name);
+}
+
 ?>
