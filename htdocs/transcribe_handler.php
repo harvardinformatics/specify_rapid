@@ -172,6 +172,34 @@ if ($connection && $authenticated) {
          echo json_encode($toencode);
          break;
 
+      case 'savecarryover':
+         // Save the user's choice of carryover fields for the Add/Edit Records form.  usedefault=1
+         // removes the saved choice, so that the user follows the defaults (even if they change).
+         $toencode = array();
+         $toencode['error'] = '';
+         $toencode['saved'] = '';
+         try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { throw new Exception('POST required.'); }
+            @$usedefault = $_POST['usedefault'];
+            if ($usedefault=='1') {
+               deleteUserSetting($_SESSION["username"], 'carryover_fields');
+               $toencode['saved'] = 'default';
+            } else {
+               @$fields = json_decode($_POST['fields'], true);
+               if (!is_array($fields) || count($fields) > 100) { throw new Exception('Invalid list of fields.'); }
+               foreach ($fields as $field) {
+                  if (!isValidFieldName($field)) { throw new Exception('Invalid field name.'); }
+               }
+               setUserSetting($_SESSION["username"], 'carryover_fields', json_encode(array_values(array_unique($fields))));
+               $toencode['saved'] = 'custom';
+            }
+         } catch (Exception $e) {
+            $toencode['error'] = $e->getMessage();
+         }
+         header("Content-type: application/json");
+         echo json_encode($toencode);
+         break;
+
       case 'getimagesforbarcode':
          // Find images for a barcode, from IMAGE_SET_collectionobject and from TR_BATCH_IMAGE.
          @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
