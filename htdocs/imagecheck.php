@@ -29,7 +29,11 @@ if (!function_exists("boolval")) {
 // The directory for which to scan files for barcodes, edit to an appropriate path below base for testing.
 $dir = BASE_IMAGE_PATH."huh_images/batch1/";
 
-$files = scandir($dir,SCANDIR_SORT_ASCENDING);
+$files = is_dir($dir) ? scandir($dir,SCANDIR_SORT_ASCENDING) : false;
+if ($files === false) {
+   echo("Directory not found: $dir \n");
+   $files = array();
+}
 
 $decoder = new PHPZxingDecoder($config);
 $decoder->setJavaPath(JAVA_EXE);

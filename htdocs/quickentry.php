@@ -23,9 +23,9 @@ if (!$connection) {
 }
 
 $display = '';
-@$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+$display = substr(preg_replace('/[^a-z]/','',($_GET['display'] ?? '')),0,20);
 if ($display=='') {
-   @$display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
+   $display = substr(preg_replace('/[^a-z]/','',($_POST['display'] ?? '')),0,20);
 }
 $tdisplay = $display;
 $showDefault = true;
@@ -36,12 +36,12 @@ $authenticated = false;
 $user = new User();
 
 if ($require_authentication) {
-   if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
+   if(!isset($_SESSION['session_id']) || ($_SESSION['session_id'] ?? '')!=session_id()) {
       $display = "logindialog";
-      if (@$_POST['password']!="" && $_POST['username']!="") {
+      if (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
          // authenticate
-         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",$_POST['password']),0,255);
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_POST['username']),0,255);
+         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",($_POST['password'] ?? '')),0,255);
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_POST['username'] ?? '')),0,255);
          $user = new User($username,$password);
          if ($user->authenticate()){
             $_SESSION["session_id"]=session_id();
@@ -63,13 +63,13 @@ if ($require_authentication) {
          $error .= "Login to HUH Specify Data Quick Entry Form";
       }
    } else {
-      $user = new User($_SESSION["username"],'');
-      if ($user->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
+      $user = new User(($_SESSION["username"] ?? ''),'');
+      if ($user->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
       	 $authenticated = true;
-         $user->setFullname($_SESSION["fullname"]);
-         $user->setAgentId($_SESSION["agentid"]);
-         $user->setLastLogin($_SESSION["lastlogin"]);
-         $user->setAbout($_SESSION["about"]);
+         $user->setFullname(($_SESSION["fullname"] ?? ''));
+         $user->setAgentId(($_SESSION["agentid"] ?? ''));
+         $user->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+         $user->setAbout(($_SESSION["about"] ?? ''));
       } else {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
@@ -98,8 +98,8 @@ switch ($display) {
    case "logindialog":
    default:
       $email = $username;
-      if (@$_GET['email']!="") {
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_GET['email']),0,255);
+      if (($_GET['email'] ?? '')!="") {
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_GET['email'] ?? '')),0,255);
       }
       $title = "Specify Login";
       echo '<div class="flexbox">';
@@ -142,6 +142,18 @@ echo $apage->getFooter($user);
 
 function form() {
    global $user;
+
+   // Values for the form fields.  None are supplied to this form, so start each one empty.
+   $targetbarcode = ''; $herbarium = ''; $filedundername = ''; $filedundernameid = '';
+   $currentname = ''; $currentnameid = ''; $currentqualifier = ''; $identifiedby = '';
+   $identifiedbyid = ''; $dateidentified = ''; $collectoragentid = ''; $collectors = '';
+   $etal = ''; $collectingtrip = ''; $collectingtripid = ''; $stationfieldnumber = '';
+   $datecollected = ''; $verbatimdate = ''; $container = ''; $containerid = '';
+   $geographyfilter = ''; $geographyfilterid = ''; $geography = ''; $geographyid = '';
+   $specificLocality = ''; $habitat = ''; $frequency = ''; $verbatimElevation = '';
+   $provenance = ''; $specimendescription = ''; $specimenremarks = ''; $defaultproject = '';
+   $created = ''; $prepmethod = ''; $defaultformat = ''; $verbatimlat = ''; $verbatimlong = '';
+   $decimallat = ''; $decimallong = ''; $georeferencesource = ''; $coordinateuncertainty = '';
 
    echo "</div>";
 
@@ -492,7 +504,7 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
+      echo "<input id=$name name=$name value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$GLOBALS['BASEWIDTH']."em; ' $disabled >";
    }
    echo "</td></tr>\n";
 }
@@ -719,6 +731,7 @@ function selectQualifier($field,$label,$default) {
 	echo "<label for='$field'>$label</label>";
 	echo "</td><td>\n";
 	echo '<select name="'.$field.'" id="'.$field.'">';
+    $s0 = ''; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf="";
     if ($default=="") { $s0 = 'selected="selected"'; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; }
     if ($default=="SensuStricto") { $s0 = ''; $sss = 'selected="selected"'; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; }
     if ($default=="InQuestion") { $s0 = ''; $sss = ""; $sq = 'selected="selected"'; $sn=""; $scf=""; $ssl=""; $saf=""; }
@@ -730,7 +743,7 @@ function selectQualifier($field,$label,$default) {
     echo "<option value='SensuStricto' $sss>s. str.</option>";
     echo "<option value='InQuestion' $sq>?</option>";
     echo "<option value='Not' $sn>not</option>";
-    echo "<option value='Compare' $cfs>cf.</option>";
+    echo "<option value='Compare' $scf>cf.</option>";
     echo "<option value='SensuLato' $ssl>s. lat.</option>";
     echo "<option value='Affine' $saf>aff.</option>";
 	echo '</select>';
@@ -741,6 +754,7 @@ function selectAcronym($field,$default) {
    echo "<tr><td>\n";
    echo "<label for='$field'>Herbarium acronym</label>";
    echo "</td><td>\n";
+   $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs="";
    if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="FH") { $ghs = ""; $as = ""; $fhs = 'selected="selected"'; $amess=""; $econs=""; $nebcs=""; }

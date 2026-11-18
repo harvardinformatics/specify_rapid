@@ -13,8 +13,8 @@ $response = '';
 $debug = false;
 $action = '';
 $table = '';
-@$action = substr(preg_replace('/[^a-z]/','',$_GET['druid_action']),0,20);
-@$table = substr(preg_replace('/[^a-z0-9A-Z\_]/','',$_GET['druid_table']),0,50);
+$action = substr(preg_replace('/[^a-z]/','',($_GET['druid_action'] ?? '')),0,20);
+$table = substr(preg_replace('/[^a-z0-9A-Z\_]/','',($_GET['druid_table'] ?? '')),0,50);
 
 switch ($action) {
    case 'save':
@@ -78,14 +78,14 @@ switch ($action) {
       $value = '';
       $uniqueid = '';
       $controltype = '';
-      @$table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',$_GET['table']),0,40); // name of the table to update
-      @$key = substr(preg_replace('/[^0-9\,A-Za-z0-9\.\;]/','',$_GET['key']),0,15);      // value of the  primary key in the table indicating the row to update
+      $table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',($_GET['table'] ?? '')),0,40); // name of the table to update
+      $key = substr(preg_replace('/[^0-9\,A-Za-z0-9\.\;]/','',($_GET['key'] ?? '')),0,15);      // value of the  primary key in the table indicating the row to update
       // or a semicolon separated list of fieldname comma value pairs in cases of multiple field primary keys. 
       // Note: this will fail in cases where either semicolon or comma is a valid character in a primary key field.
       // Note: the list of allowed values for the content of a primary key may be too restricted. 
-      @$field= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['field']),0,40);  // field to update in table
-      @$value = substr(preg_replace('/[^A-Z0-9a-zèéöòóàáùúü&\>\<\.\,\?\ \_\(\)\[\]\-\/\:\'\+\=]/','',$_GET['value$uniqueid']),0,4000);  // new value for field in row with primary key = value
-      @$controltype = substr(preg_replace('/[^A-Za-z]/','',$_GET['controltype']),0,15);  // control type - to identify checkbox data that doesn't match values to send to db.
+      $field= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['field'] ?? '')),0,40);  // field to update in table
+      $value = substr(preg_replace('/[^A-Z0-9a-zèéöòóàáùúü&\>\<\.\,\?\ \_\(\)\[\]\-\/\:\'\+\=]/','',($_GET['value$uniqueid'] ?? '')),0,4000);  // new value for field in row with primary key = value
+      $controltype = substr(preg_replace('/[^A-Za-z]/','',($_GET['controltype'] ?? '')),0,15);  // control type - to identify checkbox data that doesn't match values to send to db.
 
       if ($debug) { echo '[$table][$key][$field][$value][$uniqueid]'; } 
       // check that table is on allowed list
@@ -100,7 +100,7 @@ switch ($action) {
                 $kv = explode(';',$key);
                 $kvpairs = array();
                 for ($x=0;$x<count($kv); $x++) { 
-                    $kvparts = explode(',',$kv[$x]); 
+                    $kvparts = explode(',',$kv[$x] ?? ''); 
                     $kvpairs[$kvparts[0]] = $kvparts[1] ?? '';
                 }
                 $t->loadPKArray($kvpairs);
@@ -140,7 +140,7 @@ switch ($action) {
       $table = ''; 
       $key = '';
       $value = '';
-      @$table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',$_GET['table']),0,40); // name of the table to update
+      $table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',($_GET['table'] ?? '')),0,40); // name of the table to update
       if ($debug) { echo "[$table]"; }
       // check that table is on allowed list
       $schema = new database_schema(); 
@@ -175,8 +175,8 @@ switch ($action) {
       $value = '';
       $uniqueid = '';
       $controltype = '';
-      @$table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',$_GET['table']),0,40); // name of the table to update
-      @$field= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['field']),0,40);  // field to update in table
+      $table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',($_GET['table'] ?? '')),0,40); // name of the table to update
+      $field= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['field'] ?? '')),0,40);  // field to update in table
       
       if ($debug) { echo "[$table][$field]"; }
       // check that table is on allowed list
@@ -212,11 +212,11 @@ switch ($action) {
       $value = '';
       $uniqueid = '';
       $controltype = '';
-      @$table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',$_GET['table']),0,40); // name of the table to update
-      @$field= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['field']),0,40);  // field to update in table
-      @$limit= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['name']),0,40);  // query limit condition
+      $table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',($_GET['table'] ?? '')),0,40); // name of the table to update
+      $field= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['field'] ?? '')),0,40);  // field to update in table
+      $limit= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['name'] ?? '')),0,40);  // query limit condition
       
-      if ($debug) { echo "[$table][$field][$name]"; }
+      if ($debug) { echo "[$table][$field][$limit]"; }
       // check that table is on allowed list
       $schema = new database_schema(); 
       $error = '';

@@ -42,7 +42,7 @@ $value='';
 $page = new Page();
 echo $page->getHeader(null);
 
-$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+$display = substr(preg_replace('/[^a-z]/','',($_GET['display'] ?? '')),0,20);
 
 // This switch block includes break statements and only produces output for particlar
 // values of display.  Another switch block follows this that produces a cascading output for
@@ -59,7 +59,7 @@ switch ($display) {
         // You must sanitize any data that could be provided by a user.
         // The patern below may not include all valid characters for your data
         // And the length limit below may be too short for your data
-        $table_name = substr(preg_replace('/[^a-zA-Z_]/','',$_GET['table']),0,50);  
+        $table_name = substr(preg_replace('/[^a-zA-Z_]/','',($_GET['table'] ?? '')),0,50);  
 
         echo "<h2>Add new record to $table_name</h2>";
         $db = new database_schema();  // database_schema has discovery methods allowing you load a class representing a table when given a string 
@@ -74,15 +74,16 @@ switch ($display) {
         // You must sanitize any data that could be provided by a user.
         // The patern below may not include all valid characters for your data
         // And the length limit below may be too short for your data
-        $table_name = substr(preg_replace('/[^a-zA-Z_]/','',$_GET['table']),0,50);  
+        $table_name = substr(preg_replace('/[^a-zA-Z_]/','',($_GET['table'] ?? '')),0,50);  
 
         echo "<h2>Add new record to $table_name</h2>";
         $db = new database_schema();  // database_schema has discovery methods allowing you load a class representing a table when given a string 
         if ($db->hasTable($table_name)) { ;
             $table_class = $db->getClass($table_name);  // table_class is a model class for the table_name table.
             $primarykeys = $table_class->schemaPK();
+            $pkarray = array();
             foreach ($primarykeys as $primarykey) { 
-                $pkarray[$primarykey]= substr(preg_replace('/[^a-zA-Z0-9_]/','',$_GET[$primarykey]),0,50);  
+                $pkarray[$primarykey]= substr(preg_replace('/[^a-zA-Z0-9_]/','',($_GET[$primarykey] ?? '')),0,50);  
             }
             $table_class->load($pkarray);
             $table_view = $db->getViewClass($table_name); // table_view is a view class for the table_name table.
@@ -98,9 +99,9 @@ switch ($display) {
        // You must sanitize any data that could be provided by a user.
        // The paterns below may not include all valid characters for your data
        // And the length limits below may be too short for your data
-       $table_name = substr(preg_replace('/[^a-zA-Z_]/','',$_GET['table']),0,50);  
-       $field_name = substr(preg_replace('/[^a-zA-Z_0-9]/','',$_GET['field']),0,50);  
-       $value = substr($_GET[$field_name],0,255);  
+       $table_name = substr(preg_replace('/[^a-zA-Z_]/','',($_GET['table'] ?? '')),0,50);  
+       $field_name = substr(preg_replace('/[^a-zA-Z_0-9]/','',($_GET['field'] ?? '')),0,50);  
+       $value = substr(($_GET[$field_name] ?? ''),0,255);  
 
        echo "<h2>Search for [$table_name].[$field_name]=[$value]</h2>";
        $db = new database_schema();  // database_schema has discovery methods allowing you load a class representing a table when given a string 
@@ -124,7 +125,7 @@ switch ($display) {
           }
        } ;
    case 'table':
-       $table_name = substr(preg_replace('/[^a-zA-Z_]/','',$_GET['table']),0,50);  // May not include all valid table name characters.
+       $table_name = substr(preg_replace('/[^a-zA-Z_]/','',($_GET['table'] ?? '')),0,50);  // May not include all valid table name characters.
        $db = new database_schema();
        if ($db->hasTable($table_name)) { ;
           echo '<h2>Distinct values in  '.$table_name.'</h2>';
@@ -143,7 +144,7 @@ switch ($display) {
                   $link = 'index.php?display=search&table='.$table_name.'&field='.$field;  // &{fieldname}={value} is appended by keySelectDistinct.
                   $endwith = '<BR>';
                   $includecount = true;
-                  $orderbycsount = false;
+                  $orderbycount = false;
                   echo $table_class->keySelectDistinct($field,$beginwith,$link,$endwith,$includecount,$orderbycount);
               }
           }

@@ -8,13 +8,14 @@ include_once("transcribe_lib.php");
 // PHP 8.1+ makes mysqli throw exceptions by default; this code checks return
 // values and $connection->error instead, so keep the pre-8.1 behavior.
 mysqli_report(MYSQLI_REPORT_OFF);
+$targethostdb = '';
 @$connection = specify_connect();
 if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
 $mode= '';
-@$mode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
+$mode = substr(preg_replace('/[^a-z]/','',($_GET['mode'] ?? '')),0,20);
 
 function targetlist() {
    global $connection;
