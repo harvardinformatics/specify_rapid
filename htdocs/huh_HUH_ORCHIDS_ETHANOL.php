@@ -99,12 +99,12 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -172,10 +172,10 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setid($id) {
-       if (strlen(preg_replace('/[^0-9]/','',$id)) > huh_HUH_ORCHIDS_ETHANOL::ID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$id ?? '')) > huh_HUH_ORCHIDS_ETHANOL::ID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $id = trim($id);
+       $id = trim($id ?? '');
        if (!ctype_digit(strval($id)) && trim(strval($id))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -191,7 +191,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setgenus($genus) {
-       if (strlen($genus) > huh_HUH_ORCHIDS_ETHANOL::GENUS_SIZE) { 
+       if (strlen($genus ?? '') > huh_HUH_ORCHIDS_ETHANOL::GENUS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->genus = $this->l_addslashes($genus);
@@ -206,7 +206,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setepithet($epithet) {
-       if (strlen($epithet) > huh_HUH_ORCHIDS_ETHANOL::EPITHET_SIZE) { 
+       if (strlen($epithet ?? '') > huh_HUH_ORCHIDS_ETHANOL::EPITHET_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->epithet = $this->l_addslashes($epithet);
@@ -221,7 +221,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setauthorship($authorship) {
-       if (strlen($authorship) > huh_HUH_ORCHIDS_ETHANOL::AUTHORSHIP_SIZE) { 
+       if (strlen($authorship ?? '') > huh_HUH_ORCHIDS_ETHANOL::AUTHORSHIP_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->authorship = $this->l_addslashes($authorship);
@@ -236,7 +236,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setcollector($collector) {
-       if (strlen($collector) > huh_HUH_ORCHIDS_ETHANOL::COLLECTOR_SIZE) { 
+       if (strlen($collector ?? '') > huh_HUH_ORCHIDS_ETHANOL::COLLECTOR_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->collector = $this->l_addslashes($collector);
@@ -251,7 +251,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setcollector_number($collector_number) {
-       if (strlen($collector_number) > huh_HUH_ORCHIDS_ETHANOL::COLLECTOR_NUMBER_SIZE) { 
+       if (strlen($collector_number ?? '') > huh_HUH_ORCHIDS_ETHANOL::COLLECTOR_NUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->collector_number = $this->l_addslashes($collector_number);
@@ -266,7 +266,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setjar_number($jar_number) {
-       if (strlen($jar_number) > huh_HUH_ORCHIDS_ETHANOL::JAR_NUMBER_SIZE) { 
+       if (strlen($jar_number ?? '') > huh_HUH_ORCHIDS_ETHANOL::JAR_NUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->jar_number = $this->l_addslashes($jar_number);
@@ -281,7 +281,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function setnotes($notes) {
-       if (strlen($notes) > huh_HUH_ORCHIDS_ETHANOL::NOTES_SIZE) { 
+       if (strlen($notes ?? '') > huh_HUH_ORCHIDS_ETHANOL::NOTES_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->notes = $this->l_addslashes($notes);
@@ -296,7 +296,7 @@ class huh_HUH_ORCHIDS_ETHANOL implements  model , loadableModel, saveableModel, 
        }
    }
    public function settemp($temp) {
-       if (strlen($temp) > huh_HUH_ORCHIDS_ETHANOL::TEMP_SIZE) { 
+       if (strlen($temp ?? '') > huh_HUH_ORCHIDS_ETHANOL::TEMP_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->temp = $this->l_addslashes($temp);
@@ -517,8 +517,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -584,11 +584,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -616,8 +616,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -653,7 +653,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -680,15 +680,15 @@ class huh_HUH_ORCHIDS_ETHANOLView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_HUH_ORCHIDS_ETHANOL <a href='$editLinkURL'>Edit</a></li>\n";  } 

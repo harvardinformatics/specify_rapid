@@ -64,12 +64,12 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -123,10 +123,10 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
        }
    }
    public function setSpecifyUserID($SpecifyUserID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpecifyUserID)) > huh_specifyuser_spprincipal::SPECIFYUSERID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpecifyUserID ?? '')) > huh_specifyuser_spprincipal::SPECIFYUSERID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpecifyUserID = trim($SpecifyUserID);
+       $SpecifyUserID = trim($SpecifyUserID ?? '');
        if (!ctype_digit(strval($SpecifyUserID)) && trim(strval($SpecifyUserID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -142,10 +142,10 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
        }
    }
    public function setSpPrincipalID($SpPrincipalID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpPrincipalID)) > huh_specifyuser_spprincipal::SPPRINCIPALID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpPrincipalID ?? '')) > huh_specifyuser_spprincipal::SPPRINCIPALID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpPrincipalID = trim($SpPrincipalID);
+       $SpPrincipalID = trim($SpPrincipalID ?? '');
        if (!ctype_digit(strval($SpPrincipalID)) && trim(strval($SpPrincipalID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -347,8 +347,8 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -422,11 +422,11 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -454,8 +454,8 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -491,7 +491,7 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -518,15 +518,15 @@ class huh_specifyuser_spprincipalView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_specifyuser_spprincipal <a href='$editLinkURL'>Edit</a></li>\n";  } 

@@ -274,12 +274,12 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -417,10 +417,10 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setCollectingEventAttributeID($CollectingEventAttributeID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectingEventAttributeID)) > huh_collectingeventattribute::COLLECTINGEVENTATTRIBUTEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectingEventAttributeID ?? '')) > huh_collectingeventattribute::COLLECTINGEVENTATTRIBUTEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectingEventAttributeID = trim($CollectingEventAttributeID);
+       $CollectingEventAttributeID = trim($CollectingEventAttributeID ?? '');
        if (!ctype_digit(strval($CollectingEventAttributeID)) && trim(strval($CollectingEventAttributeID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -436,7 +436,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_collectingeventattribute::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_collectingeventattribute::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -451,7 +451,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_collectingeventattribute::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_collectingeventattribute::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -466,10 +466,10 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_collectingeventattribute::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_collectingeventattribute::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -485,10 +485,10 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setCollectionMemberID($CollectionMemberID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID)) > huh_collectingeventattribute::COLLECTIONMEMBERID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID ?? '')) > huh_collectingeventattribute::COLLECTIONMEMBERID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionMemberID = trim($CollectionMemberID);
+       $CollectionMemberID = trim($CollectionMemberID ?? '');
        if (!ctype_digit(strval($CollectionMemberID))) {
              throw new Exception("Value must be an integer");
        }
@@ -504,7 +504,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_collectingeventattribute::NUMBER1_SIZE) { 
+       if (strlen($Number1 ?? '') > huh_collectingeventattribute::NUMBER1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number1 = $this->l_addslashes($Number1);
@@ -519,7 +519,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber10($Number10) {
-       if (strlen($Number10) > huh_collectingeventattribute::NUMBER10_SIZE) { 
+       if (strlen($Number10 ?? '') > huh_collectingeventattribute::NUMBER10_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number10 = $this->l_addslashes($Number10);
@@ -534,7 +534,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber11($Number11) {
-       if (strlen($Number11) > huh_collectingeventattribute::NUMBER11_SIZE) { 
+       if (strlen($Number11 ?? '') > huh_collectingeventattribute::NUMBER11_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number11 = $this->l_addslashes($Number11);
@@ -549,7 +549,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber12($Number12) {
-       if (strlen($Number12) > huh_collectingeventattribute::NUMBER12_SIZE) { 
+       if (strlen($Number12 ?? '') > huh_collectingeventattribute::NUMBER12_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number12 = $this->l_addslashes($Number12);
@@ -564,7 +564,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber13($Number13) {
-       if (strlen($Number13) > huh_collectingeventattribute::NUMBER13_SIZE) { 
+       if (strlen($Number13 ?? '') > huh_collectingeventattribute::NUMBER13_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number13 = $this->l_addslashes($Number13);
@@ -579,7 +579,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_collectingeventattribute::NUMBER2_SIZE) { 
+       if (strlen($Number2 ?? '') > huh_collectingeventattribute::NUMBER2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number2 = $this->l_addslashes($Number2);
@@ -594,7 +594,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber3($Number3) {
-       if (strlen($Number3) > huh_collectingeventattribute::NUMBER3_SIZE) { 
+       if (strlen($Number3 ?? '') > huh_collectingeventattribute::NUMBER3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number3 = $this->l_addslashes($Number3);
@@ -609,7 +609,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber4($Number4) {
-       if (strlen($Number4) > huh_collectingeventattribute::NUMBER4_SIZE) { 
+       if (strlen($Number4 ?? '') > huh_collectingeventattribute::NUMBER4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number4 = $this->l_addslashes($Number4);
@@ -624,7 +624,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber5($Number5) {
-       if (strlen($Number5) > huh_collectingeventattribute::NUMBER5_SIZE) { 
+       if (strlen($Number5 ?? '') > huh_collectingeventattribute::NUMBER5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number5 = $this->l_addslashes($Number5);
@@ -639,7 +639,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber6($Number6) {
-       if (strlen($Number6) > huh_collectingeventattribute::NUMBER6_SIZE) { 
+       if (strlen($Number6 ?? '') > huh_collectingeventattribute::NUMBER6_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number6 = $this->l_addslashes($Number6);
@@ -654,7 +654,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber7($Number7) {
-       if (strlen($Number7) > huh_collectingeventattribute::NUMBER7_SIZE) { 
+       if (strlen($Number7 ?? '') > huh_collectingeventattribute::NUMBER7_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number7 = $this->l_addslashes($Number7);
@@ -669,7 +669,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber8($Number8) {
-       if (strlen($Number8) > huh_collectingeventattribute::NUMBER8_SIZE) { 
+       if (strlen($Number8 ?? '') > huh_collectingeventattribute::NUMBER8_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number8 = $this->l_addslashes($Number8);
@@ -684,7 +684,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setNumber9($Number9) {
-       if (strlen($Number9) > huh_collectingeventattribute::NUMBER9_SIZE) { 
+       if (strlen($Number9 ?? '') > huh_collectingeventattribute::NUMBER9_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number9 = $this->l_addslashes($Number9);
@@ -699,7 +699,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_collectingeventattribute::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_collectingeventattribute::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -714,7 +714,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_collectingeventattribute::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_collectingeventattribute::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -729,7 +729,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText10($Text10) {
-       if (strlen($Text10) > huh_collectingeventattribute::TEXT10_SIZE) { 
+       if (strlen($Text10 ?? '') > huh_collectingeventattribute::TEXT10_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text10 = $this->l_addslashes($Text10);
@@ -744,7 +744,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText11($Text11) {
-       if (strlen($Text11) > huh_collectingeventattribute::TEXT11_SIZE) { 
+       if (strlen($Text11 ?? '') > huh_collectingeventattribute::TEXT11_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text11 = $this->l_addslashes($Text11);
@@ -759,7 +759,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText12($Text12) {
-       if (strlen($Text12) > huh_collectingeventattribute::TEXT12_SIZE) { 
+       if (strlen($Text12 ?? '') > huh_collectingeventattribute::TEXT12_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text12 = $this->l_addslashes($Text12);
@@ -774,7 +774,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText13($Text13) {
-       if (strlen($Text13) > huh_collectingeventattribute::TEXT13_SIZE) { 
+       if (strlen($Text13 ?? '') > huh_collectingeventattribute::TEXT13_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text13 = $this->l_addslashes($Text13);
@@ -789,7 +789,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText14($Text14) {
-       if (strlen($Text14) > huh_collectingeventattribute::TEXT14_SIZE) { 
+       if (strlen($Text14 ?? '') > huh_collectingeventattribute::TEXT14_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text14 = $this->l_addslashes($Text14);
@@ -804,7 +804,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText15($Text15) {
-       if (strlen($Text15) > huh_collectingeventattribute::TEXT15_SIZE) { 
+       if (strlen($Text15 ?? '') > huh_collectingeventattribute::TEXT15_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text15 = $this->l_addslashes($Text15);
@@ -819,7 +819,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText16($Text16) {
-       if (strlen($Text16) > huh_collectingeventattribute::TEXT16_SIZE) { 
+       if (strlen($Text16 ?? '') > huh_collectingeventattribute::TEXT16_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text16 = $this->l_addslashes($Text16);
@@ -834,7 +834,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText17($Text17) {
-       if (strlen($Text17) > huh_collectingeventattribute::TEXT17_SIZE) { 
+       if (strlen($Text17 ?? '') > huh_collectingeventattribute::TEXT17_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text17 = $this->l_addslashes($Text17);
@@ -849,7 +849,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_collectingeventattribute::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_collectingeventattribute::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -864,7 +864,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText3($Text3) {
-       if (strlen($Text3) > huh_collectingeventattribute::TEXT3_SIZE) { 
+       if (strlen($Text3 ?? '') > huh_collectingeventattribute::TEXT3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text3 = $this->l_addslashes($Text3);
@@ -879,7 +879,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText4($Text4) {
-       if (strlen($Text4) > huh_collectingeventattribute::TEXT4_SIZE) { 
+       if (strlen($Text4 ?? '') > huh_collectingeventattribute::TEXT4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text4 = $this->l_addslashes($Text4);
@@ -894,7 +894,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText5($Text5) {
-       if (strlen($Text5) > huh_collectingeventattribute::TEXT5_SIZE) { 
+       if (strlen($Text5 ?? '') > huh_collectingeventattribute::TEXT5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text5 = $this->l_addslashes($Text5);
@@ -909,7 +909,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText6($Text6) {
-       if (strlen($Text6) > huh_collectingeventattribute::TEXT6_SIZE) { 
+       if (strlen($Text6 ?? '') > huh_collectingeventattribute::TEXT6_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text6 = $this->l_addslashes($Text6);
@@ -924,7 +924,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText7($Text7) {
-       if (strlen($Text7) > huh_collectingeventattribute::TEXT7_SIZE) { 
+       if (strlen($Text7 ?? '') > huh_collectingeventattribute::TEXT7_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text7 = $this->l_addslashes($Text7);
@@ -939,7 +939,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText8($Text8) {
-       if (strlen($Text8) > huh_collectingeventattribute::TEXT8_SIZE) { 
+       if (strlen($Text8 ?? '') > huh_collectingeventattribute::TEXT8_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text8 = $this->l_addslashes($Text8);
@@ -954,7 +954,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setText9($Text9) {
-       if (strlen($Text9) > huh_collectingeventattribute::TEXT9_SIZE) { 
+       if (strlen($Text9 ?? '') > huh_collectingeventattribute::TEXT9_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text9 = $this->l_addslashes($Text9);
@@ -969,7 +969,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_collectingeventattribute::YESNO1_SIZE) { 
+       if (strlen($YesNo1 ?? '') > huh_collectingeventattribute::YESNO1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -984,7 +984,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_collectingeventattribute::YESNO2_SIZE) { 
+       if (strlen($YesNo2 ?? '') > huh_collectingeventattribute::YESNO2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -999,7 +999,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setYesNo3($YesNo3) {
-       if (strlen($YesNo3) > huh_collectingeventattribute::YESNO3_SIZE) { 
+       if (strlen($YesNo3 ?? '') > huh_collectingeventattribute::YESNO3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo3 = $this->l_addslashes($YesNo3);
@@ -1014,7 +1014,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setYesNo4($YesNo4) {
-       if (strlen($YesNo4) > huh_collectingeventattribute::YESNO4_SIZE) { 
+       if (strlen($YesNo4 ?? '') > huh_collectingeventattribute::YESNO4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo4 = $this->l_addslashes($YesNo4);
@@ -1029,7 +1029,7 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setYesNo5($YesNo5) {
-       if (strlen($YesNo5) > huh_collectingeventattribute::YESNO5_SIZE) { 
+       if (strlen($YesNo5 ?? '') > huh_collectingeventattribute::YESNO5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo5 = $this->l_addslashes($YesNo5);
@@ -1044,10 +1044,10 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_collectingeventattribute::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_collectingeventattribute::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1063,10 +1063,10 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setHostTaxonID($HostTaxonID) {
-       if (strlen(preg_replace('/[^0-9]/','',$HostTaxonID)) > huh_collectingeventattribute::HOSTTAXONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$HostTaxonID ?? '')) > huh_collectingeventattribute::HOSTTAXONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $HostTaxonID = trim($HostTaxonID);
+       $HostTaxonID = trim($HostTaxonID ?? '');
        if (!ctype_digit(strval($HostTaxonID)) && trim(strval($HostTaxonID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1082,10 +1082,10 @@ class huh_collectingeventattribute implements  model , loadableModel, saveableMo
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_collectingeventattribute::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_collectingeventattribute::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1447,8 +1447,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1534,11 +1534,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1566,8 +1566,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1589,8 +1589,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE CollectionMemberID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE CollectionMemberID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1612,8 +1612,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1635,8 +1635,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE HostTaxonID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE HostTaxonID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1658,8 +1658,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingEventAttributeID FROM collectingeventattribute WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1695,7 +1695,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1723,7 +1723,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1751,7 +1751,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1779,7 +1779,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1819,7 +1819,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1846,15 +1846,15 @@ class huh_collectingeventattributeView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_collectingeventattribute <a href='$editLinkURL'>Edit</a></li>\n";  } 

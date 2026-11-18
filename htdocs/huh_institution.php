@@ -194,12 +194,12 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -305,10 +305,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setUserGroupScopeId($UserGroupScopeId) {
-       if (strlen(preg_replace('/[^0-9]/','',$UserGroupScopeId)) > huh_institution::USERGROUPSCOPEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UserGroupScopeId ?? '')) > huh_institution::USERGROUPSCOPEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UserGroupScopeId = trim($UserGroupScopeId);
+       $UserGroupScopeId = trim($UserGroupScopeId ?? '');
        if (!ctype_digit(strval($UserGroupScopeId)) && trim(strval($UserGroupScopeId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -324,7 +324,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_institution::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_institution::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -339,7 +339,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_institution::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_institution::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -354,10 +354,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_institution::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_institution::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -373,10 +373,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_institution::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_institution::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -392,10 +392,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_institution::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_institution::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -411,7 +411,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setAltName($AltName) {
-       if (strlen($AltName) > huh_institution::ALTNAME_SIZE) { 
+       if (strlen($AltName ?? '') > huh_institution::ALTNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->AltName = $this->l_addslashes($AltName);
@@ -426,7 +426,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCode($Code) {
-       if (strlen($Code) > huh_institution::CODE_SIZE) { 
+       if (strlen($Code ?? '') > huh_institution::CODE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Code = $this->l_addslashes($Code);
@@ -441,7 +441,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCopyright($Copyright) {
-       if (strlen($Copyright) > huh_institution::COPYRIGHT_SIZE) { 
+       if (strlen($Copyright ?? '') > huh_institution::COPYRIGHT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Copyright = $this->l_addslashes($Copyright);
@@ -456,7 +456,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setDescription($Description) {
-       if (strlen($Description) > huh_institution::DESCRIPTION_SIZE) { 
+       if (strlen($Description ?? '') > huh_institution::DESCRIPTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Description = $this->l_addslashes($Description);
@@ -471,7 +471,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setDisclaimer($Disclaimer) {
-       if (strlen($Disclaimer) > huh_institution::DISCLAIMER_SIZE) { 
+       if (strlen($Disclaimer ?? '') > huh_institution::DISCLAIMER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Disclaimer = $this->l_addslashes($Disclaimer);
@@ -486,7 +486,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setHasBeenAsked($HasBeenAsked) {
-       if (strlen($HasBeenAsked) > huh_institution::HASBEENASKED_SIZE) { 
+       if (strlen($HasBeenAsked ?? '') > huh_institution::HASBEENASKED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->HasBeenAsked = $this->l_addslashes($HasBeenAsked);
@@ -501,7 +501,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIconURI($IconURI) {
-       if (strlen($IconURI) > huh_institution::ICONURI_SIZE) { 
+       if (strlen($IconURI ?? '') > huh_institution::ICONURI_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IconURI = $this->l_addslashes($IconURI);
@@ -516,10 +516,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setinstitutionId($institutionId) {
-       if (strlen(preg_replace('/[^0-9]/','',$institutionId)) > huh_institution::INSTITUTIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$institutionId ?? '')) > huh_institution::INSTITUTIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $institutionId = trim($institutionId);
+       $institutionId = trim($institutionId ?? '');
        if (!ctype_digit(strval($institutionId)) && trim(strval($institutionId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -535,7 +535,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIpr($Ipr) {
-       if (strlen($Ipr) > huh_institution::IPR_SIZE) { 
+       if (strlen($Ipr ?? '') > huh_institution::IPR_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Ipr = $this->l_addslashes($Ipr);
@@ -550,7 +550,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIsAccessionsGlobal($IsAccessionsGlobal) {
-       if (strlen($IsAccessionsGlobal) > huh_institution::ISACCESSIONSGLOBAL_SIZE) { 
+       if (strlen($IsAccessionsGlobal ?? '') > huh_institution::ISACCESSIONSGLOBAL_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsAccessionsGlobal = $this->l_addslashes($IsAccessionsGlobal);
@@ -565,7 +565,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIsAnonymous($IsAnonymous) {
-       if (strlen($IsAnonymous) > huh_institution::ISANONYMOUS_SIZE) { 
+       if (strlen($IsAnonymous ?? '') > huh_institution::ISANONYMOUS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsAnonymous = $this->l_addslashes($IsAnonymous);
@@ -580,7 +580,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIsSecurityOn($IsSecurityOn) {
-       if (strlen($IsSecurityOn) > huh_institution::ISSECURITYON_SIZE) { 
+       if (strlen($IsSecurityOn ?? '') > huh_institution::ISSECURITYON_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsSecurityOn = $this->l_addslashes($IsSecurityOn);
@@ -595,7 +595,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIsServerBased($IsServerBased) {
-       if (strlen($IsServerBased) > huh_institution::ISSERVERBASED_SIZE) { 
+       if (strlen($IsServerBased ?? '') > huh_institution::ISSERVERBASED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsServerBased = $this->l_addslashes($IsServerBased);
@@ -610,7 +610,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setLicense($License) {
-       if (strlen($License) > huh_institution::LICENSE_SIZE) { 
+       if (strlen($License ?? '') > huh_institution::LICENSE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->License = $this->l_addslashes($License);
@@ -625,7 +625,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setLsidAuthority($LsidAuthority) {
-       if (strlen($LsidAuthority) > huh_institution::LSIDAUTHORITY_SIZE) { 
+       if (strlen($LsidAuthority ?? '') > huh_institution::LSIDAUTHORITY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->LsidAuthority = $this->l_addslashes($LsidAuthority);
@@ -640,7 +640,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setName($Name) {
-       if (strlen($Name) > huh_institution::NAME_SIZE) { 
+       if (strlen($Name ?? '') > huh_institution::NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Name = $this->l_addslashes($Name);
@@ -655,7 +655,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setRegNumber($RegNumber) {
-       if (strlen($RegNumber) > huh_institution::REGNUMBER_SIZE) { 
+       if (strlen($RegNumber ?? '') > huh_institution::REGNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RegNumber = $this->l_addslashes($RegNumber);
@@ -670,7 +670,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_institution::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_institution::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -685,7 +685,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTermsOfUse($TermsOfUse) {
-       if (strlen($TermsOfUse) > huh_institution::TERMSOFUSE_SIZE) { 
+       if (strlen($TermsOfUse ?? '') > huh_institution::TERMSOFUSE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TermsOfUse = $this->l_addslashes($TermsOfUse);
@@ -700,7 +700,7 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setUri($Uri) {
-       if (strlen($Uri) > huh_institution::URI_SIZE) { 
+       if (strlen($Uri ?? '') > huh_institution::URI_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Uri = $this->l_addslashes($Uri);
@@ -715,10 +715,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setAddressID($AddressID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AddressID)) > huh_institution::ADDRESSID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AddressID ?? '')) > huh_institution::ADDRESSID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AddressID = trim($AddressID);
+       $AddressID = trim($AddressID ?? '');
        if (!ctype_digit(strval($AddressID)) && trim(strval($AddressID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -734,10 +734,10 @@ class huh_institution implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setStorageTreeDefID($StorageTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$StorageTreeDefID)) > huh_institution::STORAGETREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$StorageTreeDefID ?? '')) > huh_institution::STORAGETREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $StorageTreeDefID = trim($StorageTreeDefID);
+       $StorageTreeDefID = trim($StorageTreeDefID ?? '');
        if (!ctype_digit(strval($StorageTreeDefID)) && trim(strval($StorageTreeDefID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1035,8 +1035,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1130,11 +1130,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1162,8 +1162,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1185,8 +1185,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM institution WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM institution WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1208,8 +1208,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM institution WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM institution WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1231,8 +1231,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM institution WHERE Name $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM institution WHERE Name $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1254,8 +1254,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM institution WHERE AddressID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM institution WHERE AddressID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1277,8 +1277,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM institution WHERE StorageTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM institution WHERE StorageTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1314,7 +1314,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1342,7 +1342,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1370,7 +1370,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1398,7 +1398,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1426,7 +1426,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1469,7 +1469,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1496,15 +1496,15 @@ class huh_institutionView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_institution <a href='$editLinkURL'>Edit</a></li>\n";  } 

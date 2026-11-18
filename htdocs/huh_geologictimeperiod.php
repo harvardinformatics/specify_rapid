@@ -174,12 +174,12 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -277,10 +277,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setGeologicTimePeriodID($GeologicTimePeriodID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodID)) > huh_geologictimeperiod::GEOLOGICTIMEPERIODID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodID ?? '')) > huh_geologictimeperiod::GEOLOGICTIMEPERIODID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeologicTimePeriodID = trim($GeologicTimePeriodID);
+       $GeologicTimePeriodID = trim($GeologicTimePeriodID ?? '');
        if (!ctype_digit(strval($GeologicTimePeriodID)) && trim(strval($GeologicTimePeriodID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -296,7 +296,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_geologictimeperiod::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_geologictimeperiod::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -311,7 +311,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_geologictimeperiod::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_geologictimeperiod::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -326,10 +326,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_geologictimeperiod::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_geologictimeperiod::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -345,7 +345,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setEndPeriod($EndPeriod) {
-       if (strlen($EndPeriod) > huh_geologictimeperiod::ENDPERIOD_SIZE) { 
+       if (strlen($EndPeriod ?? '') > huh_geologictimeperiod::ENDPERIOD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndPeriod = $this->l_addslashes($EndPeriod);
@@ -360,7 +360,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setEndUncertainty($EndUncertainty) {
-       if (strlen($EndUncertainty) > huh_geologictimeperiod::ENDUNCERTAINTY_SIZE) { 
+       if (strlen($EndUncertainty ?? '') > huh_geologictimeperiod::ENDUNCERTAINTY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndUncertainty = $this->l_addslashes($EndUncertainty);
@@ -375,7 +375,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setFullName($FullName) {
-       if (strlen($FullName) > huh_geologictimeperiod::FULLNAME_SIZE) { 
+       if (strlen($FullName ?? '') > huh_geologictimeperiod::FULLNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FullName = $this->l_addslashes($FullName);
@@ -390,7 +390,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setGUID($GUID) {
-       if (strlen($GUID) > huh_geologictimeperiod::GUID_SIZE) { 
+       if (strlen($GUID ?? '') > huh_geologictimeperiod::GUID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GUID = $this->l_addslashes($GUID);
@@ -405,10 +405,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setHighestChildNodeNumber($HighestChildNodeNumber) {
-       if (strlen(preg_replace('/[^0-9]/','',$HighestChildNodeNumber)) > huh_geologictimeperiod::HIGHESTCHILDNODENUMBER_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$HighestChildNodeNumber ?? '')) > huh_geologictimeperiod::HIGHESTCHILDNODENUMBER_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $HighestChildNodeNumber = trim($HighestChildNodeNumber);
+       $HighestChildNodeNumber = trim($HighestChildNodeNumber ?? '');
        if (!ctype_digit(strval($HighestChildNodeNumber)) && trim(strval($HighestChildNodeNumber))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -424,7 +424,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setIsAccepted($IsAccepted) {
-       if (strlen($IsAccepted) > huh_geologictimeperiod::ISACCEPTED_SIZE) { 
+       if (strlen($IsAccepted ?? '') > huh_geologictimeperiod::ISACCEPTED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsAccepted = $this->l_addslashes($IsAccepted);
@@ -439,7 +439,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setIsBioStrat($IsBioStrat) {
-       if (strlen($IsBioStrat) > huh_geologictimeperiod::ISBIOSTRAT_SIZE) { 
+       if (strlen($IsBioStrat ?? '') > huh_geologictimeperiod::ISBIOSTRAT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsBioStrat = $this->l_addslashes($IsBioStrat);
@@ -454,7 +454,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setName($Name) {
-       if (strlen($Name) > huh_geologictimeperiod::NAME_SIZE) { 
+       if (strlen($Name ?? '') > huh_geologictimeperiod::NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Name = $this->l_addslashes($Name);
@@ -469,10 +469,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setNodeNumber($NodeNumber) {
-       if (strlen(preg_replace('/[^0-9]/','',$NodeNumber)) > huh_geologictimeperiod::NODENUMBER_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$NodeNumber ?? '')) > huh_geologictimeperiod::NODENUMBER_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $NodeNumber = trim($NodeNumber);
+       $NodeNumber = trim($NodeNumber ?? '');
        if (!ctype_digit(strval($NodeNumber)) && trim(strval($NodeNumber))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -488,10 +488,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setRankID($RankID) {
-       if (strlen(preg_replace('/[^0-9]/','',$RankID)) > huh_geologictimeperiod::RANKID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$RankID ?? '')) > huh_geologictimeperiod::RANKID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $RankID = trim($RankID);
+       $RankID = trim($RankID ?? '');
        if (!ctype_digit(strval($RankID))) {
              throw new Exception("Value must be an integer");
        }
@@ -507,7 +507,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_geologictimeperiod::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_geologictimeperiod::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -522,7 +522,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setStandard($Standard) {
-       if (strlen($Standard) > huh_geologictimeperiod::STANDARD_SIZE) { 
+       if (strlen($Standard ?? '') > huh_geologictimeperiod::STANDARD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Standard = $this->l_addslashes($Standard);
@@ -537,7 +537,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setStartPeriod($StartPeriod) {
-       if (strlen($StartPeriod) > huh_geologictimeperiod::STARTPERIOD_SIZE) { 
+       if (strlen($StartPeriod ?? '') > huh_geologictimeperiod::STARTPERIOD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartPeriod = $this->l_addslashes($StartPeriod);
@@ -552,7 +552,7 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setStartUncertainty($StartUncertainty) {
-       if (strlen($StartUncertainty) > huh_geologictimeperiod::STARTUNCERTAINTY_SIZE) { 
+       if (strlen($StartUncertainty ?? '') > huh_geologictimeperiod::STARTUNCERTAINTY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartUncertainty = $this->l_addslashes($StartUncertainty);
@@ -567,10 +567,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_geologictimeperiod::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_geologictimeperiod::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -586,10 +586,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setGeologicTimePeriodTreeDefID($GeologicTimePeriodTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodTreeDefID)) > huh_geologictimeperiod::GEOLOGICTIMEPERIODTREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodTreeDefID ?? '')) > huh_geologictimeperiod::GEOLOGICTIMEPERIODTREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeologicTimePeriodTreeDefID = trim($GeologicTimePeriodTreeDefID);
+       $GeologicTimePeriodTreeDefID = trim($GeologicTimePeriodTreeDefID ?? '');
        if (!ctype_digit(strval($GeologicTimePeriodTreeDefID))) {
              throw new Exception("Value must be an integer");
        }
@@ -605,10 +605,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setGeologicTimePeriodTreeDefItemID($GeologicTimePeriodTreeDefItemID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodTreeDefItemID)) > huh_geologictimeperiod::GEOLOGICTIMEPERIODTREEDEFITEMID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodTreeDefItemID ?? '')) > huh_geologictimeperiod::GEOLOGICTIMEPERIODTREEDEFITEMID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeologicTimePeriodTreeDefItemID = trim($GeologicTimePeriodTreeDefItemID);
+       $GeologicTimePeriodTreeDefItemID = trim($GeologicTimePeriodTreeDefItemID ?? '');
        if (!ctype_digit(strval($GeologicTimePeriodTreeDefItemID))) {
              throw new Exception("Value must be an integer");
        }
@@ -624,10 +624,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_geologictimeperiod::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_geologictimeperiod::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -643,10 +643,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setParentID($ParentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ParentID)) > huh_geologictimeperiod::PARENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ParentID ?? '')) > huh_geologictimeperiod::PARENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ParentID = trim($ParentID);
+       $ParentID = trim($ParentID ?? '');
        if (!ctype_digit(strval($ParentID)) && trim(strval($ParentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -662,10 +662,10 @@ class huh_geologictimeperiod implements  model , loadableModel, saveableModel, t
        }
    }
    public function setAcceptedID($AcceptedID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AcceptedID)) > huh_geologictimeperiod::ACCEPTEDID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AcceptedID ?? '')) > huh_geologictimeperiod::ACCEPTEDID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AcceptedID = trim($AcceptedID);
+       $AcceptedID = trim($AcceptedID ?? '');
        if (!ctype_digit(strval($AcceptedID)) && trim(strval($AcceptedID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -947,8 +947,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1046,11 +1046,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1078,8 +1078,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1101,8 +1101,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE FullName $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE FullName $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1124,8 +1124,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GUID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GUID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1147,8 +1147,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE Name $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE Name $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1170,8 +1170,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1193,8 +1193,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1216,8 +1216,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefItemID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefItemID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1239,8 +1239,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1262,8 +1262,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE ParentID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE ParentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1285,8 +1285,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE AcceptedID $operator '$searchTerm'";
         $preparedsql = "SELECT GeologicTimePeriodID FROM geologictimeperiod WHERE AcceptedID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1322,7 +1322,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1350,7 +1350,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1378,7 +1378,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1406,7 +1406,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1434,7 +1434,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1462,7 +1462,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1490,7 +1490,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1518,7 +1518,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1546,7 +1546,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1601,7 +1601,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1628,15 +1628,15 @@ class huh_geologictimeperiodView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_geologictimeperiod <a href='$editLinkURL'>Edit</a></li>\n";  } 

@@ -149,12 +149,12 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -242,10 +242,10 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setAttachmentID($AttachmentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AttachmentID)) > huh_attachment::ATTACHMENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AttachmentID ?? '')) > huh_attachment::ATTACHMENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AttachmentID = trim($AttachmentID);
+       $AttachmentID = trim($AttachmentID ?? '');
        if (!ctype_digit(strval($AttachmentID)) && trim(strval($AttachmentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -261,7 +261,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_attachment::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_attachment::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -276,7 +276,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_attachment::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_attachment::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -291,10 +291,10 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_attachment::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_attachment::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -310,7 +310,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setAttachmentLocation($AttachmentLocation) {
-       if (strlen($AttachmentLocation) > huh_attachment::ATTACHMENTLOCATION_SIZE) { 
+       if (strlen($AttachmentLocation ?? '') > huh_attachment::ATTACHMENTLOCATION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->AttachmentLocation = $this->l_addslashes($AttachmentLocation);
@@ -325,7 +325,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setCopyrightDate($CopyrightDate) {
-       if (strlen($CopyrightDate) > huh_attachment::COPYRIGHTDATE_SIZE) { 
+       if (strlen($CopyrightDate ?? '') > huh_attachment::COPYRIGHTDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CopyrightDate = $this->l_addslashes($CopyrightDate);
@@ -340,7 +340,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setCopyrightHolder($CopyrightHolder) {
-       if (strlen($CopyrightHolder) > huh_attachment::COPYRIGHTHOLDER_SIZE) { 
+       if (strlen($CopyrightHolder ?? '') > huh_attachment::COPYRIGHTHOLDER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CopyrightHolder = $this->l_addslashes($CopyrightHolder);
@@ -355,7 +355,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setCredit($Credit) {
-       if (strlen($Credit) > huh_attachment::CREDIT_SIZE) { 
+       if (strlen($Credit ?? '') > huh_attachment::CREDIT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Credit = $this->l_addslashes($Credit);
@@ -370,7 +370,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setDateImaged($DateImaged) {
-       if (strlen($DateImaged) > huh_attachment::DATEIMAGED_SIZE) { 
+       if (strlen($DateImaged ?? '') > huh_attachment::DATEIMAGED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateImaged = $this->l_addslashes($DateImaged);
@@ -385,7 +385,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setFileCreatedDate($FileCreatedDate) {
-       if (strlen($FileCreatedDate) > huh_attachment::FILECREATEDDATE_SIZE) { 
+       if (strlen($FileCreatedDate ?? '') > huh_attachment::FILECREATEDDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FileCreatedDate = $this->l_addslashes($FileCreatedDate);
@@ -400,7 +400,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setLicense($License) {
-       if (strlen($License) > huh_attachment::LICENSE_SIZE) { 
+       if (strlen($License ?? '') > huh_attachment::LICENSE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->License = $this->l_addslashes($License);
@@ -415,7 +415,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setMimeType($MimeType) {
-       if (strlen($MimeType) > huh_attachment::MIMETYPE_SIZE) { 
+       if (strlen($MimeType ?? '') > huh_attachment::MIMETYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->MimeType = $this->l_addslashes($MimeType);
@@ -430,7 +430,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setOrigFilename($OrigFilename) {
-       if (strlen($OrigFilename) > huh_attachment::ORIGFILENAME_SIZE) { 
+       if (strlen($OrigFilename ?? '') > huh_attachment::ORIGFILENAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OrigFilename = $this->l_addslashes($OrigFilename);
@@ -445,7 +445,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_attachment::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_attachment::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -460,7 +460,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTitle($Title) {
-       if (strlen($Title) > huh_attachment::TITLE_SIZE) { 
+       if (strlen($Title ?? '') > huh_attachment::TITLE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Title = $this->l_addslashes($Title);
@@ -475,7 +475,7 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setVisibility($Visibility) {
-       if (strlen($Visibility) > huh_attachment::VISIBILITY_SIZE) { 
+       if (strlen($Visibility ?? '') > huh_attachment::VISIBILITY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Visibility = $this->l_addslashes($Visibility);
@@ -490,10 +490,10 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_attachment::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_attachment::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -509,10 +509,10 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_attachment::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_attachment::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -528,10 +528,10 @@ class huh_attachment implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setVisibilitySetByID($VisibilitySetByID) {
-       if (strlen(preg_replace('/[^0-9]/','',$VisibilitySetByID)) > huh_attachment::VISIBILITYSETBYID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$VisibilitySetByID ?? '')) > huh_attachment::VISIBILITYSETBYID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $VisibilitySetByID = trim($VisibilitySetByID);
+       $VisibilitySetByID = trim($VisibilitySetByID ?? '');
        if (!ctype_digit(strval($VisibilitySetByID)) && trim(strval($VisibilitySetByID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -793,8 +793,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -952,11 +952,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -984,8 +984,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1007,8 +1007,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AttachmentID FROM attachment WHERE DateImaged $operator '$searchTerm'";
         $preparedsql = "SELECT AttachmentID FROM attachment WHERE DateImaged $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1030,8 +1030,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AttachmentID FROM attachment WHERE Title $operator '$searchTerm'";
         $preparedsql = "SELECT AttachmentID FROM attachment WHERE Title $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1053,8 +1053,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AttachmentID FROM attachment WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT AttachmentID FROM attachment WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1076,8 +1076,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AttachmentID FROM attachment WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT AttachmentID FROM attachment WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1099,8 +1099,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AttachmentID FROM attachment WHERE VisibilitySetByID $operator '$searchTerm'";
         $preparedsql = "SELECT AttachmentID FROM attachment WHERE VisibilitySetByID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1136,7 +1136,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1164,7 +1164,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1192,7 +1192,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1220,7 +1220,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1248,7 +1248,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1291,7 +1291,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1318,15 +1318,15 @@ class huh_attachmentView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_attachment <a href='$editLinkURL'>Edit</a></li>\n";  } 

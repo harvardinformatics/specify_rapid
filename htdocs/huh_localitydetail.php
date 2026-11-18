@@ -234,12 +234,12 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -361,10 +361,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setLocalityDetailID($LocalityDetailID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LocalityDetailID)) > huh_localitydetail::LOCALITYDETAILID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LocalityDetailID ?? '')) > huh_localitydetail::LOCALITYDETAILID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LocalityDetailID = trim($LocalityDetailID);
+       $LocalityDetailID = trim($LocalityDetailID ?? '');
        if (!ctype_digit(strval($LocalityDetailID)) && trim(strval($LocalityDetailID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -380,7 +380,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_localitydetail::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_localitydetail::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -395,7 +395,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_localitydetail::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_localitydetail::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -410,10 +410,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_localitydetail::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_localitydetail::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -429,7 +429,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setBaseMeridian($BaseMeridian) {
-       if (strlen($BaseMeridian) > huh_localitydetail::BASEMERIDIAN_SIZE) { 
+       if (strlen($BaseMeridian ?? '') > huh_localitydetail::BASEMERIDIAN_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BaseMeridian = $this->l_addslashes($BaseMeridian);
@@ -444,7 +444,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDrainage($Drainage) {
-       if (strlen($Drainage) > huh_localitydetail::DRAINAGE_SIZE) { 
+       if (strlen($Drainage ?? '') > huh_localitydetail::DRAINAGE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Drainage = $this->l_addslashes($Drainage);
@@ -459,7 +459,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setGML($GML) {
-       if (strlen($GML) > huh_localitydetail::GML_SIZE) { 
+       if (strlen($GML ?? '') > huh_localitydetail::GML_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GML = $this->l_addslashes($GML);
@@ -474,7 +474,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setHucCode($HucCode) {
-       if (strlen($HucCode) > huh_localitydetail::HUCCODE_SIZE) { 
+       if (strlen($HucCode ?? '') > huh_localitydetail::HUCCODE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->HucCode = $this->l_addslashes($HucCode);
@@ -489,7 +489,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setIsland($Island) {
-       if (strlen($Island) > huh_localitydetail::ISLAND_SIZE) { 
+       if (strlen($Island ?? '') > huh_localitydetail::ISLAND_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Island = $this->l_addslashes($Island);
@@ -504,7 +504,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setIslandGroup($IslandGroup) {
-       if (strlen($IslandGroup) > huh_localitydetail::ISLANDGROUP_SIZE) { 
+       if (strlen($IslandGroup ?? '') > huh_localitydetail::ISLANDGROUP_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IslandGroup = $this->l_addslashes($IslandGroup);
@@ -519,7 +519,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setNationalParkName($NationalParkName) {
-       if (strlen($NationalParkName) > huh_localitydetail::NATIONALPARKNAME_SIZE) { 
+       if (strlen($NationalParkName ?? '') > huh_localitydetail::NATIONALPARKNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->NationalParkName = $this->l_addslashes($NationalParkName);
@@ -534,7 +534,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_localitydetail::NUMBER1_SIZE) { 
+       if (strlen($Number1 ?? '') > huh_localitydetail::NUMBER1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number1 = $this->l_addslashes($Number1);
@@ -549,7 +549,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_localitydetail::NUMBER2_SIZE) { 
+       if (strlen($Number2 ?? '') > huh_localitydetail::NUMBER2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number2 = $this->l_addslashes($Number2);
@@ -564,7 +564,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setRangeDesc($RangeDesc) {
-       if (strlen($RangeDesc) > huh_localitydetail::RANGEDESC_SIZE) { 
+       if (strlen($RangeDesc ?? '') > huh_localitydetail::RANGEDESC_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RangeDesc = $this->l_addslashes($RangeDesc);
@@ -579,7 +579,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setRangeDirection($RangeDirection) {
-       if (strlen($RangeDirection) > huh_localitydetail::RANGEDIRECTION_SIZE) { 
+       if (strlen($RangeDirection ?? '') > huh_localitydetail::RANGEDIRECTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RangeDirection = $this->l_addslashes($RangeDirection);
@@ -594,7 +594,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setSection($Section) {
-       if (strlen($Section) > huh_localitydetail::SECTION_SIZE) { 
+       if (strlen($Section ?? '') > huh_localitydetail::SECTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Section = $this->l_addslashes($Section);
@@ -609,7 +609,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setSectionPart($SectionPart) {
-       if (strlen($SectionPart) > huh_localitydetail::SECTIONPART_SIZE) { 
+       if (strlen($SectionPart ?? '') > huh_localitydetail::SECTIONPART_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->SectionPart = $this->l_addslashes($SectionPart);
@@ -624,7 +624,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_localitydetail::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_localitydetail::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -639,7 +639,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_localitydetail::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_localitydetail::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -654,7 +654,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTownship($Township) {
-       if (strlen($Township) > huh_localitydetail::TOWNSHIP_SIZE) { 
+       if (strlen($Township ?? '') > huh_localitydetail::TOWNSHIP_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Township = $this->l_addslashes($Township);
@@ -669,7 +669,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTownshipDirection($TownshipDirection) {
-       if (strlen($TownshipDirection) > huh_localitydetail::TOWNSHIPDIRECTION_SIZE) { 
+       if (strlen($TownshipDirection ?? '') > huh_localitydetail::TOWNSHIPDIRECTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TownshipDirection = $this->l_addslashes($TownshipDirection);
@@ -684,7 +684,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmDatum($UtmDatum) {
-       if (strlen($UtmDatum) > huh_localitydetail::UTMDATUM_SIZE) { 
+       if (strlen($UtmDatum ?? '') > huh_localitydetail::UTMDATUM_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->UtmDatum = $this->l_addslashes($UtmDatum);
@@ -699,7 +699,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmEasting($UtmEasting) {
-       if (strlen($UtmEasting) > huh_localitydetail::UTMEASTING_SIZE) { 
+       if (strlen($UtmEasting ?? '') > huh_localitydetail::UTMEASTING_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->UtmEasting = $this->l_addslashes($UtmEasting);
@@ -714,10 +714,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmFalseEasting($UtmFalseEasting) {
-       if (strlen(preg_replace('/[^0-9]/','',$UtmFalseEasting)) > huh_localitydetail::UTMFALSEEASTING_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UtmFalseEasting ?? '')) > huh_localitydetail::UTMFALSEEASTING_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UtmFalseEasting = trim($UtmFalseEasting);
+       $UtmFalseEasting = trim($UtmFalseEasting ?? '');
        if (!ctype_digit(strval($UtmFalseEasting)) && trim(strval($UtmFalseEasting))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -733,10 +733,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmFalseNorthing($UtmFalseNorthing) {
-       if (strlen(preg_replace('/[^0-9]/','',$UtmFalseNorthing)) > huh_localitydetail::UTMFALSENORTHING_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UtmFalseNorthing ?? '')) > huh_localitydetail::UTMFALSENORTHING_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UtmFalseNorthing = trim($UtmFalseNorthing);
+       $UtmFalseNorthing = trim($UtmFalseNorthing ?? '');
        if (!ctype_digit(strval($UtmFalseNorthing)) && trim(strval($UtmFalseNorthing))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -752,7 +752,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmNorthing($UtmNorthing) {
-       if (strlen($UtmNorthing) > huh_localitydetail::UTMNORTHING_SIZE) { 
+       if (strlen($UtmNorthing ?? '') > huh_localitydetail::UTMNORTHING_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->UtmNorthing = $this->l_addslashes($UtmNorthing);
@@ -767,10 +767,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmOrigLatitude($UtmOrigLatitude) {
-       if (strlen(preg_replace('/[^0-9]/','',$UtmOrigLatitude)) > huh_localitydetail::UTMORIGLATITUDE_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UtmOrigLatitude ?? '')) > huh_localitydetail::UTMORIGLATITUDE_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UtmOrigLatitude = trim($UtmOrigLatitude);
+       $UtmOrigLatitude = trim($UtmOrigLatitude ?? '');
        if (!is_numeric($UtmOrigLatitude) && trim(strval($UtmOrigLatitude))!='' ) {
              throw new Exception("Value must be a number");
        }
@@ -786,10 +786,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmOrigLongitude($UtmOrigLongitude) {
-       if (strlen(preg_replace('/[^0-9]/','',$UtmOrigLongitude)) > huh_localitydetail::UTMORIGLONGITUDE_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UtmOrigLongitude ?? '')) > huh_localitydetail::UTMORIGLONGITUDE_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UtmOrigLongitude = trim($UtmOrigLongitude);
+       $UtmOrigLongitude = trim($UtmOrigLongitude ?? '');
        if (!is_numeric($UtmOrigLongitude) && trim(strval($UtmOrigLongitude))!='' ) {
              throw new Exception("Value must be a number");
        }
@@ -805,7 +805,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmScale($UtmScale) {
-       if (strlen($UtmScale) > huh_localitydetail::UTMSCALE_SIZE) { 
+       if (strlen($UtmScale ?? '') > huh_localitydetail::UTMSCALE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->UtmScale = $this->l_addslashes($UtmScale);
@@ -820,7 +820,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setUtmZone($UtmZone) {
-       if (strlen($UtmZone) > huh_localitydetail::UTMZONE_SIZE) { 
+       if (strlen($UtmZone ?? '') > huh_localitydetail::UTMZONE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->UtmZone = $this->l_addslashes($UtmZone);
@@ -835,7 +835,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setWaterBody($WaterBody) {
-       if (strlen($WaterBody) > huh_localitydetail::WATERBODY_SIZE) { 
+       if (strlen($WaterBody ?? '') > huh_localitydetail::WATERBODY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->WaterBody = $this->l_addslashes($WaterBody);
@@ -850,7 +850,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_localitydetail::YESNO1_SIZE) { 
+       if (strlen($YesNo1 ?? '') > huh_localitydetail::YESNO1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -865,7 +865,7 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_localitydetail::YESNO2_SIZE) { 
+       if (strlen($YesNo2 ?? '') > huh_localitydetail::YESNO2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -880,10 +880,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_localitydetail::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_localitydetail::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -899,10 +899,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setLocalityID($LocalityID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LocalityID)) > huh_localitydetail::LOCALITYID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LocalityID ?? '')) > huh_localitydetail::LOCALITYID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LocalityID = trim($LocalityID);
+       $LocalityID = trim($LocalityID ?? '');
        if (!ctype_digit(strval($LocalityID)) && trim(strval($LocalityID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -918,10 +918,10 @@ class huh_localitydetail implements  model , loadableModel, saveableModel, table
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_localitydetail::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_localitydetail::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1251,8 +1251,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1334,11 +1334,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1366,8 +1366,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1389,8 +1389,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LocalityDetailID FROM localitydetail WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT LocalityDetailID FROM localitydetail WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1412,8 +1412,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LocalityDetailID FROM localitydetail WHERE LocalityID $operator '$searchTerm'";
         $preparedsql = "SELECT LocalityDetailID FROM localitydetail WHERE LocalityID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1435,8 +1435,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LocalityDetailID FROM localitydetail WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT LocalityDetailID FROM localitydetail WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1472,7 +1472,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1500,7 +1500,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1528,7 +1528,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1565,7 +1565,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1592,15 +1592,15 @@ class huh_localitydetailView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_localitydetail <a href='$editLinkURL'>Edit</a></li>\n";  } 

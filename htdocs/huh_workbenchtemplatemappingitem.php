@@ -169,12 +169,12 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -270,10 +270,10 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setWorkbenchTemplateMappingItemID($WorkbenchTemplateMappingItemID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchTemplateMappingItemID)) > huh_workbenchtemplatemappingitem::WORKBENCHTEMPLATEMAPPINGITEMID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchTemplateMappingItemID ?? '')) > huh_workbenchtemplatemappingitem::WORKBENCHTEMPLATEMAPPINGITEMID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchTemplateMappingItemID = trim($WorkbenchTemplateMappingItemID);
+       $WorkbenchTemplateMappingItemID = trim($WorkbenchTemplateMappingItemID ?? '');
        if (!ctype_digit(strval($WorkbenchTemplateMappingItemID)) && trim(strval($WorkbenchTemplateMappingItemID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -289,7 +289,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_workbenchtemplatemappingitem::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_workbenchtemplatemappingitem::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -304,7 +304,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_workbenchtemplatemappingitem::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_workbenchtemplatemappingitem::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -319,10 +319,10 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_workbenchtemplatemappingitem::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_workbenchtemplatemappingitem::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -338,7 +338,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setXCoord($XCoord) {
-       if (strlen($XCoord) > huh_workbenchtemplatemappingitem::XCOORD_SIZE) { 
+       if (strlen($XCoord ?? '') > huh_workbenchtemplatemappingitem::XCOORD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->XCoord = $this->l_addslashes($XCoord);
@@ -353,7 +353,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setYCoord($YCoord) {
-       if (strlen($YCoord) > huh_workbenchtemplatemappingitem::YCOORD_SIZE) { 
+       if (strlen($YCoord ?? '') > huh_workbenchtemplatemappingitem::YCOORD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YCoord = $this->l_addslashes($YCoord);
@@ -368,7 +368,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setCaption($Caption) {
-       if (strlen($Caption) > huh_workbenchtemplatemappingitem::CAPTION_SIZE) { 
+       if (strlen($Caption ?? '') > huh_workbenchtemplatemappingitem::CAPTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Caption = $this->l_addslashes($Caption);
@@ -383,7 +383,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setCarryForward($CarryForward) {
-       if (strlen($CarryForward) > huh_workbenchtemplatemappingitem::CARRYFORWARD_SIZE) { 
+       if (strlen($CarryForward ?? '') > huh_workbenchtemplatemappingitem::CARRYFORWARD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CarryForward = $this->l_addslashes($CarryForward);
@@ -398,7 +398,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setDataFieldLength($DataFieldLength) {
-       if (strlen($DataFieldLength) > huh_workbenchtemplatemappingitem::DATAFIELDLENGTH_SIZE) { 
+       if (strlen($DataFieldLength ?? '') > huh_workbenchtemplatemappingitem::DATAFIELDLENGTH_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DataFieldLength = $this->l_addslashes($DataFieldLength);
@@ -413,7 +413,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setFieldName($FieldName) {
-       if (strlen($FieldName) > huh_workbenchtemplatemappingitem::FIELDNAME_SIZE) { 
+       if (strlen($FieldName ?? '') > huh_workbenchtemplatemappingitem::FIELDNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FieldName = $this->l_addslashes($FieldName);
@@ -428,7 +428,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setFieldType($FieldType) {
-       if (strlen($FieldType) > huh_workbenchtemplatemappingitem::FIELDTYPE_SIZE) { 
+       if (strlen($FieldType ?? '') > huh_workbenchtemplatemappingitem::FIELDTYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FieldType = $this->l_addslashes($FieldType);
@@ -443,7 +443,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setImportedColName($ImportedColName) {
-       if (strlen($ImportedColName) > huh_workbenchtemplatemappingitem::IMPORTEDCOLNAME_SIZE) { 
+       if (strlen($ImportedColName ?? '') > huh_workbenchtemplatemappingitem::IMPORTEDCOLNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ImportedColName = $this->l_addslashes($ImportedColName);
@@ -458,7 +458,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setIsExportableToContent($IsExportableToContent) {
-       if (strlen($IsExportableToContent) > huh_workbenchtemplatemappingitem::ISEXPORTABLETOCONTENT_SIZE) { 
+       if (strlen($IsExportableToContent ?? '') > huh_workbenchtemplatemappingitem::ISEXPORTABLETOCONTENT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsExportableToContent = $this->l_addslashes($IsExportableToContent);
@@ -473,7 +473,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setIsIncludedInTitle($IsIncludedInTitle) {
-       if (strlen($IsIncludedInTitle) > huh_workbenchtemplatemappingitem::ISINCLUDEDINTITLE_SIZE) { 
+       if (strlen($IsIncludedInTitle ?? '') > huh_workbenchtemplatemappingitem::ISINCLUDEDINTITLE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsIncludedInTitle = $this->l_addslashes($IsIncludedInTitle);
@@ -488,7 +488,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setIsRequired($IsRequired) {
-       if (strlen($IsRequired) > huh_workbenchtemplatemappingitem::ISREQUIRED_SIZE) { 
+       if (strlen($IsRequired ?? '') > huh_workbenchtemplatemappingitem::ISREQUIRED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsRequired = $this->l_addslashes($IsRequired);
@@ -503,7 +503,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setMetaData($MetaData) {
-       if (strlen($MetaData) > huh_workbenchtemplatemappingitem::METADATA_SIZE) { 
+       if (strlen($MetaData ?? '') > huh_workbenchtemplatemappingitem::METADATA_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->MetaData = $this->l_addslashes($MetaData);
@@ -518,7 +518,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setDataColumnIndex($DataColumnIndex) {
-       if (strlen($DataColumnIndex) > huh_workbenchtemplatemappingitem::DATACOLUMNINDEX_SIZE) { 
+       if (strlen($DataColumnIndex ?? '') > huh_workbenchtemplatemappingitem::DATACOLUMNINDEX_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DataColumnIndex = $this->l_addslashes($DataColumnIndex);
@@ -533,10 +533,10 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setTableId($TableId) {
-       if (strlen(preg_replace('/[^0-9]/','',$TableId)) > huh_workbenchtemplatemappingitem::TABLEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TableId ?? '')) > huh_workbenchtemplatemappingitem::TABLEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TableId = trim($TableId);
+       $TableId = trim($TableId ?? '');
        if (!ctype_digit(strval($TableId)) && trim(strval($TableId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -552,7 +552,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setTableName($TableName) {
-       if (strlen($TableName) > huh_workbenchtemplatemappingitem::TABLENAME_SIZE) { 
+       if (strlen($TableName ?? '') > huh_workbenchtemplatemappingitem::TABLENAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TableName = $this->l_addslashes($TableName);
@@ -567,7 +567,7 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setViewOrder($ViewOrder) {
-       if (strlen($ViewOrder) > huh_workbenchtemplatemappingitem::VIEWORDER_SIZE) { 
+       if (strlen($ViewOrder ?? '') > huh_workbenchtemplatemappingitem::VIEWORDER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ViewOrder = $this->l_addslashes($ViewOrder);
@@ -582,10 +582,10 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_workbenchtemplatemappingitem::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_workbenchtemplatemappingitem::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -601,10 +601,10 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_workbenchtemplatemappingitem::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_workbenchtemplatemappingitem::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -620,10 +620,10 @@ class huh_workbenchtemplatemappingitem implements  model , loadableModel, saveab
        }
    }
    public function setWorkbenchTemplateID($WorkbenchTemplateID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchTemplateID)) > huh_workbenchtemplatemappingitem::WORKBENCHTEMPLATEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchTemplateID ?? '')) > huh_workbenchtemplatemappingitem::WORKBENCHTEMPLATEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchTemplateID = trim($WorkbenchTemplateID);
+       $WorkbenchTemplateID = trim($WorkbenchTemplateID ?? '');
        if (!ctype_digit(strval($WorkbenchTemplateID))) {
              throw new Exception("Value must be an integer");
        }
@@ -901,8 +901,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -988,11 +988,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1020,8 +1020,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1043,8 +1043,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchTemplateMappingItemID FROM workbenchtemplatemappingitem WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchTemplateMappingItemID FROM workbenchtemplatemappingitem WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1066,8 +1066,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchTemplateMappingItemID FROM workbenchtemplatemappingitem WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchTemplateMappingItemID FROM workbenchtemplatemappingitem WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1089,8 +1089,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchTemplateMappingItemID FROM workbenchtemplatemappingitem WHERE WorkbenchTemplateID $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchTemplateMappingItemID FROM workbenchtemplatemappingitem WHERE WorkbenchTemplateID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1126,7 +1126,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1154,7 +1154,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1182,7 +1182,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1219,7 +1219,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1246,15 +1246,15 @@ class huh_workbenchtemplatemappingitemView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_workbenchtemplatemappingitem <a href='$editLinkURL'>Edit</a></li>\n";  } 

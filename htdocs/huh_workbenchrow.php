@@ -109,12 +109,12 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -186,10 +186,10 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setWorkbenchRowID($WorkbenchRowID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchRowID)) > huh_workbenchrow::WORKBENCHROWID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchRowID ?? '')) > huh_workbenchrow::WORKBENCHROWID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchRowID = trim($WorkbenchRowID);
+       $WorkbenchRowID = trim($WorkbenchRowID ?? '');
        if (!ctype_digit(strval($WorkbenchRowID)) && trim(strval($WorkbenchRowID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -205,7 +205,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setBioGeomancerResults($BioGeomancerResults) {
-       if (strlen($BioGeomancerResults) > huh_workbenchrow::BIOGEOMANCERRESULTS_SIZE) { 
+       if (strlen($BioGeomancerResults ?? '') > huh_workbenchrow::BIOGEOMANCERRESULTS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BioGeomancerResults = $this->l_addslashes($BioGeomancerResults);
@@ -220,7 +220,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setCardImageData($CardImageData) {
-       if (strlen($CardImageData) > huh_workbenchrow::CARDIMAGEDATA_SIZE) { 
+       if (strlen($CardImageData ?? '') > huh_workbenchrow::CARDIMAGEDATA_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CardImageData = $this->l_addslashes($CardImageData);
@@ -235,7 +235,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setCardImageFullPath($CardImageFullPath) {
-       if (strlen($CardImageFullPath) > huh_workbenchrow::CARDIMAGEFULLPATH_SIZE) { 
+       if (strlen($CardImageFullPath ?? '') > huh_workbenchrow::CARDIMAGEFULLPATH_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CardImageFullPath = $this->l_addslashes($CardImageFullPath);
@@ -250,7 +250,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setLat1Text($Lat1Text) {
-       if (strlen($Lat1Text) > huh_workbenchrow::LAT1TEXT_SIZE) { 
+       if (strlen($Lat1Text ?? '') > huh_workbenchrow::LAT1TEXT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Lat1Text = $this->l_addslashes($Lat1Text);
@@ -265,7 +265,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setLat2Text($Lat2Text) {
-       if (strlen($Lat2Text) > huh_workbenchrow::LAT2TEXT_SIZE) { 
+       if (strlen($Lat2Text ?? '') > huh_workbenchrow::LAT2TEXT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Lat2Text = $this->l_addslashes($Lat2Text);
@@ -280,7 +280,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setLong1Text($Long1Text) {
-       if (strlen($Long1Text) > huh_workbenchrow::LONG1TEXT_SIZE) { 
+       if (strlen($Long1Text ?? '') > huh_workbenchrow::LONG1TEXT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Long1Text = $this->l_addslashes($Long1Text);
@@ -295,7 +295,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setLong2Text($Long2Text) {
-       if (strlen($Long2Text) > huh_workbenchrow::LONG2TEXT_SIZE) { 
+       if (strlen($Long2Text ?? '') > huh_workbenchrow::LONG2TEXT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Long2Text = $this->l_addslashes($Long2Text);
@@ -310,7 +310,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setRowNumber($RowNumber) {
-       if (strlen($RowNumber) > huh_workbenchrow::ROWNUMBER_SIZE) { 
+       if (strlen($RowNumber ?? '') > huh_workbenchrow::ROWNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RowNumber = $this->l_addslashes($RowNumber);
@@ -325,7 +325,7 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setUploadStatus($UploadStatus) {
-       if (strlen($UploadStatus) > huh_workbenchrow::UPLOADSTATUS_SIZE) { 
+       if (strlen($UploadStatus ?? '') > huh_workbenchrow::UPLOADSTATUS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->UploadStatus = $this->l_addslashes($UploadStatus);
@@ -340,10 +340,10 @@ class huh_workbenchrow implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setWorkbenchID($WorkbenchID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchID)) > huh_workbenchrow::WORKBENCHID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchID ?? '')) > huh_workbenchrow::WORKBENCHID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchID = trim($WorkbenchID);
+       $WorkbenchID = trim($WorkbenchID ?? '');
        if (!ctype_digit(strval($WorkbenchID))) {
              throw new Exception("Value must be an integer");
        }
@@ -573,8 +573,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -656,11 +656,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -688,8 +688,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -711,8 +711,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchRowID FROM workbenchrow WHERE RowNumber $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchRowID FROM workbenchrow WHERE RowNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -734,8 +734,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchRowID FROM workbenchrow WHERE WorkbenchID $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchRowID FROM workbenchrow WHERE WorkbenchID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -771,7 +771,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -799,7 +799,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -833,7 +833,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -860,15 +860,15 @@ class huh_workbenchrowView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_workbenchrow <a href='$editLinkURL'>Edit</a></li>\n";  } 

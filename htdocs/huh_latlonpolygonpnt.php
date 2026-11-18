@@ -84,12 +84,12 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -151,10 +151,10 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
        }
    }
    public function setLatLonPolygonPntID($LatLonPolygonPntID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LatLonPolygonPntID)) > huh_latlonpolygonpnt::LATLONPOLYGONPNTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LatLonPolygonPntID ?? '')) > huh_latlonpolygonpnt::LATLONPOLYGONPNTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LatLonPolygonPntID = trim($LatLonPolygonPntID);
+       $LatLonPolygonPntID = trim($LatLonPolygonPntID ?? '');
        if (!ctype_digit(strval($LatLonPolygonPntID)) && trim(strval($LatLonPolygonPntID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -170,10 +170,10 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
        }
    }
    public function setElevation($Elevation) {
-       if (strlen(preg_replace('/[^0-9]/','',$Elevation)) > huh_latlonpolygonpnt::ELEVATION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Elevation ?? '')) > huh_latlonpolygonpnt::ELEVATION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Elevation = trim($Elevation);
+       $Elevation = trim($Elevation ?? '');
        if (!ctype_digit(strval($Elevation)) && trim(strval($Elevation))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -189,10 +189,10 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
        }
    }
    public function setLatitude($Latitude) {
-       if (strlen(preg_replace('/[^0-9]/','',$Latitude)) > huh_latlonpolygonpnt::LATITUDE_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Latitude ?? '')) > huh_latlonpolygonpnt::LATITUDE_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Latitude = trim($Latitude);
+       $Latitude = trim($Latitude ?? '');
        if (!is_numeric($Latitude)) {
              throw new Exception("Value must be a number");
        }
@@ -208,10 +208,10 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
        }
    }
    public function setLongitude($Longitude) {
-       if (strlen(preg_replace('/[^0-9]/','',$Longitude)) > huh_latlonpolygonpnt::LONGITUDE_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Longitude ?? '')) > huh_latlonpolygonpnt::LONGITUDE_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Longitude = trim($Longitude);
+       $Longitude = trim($Longitude ?? '');
        if (!is_numeric($Longitude)) {
              throw new Exception("Value must be a number");
        }
@@ -227,10 +227,10 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
        }
    }
    public function setOrdinal($Ordinal) {
-       if (strlen(preg_replace('/[^0-9]/','',$Ordinal)) > huh_latlonpolygonpnt::ORDINAL_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Ordinal ?? '')) > huh_latlonpolygonpnt::ORDINAL_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Ordinal = trim($Ordinal);
+       $Ordinal = trim($Ordinal ?? '');
        if (!ctype_digit(strval($Ordinal))) {
              throw new Exception("Value must be an integer");
        }
@@ -246,10 +246,10 @@ class huh_latlonpolygonpnt implements  model , loadableModel, saveableModel, tab
        }
    }
    public function setLatLonPolygonID($LatLonPolygonID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LatLonPolygonID)) > huh_latlonpolygonpnt::LATLONPOLYGONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LatLonPolygonID ?? '')) > huh_latlonpolygonpnt::LATLONPOLYGONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LatLonPolygonID = trim($LatLonPolygonID);
+       $LatLonPolygonID = trim($LatLonPolygonID ?? '');
        if (!ctype_digit(strval($LatLonPolygonID))) {
              throw new Exception("Value must be an integer");
        }
@@ -459,8 +459,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -534,11 +534,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -566,8 +566,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -589,8 +589,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LatLonPolygonPntID FROM latlonpolygonpnt WHERE LatLonPolygonID $operator '$searchTerm'";
         $preparedsql = "SELECT LatLonPolygonPntID FROM latlonpolygonpnt WHERE LatLonPolygonID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -626,7 +626,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -657,7 +657,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -684,15 +684,15 @@ class huh_latlonpolygonpntView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_latlonpolygonpnt <a href='$editLinkURL'>Edit</a></li>\n";  } 

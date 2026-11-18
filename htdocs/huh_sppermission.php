@@ -79,12 +79,12 @@ class huh_sppermission implements  model , loadableModel, saveableModel, tableSc
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -144,10 +144,10 @@ class huh_sppermission implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setSpPermissionID($SpPermissionID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpPermissionID)) > huh_sppermission::SPPERMISSIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpPermissionID ?? '')) > huh_sppermission::SPPERMISSIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpPermissionID = trim($SpPermissionID);
+       $SpPermissionID = trim($SpPermissionID ?? '');
        if (!ctype_digit(strval($SpPermissionID)) && trim(strval($SpPermissionID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -163,7 +163,7 @@ class huh_sppermission implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setActions($Actions) {
-       if (strlen($Actions) > huh_sppermission::ACTIONS_SIZE) { 
+       if (strlen($Actions ?? '') > huh_sppermission::ACTIONS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Actions = $this->l_addslashes($Actions);
@@ -178,7 +178,7 @@ class huh_sppermission implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setName($Name) {
-       if (strlen($Name) > huh_sppermission::NAME_SIZE) { 
+       if (strlen($Name ?? '') > huh_sppermission::NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Name = $this->l_addslashes($Name);
@@ -193,7 +193,7 @@ class huh_sppermission implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setPermissionClass($PermissionClass) {
-       if (strlen($PermissionClass) > huh_sppermission::PERMISSIONCLASS_SIZE) { 
+       if (strlen($PermissionClass ?? '') > huh_sppermission::PERMISSIONCLASS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->PermissionClass = $this->l_addslashes($PermissionClass);
@@ -208,10 +208,10 @@ class huh_sppermission implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setTargetId($TargetId) {
-       if (strlen(preg_replace('/[^0-9]/','',$TargetId)) > huh_sppermission::TARGETID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TargetId ?? '')) > huh_sppermission::TARGETID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TargetId = trim($TargetId);
+       $TargetId = trim($TargetId ?? '');
        if (!ctype_digit(strval($TargetId)) && trim(strval($TargetId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -417,8 +417,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -488,11 +488,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -520,8 +520,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -557,7 +557,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -584,15 +584,15 @@ class huh_sppermissionView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_sppermission <a href='$editLinkURL'>Edit</a></li>\n";  } 

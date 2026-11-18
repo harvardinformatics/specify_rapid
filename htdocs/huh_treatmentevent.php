@@ -159,12 +159,12 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -256,10 +256,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTreatmentEventID($TreatmentEventID) {
-       if (strlen(preg_replace('/[^0-9]/','',$TreatmentEventID)) > huh_treatmentevent::TREATMENTEVENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TreatmentEventID ?? '')) > huh_treatmentevent::TREATMENTEVENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TreatmentEventID = trim($TreatmentEventID);
+       $TreatmentEventID = trim($TreatmentEventID ?? '');
        if (!ctype_digit(strval($TreatmentEventID)) && trim(strval($TreatmentEventID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -275,7 +275,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_treatmentevent::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_treatmentevent::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -290,7 +290,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_treatmentevent::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_treatmentevent::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -305,10 +305,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_treatmentevent::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_treatmentevent::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -324,7 +324,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateBoxed($DateBoxed) {
-       if (strlen($DateBoxed) > huh_treatmentevent::DATEBOXED_SIZE) { 
+       if (strlen($DateBoxed ?? '') > huh_treatmentevent::DATEBOXED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateBoxed = $this->l_addslashes($DateBoxed);
@@ -339,7 +339,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateCleaned($DateCleaned) {
-       if (strlen($DateCleaned) > huh_treatmentevent::DATECLEANED_SIZE) { 
+       if (strlen($DateCleaned ?? '') > huh_treatmentevent::DATECLEANED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateCleaned = $this->l_addslashes($DateCleaned);
@@ -354,7 +354,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateCompleted($DateCompleted) {
-       if (strlen($DateCompleted) > huh_treatmentevent::DATECOMPLETED_SIZE) { 
+       if (strlen($DateCompleted ?? '') > huh_treatmentevent::DATECOMPLETED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateCompleted = $this->l_addslashes($DateCompleted);
@@ -369,7 +369,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateReceived($DateReceived) {
-       if (strlen($DateReceived) > huh_treatmentevent::DATERECEIVED_SIZE) { 
+       if (strlen($DateReceived ?? '') > huh_treatmentevent::DATERECEIVED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateReceived = $this->l_addslashes($DateReceived);
@@ -384,7 +384,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateToIsolation($DateToIsolation) {
-       if (strlen($DateToIsolation) > huh_treatmentevent::DATETOISOLATION_SIZE) { 
+       if (strlen($DateToIsolation ?? '') > huh_treatmentevent::DATETOISOLATION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateToIsolation = $this->l_addslashes($DateToIsolation);
@@ -399,7 +399,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateTreatmentEnded($DateTreatmentEnded) {
-       if (strlen($DateTreatmentEnded) > huh_treatmentevent::DATETREATMENTENDED_SIZE) { 
+       if (strlen($DateTreatmentEnded ?? '') > huh_treatmentevent::DATETREATMENTENDED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateTreatmentEnded = $this->l_addslashes($DateTreatmentEnded);
@@ -414,7 +414,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDateTreatmentStarted($DateTreatmentStarted) {
-       if (strlen($DateTreatmentStarted) > huh_treatmentevent::DATETREATMENTSTARTED_SIZE) { 
+       if (strlen($DateTreatmentStarted ?? '') > huh_treatmentevent::DATETREATMENTSTARTED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DateTreatmentStarted = $this->l_addslashes($DateTreatmentStarted);
@@ -429,7 +429,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setFieldNumber($FieldNumber) {
-       if (strlen($FieldNumber) > huh_treatmentevent::FIELDNUMBER_SIZE) { 
+       if (strlen($FieldNumber ?? '') > huh_treatmentevent::FIELDNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FieldNumber = $this->l_addslashes($FieldNumber);
@@ -444,7 +444,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setStorage($Storage) {
-       if (strlen($Storage) > huh_treatmentevent::STORAGE_SIZE) { 
+       if (strlen($Storage ?? '') > huh_treatmentevent::STORAGE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Storage = $this->l_addslashes($Storage);
@@ -459,7 +459,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_treatmentevent::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_treatmentevent::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -474,7 +474,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTreatmentNumber($TreatmentNumber) {
-       if (strlen($TreatmentNumber) > huh_treatmentevent::TREATMENTNUMBER_SIZE) { 
+       if (strlen($TreatmentNumber ?? '') > huh_treatmentevent::TREATMENTNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TreatmentNumber = $this->l_addslashes($TreatmentNumber);
@@ -489,7 +489,7 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setType($Type) {
-       if (strlen($Type) > huh_treatmentevent::TYPE_SIZE) { 
+       if (strlen($Type ?? '') > huh_treatmentevent::TYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Type = $this->l_addslashes($Type);
@@ -504,10 +504,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setPreparationID($PreparationID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PreparationID)) > huh_treatmentevent::PREPARATIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$PreparationID ?? '')) > huh_treatmentevent::PREPARATIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $PreparationID = trim($PreparationID);
+       $PreparationID = trim($PreparationID ?? '');
        if (!ctype_digit(strval($PreparationID)) && trim(strval($PreparationID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -523,10 +523,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_treatmentevent::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_treatmentevent::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -542,10 +542,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setAccessionID($AccessionID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AccessionID)) > huh_treatmentevent::ACCESSIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AccessionID ?? '')) > huh_treatmentevent::ACCESSIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AccessionID = trim($AccessionID);
+       $AccessionID = trim($AccessionID ?? '');
        if (!ctype_digit(strval($AccessionID)) && trim(strval($AccessionID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -561,10 +561,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_treatmentevent::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_treatmentevent::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -580,10 +580,10 @@ class huh_treatmentevent implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDivisionID($DivisionID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DivisionID)) > huh_treatmentevent::DIVISIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DivisionID ?? '')) > huh_treatmentevent::DIVISIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DivisionID = trim($DivisionID);
+       $DivisionID = trim($DivisionID ?? '');
        if (!ctype_digit(strval($DivisionID)) && trim(strval($DivisionID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -853,8 +853,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -944,11 +944,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -976,8 +976,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -999,8 +999,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE DateReceived $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE DateReceived $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1022,8 +1022,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE DateTreatmentStarted $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE DateTreatmentStarted $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1045,8 +1045,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE FieldNumber $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE FieldNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1068,8 +1068,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE TreatmentNumber $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE TreatmentNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1091,8 +1091,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE PreparationID $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE PreparationID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1114,8 +1114,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1137,8 +1137,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE AccessionID $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE AccessionID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1160,8 +1160,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1183,8 +1183,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TreatmentEventID FROM treatmentevent WHERE DivisionID $operator '$searchTerm'";
         $preparedsql = "SELECT TreatmentEventID FROM treatmentevent WHERE DivisionID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1220,7 +1220,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1248,7 +1248,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1276,7 +1276,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1304,7 +1304,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1332,7 +1332,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1360,7 +1360,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1388,7 +1388,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1416,7 +1416,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1444,7 +1444,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1499,7 +1499,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1526,15 +1526,15 @@ class huh_treatmenteventView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_treatmentevent <a href='$editLinkURL'>Edit</a></li>\n";  } 

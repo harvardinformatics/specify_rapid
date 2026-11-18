@@ -409,12 +409,12 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -606,10 +606,10 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setCollectionObjectAttributeID($CollectionObjectAttributeID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionObjectAttributeID)) > huh_collectionobjectattribute::COLLECTIONOBJECTATTRIBUTEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionObjectAttributeID ?? '')) > huh_collectionobjectattribute::COLLECTIONOBJECTATTRIBUTEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionObjectAttributeID = trim($CollectionObjectAttributeID);
+       $CollectionObjectAttributeID = trim($CollectionObjectAttributeID ?? '');
        if (!ctype_digit(strval($CollectionObjectAttributeID)) && trim(strval($CollectionObjectAttributeID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -625,7 +625,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_collectionobjectattribute::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_collectionobjectattribute::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -640,7 +640,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_collectionobjectattribute::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_collectionobjectattribute::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -655,10 +655,10 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_collectionobjectattribute::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_collectionobjectattribute::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -674,10 +674,10 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setCollectionMemberID($CollectionMemberID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID)) > huh_collectionobjectattribute::COLLECTIONMEMBERID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID ?? '')) > huh_collectionobjectattribute::COLLECTIONMEMBERID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionMemberID = trim($CollectionMemberID);
+       $CollectionMemberID = trim($CollectionMemberID ?? '');
        if (!ctype_digit(strval($CollectionMemberID))) {
              throw new Exception("Value must be an integer");
        }
@@ -693,7 +693,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_collectionobjectattribute::NUMBER1_SIZE) { 
+       if (strlen($Number1 ?? '') > huh_collectionobjectattribute::NUMBER1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number1 = $this->l_addslashes($Number1);
@@ -708,7 +708,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber10($Number10) {
-       if (strlen($Number10) > huh_collectionobjectattribute::NUMBER10_SIZE) { 
+       if (strlen($Number10 ?? '') > huh_collectionobjectattribute::NUMBER10_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number10 = $this->l_addslashes($Number10);
@@ -723,7 +723,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber11($Number11) {
-       if (strlen($Number11) > huh_collectionobjectattribute::NUMBER11_SIZE) { 
+       if (strlen($Number11 ?? '') > huh_collectionobjectattribute::NUMBER11_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number11 = $this->l_addslashes($Number11);
@@ -738,7 +738,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber12($Number12) {
-       if (strlen($Number12) > huh_collectionobjectattribute::NUMBER12_SIZE) { 
+       if (strlen($Number12 ?? '') > huh_collectionobjectattribute::NUMBER12_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number12 = $this->l_addslashes($Number12);
@@ -753,7 +753,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber13($Number13) {
-       if (strlen($Number13) > huh_collectionobjectattribute::NUMBER13_SIZE) { 
+       if (strlen($Number13 ?? '') > huh_collectionobjectattribute::NUMBER13_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number13 = $this->l_addslashes($Number13);
@@ -768,7 +768,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber14($Number14) {
-       if (strlen($Number14) > huh_collectionobjectattribute::NUMBER14_SIZE) { 
+       if (strlen($Number14 ?? '') > huh_collectionobjectattribute::NUMBER14_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number14 = $this->l_addslashes($Number14);
@@ -783,7 +783,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber15($Number15) {
-       if (strlen($Number15) > huh_collectionobjectattribute::NUMBER15_SIZE) { 
+       if (strlen($Number15 ?? '') > huh_collectionobjectattribute::NUMBER15_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number15 = $this->l_addslashes($Number15);
@@ -798,7 +798,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber16($Number16) {
-       if (strlen($Number16) > huh_collectionobjectattribute::NUMBER16_SIZE) { 
+       if (strlen($Number16 ?? '') > huh_collectionobjectattribute::NUMBER16_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number16 = $this->l_addslashes($Number16);
@@ -813,7 +813,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber17($Number17) {
-       if (strlen($Number17) > huh_collectionobjectattribute::NUMBER17_SIZE) { 
+       if (strlen($Number17 ?? '') > huh_collectionobjectattribute::NUMBER17_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number17 = $this->l_addslashes($Number17);
@@ -828,7 +828,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber18($Number18) {
-       if (strlen($Number18) > huh_collectionobjectattribute::NUMBER18_SIZE) { 
+       if (strlen($Number18 ?? '') > huh_collectionobjectattribute::NUMBER18_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number18 = $this->l_addslashes($Number18);
@@ -843,7 +843,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber19($Number19) {
-       if (strlen($Number19) > huh_collectionobjectattribute::NUMBER19_SIZE) { 
+       if (strlen($Number19 ?? '') > huh_collectionobjectattribute::NUMBER19_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number19 = $this->l_addslashes($Number19);
@@ -858,7 +858,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_collectionobjectattribute::NUMBER2_SIZE) { 
+       if (strlen($Number2 ?? '') > huh_collectionobjectattribute::NUMBER2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number2 = $this->l_addslashes($Number2);
@@ -873,7 +873,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber20($Number20) {
-       if (strlen($Number20) > huh_collectionobjectattribute::NUMBER20_SIZE) { 
+       if (strlen($Number20 ?? '') > huh_collectionobjectattribute::NUMBER20_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number20 = $this->l_addslashes($Number20);
@@ -888,7 +888,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber21($Number21) {
-       if (strlen($Number21) > huh_collectionobjectattribute::NUMBER21_SIZE) { 
+       if (strlen($Number21 ?? '') > huh_collectionobjectattribute::NUMBER21_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number21 = $this->l_addslashes($Number21);
@@ -903,7 +903,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber22($Number22) {
-       if (strlen($Number22) > huh_collectionobjectattribute::NUMBER22_SIZE) { 
+       if (strlen($Number22 ?? '') > huh_collectionobjectattribute::NUMBER22_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number22 = $this->l_addslashes($Number22);
@@ -918,7 +918,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber23($Number23) {
-       if (strlen($Number23) > huh_collectionobjectattribute::NUMBER23_SIZE) { 
+       if (strlen($Number23 ?? '') > huh_collectionobjectattribute::NUMBER23_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number23 = $this->l_addslashes($Number23);
@@ -933,7 +933,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber24($Number24) {
-       if (strlen($Number24) > huh_collectionobjectattribute::NUMBER24_SIZE) { 
+       if (strlen($Number24 ?? '') > huh_collectionobjectattribute::NUMBER24_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number24 = $this->l_addslashes($Number24);
@@ -948,7 +948,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber25($Number25) {
-       if (strlen($Number25) > huh_collectionobjectattribute::NUMBER25_SIZE) { 
+       if (strlen($Number25 ?? '') > huh_collectionobjectattribute::NUMBER25_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number25 = $this->l_addslashes($Number25);
@@ -963,7 +963,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber26($Number26) {
-       if (strlen($Number26) > huh_collectionobjectattribute::NUMBER26_SIZE) { 
+       if (strlen($Number26 ?? '') > huh_collectionobjectattribute::NUMBER26_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number26 = $this->l_addslashes($Number26);
@@ -978,7 +978,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber27($Number27) {
-       if (strlen($Number27) > huh_collectionobjectattribute::NUMBER27_SIZE) { 
+       if (strlen($Number27 ?? '') > huh_collectionobjectattribute::NUMBER27_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number27 = $this->l_addslashes($Number27);
@@ -993,7 +993,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber28($Number28) {
-       if (strlen($Number28) > huh_collectionobjectattribute::NUMBER28_SIZE) { 
+       if (strlen($Number28 ?? '') > huh_collectionobjectattribute::NUMBER28_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number28 = $this->l_addslashes($Number28);
@@ -1008,7 +1008,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber29($Number29) {
-       if (strlen($Number29) > huh_collectionobjectattribute::NUMBER29_SIZE) { 
+       if (strlen($Number29 ?? '') > huh_collectionobjectattribute::NUMBER29_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number29 = $this->l_addslashes($Number29);
@@ -1023,7 +1023,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber3($Number3) {
-       if (strlen($Number3) > huh_collectionobjectattribute::NUMBER3_SIZE) { 
+       if (strlen($Number3 ?? '') > huh_collectionobjectattribute::NUMBER3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number3 = $this->l_addslashes($Number3);
@@ -1038,7 +1038,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber30($Number30) {
-       if (strlen($Number30) > huh_collectionobjectattribute::NUMBER30_SIZE) { 
+       if (strlen($Number30 ?? '') > huh_collectionobjectattribute::NUMBER30_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number30 = $this->l_addslashes($Number30);
@@ -1053,7 +1053,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber31($Number31) {
-       if (strlen($Number31) > huh_collectionobjectattribute::NUMBER31_SIZE) { 
+       if (strlen($Number31 ?? '') > huh_collectionobjectattribute::NUMBER31_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number31 = $this->l_addslashes($Number31);
@@ -1068,7 +1068,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber32($Number32) {
-       if (strlen($Number32) > huh_collectionobjectattribute::NUMBER32_SIZE) { 
+       if (strlen($Number32 ?? '') > huh_collectionobjectattribute::NUMBER32_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number32 = $this->l_addslashes($Number32);
@@ -1083,7 +1083,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber33($Number33) {
-       if (strlen($Number33) > huh_collectionobjectattribute::NUMBER33_SIZE) { 
+       if (strlen($Number33 ?? '') > huh_collectionobjectattribute::NUMBER33_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number33 = $this->l_addslashes($Number33);
@@ -1098,7 +1098,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber34($Number34) {
-       if (strlen($Number34) > huh_collectionobjectattribute::NUMBER34_SIZE) { 
+       if (strlen($Number34 ?? '') > huh_collectionobjectattribute::NUMBER34_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number34 = $this->l_addslashes($Number34);
@@ -1113,7 +1113,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber35($Number35) {
-       if (strlen($Number35) > huh_collectionobjectattribute::NUMBER35_SIZE) { 
+       if (strlen($Number35 ?? '') > huh_collectionobjectattribute::NUMBER35_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number35 = $this->l_addslashes($Number35);
@@ -1128,7 +1128,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber36($Number36) {
-       if (strlen($Number36) > huh_collectionobjectattribute::NUMBER36_SIZE) { 
+       if (strlen($Number36 ?? '') > huh_collectionobjectattribute::NUMBER36_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number36 = $this->l_addslashes($Number36);
@@ -1143,7 +1143,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber37($Number37) {
-       if (strlen($Number37) > huh_collectionobjectattribute::NUMBER37_SIZE) { 
+       if (strlen($Number37 ?? '') > huh_collectionobjectattribute::NUMBER37_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number37 = $this->l_addslashes($Number37);
@@ -1158,7 +1158,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber38($Number38) {
-       if (strlen($Number38) > huh_collectionobjectattribute::NUMBER38_SIZE) { 
+       if (strlen($Number38 ?? '') > huh_collectionobjectattribute::NUMBER38_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number38 = $this->l_addslashes($Number38);
@@ -1173,7 +1173,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber39($Number39) {
-       if (strlen($Number39) > huh_collectionobjectattribute::NUMBER39_SIZE) { 
+       if (strlen($Number39 ?? '') > huh_collectionobjectattribute::NUMBER39_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number39 = $this->l_addslashes($Number39);
@@ -1188,7 +1188,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber4($Number4) {
-       if (strlen($Number4) > huh_collectionobjectattribute::NUMBER4_SIZE) { 
+       if (strlen($Number4 ?? '') > huh_collectionobjectattribute::NUMBER4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number4 = $this->l_addslashes($Number4);
@@ -1203,7 +1203,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber40($Number40) {
-       if (strlen($Number40) > huh_collectionobjectattribute::NUMBER40_SIZE) { 
+       if (strlen($Number40 ?? '') > huh_collectionobjectattribute::NUMBER40_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number40 = $this->l_addslashes($Number40);
@@ -1218,7 +1218,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber41($Number41) {
-       if (strlen($Number41) > huh_collectionobjectattribute::NUMBER41_SIZE) { 
+       if (strlen($Number41 ?? '') > huh_collectionobjectattribute::NUMBER41_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number41 = $this->l_addslashes($Number41);
@@ -1233,7 +1233,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber42($Number42) {
-       if (strlen($Number42) > huh_collectionobjectattribute::NUMBER42_SIZE) { 
+       if (strlen($Number42 ?? '') > huh_collectionobjectattribute::NUMBER42_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number42 = $this->l_addslashes($Number42);
@@ -1248,7 +1248,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber5($Number5) {
-       if (strlen($Number5) > huh_collectionobjectattribute::NUMBER5_SIZE) { 
+       if (strlen($Number5 ?? '') > huh_collectionobjectattribute::NUMBER5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number5 = $this->l_addslashes($Number5);
@@ -1263,7 +1263,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber6($Number6) {
-       if (strlen($Number6) > huh_collectionobjectattribute::NUMBER6_SIZE) { 
+       if (strlen($Number6 ?? '') > huh_collectionobjectattribute::NUMBER6_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number6 = $this->l_addslashes($Number6);
@@ -1278,7 +1278,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber7($Number7) {
-       if (strlen($Number7) > huh_collectionobjectattribute::NUMBER7_SIZE) { 
+       if (strlen($Number7 ?? '') > huh_collectionobjectattribute::NUMBER7_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number7 = $this->l_addslashes($Number7);
@@ -1293,7 +1293,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber8($Number8) {
-       if (strlen($Number8) > huh_collectionobjectattribute::NUMBER8_SIZE) { 
+       if (strlen($Number8 ?? '') > huh_collectionobjectattribute::NUMBER8_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number8 = $this->l_addslashes($Number8);
@@ -1308,7 +1308,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setNumber9($Number9) {
-       if (strlen($Number9) > huh_collectionobjectattribute::NUMBER9_SIZE) { 
+       if (strlen($Number9 ?? '') > huh_collectionobjectattribute::NUMBER9_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number9 = $this->l_addslashes($Number9);
@@ -1323,7 +1323,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_collectionobjectattribute::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_collectionobjectattribute::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -1338,7 +1338,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_collectionobjectattribute::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_collectionobjectattribute::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -1353,7 +1353,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText10($Text10) {
-       if (strlen($Text10) > huh_collectionobjectattribute::TEXT10_SIZE) { 
+       if (strlen($Text10 ?? '') > huh_collectionobjectattribute::TEXT10_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text10 = $this->l_addslashes($Text10);
@@ -1368,7 +1368,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText11($Text11) {
-       if (strlen($Text11) > huh_collectionobjectattribute::TEXT11_SIZE) { 
+       if (strlen($Text11 ?? '') > huh_collectionobjectattribute::TEXT11_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text11 = $this->l_addslashes($Text11);
@@ -1383,7 +1383,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText12($Text12) {
-       if (strlen($Text12) > huh_collectionobjectattribute::TEXT12_SIZE) { 
+       if (strlen($Text12 ?? '') > huh_collectionobjectattribute::TEXT12_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text12 = $this->l_addslashes($Text12);
@@ -1398,7 +1398,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText13($Text13) {
-       if (strlen($Text13) > huh_collectionobjectattribute::TEXT13_SIZE) { 
+       if (strlen($Text13 ?? '') > huh_collectionobjectattribute::TEXT13_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text13 = $this->l_addslashes($Text13);
@@ -1413,7 +1413,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText14($Text14) {
-       if (strlen($Text14) > huh_collectionobjectattribute::TEXT14_SIZE) { 
+       if (strlen($Text14 ?? '') > huh_collectionobjectattribute::TEXT14_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text14 = $this->l_addslashes($Text14);
@@ -1428,7 +1428,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_collectionobjectattribute::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_collectionobjectattribute::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -1443,7 +1443,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText3($Text3) {
-       if (strlen($Text3) > huh_collectionobjectattribute::TEXT3_SIZE) { 
+       if (strlen($Text3 ?? '') > huh_collectionobjectattribute::TEXT3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text3 = $this->l_addslashes($Text3);
@@ -1458,7 +1458,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText4($Text4) {
-       if (strlen($Text4) > huh_collectionobjectattribute::TEXT4_SIZE) { 
+       if (strlen($Text4 ?? '') > huh_collectionobjectattribute::TEXT4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text4 = $this->l_addslashes($Text4);
@@ -1473,7 +1473,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText5($Text5) {
-       if (strlen($Text5) > huh_collectionobjectattribute::TEXT5_SIZE) { 
+       if (strlen($Text5 ?? '') > huh_collectionobjectattribute::TEXT5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text5 = $this->l_addslashes($Text5);
@@ -1488,7 +1488,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText6($Text6) {
-       if (strlen($Text6) > huh_collectionobjectattribute::TEXT6_SIZE) { 
+       if (strlen($Text6 ?? '') > huh_collectionobjectattribute::TEXT6_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text6 = $this->l_addslashes($Text6);
@@ -1503,7 +1503,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText7($Text7) {
-       if (strlen($Text7) > huh_collectionobjectattribute::TEXT7_SIZE) { 
+       if (strlen($Text7 ?? '') > huh_collectionobjectattribute::TEXT7_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text7 = $this->l_addslashes($Text7);
@@ -1518,7 +1518,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText8($Text8) {
-       if (strlen($Text8) > huh_collectionobjectattribute::TEXT8_SIZE) { 
+       if (strlen($Text8 ?? '') > huh_collectionobjectattribute::TEXT8_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text8 = $this->l_addslashes($Text8);
@@ -1533,7 +1533,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setText9($Text9) {
-       if (strlen($Text9) > huh_collectionobjectattribute::TEXT9_SIZE) { 
+       if (strlen($Text9 ?? '') > huh_collectionobjectattribute::TEXT9_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text9 = $this->l_addslashes($Text9);
@@ -1548,7 +1548,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_collectionobjectattribute::YESNO1_SIZE) { 
+       if (strlen($YesNo1 ?? '') > huh_collectionobjectattribute::YESNO1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -1563,7 +1563,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_collectionobjectattribute::YESNO2_SIZE) { 
+       if (strlen($YesNo2 ?? '') > huh_collectionobjectattribute::YESNO2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -1578,7 +1578,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo3($YesNo3) {
-       if (strlen($YesNo3) > huh_collectionobjectattribute::YESNO3_SIZE) { 
+       if (strlen($YesNo3 ?? '') > huh_collectionobjectattribute::YESNO3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo3 = $this->l_addslashes($YesNo3);
@@ -1593,7 +1593,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo4($YesNo4) {
-       if (strlen($YesNo4) > huh_collectionobjectattribute::YESNO4_SIZE) { 
+       if (strlen($YesNo4 ?? '') > huh_collectionobjectattribute::YESNO4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo4 = $this->l_addslashes($YesNo4);
@@ -1608,7 +1608,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo5($YesNo5) {
-       if (strlen($YesNo5) > huh_collectionobjectattribute::YESNO5_SIZE) { 
+       if (strlen($YesNo5 ?? '') > huh_collectionobjectattribute::YESNO5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo5 = $this->l_addslashes($YesNo5);
@@ -1623,7 +1623,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo6($YesNo6) {
-       if (strlen($YesNo6) > huh_collectionobjectattribute::YESNO6_SIZE) { 
+       if (strlen($YesNo6 ?? '') > huh_collectionobjectattribute::YESNO6_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo6 = $this->l_addslashes($YesNo6);
@@ -1638,7 +1638,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setYesNo7($YesNo7) {
-       if (strlen($YesNo7) > huh_collectionobjectattribute::YESNO7_SIZE) { 
+       if (strlen($YesNo7 ?? '') > huh_collectionobjectattribute::YESNO7_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo7 = $this->l_addslashes($YesNo7);
@@ -1653,10 +1653,10 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_collectionobjectattribute::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_collectionobjectattribute::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1672,10 +1672,10 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_collectionobjectattribute::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_collectionobjectattribute::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -2145,8 +2145,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -2228,11 +2228,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -2260,8 +2260,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -2283,8 +2283,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectionObjectAttributeID FROM collectionobjectattribute WHERE CollectionMemberID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectionObjectAttributeID FROM collectionobjectattribute WHERE CollectionMemberID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -2306,8 +2306,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectionObjectAttributeID FROM collectionobjectattribute WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectionObjectAttributeID FROM collectionobjectattribute WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -2329,8 +2329,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectionObjectAttributeID FROM collectionobjectattribute WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectionObjectAttributeID FROM collectionobjectattribute WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -2366,7 +2366,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -2394,7 +2394,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -2422,7 +2422,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -2459,7 +2459,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -2486,15 +2486,15 @@ class huh_collectionobjectattributeView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_collectionobjectattribute <a href='$editLinkURL'>Edit</a></li>\n";  } 

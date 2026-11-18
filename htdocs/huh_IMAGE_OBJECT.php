@@ -159,12 +159,12 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -256,7 +256,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setID($ID) {
-       if (strlen($ID) > huh_IMAGE_OBJECT::ID_SIZE) { 
+       if (strlen($ID ?? '') > huh_IMAGE_OBJECT::ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ID = $this->l_addslashes($ID);
@@ -271,7 +271,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setIMAGE_SET_ID($IMAGE_SET_ID) {
-       if (strlen($IMAGE_SET_ID) > huh_IMAGE_OBJECT::IMAGE_SET_ID_SIZE) { 
+       if (strlen($IMAGE_SET_ID ?? '') > huh_IMAGE_OBJECT::IMAGE_SET_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IMAGE_SET_ID = $this->l_addslashes($IMAGE_SET_ID);
@@ -286,7 +286,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setOBJECT_TYPE_ID($OBJECT_TYPE_ID) {
-       if (strlen($OBJECT_TYPE_ID) > huh_IMAGE_OBJECT::OBJECT_TYPE_ID_SIZE) { 
+       if (strlen($OBJECT_TYPE_ID ?? '') > huh_IMAGE_OBJECT::OBJECT_TYPE_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OBJECT_TYPE_ID = $this->l_addslashes($OBJECT_TYPE_ID);
@@ -301,7 +301,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setREPOSITORY_ID($REPOSITORY_ID) {
-       if (strlen($REPOSITORY_ID) > huh_IMAGE_OBJECT::REPOSITORY_ID_SIZE) { 
+       if (strlen($REPOSITORY_ID ?? '') > huh_IMAGE_OBJECT::REPOSITORY_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->REPOSITORY_ID = $this->l_addslashes($REPOSITORY_ID);
@@ -316,7 +316,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setMIME_TYPE_ID($MIME_TYPE_ID) {
-       if (strlen($MIME_TYPE_ID) > huh_IMAGE_OBJECT::MIME_TYPE_ID_SIZE) { 
+       if (strlen($MIME_TYPE_ID ?? '') > huh_IMAGE_OBJECT::MIME_TYPE_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->MIME_TYPE_ID = $this->l_addslashes($MIME_TYPE_ID);
@@ -331,7 +331,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setBITS_PER_SAMPLE_ID($BITS_PER_SAMPLE_ID) {
-       if (strlen($BITS_PER_SAMPLE_ID) > huh_IMAGE_OBJECT::BITS_PER_SAMPLE_ID_SIZE) { 
+       if (strlen($BITS_PER_SAMPLE_ID ?? '') > huh_IMAGE_OBJECT::BITS_PER_SAMPLE_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BITS_PER_SAMPLE_ID = $this->l_addslashes($BITS_PER_SAMPLE_ID);
@@ -346,7 +346,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setCOMPRESSION_ID($COMPRESSION_ID) {
-       if (strlen($COMPRESSION_ID) > huh_IMAGE_OBJECT::COMPRESSION_ID_SIZE) { 
+       if (strlen($COMPRESSION_ID ?? '') > huh_IMAGE_OBJECT::COMPRESSION_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->COMPRESSION_ID = $this->l_addslashes($COMPRESSION_ID);
@@ -361,7 +361,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setPHOTO_INTERP_ID($PHOTO_INTERP_ID) {
-       if (strlen($PHOTO_INTERP_ID) > huh_IMAGE_OBJECT::PHOTO_INTERP_ID_SIZE) { 
+       if (strlen($PHOTO_INTERP_ID ?? '') > huh_IMAGE_OBJECT::PHOTO_INTERP_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->PHOTO_INTERP_ID = $this->l_addslashes($PHOTO_INTERP_ID);
@@ -376,10 +376,10 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setACTIVE_FLAG($ACTIVE_FLAG) {
-       if (strlen(preg_replace('/[^0-9]/','',$ACTIVE_FLAG)) > huh_IMAGE_OBJECT::ACTIVE_FLAG_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ACTIVE_FLAG ?? '')) > huh_IMAGE_OBJECT::ACTIVE_FLAG_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ACTIVE_FLAG = trim($ACTIVE_FLAG);
+       $ACTIVE_FLAG = trim($ACTIVE_FLAG ?? '');
        if (!ctype_digit(strval($ACTIVE_FLAG))) {
              throw new Exception("Value must be an integer");
        }
@@ -395,10 +395,10 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setALTERED_FLAG($ALTERED_FLAG) {
-       if (strlen(preg_replace('/[^0-9]/','',$ALTERED_FLAG)) > huh_IMAGE_OBJECT::ALTERED_FLAG_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ALTERED_FLAG ?? '')) > huh_IMAGE_OBJECT::ALTERED_FLAG_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ALTERED_FLAG = trim($ALTERED_FLAG);
+       $ALTERED_FLAG = trim($ALTERED_FLAG ?? '');
        if (!ctype_digit(strval($ALTERED_FLAG))) {
              throw new Exception("Value must be an integer");
        }
@@ -414,10 +414,10 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setIN_PROCESS_FLAG($IN_PROCESS_FLAG) {
-       if (strlen(preg_replace('/[^0-9]/','',$IN_PROCESS_FLAG)) > huh_IMAGE_OBJECT::IN_PROCESS_FLAG_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$IN_PROCESS_FLAG ?? '')) > huh_IMAGE_OBJECT::IN_PROCESS_FLAG_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $IN_PROCESS_FLAG = trim($IN_PROCESS_FLAG);
+       $IN_PROCESS_FLAG = trim($IN_PROCESS_FLAG ?? '');
        if (!ctype_digit(strval($IN_PROCESS_FLAG))) {
              throw new Exception("Value must be an integer");
        }
@@ -433,10 +433,10 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setORDINAL($ORDINAL) {
-       if (strlen(preg_replace('/[^0-9]/','',$ORDINAL)) > huh_IMAGE_OBJECT::ORDINAL_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ORDINAL ?? '')) > huh_IMAGE_OBJECT::ORDINAL_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ORDINAL = trim($ORDINAL);
+       $ORDINAL = trim($ORDINAL ?? '');
        if (!ctype_digit(strval($ORDINAL)) && trim(strval($ORDINAL))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -452,10 +452,10 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setPIXEL_WIDTH($PIXEL_WIDTH) {
-       if (strlen(preg_replace('/[^0-9]/','',$PIXEL_WIDTH)) > huh_IMAGE_OBJECT::PIXEL_WIDTH_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$PIXEL_WIDTH ?? '')) > huh_IMAGE_OBJECT::PIXEL_WIDTH_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $PIXEL_WIDTH = trim($PIXEL_WIDTH);
+       $PIXEL_WIDTH = trim($PIXEL_WIDTH ?? '');
        if (!ctype_digit(strval($PIXEL_WIDTH)) && trim(strval($PIXEL_WIDTH))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -471,10 +471,10 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setPIXEL_HEIGHT($PIXEL_HEIGHT) {
-       if (strlen(preg_replace('/[^0-9]/','',$PIXEL_HEIGHT)) > huh_IMAGE_OBJECT::PIXEL_HEIGHT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$PIXEL_HEIGHT ?? '')) > huh_IMAGE_OBJECT::PIXEL_HEIGHT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $PIXEL_HEIGHT = trim($PIXEL_HEIGHT);
+       $PIXEL_HEIGHT = trim($PIXEL_HEIGHT ?? '');
        if (!ctype_digit(strval($PIXEL_HEIGHT)) && trim(strval($PIXEL_HEIGHT))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -490,7 +490,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setCREATE_DATE($CREATE_DATE) {
-       if (strlen($CREATE_DATE) > huh_IMAGE_OBJECT::CREATE_DATE_SIZE) { 
+       if (strlen($CREATE_DATE ?? '') > huh_IMAGE_OBJECT::CREATE_DATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CREATE_DATE = $this->l_addslashes($CREATE_DATE);
@@ -505,7 +505,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setRESOLUTION($RESOLUTION) {
-       if (strlen($RESOLUTION) > huh_IMAGE_OBJECT::RESOLUTION_SIZE) { 
+       if (strlen($RESOLUTION ?? '') > huh_IMAGE_OBJECT::RESOLUTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RESOLUTION = $this->l_addslashes($RESOLUTION);
@@ -520,7 +520,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setFILE_SIZE($FILE_SIZE) {
-       if (strlen($FILE_SIZE) > huh_IMAGE_OBJECT::FILE_SIZE_SIZE) { 
+       if (strlen($FILE_SIZE ?? '') > huh_IMAGE_OBJECT::FILE_SIZE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FILE_SIZE = $this->l_addslashes($FILE_SIZE);
@@ -535,7 +535,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setOBJECT_NAME($OBJECT_NAME) {
-       if (strlen($OBJECT_NAME) > huh_IMAGE_OBJECT::OBJECT_NAME_SIZE) { 
+       if (strlen($OBJECT_NAME ?? '') > huh_IMAGE_OBJECT::OBJECT_NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OBJECT_NAME = $this->l_addslashes($OBJECT_NAME);
@@ -550,7 +550,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setURI($URI) {
-       if (strlen($URI) > huh_IMAGE_OBJECT::URI_SIZE) { 
+       if (strlen($URI ?? '') > huh_IMAGE_OBJECT::URI_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->URI = $this->l_addslashes($URI);
@@ -565,7 +565,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setSIGNATURE($SIGNATURE) {
-       if (strlen($SIGNATURE) > huh_IMAGE_OBJECT::SIGNATURE_SIZE) { 
+       if (strlen($SIGNATURE ?? '') > huh_IMAGE_OBJECT::SIGNATURE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->SIGNATURE = $this->l_addslashes($SIGNATURE);
@@ -580,7 +580,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setCOLOR_TARGET_ID($COLOR_TARGET_ID) {
-       if (strlen($COLOR_TARGET_ID) > huh_IMAGE_OBJECT::COLOR_TARGET_ID_SIZE) { 
+       if (strlen($COLOR_TARGET_ID ?? '') > huh_IMAGE_OBJECT::COLOR_TARGET_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->COLOR_TARGET_ID = $this->l_addslashes($COLOR_TARGET_ID);
@@ -849,8 +849,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -916,11 +916,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -948,8 +948,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -971,8 +971,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ID FROM IMAGE_OBJECT WHERE IMAGE_SET_ID $operator '$searchTerm'";
         $preparedsql = "SELECT ID FROM IMAGE_OBJECT WHERE IMAGE_SET_ID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1008,7 +1008,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1039,7 +1039,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1066,15 +1066,15 @@ class huh_IMAGE_OBJECTView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_IMAGE_OBJECT <a href='$editLinkURL'>Edit</a></li>\n";  } 

@@ -84,12 +84,12 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -151,10 +151,10 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setWorkbenchDataItemID($WorkbenchDataItemID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchDataItemID)) > huh_workbenchdataitem::WORKBENCHDATAITEMID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchDataItemID ?? '')) > huh_workbenchdataitem::WORKBENCHDATAITEMID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchDataItemID = trim($WorkbenchDataItemID);
+       $WorkbenchDataItemID = trim($WorkbenchDataItemID ?? '');
        if (!ctype_digit(strval($WorkbenchDataItemID)) && trim(strval($WorkbenchDataItemID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -170,7 +170,7 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setCellData($CellData) {
-       if (strlen($CellData) > huh_workbenchdataitem::CELLDATA_SIZE) { 
+       if (strlen($CellData ?? '') > huh_workbenchdataitem::CELLDATA_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CellData = $this->l_addslashes($CellData);
@@ -185,7 +185,7 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setRowNumber($RowNumber) {
-       if (strlen($RowNumber) > huh_workbenchdataitem::ROWNUMBER_SIZE) { 
+       if (strlen($RowNumber ?? '') > huh_workbenchdataitem::ROWNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RowNumber = $this->l_addslashes($RowNumber);
@@ -200,7 +200,7 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setValidationStatus($ValidationStatus) {
-       if (strlen($ValidationStatus) > huh_workbenchdataitem::VALIDATIONSTATUS_SIZE) { 
+       if (strlen($ValidationStatus ?? '') > huh_workbenchdataitem::VALIDATIONSTATUS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ValidationStatus = $this->l_addslashes($ValidationStatus);
@@ -215,10 +215,10 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setWorkbenchTemplateMappingItemID($WorkbenchTemplateMappingItemID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchTemplateMappingItemID)) > huh_workbenchdataitem::WORKBENCHTEMPLATEMAPPINGITEMID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchTemplateMappingItemID ?? '')) > huh_workbenchdataitem::WORKBENCHTEMPLATEMAPPINGITEMID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchTemplateMappingItemID = trim($WorkbenchTemplateMappingItemID);
+       $WorkbenchTemplateMappingItemID = trim($WorkbenchTemplateMappingItemID ?? '');
        if (!ctype_digit(strval($WorkbenchTemplateMappingItemID))) {
              throw new Exception("Value must be an integer");
        }
@@ -234,10 +234,10 @@ class huh_workbenchdataitem implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setWorkbenchRowID($WorkbenchRowID) {
-       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchRowID)) > huh_workbenchdataitem::WORKBENCHROWID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$WorkbenchRowID ?? '')) > huh_workbenchdataitem::WORKBENCHROWID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $WorkbenchRowID = trim($WorkbenchRowID);
+       $WorkbenchRowID = trim($WorkbenchRowID ?? '');
        if (!ctype_digit(strval($WorkbenchRowID))) {
              throw new Exception("Value must be an integer");
        }
@@ -447,8 +447,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -526,11 +526,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -558,8 +558,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -581,8 +581,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchDataItemID FROM workbenchdataitem WHERE RowNumber $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchDataItemID FROM workbenchdataitem WHERE RowNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -604,8 +604,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchDataItemID FROM workbenchdataitem WHERE WorkbenchTemplateMappingItemID $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchDataItemID FROM workbenchdataitem WHERE WorkbenchTemplateMappingItemID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -627,8 +627,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT WorkbenchDataItemID FROM workbenchdataitem WHERE WorkbenchRowID $operator '$searchTerm'";
         $preparedsql = "SELECT WorkbenchDataItemID FROM workbenchdataitem WHERE WorkbenchRowID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -664,7 +664,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -692,7 +692,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -720,7 +720,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -757,7 +757,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -784,15 +784,15 @@ class huh_workbenchdataitemView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_workbenchdataitem <a href='$editLinkURL'>Edit</a></li>\n";  } 

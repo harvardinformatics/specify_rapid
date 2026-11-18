@@ -144,12 +144,12 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -235,10 +235,10 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setCollectingTripID($CollectingTripID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectingTripID)) > huh_collectingtrip::COLLECTINGTRIPID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectingTripID ?? '')) > huh_collectingtrip::COLLECTINGTRIPID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectingTripID = trim($CollectingTripID);
+       $CollectingTripID = trim($CollectingTripID ?? '');
        if (!ctype_digit(strval($CollectingTripID)) && trim(strval($CollectingTripID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -254,7 +254,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_collectingtrip::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_collectingtrip::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -269,7 +269,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_collectingtrip::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_collectingtrip::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -284,10 +284,10 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_collectingtrip::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_collectingtrip::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -303,7 +303,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setCollectingTripName($CollectingTripName) {
-       if (strlen($CollectingTripName) > huh_collectingtrip::COLLECTINGTRIPNAME_SIZE) { 
+       if (strlen($CollectingTripName ?? '') > huh_collectingtrip::COLLECTINGTRIPNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CollectingTripName = $this->l_addslashes($CollectingTripName);
@@ -318,7 +318,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setEndDate($EndDate) {
-       if (strlen($EndDate) > huh_collectingtrip::ENDDATE_SIZE) { 
+       if (strlen($EndDate ?? '') > huh_collectingtrip::ENDDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndDate = $this->l_addslashes($EndDate);
@@ -333,7 +333,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setEndDatePrecision($EndDatePrecision) {
-       if (strlen($EndDatePrecision) > huh_collectingtrip::ENDDATEPRECISION_SIZE) { 
+       if (strlen($EndDatePrecision ?? '') > huh_collectingtrip::ENDDATEPRECISION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndDatePrecision = $this->l_addslashes($EndDatePrecision);
@@ -348,7 +348,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setEndDateVerbatim($EndDateVerbatim) {
-       if (strlen($EndDateVerbatim) > huh_collectingtrip::ENDDATEVERBATIM_SIZE) { 
+       if (strlen($EndDateVerbatim ?? '') > huh_collectingtrip::ENDDATEVERBATIM_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndDateVerbatim = $this->l_addslashes($EndDateVerbatim);
@@ -363,7 +363,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setEndTime($EndTime) {
-       if (strlen($EndTime) > huh_collectingtrip::ENDTIME_SIZE) { 
+       if (strlen($EndTime ?? '') > huh_collectingtrip::ENDTIME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndTime = $this->l_addslashes($EndTime);
@@ -378,7 +378,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_collectingtrip::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_collectingtrip::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -393,7 +393,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setSponsor($Sponsor) {
-       if (strlen($Sponsor) > huh_collectingtrip::SPONSOR_SIZE) { 
+       if (strlen($Sponsor ?? '') > huh_collectingtrip::SPONSOR_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Sponsor = $this->l_addslashes($Sponsor);
@@ -408,7 +408,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setStartDate($StartDate) {
-       if (strlen($StartDate) > huh_collectingtrip::STARTDATE_SIZE) { 
+       if (strlen($StartDate ?? '') > huh_collectingtrip::STARTDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartDate = $this->l_addslashes($StartDate);
@@ -423,7 +423,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setStartDatePrecision($StartDatePrecision) {
-       if (strlen($StartDatePrecision) > huh_collectingtrip::STARTDATEPRECISION_SIZE) { 
+       if (strlen($StartDatePrecision ?? '') > huh_collectingtrip::STARTDATEPRECISION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartDatePrecision = $this->l_addslashes($StartDatePrecision);
@@ -438,7 +438,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setStartDateVerbatim($StartDateVerbatim) {
-       if (strlen($StartDateVerbatim) > huh_collectingtrip::STARTDATEVERBATIM_SIZE) { 
+       if (strlen($StartDateVerbatim ?? '') > huh_collectingtrip::STARTDATEVERBATIM_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartDateVerbatim = $this->l_addslashes($StartDateVerbatim);
@@ -453,7 +453,7 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setStartTime($StartTime) {
-       if (strlen($StartTime) > huh_collectingtrip::STARTTIME_SIZE) { 
+       if (strlen($StartTime ?? '') > huh_collectingtrip::STARTTIME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartTime = $this->l_addslashes($StartTime);
@@ -468,10 +468,10 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setDisciplineID($DisciplineID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DisciplineID)) > huh_collectingtrip::DISCIPLINEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DisciplineID ?? '')) > huh_collectingtrip::DISCIPLINEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DisciplineID = trim($DisciplineID);
+       $DisciplineID = trim($DisciplineID ?? '');
        if (!ctype_digit(strval($DisciplineID))) {
              throw new Exception("Value must be an integer");
        }
@@ -487,10 +487,10 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_collectingtrip::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_collectingtrip::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -506,10 +506,10 @@ class huh_collectingtrip implements  model , loadableModel, saveableModel, table
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_collectingtrip::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_collectingtrip::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -767,8 +767,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -854,11 +854,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -886,8 +886,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -909,8 +909,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingTripID FROM collectingtrip WHERE CollectingTripName $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingTripID FROM collectingtrip WHERE CollectingTripName $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -932,8 +932,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingTripID FROM collectingtrip WHERE StartDate $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingTripID FROM collectingtrip WHERE StartDate $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -955,8 +955,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingTripID FROM collectingtrip WHERE DisciplineID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingTripID FROM collectingtrip WHERE DisciplineID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -978,8 +978,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingTripID FROM collectingtrip WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingTripID FROM collectingtrip WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1001,8 +1001,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT CollectingTripID FROM collectingtrip WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT CollectingTripID FROM collectingtrip WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1038,7 +1038,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1066,7 +1066,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1094,7 +1094,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1122,7 +1122,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1150,7 +1150,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1193,7 +1193,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1220,15 +1220,15 @@ class huh_collectingtripView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_collectingtrip <a href='$editLinkURL'>Edit</a></li>\n";  } 

@@ -219,12 +219,12 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -340,10 +340,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setDnaSequenceID($DnaSequenceID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DnaSequenceID)) > huh_dnasequence::DNASEQUENCEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DnaSequenceID ?? '')) > huh_dnasequence::DNASEQUENCEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DnaSequenceID = trim($DnaSequenceID);
+       $DnaSequenceID = trim($DnaSequenceID ?? '');
        if (!ctype_digit(strval($DnaSequenceID)) && trim(strval($DnaSequenceID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -359,7 +359,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_dnasequence::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_dnasequence::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -374,7 +374,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_dnasequence::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_dnasequence::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -389,10 +389,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_dnasequence::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_dnasequence::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -408,10 +408,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCollectionMemberID($CollectionMemberID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID)) > huh_dnasequence::COLLECTIONMEMBERID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID ?? '')) > huh_dnasequence::COLLECTIONMEMBERID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionMemberID = trim($CollectionMemberID);
+       $CollectionMemberID = trim($CollectionMemberID ?? '');
        if (!ctype_digit(strval($CollectionMemberID))) {
              throw new Exception("Value must be an integer");
        }
@@ -427,10 +427,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setAmbiguousResidues($AmbiguousResidues) {
-       if (strlen(preg_replace('/[^0-9]/','',$AmbiguousResidues)) > huh_dnasequence::AMBIGUOUSRESIDUES_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AmbiguousResidues ?? '')) > huh_dnasequence::AMBIGUOUSRESIDUES_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AmbiguousResidues = trim($AmbiguousResidues);
+       $AmbiguousResidues = trim($AmbiguousResidues ?? '');
        if (!ctype_digit(strval($AmbiguousResidues)) && trim(strval($AmbiguousResidues))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -446,7 +446,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setBOLDBarcodeID($BOLDBarcodeID) {
-       if (strlen($BOLDBarcodeID) > huh_dnasequence::BOLDBARCODEID_SIZE) { 
+       if (strlen($BOLDBarcodeID ?? '') > huh_dnasequence::BOLDBARCODEID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BOLDBarcodeID = $this->l_addslashes($BOLDBarcodeID);
@@ -461,7 +461,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setBOLDLastUpdateDate($BOLDLastUpdateDate) {
-       if (strlen($BOLDLastUpdateDate) > huh_dnasequence::BOLDLASTUPDATEDATE_SIZE) { 
+       if (strlen($BOLDLastUpdateDate ?? '') > huh_dnasequence::BOLDLASTUPDATEDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BOLDLastUpdateDate = $this->l_addslashes($BOLDLastUpdateDate);
@@ -476,7 +476,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setBOLDSampleID($BOLDSampleID) {
-       if (strlen($BOLDSampleID) > huh_dnasequence::BOLDSAMPLEID_SIZE) { 
+       if (strlen($BOLDSampleID ?? '') > huh_dnasequence::BOLDSAMPLEID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BOLDSampleID = $this->l_addslashes($BOLDSampleID);
@@ -491,7 +491,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setBOLDTranslationMatrix($BOLDTranslationMatrix) {
-       if (strlen($BOLDTranslationMatrix) > huh_dnasequence::BOLDTRANSLATIONMATRIX_SIZE) { 
+       if (strlen($BOLDTranslationMatrix ?? '') > huh_dnasequence::BOLDTRANSLATIONMATRIX_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BOLDTranslationMatrix = $this->l_addslashes($BOLDTranslationMatrix);
@@ -506,10 +506,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCompA($CompA) {
-       if (strlen(preg_replace('/[^0-9]/','',$CompA)) > huh_dnasequence::COMPA_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CompA ?? '')) > huh_dnasequence::COMPA_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CompA = trim($CompA);
+       $CompA = trim($CompA ?? '');
        if (!ctype_digit(strval($CompA)) && trim(strval($CompA))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -525,10 +525,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCompC($CompC) {
-       if (strlen(preg_replace('/[^0-9]/','',$CompC)) > huh_dnasequence::COMPC_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CompC ?? '')) > huh_dnasequence::COMPC_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CompC = trim($CompC);
+       $CompC = trim($CompC ?? '');
        if (!ctype_digit(strval($CompC)) && trim(strval($CompC))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -544,10 +544,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCompG($CompG) {
-       if (strlen(preg_replace('/[^0-9]/','',$CompG)) > huh_dnasequence::COMPG_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CompG ?? '')) > huh_dnasequence::COMPG_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CompG = trim($CompG);
+       $CompG = trim($CompG ?? '');
        if (!ctype_digit(strval($CompG)) && trim(strval($CompG))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -563,10 +563,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setcompT($compT) {
-       if (strlen(preg_replace('/[^0-9]/','',$compT)) > huh_dnasequence::COMPT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$compT ?? '')) > huh_dnasequence::COMPT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $compT = trim($compT);
+       $compT = trim($compT ?? '');
        if (!ctype_digit(strval($compT)) && trim(strval($compT))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -582,7 +582,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setGenBankAccessionNumber($GenBankAccessionNumber) {
-       if (strlen($GenBankAccessionNumber) > huh_dnasequence::GENBANKACCESSIONNUMBER_SIZE) { 
+       if (strlen($GenBankAccessionNumber ?? '') > huh_dnasequence::GENBANKACCESSIONNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GenBankAccessionNumber = $this->l_addslashes($GenBankAccessionNumber);
@@ -597,7 +597,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setGeneSequence($GeneSequence) {
-       if (strlen($GeneSequence) > huh_dnasequence::GENESEQUENCE_SIZE) { 
+       if (strlen($GeneSequence ?? '') > huh_dnasequence::GENESEQUENCE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GeneSequence = $this->l_addslashes($GeneSequence);
@@ -612,7 +612,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setMoleculeType($MoleculeType) {
-       if (strlen($MoleculeType) > huh_dnasequence::MOLECULETYPE_SIZE) { 
+       if (strlen($MoleculeType ?? '') > huh_dnasequence::MOLECULETYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->MoleculeType = $this->l_addslashes($MoleculeType);
@@ -627,7 +627,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_dnasequence::NUMBER1_SIZE) { 
+       if (strlen($Number1 ?? '') > huh_dnasequence::NUMBER1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number1 = $this->l_addslashes($Number1);
@@ -642,7 +642,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_dnasequence::NUMBER2_SIZE) { 
+       if (strlen($Number2 ?? '') > huh_dnasequence::NUMBER2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number2 = $this->l_addslashes($Number2);
@@ -657,7 +657,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setNumber3($Number3) {
-       if (strlen($Number3) > huh_dnasequence::NUMBER3_SIZE) { 
+       if (strlen($Number3 ?? '') > huh_dnasequence::NUMBER3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number3 = $this->l_addslashes($Number3);
@@ -672,7 +672,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_dnasequence::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_dnasequence::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -687,7 +687,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTargetMarker($TargetMarker) {
-       if (strlen($TargetMarker) > huh_dnasequence::TARGETMARKER_SIZE) { 
+       if (strlen($TargetMarker ?? '') > huh_dnasequence::TARGETMARKER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TargetMarker = $this->l_addslashes($TargetMarker);
@@ -702,7 +702,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_dnasequence::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_dnasequence::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -717,7 +717,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_dnasequence::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_dnasequence::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -732,7 +732,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setText3($Text3) {
-       if (strlen($Text3) > huh_dnasequence::TEXT3_SIZE) { 
+       if (strlen($Text3 ?? '') > huh_dnasequence::TEXT3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text3 = $this->l_addslashes($Text3);
@@ -747,10 +747,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTotalResidues($TotalResidues) {
-       if (strlen(preg_replace('/[^0-9]/','',$TotalResidues)) > huh_dnasequence::TOTALRESIDUES_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TotalResidues ?? '')) > huh_dnasequence::TOTALRESIDUES_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TotalResidues = trim($TotalResidues);
+       $TotalResidues = trim($TotalResidues ?? '');
        if (!ctype_digit(strval($TotalResidues)) && trim(strval($TotalResidues))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -766,7 +766,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_dnasequence::YESNO1_SIZE) { 
+       if (strlen($YesNo1 ?? '') > huh_dnasequence::YESNO1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -781,7 +781,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_dnasequence::YESNO2_SIZE) { 
+       if (strlen($YesNo2 ?? '') > huh_dnasequence::YESNO2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -796,7 +796,7 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setYesNo3($YesNo3) {
-       if (strlen($YesNo3) > huh_dnasequence::YESNO3_SIZE) { 
+       if (strlen($YesNo3 ?? '') > huh_dnasequence::YESNO3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo3 = $this->l_addslashes($YesNo3);
@@ -811,10 +811,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_dnasequence::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_dnasequence::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -830,10 +830,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setAgentID($AgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AgentID)) > huh_dnasequence::AGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AgentID ?? '')) > huh_dnasequence::AGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AgentID = trim($AgentID);
+       $AgentID = trim($AgentID ?? '');
        if (!ctype_digit(strval($AgentID)) && trim(strval($AgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -849,10 +849,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_dnasequence::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_dnasequence::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -868,10 +868,10 @@ class huh_dnasequence implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCollectionObjectID($CollectionObjectID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionObjectID)) > huh_dnasequence::COLLECTIONOBJECTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionObjectID ?? '')) > huh_dnasequence::COLLECTIONOBJECTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionObjectID = trim($CollectionObjectID);
+       $CollectionObjectID = trim($CollectionObjectID ?? '');
        if (!ctype_digit(strval($CollectionObjectID)) && trim(strval($CollectionObjectID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1189,8 +1189,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1280,11 +1280,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1312,8 +1312,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1335,8 +1335,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE BOLDBarcodeID $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE BOLDBarcodeID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1358,8 +1358,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE BOLDSampleID $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE BOLDSampleID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1381,8 +1381,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE GenBankAccessionNumber $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE GenBankAccessionNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1404,8 +1404,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1427,8 +1427,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE AgentID $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE AgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1450,8 +1450,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1473,8 +1473,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT DnaSequenceID FROM dnasequence WHERE CollectionObjectID $operator '$searchTerm'";
         $preparedsql = "SELECT DnaSequenceID FROM dnasequence WHERE CollectionObjectID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1510,7 +1510,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1538,7 +1538,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1566,7 +1566,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1594,7 +1594,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1622,7 +1622,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1650,7 +1650,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1678,7 +1678,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1727,7 +1727,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1754,15 +1754,15 @@ class huh_dnasequenceView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_dnasequence <a href='$editLinkURL'>Edit</a></li>\n";  } 

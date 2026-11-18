@@ -84,12 +84,12 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -151,7 +151,7 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setID($ID) {
-       if (strlen($ID) > huh_IMAGE_BATCH::ID_SIZE) { 
+       if (strlen($ID ?? '') > huh_IMAGE_BATCH::ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ID = $this->l_addslashes($ID);
@@ -166,7 +166,7 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setLAB_ID($LAB_ID) {
-       if (strlen($LAB_ID) > huh_IMAGE_BATCH::LAB_ID_SIZE) { 
+       if (strlen($LAB_ID ?? '') > huh_IMAGE_BATCH::LAB_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->LAB_ID = $this->l_addslashes($LAB_ID);
@@ -181,7 +181,7 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPRODUCTION_DATE($PRODUCTION_DATE) {
-       if (strlen($PRODUCTION_DATE) > huh_IMAGE_BATCH::PRODUCTION_DATE_SIZE) { 
+       if (strlen($PRODUCTION_DATE ?? '') > huh_IMAGE_BATCH::PRODUCTION_DATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->PRODUCTION_DATE = $this->l_addslashes($PRODUCTION_DATE);
@@ -196,7 +196,7 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setBATCH_NAME($BATCH_NAME) {
-       if (strlen($BATCH_NAME) > huh_IMAGE_BATCH::BATCH_NAME_SIZE) { 
+       if (strlen($BATCH_NAME ?? '') > huh_IMAGE_BATCH::BATCH_NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->BATCH_NAME = $this->l_addslashes($BATCH_NAME);
@@ -211,7 +211,7 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setREMARKS($REMARKS) {
-       if (strlen($REMARKS) > huh_IMAGE_BATCH::REMARKS_SIZE) { 
+       if (strlen($REMARKS ?? '') > huh_IMAGE_BATCH::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->REMARKS = $this->l_addslashes($REMARKS);
@@ -226,7 +226,7 @@ class huh_IMAGE_BATCH implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPROJECT($PROJECT) {
-       if (strlen($PROJECT) > huh_IMAGE_BATCH::PROJECT_SIZE) { 
+       if (strlen($PROJECT ?? '') > huh_IMAGE_BATCH::PROJECT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->PROJECT = $this->l_addslashes($PROJECT);
@@ -435,8 +435,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -502,11 +502,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -534,8 +534,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -557,8 +557,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ID FROM IMAGE_BATCH WHERE LAB_ID $operator '$searchTerm'";
         $preparedsql = "SELECT ID FROM IMAGE_BATCH WHERE LAB_ID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -594,7 +594,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -625,7 +625,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -652,15 +652,15 @@ class huh_IMAGE_BATCHView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_IMAGE_BATCH <a href='$editLinkURL'>Edit</a></li>\n";  } 

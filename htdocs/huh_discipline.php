@@ -134,12 +134,12 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -221,10 +221,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setUserGroupScopeId($UserGroupScopeId) {
-       if (strlen(preg_replace('/[^0-9]/','',$UserGroupScopeId)) > huh_discipline::USERGROUPSCOPEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UserGroupScopeId ?? '')) > huh_discipline::USERGROUPSCOPEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UserGroupScopeId = trim($UserGroupScopeId);
+       $UserGroupScopeId = trim($UserGroupScopeId ?? '');
        if (!ctype_digit(strval($UserGroupScopeId)) && trim(strval($UserGroupScopeId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -240,7 +240,7 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_discipline::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_discipline::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -255,7 +255,7 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_discipline::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_discipline::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -270,10 +270,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_discipline::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_discipline::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -289,10 +289,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_discipline::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_discipline::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -308,10 +308,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_discipline::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_discipline::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -327,10 +327,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setdisciplineId($disciplineId) {
-       if (strlen(preg_replace('/[^0-9]/','',$disciplineId)) > huh_discipline::DISCIPLINEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$disciplineId ?? '')) > huh_discipline::DISCIPLINEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $disciplineId = trim($disciplineId);
+       $disciplineId = trim($disciplineId ?? '');
        if (!ctype_digit(strval($disciplineId)) && trim(strval($disciplineId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -346,7 +346,7 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setName($Name) {
-       if (strlen($Name) > huh_discipline::NAME_SIZE) { 
+       if (strlen($Name ?? '') > huh_discipline::NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Name = $this->l_addslashes($Name);
@@ -361,7 +361,7 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setRegNumber($RegNumber) {
-       if (strlen($RegNumber) > huh_discipline::REGNUMBER_SIZE) { 
+       if (strlen($RegNumber ?? '') > huh_discipline::REGNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->RegNumber = $this->l_addslashes($RegNumber);
@@ -376,7 +376,7 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setType($Type) {
-       if (strlen($Type) > huh_discipline::TYPE_SIZE) { 
+       if (strlen($Type ?? '') > huh_discipline::TYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Type = $this->l_addslashes($Type);
@@ -391,10 +391,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTaxonTreeDefID($TaxonTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$TaxonTreeDefID)) > huh_discipline::TAXONTREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TaxonTreeDefID ?? '')) > huh_discipline::TAXONTREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TaxonTreeDefID = trim($TaxonTreeDefID);
+       $TaxonTreeDefID = trim($TaxonTreeDefID ?? '');
        if (!ctype_digit(strval($TaxonTreeDefID)) && trim(strval($TaxonTreeDefID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -410,10 +410,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setGeographyTreeDefID($GeographyTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeographyTreeDefID)) > huh_discipline::GEOGRAPHYTREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeographyTreeDefID ?? '')) > huh_discipline::GEOGRAPHYTREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeographyTreeDefID = trim($GeographyTreeDefID);
+       $GeographyTreeDefID = trim($GeographyTreeDefID ?? '');
        if (!ctype_digit(strval($GeographyTreeDefID))) {
              throw new Exception("Value must be an integer");
        }
@@ -429,10 +429,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setGeologicTimePeriodTreeDefID($GeologicTimePeriodTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodTreeDefID)) > huh_discipline::GEOLOGICTIMEPERIODTREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeologicTimePeriodTreeDefID ?? '')) > huh_discipline::GEOLOGICTIMEPERIODTREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeologicTimePeriodTreeDefID = trim($GeologicTimePeriodTreeDefID);
+       $GeologicTimePeriodTreeDefID = trim($GeologicTimePeriodTreeDefID ?? '');
        if (!ctype_digit(strval($GeologicTimePeriodTreeDefID))) {
              throw new Exception("Value must be an integer");
        }
@@ -448,10 +448,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setLithoStratTreeDefID($LithoStratTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LithoStratTreeDefID)) > huh_discipline::LITHOSTRATTREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LithoStratTreeDefID ?? '')) > huh_discipline::LITHOSTRATTREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LithoStratTreeDefID = trim($LithoStratTreeDefID);
+       $LithoStratTreeDefID = trim($LithoStratTreeDefID ?? '');
        if (!ctype_digit(strval($LithoStratTreeDefID)) && trim(strval($LithoStratTreeDefID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -467,10 +467,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setDivisionID($DivisionID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DivisionID)) > huh_discipline::DIVISIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DivisionID ?? '')) > huh_discipline::DIVISIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DivisionID = trim($DivisionID);
+       $DivisionID = trim($DivisionID ?? '');
        if (!ctype_digit(strval($DivisionID))) {
              throw new Exception("Value must be an integer");
        }
@@ -486,10 +486,10 @@ class huh_discipline implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setDataTypeID($DataTypeID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DataTypeID)) > huh_discipline::DATATYPEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DataTypeID ?? '')) > huh_discipline::DATATYPEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DataTypeID = trim($DataTypeID);
+       $DataTypeID = trim($DataTypeID ?? '');
        if (!ctype_digit(strval($DataTypeID))) {
              throw new Exception("Value must be an integer");
        }
@@ -739,8 +739,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -946,11 +946,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -978,8 +978,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1001,8 +1001,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1024,8 +1024,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1047,8 +1047,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE Name $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE Name $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1070,8 +1070,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE TaxonTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE TaxonTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1093,8 +1093,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE GeographyTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE GeographyTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1116,8 +1116,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE GeologicTimePeriodTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE GeologicTimePeriodTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1139,8 +1139,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE LithoStratTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE LithoStratTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1162,8 +1162,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE DivisionID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE DivisionID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1185,8 +1185,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT UserGroupScopeId FROM discipline WHERE DataTypeID $operator '$searchTerm'";
         $preparedsql = "SELECT UserGroupScopeId FROM discipline WHERE DataTypeID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1222,7 +1222,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1250,7 +1250,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1278,7 +1278,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1306,7 +1306,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1334,7 +1334,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1362,7 +1362,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1390,7 +1390,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1418,7 +1418,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1446,7 +1446,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1501,7 +1501,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1528,15 +1528,15 @@ class huh_disciplineView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_discipline <a href='$editLinkURL'>Edit</a></li>\n";  } 

@@ -119,12 +119,12 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -200,10 +200,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAppraisalID($AppraisalID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AppraisalID)) > huh_appraisal::APPRAISALID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AppraisalID ?? '')) > huh_appraisal::APPRAISALID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AppraisalID = trim($AppraisalID);
+       $AppraisalID = trim($AppraisalID ?? '');
        if (!ctype_digit(strval($AppraisalID)) && trim(strval($AppraisalID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -219,7 +219,7 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_appraisal::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_appraisal::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -234,7 +234,7 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_appraisal::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_appraisal::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -249,10 +249,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_appraisal::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_appraisal::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -268,7 +268,7 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAppraisalDate($AppraisalDate) {
-       if (strlen($AppraisalDate) > huh_appraisal::APPRAISALDATE_SIZE) { 
+       if (strlen($AppraisalDate ?? '') > huh_appraisal::APPRAISALDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->AppraisalDate = $this->l_addslashes($AppraisalDate);
@@ -283,7 +283,7 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAppraisalNumber($AppraisalNumber) {
-       if (strlen($AppraisalNumber) > huh_appraisal::APPRAISALNUMBER_SIZE) { 
+       if (strlen($AppraisalNumber ?? '') > huh_appraisal::APPRAISALNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->AppraisalNumber = $this->l_addslashes($AppraisalNumber);
@@ -298,10 +298,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAppraisalValue($AppraisalValue) {
-       if (strlen(preg_replace('/[^0-9]/','',$AppraisalValue)) > huh_appraisal::APPRAISALVALUE_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AppraisalValue ?? '')) > huh_appraisal::APPRAISALVALUE_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AppraisalValue = trim($AppraisalValue);
+       $AppraisalValue = trim($AppraisalValue ?? '');
        if (!is_numeric($AppraisalValue) && trim(strval($AppraisalValue))!='' ) {
              throw new Exception("Value must be a number");
        }
@@ -317,7 +317,7 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setMonetaryUnitType($MonetaryUnitType) {
-       if (strlen($MonetaryUnitType) > huh_appraisal::MONETARYUNITTYPE_SIZE) { 
+       if (strlen($MonetaryUnitType ?? '') > huh_appraisal::MONETARYUNITTYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->MonetaryUnitType = $this->l_addslashes($MonetaryUnitType);
@@ -332,7 +332,7 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setNotes($Notes) {
-       if (strlen($Notes) > huh_appraisal::NOTES_SIZE) { 
+       if (strlen($Notes ?? '') > huh_appraisal::NOTES_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Notes = $this->l_addslashes($Notes);
@@ -347,10 +347,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_appraisal::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_appraisal::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -366,10 +366,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAgentID($AgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AgentID)) > huh_appraisal::AGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AgentID ?? '')) > huh_appraisal::AGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AgentID = trim($AgentID);
+       $AgentID = trim($AgentID ?? '');
        if (!ctype_digit(strval($AgentID))) {
              throw new Exception("Value must be an integer");
        }
@@ -385,10 +385,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_appraisal::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_appraisal::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -404,10 +404,10 @@ class huh_appraisal implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAccessionID($AccessionID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AccessionID)) > huh_appraisal::ACCESSIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AccessionID ?? '')) > huh_appraisal::ACCESSIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AccessionID = trim($AccessionID);
+       $AccessionID = trim($AccessionID ?? '');
        if (!ctype_digit(strval($AccessionID)) && trim(strval($AccessionID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -645,8 +645,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -736,11 +736,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -768,8 +768,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -791,8 +791,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AppraisalID FROM appraisal WHERE AppraisalDate $operator '$searchTerm'";
         $preparedsql = "SELECT AppraisalID FROM appraisal WHERE AppraisalDate $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -814,8 +814,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AppraisalID FROM appraisal WHERE AppraisalNumber $operator '$searchTerm'";
         $preparedsql = "SELECT AppraisalID FROM appraisal WHERE AppraisalNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -837,8 +837,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AppraisalID FROM appraisal WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT AppraisalID FROM appraisal WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -860,8 +860,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AppraisalID FROM appraisal WHERE AgentID $operator '$searchTerm'";
         $preparedsql = "SELECT AppraisalID FROM appraisal WHERE AgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -883,8 +883,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AppraisalID FROM appraisal WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT AppraisalID FROM appraisal WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -906,8 +906,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT AppraisalID FROM appraisal WHERE AccessionID $operator '$searchTerm'";
         $preparedsql = "SELECT AppraisalID FROM appraisal WHERE AccessionID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -943,7 +943,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -971,7 +971,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -999,7 +999,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1027,7 +1027,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1055,7 +1055,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1083,7 +1083,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1129,7 +1129,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1156,15 +1156,15 @@ class huh_appraisalView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_appraisal <a href='$editLinkURL'>Edit</a></li>\n";  } 

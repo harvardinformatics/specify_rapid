@@ -60,12 +60,12 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -117,10 +117,10 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
        }
    }
    public function setnext_hi($next_hi) {
-       if (strlen(preg_replace('/[^0-9]/','',$next_hi)) > huh_hibernate_unique_key::NEXT_HI_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$next_hi ?? '')) > huh_hibernate_unique_key::NEXT_HI_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $next_hi = trim($next_hi);
+       $next_hi = trim($next_hi ?? '');
        if (!ctype_digit(strval($next_hi)) && trim(strval($next_hi))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -224,11 +224,11 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -256,8 +256,8 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -293,7 +293,7 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -320,15 +320,15 @@ class huh_hibernate_unique_keyView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_hibernate_unique_key <a href='$editLinkURL'>Edit</a></li>\n";  } 

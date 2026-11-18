@@ -134,12 +134,12 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -221,10 +221,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTaskSemaphoreID($TaskSemaphoreID) {
-       if (strlen(preg_replace('/[^0-9]/','',$TaskSemaphoreID)) > huh_sptasksemaphore::TASKSEMAPHOREID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TaskSemaphoreID ?? '')) > huh_sptasksemaphore::TASKSEMAPHOREID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TaskSemaphoreID = trim($TaskSemaphoreID);
+       $TaskSemaphoreID = trim($TaskSemaphoreID ?? '');
        if (!ctype_digit(strval($TaskSemaphoreID)) && trim(strval($TaskSemaphoreID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -240,7 +240,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_sptasksemaphore::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_sptasksemaphore::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -255,7 +255,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_sptasksemaphore::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_sptasksemaphore::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -270,10 +270,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_sptasksemaphore::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_sptasksemaphore::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -289,7 +289,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setContext($Context) {
-       if (strlen($Context) > huh_sptasksemaphore::CONTEXT_SIZE) { 
+       if (strlen($Context ?? '') > huh_sptasksemaphore::CONTEXT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Context = $this->l_addslashes($Context);
@@ -304,7 +304,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setIsLocked($IsLocked) {
-       if (strlen($IsLocked) > huh_sptasksemaphore::ISLOCKED_SIZE) { 
+       if (strlen($IsLocked ?? '') > huh_sptasksemaphore::ISLOCKED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsLocked = $this->l_addslashes($IsLocked);
@@ -319,7 +319,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setLockedTime($LockedTime) {
-       if (strlen($LockedTime) > huh_sptasksemaphore::LOCKEDTIME_SIZE) { 
+       if (strlen($LockedTime ?? '') > huh_sptasksemaphore::LOCKEDTIME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->LockedTime = $this->l_addslashes($LockedTime);
@@ -334,7 +334,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setMachineName($MachineName) {
-       if (strlen($MachineName) > huh_sptasksemaphore::MACHINENAME_SIZE) { 
+       if (strlen($MachineName ?? '') > huh_sptasksemaphore::MACHINENAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->MachineName = $this->l_addslashes($MachineName);
@@ -349,7 +349,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setScope($Scope) {
-       if (strlen($Scope) > huh_sptasksemaphore::SCOPE_SIZE) { 
+       if (strlen($Scope ?? '') > huh_sptasksemaphore::SCOPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Scope = $this->l_addslashes($Scope);
@@ -364,7 +364,7 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTaskName($TaskName) {
-       if (strlen($TaskName) > huh_sptasksemaphore::TASKNAME_SIZE) { 
+       if (strlen($TaskName ?? '') > huh_sptasksemaphore::TASKNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TaskName = $this->l_addslashes($TaskName);
@@ -379,10 +379,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setUsageCount($UsageCount) {
-       if (strlen(preg_replace('/[^0-9]/','',$UsageCount)) > huh_sptasksemaphore::USAGECOUNT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$UsageCount ?? '')) > huh_sptasksemaphore::USAGECOUNT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $UsageCount = trim($UsageCount);
+       $UsageCount = trim($UsageCount ?? '');
        if (!ctype_digit(strval($UsageCount)) && trim(strval($UsageCount))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -398,10 +398,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setOwnerID($OwnerID) {
-       if (strlen(preg_replace('/[^0-9]/','',$OwnerID)) > huh_sptasksemaphore::OWNERID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$OwnerID ?? '')) > huh_sptasksemaphore::OWNERID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $OwnerID = trim($OwnerID);
+       $OwnerID = trim($OwnerID ?? '');
        if (!ctype_digit(strval($OwnerID)) && trim(strval($OwnerID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -417,10 +417,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setDisciplineID($DisciplineID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DisciplineID)) > huh_sptasksemaphore::DISCIPLINEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DisciplineID ?? '')) > huh_sptasksemaphore::DISCIPLINEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DisciplineID = trim($DisciplineID);
+       $DisciplineID = trim($DisciplineID ?? '');
        if (!ctype_digit(strval($DisciplineID)) && trim(strval($DisciplineID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -436,10 +436,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setCollectionID($CollectionID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionID)) > huh_sptasksemaphore::COLLECTIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionID ?? '')) > huh_sptasksemaphore::COLLECTIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionID = trim($CollectionID);
+       $CollectionID = trim($CollectionID ?? '');
        if (!ctype_digit(strval($CollectionID)) && trim(strval($CollectionID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -455,10 +455,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_sptasksemaphore::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_sptasksemaphore::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -474,10 +474,10 @@ class huh_sptasksemaphore implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_sptasksemaphore::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_sptasksemaphore::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -727,8 +727,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -818,11 +818,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -850,8 +850,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -873,8 +873,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE OwnerID $operator '$searchTerm'";
         $preparedsql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE OwnerID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -896,8 +896,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE DisciplineID $operator '$searchTerm'";
         $preparedsql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE DisciplineID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -919,8 +919,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE CollectionID $operator '$searchTerm'";
         $preparedsql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE CollectionID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -942,8 +942,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -965,8 +965,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT TaskSemaphoreID FROM sptasksemaphore WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1002,7 +1002,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1030,7 +1030,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1058,7 +1058,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1086,7 +1086,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1114,7 +1114,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1157,7 +1157,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1184,15 +1184,15 @@ class huh_sptasksemaphoreView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_sptasksemaphore <a href='$editLinkURL'>Edit</a></li>\n";  } 

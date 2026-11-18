@@ -154,12 +154,12 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -249,10 +249,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setLoanPreparationID($LoanPreparationID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LoanPreparationID)) > huh_loanpreparation::LOANPREPARATIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LoanPreparationID ?? '')) > huh_loanpreparation::LOANPREPARATIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LoanPreparationID = trim($LoanPreparationID);
+       $LoanPreparationID = trim($LoanPreparationID ?? '');
        if (!ctype_digit(strval($LoanPreparationID)) && trim(strval($LoanPreparationID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -268,7 +268,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_loanpreparation::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_loanpreparation::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -283,7 +283,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_loanpreparation::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_loanpreparation::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -298,10 +298,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_loanpreparation::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_loanpreparation::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -317,7 +317,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setDescriptionOfMaterial($DescriptionOfMaterial) {
-       if (strlen($DescriptionOfMaterial) > huh_loanpreparation::DESCRIPTIONOFMATERIAL_SIZE) { 
+       if (strlen($DescriptionOfMaterial ?? '') > huh_loanpreparation::DESCRIPTIONOFMATERIAL_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DescriptionOfMaterial = $this->l_addslashes($DescriptionOfMaterial);
@@ -332,7 +332,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setInComments($InComments) {
-       if (strlen($InComments) > huh_loanpreparation::INCOMMENTS_SIZE) { 
+       if (strlen($InComments ?? '') > huh_loanpreparation::INCOMMENTS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->InComments = $this->l_addslashes($InComments);
@@ -347,7 +347,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setIsResolved($IsResolved) {
-       if (strlen($IsResolved) > huh_loanpreparation::ISRESOLVED_SIZE) { 
+       if (strlen($IsResolved ?? '') > huh_loanpreparation::ISRESOLVED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsResolved = $this->l_addslashes($IsResolved);
@@ -362,10 +362,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setItemCount($ItemCount) {
-       if (strlen(preg_replace('/[^0-9]/','',$ItemCount)) > huh_loanpreparation::ITEMCOUNT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ItemCount ?? '')) > huh_loanpreparation::ITEMCOUNT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ItemCount = trim($ItemCount);
+       $ItemCount = trim($ItemCount ?? '');
        if (!ctype_digit(strval($ItemCount)) && trim(strval($ItemCount))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -381,10 +381,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setNonSpecimenCount($NonSpecimenCount) {
-       if (strlen(preg_replace('/[^0-9]/','',$NonSpecimenCount)) > huh_loanpreparation::NONSPECIMENCOUNT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$NonSpecimenCount ?? '')) > huh_loanpreparation::NONSPECIMENCOUNT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $NonSpecimenCount = trim($NonSpecimenCount);
+       $NonSpecimenCount = trim($NonSpecimenCount ?? '');
        if (!ctype_digit(strval($NonSpecimenCount)) && trim(strval($NonSpecimenCount))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -400,7 +400,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setOutComments($OutComments) {
-       if (strlen($OutComments) > huh_loanpreparation::OUTCOMMENTS_SIZE) { 
+       if (strlen($OutComments ?? '') > huh_loanpreparation::OUTCOMMENTS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OutComments = $this->l_addslashes($OutComments);
@@ -415,10 +415,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setQuantityResolved($QuantityResolved) {
-       if (strlen(preg_replace('/[^0-9]/','',$QuantityResolved)) > huh_loanpreparation::QUANTITYRESOLVED_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$QuantityResolved ?? '')) > huh_loanpreparation::QUANTITYRESOLVED_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $QuantityResolved = trim($QuantityResolved);
+       $QuantityResolved = trim($QuantityResolved ?? '');
        if (!ctype_digit(strval($QuantityResolved)) && trim(strval($QuantityResolved))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -434,10 +434,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setQuantityReturned($QuantityReturned) {
-       if (strlen(preg_replace('/[^0-9]/','',$QuantityReturned)) > huh_loanpreparation::QUANTITYRETURNED_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$QuantityReturned ?? '')) > huh_loanpreparation::QUANTITYRETURNED_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $QuantityReturned = trim($QuantityReturned);
+       $QuantityReturned = trim($QuantityReturned ?? '');
        if (!ctype_digit(strval($QuantityReturned)) && trim(strval($QuantityReturned))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -453,7 +453,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setReceivedComments($ReceivedComments) {
-       if (strlen($ReceivedComments) > huh_loanpreparation::RECEIVEDCOMMENTS_SIZE) { 
+       if (strlen($ReceivedComments ?? '') > huh_loanpreparation::RECEIVEDCOMMENTS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ReceivedComments = $this->l_addslashes($ReceivedComments);
@@ -468,7 +468,7 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setSrcTaxonomy($SrcTaxonomy) {
-       if (strlen($SrcTaxonomy) > huh_loanpreparation::SRCTAXONOMY_SIZE) { 
+       if (strlen($SrcTaxonomy ?? '') > huh_loanpreparation::SRCTAXONOMY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->SrcTaxonomy = $this->l_addslashes($SrcTaxonomy);
@@ -483,10 +483,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTypeCount($TypeCount) {
-       if (strlen(preg_replace('/[^0-9]/','',$TypeCount)) > huh_loanpreparation::TYPECOUNT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$TypeCount ?? '')) > huh_loanpreparation::TYPECOUNT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $TypeCount = trim($TypeCount);
+       $TypeCount = trim($TypeCount ?? '');
        if (!ctype_digit(strval($TypeCount)) && trim(strval($TypeCount))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -502,10 +502,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_loanpreparation::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_loanpreparation::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -521,10 +521,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setDisciplineID($DisciplineID) {
-       if (strlen(preg_replace('/[^0-9]/','',$DisciplineID)) > huh_loanpreparation::DISCIPLINEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$DisciplineID ?? '')) > huh_loanpreparation::DISCIPLINEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $DisciplineID = trim($DisciplineID);
+       $DisciplineID = trim($DisciplineID ?? '');
        if (!ctype_digit(strval($DisciplineID))) {
              throw new Exception("Value must be an integer");
        }
@@ -540,10 +540,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setPreparationID($PreparationID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PreparationID)) > huh_loanpreparation::PREPARATIONID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$PreparationID ?? '')) > huh_loanpreparation::PREPARATIONID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $PreparationID = trim($PreparationID);
+       $PreparationID = trim($PreparationID ?? '');
        if (!ctype_digit(strval($PreparationID)) && trim(strval($PreparationID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -559,10 +559,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_loanpreparation::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_loanpreparation::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -578,10 +578,10 @@ class huh_loanpreparation implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setLoanID($LoanID) {
-       if (strlen(preg_replace('/[^0-9]/','',$LoanID)) > huh_loanpreparation::LOANID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$LoanID ?? '')) > huh_loanpreparation::LOANID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $LoanID = trim($LoanID);
+       $LoanID = trim($LoanID ?? '');
        if (!ctype_digit(strval($LoanID))) {
              throw new Exception("Value must be an integer");
        }
@@ -847,8 +847,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -942,11 +942,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -974,8 +974,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -997,8 +997,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LoanPreparationID FROM loanpreparation WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT LoanPreparationID FROM loanpreparation WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1020,8 +1020,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LoanPreparationID FROM loanpreparation WHERE DisciplineID $operator '$searchTerm'";
         $preparedsql = "SELECT LoanPreparationID FROM loanpreparation WHERE DisciplineID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1043,8 +1043,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LoanPreparationID FROM loanpreparation WHERE PreparationID $operator '$searchTerm'";
         $preparedsql = "SELECT LoanPreparationID FROM loanpreparation WHERE PreparationID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1066,8 +1066,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LoanPreparationID FROM loanpreparation WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT LoanPreparationID FROM loanpreparation WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1089,8 +1089,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT LoanPreparationID FROM loanpreparation WHERE LoanID $operator '$searchTerm'";
         $preparedsql = "SELECT LoanPreparationID FROM loanpreparation WHERE LoanID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1126,7 +1126,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1154,7 +1154,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1182,7 +1182,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1210,7 +1210,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1238,7 +1238,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1281,7 +1281,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1308,15 +1308,15 @@ class huh_loanpreparationView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_loanpreparation <a href='$editLinkURL'>Edit</a></li>\n";  } 

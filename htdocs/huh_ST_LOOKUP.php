@@ -84,12 +84,12 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -151,7 +151,7 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setID($ID) {
-       if (strlen($ID) > huh_ST_LOOKUP::ID_SIZE) { 
+       if (strlen($ID ?? '') > huh_ST_LOOKUP::ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ID = $this->l_addslashes($ID);
@@ -166,7 +166,7 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setCATEGORY_ID($CATEGORY_ID) {
-       if (strlen($CATEGORY_ID) > huh_ST_LOOKUP::CATEGORY_ID_SIZE) { 
+       if (strlen($CATEGORY_ID ?? '') > huh_ST_LOOKUP::CATEGORY_ID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CATEGORY_ID = $this->l_addslashes($CATEGORY_ID);
@@ -181,10 +181,10 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setORDINAL($ORDINAL) {
-       if (strlen(preg_replace('/[^0-9]/','',$ORDINAL)) > huh_ST_LOOKUP::ORDINAL_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ORDINAL ?? '')) > huh_ST_LOOKUP::ORDINAL_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ORDINAL = trim($ORDINAL);
+       $ORDINAL = trim($ORDINAL ?? '');
        if (!ctype_digit(strval($ORDINAL))) {
              throw new Exception("Value must be an integer");
        }
@@ -200,10 +200,10 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setACTIVE($ACTIVE) {
-       if (strlen(preg_replace('/[^0-9]/','',$ACTIVE)) > huh_ST_LOOKUP::ACTIVE_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ACTIVE ?? '')) > huh_ST_LOOKUP::ACTIVE_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ACTIVE = trim($ACTIVE);
+       $ACTIVE = trim($ACTIVE ?? '');
        if (!ctype_digit(strval($ACTIVE))) {
              throw new Exception("Value must be an integer");
        }
@@ -219,7 +219,7 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setNAME($NAME) {
-       if (strlen($NAME) > huh_ST_LOOKUP::NAME_SIZE) { 
+       if (strlen($NAME ?? '') > huh_ST_LOOKUP::NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->NAME = $this->l_addslashes($NAME);
@@ -234,7 +234,7 @@ class huh_ST_LOOKUP implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setDESCRIPTION($DESCRIPTION) {
-       if (strlen($DESCRIPTION) > huh_ST_LOOKUP::DESCRIPTION_SIZE) { 
+       if (strlen($DESCRIPTION ?? '') > huh_ST_LOOKUP::DESCRIPTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->DESCRIPTION = $this->l_addslashes($DESCRIPTION);
@@ -443,8 +443,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -510,11 +510,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -542,8 +542,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -579,7 +579,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -606,15 +606,15 @@ class huh_ST_LOOKUPView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_ST_LOOKUP <a href='$editLinkURL'>Edit</a></li>\n";  } 

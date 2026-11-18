@@ -219,12 +219,12 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -340,10 +340,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPreparationID($PreparationID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PreparationID)) > huh_preparation::PREPARATIONID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$PreparationID ?? '')) > huh_preparation::PREPARATIONID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $PreparationID = trim($PreparationID);
+       $PreparationID = trim($PreparationID ?? '');
        if (!ctype_digit(strval($PreparationID)) && trim(strval($PreparationID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -359,7 +359,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_preparation::TIMESTAMPCREATED_SIZE) {
+       if (strlen($TimestampCreated ?? '') > huh_preparation::TIMESTAMPCREATED_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -374,7 +374,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_preparation::TIMESTAMPMODIFIED_SIZE) {
+       if (strlen($TimestampModified ?? '') > huh_preparation::TIMESTAMPMODIFIED_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -389,10 +389,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_preparation::VERSION_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_preparation::VERSION_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -408,10 +408,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCollectionMemberID($CollectionMemberID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID)) > huh_preparation::COLLECTIONMEMBERID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID ?? '')) > huh_preparation::COLLECTIONMEMBERID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $CollectionMemberID = trim($CollectionMemberID);
+       $CollectionMemberID = trim($CollectionMemberID ?? '');
        if (!ctype_digit(strval($CollectionMemberID))) {
              throw new Exception("Value must be an integer");
        }
@@ -427,10 +427,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCountAmt($CountAmt) {
-       if (strlen(preg_replace('/[^0-9]/','',$CountAmt)) > huh_preparation::COUNTAMT_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$CountAmt ?? '')) > huh_preparation::COUNTAMT_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $CountAmt = trim($CountAmt);
+       $CountAmt = trim($CountAmt ?? '');
        if (!ctype_digit(strval($CountAmt)) && trim(strval($CountAmt))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -446,7 +446,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setDescription($Description) {
-       if (strlen($Description) > huh_preparation::DESCRIPTION_SIZE) {
+       if (strlen($Description ?? '') > huh_preparation::DESCRIPTION_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Description = $this->l_addslashes($Description);
@@ -461,7 +461,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setIdentifier($Identifier) {
-       if (strlen($Identifier) > huh_preparation::IDENTIFIER_SIZE) {
+       if (strlen($Identifier ?? '') > huh_preparation::IDENTIFIER_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Identifier = $this->l_addslashes($Identifier);
@@ -476,7 +476,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setInventoryDate($InventoryDate) {
-       if (strlen($InventoryDate) > huh_preparation::INVENTORYDATE_SIZE) {
+       if (strlen($InventoryDate ?? '') > huh_preparation::INVENTORYDATE_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->InventoryDate = $this->l_addslashes($InventoryDate);
@@ -491,7 +491,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_preparation::NUMBER1_SIZE) {
+       if (strlen($Number1 ?? '') > huh_preparation::NUMBER1_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Number1 = $this->l_addslashes($Number1);
@@ -506,7 +506,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_preparation::NUMBER2_SIZE) {
+       if (strlen($Number2 ?? '') > huh_preparation::NUMBER2_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Number2 = $this->l_addslashes($Number2);
@@ -521,7 +521,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setObjectCondition($ObjectCondition) {
-       if (strlen($ObjectCondition) > huh_preparation::OBJECTCONDITION_SIZE) {
+       if (strlen($ObjectCondition ?? '') > huh_preparation::OBJECTCONDITION_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->ObjectCondition = $this->l_addslashes($ObjectCondition);
@@ -536,7 +536,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPreparedDate($PreparedDate) {
-       if (strlen($PreparedDate) > huh_preparation::PREPAREDDATE_SIZE) {
+       if (strlen($PreparedDate ?? '') > huh_preparation::PREPAREDDATE_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->PreparedDate = $this->l_addslashes($PreparedDate);
@@ -551,7 +551,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPreparedDatePrecision($PreparedDatePrecision) {
-       if (strlen($PreparedDatePrecision) > huh_preparation::PREPAREDDATEPRECISION_SIZE) {
+       if (strlen($PreparedDatePrecision ?? '') > huh_preparation::PREPAREDDATEPRECISION_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->PreparedDatePrecision = $this->l_addslashes($PreparedDatePrecision);
@@ -566,7 +566,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_preparation::REMARKS_SIZE) {
+       if (strlen($Remarks ?? '') > huh_preparation::REMARKS_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -581,7 +581,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setSampleNumber($SampleNumber) {
-       if (strlen($SampleNumber) > huh_preparation::SAMPLENUMBER_SIZE) {
+       if (strlen($SampleNumber ?? '') > huh_preparation::SAMPLENUMBER_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->SampleNumber = $this->l_addslashes($SampleNumber);
@@ -596,7 +596,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setStatus($Status) {
-       if (strlen($Status) > huh_preparation::STATUS_SIZE) {
+       if (strlen($Status ?? '') > huh_preparation::STATUS_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Status = $this->l_addslashes($Status);
@@ -611,7 +611,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setStorageLocation($StorageLocation) {
-       if (strlen($StorageLocation) > huh_preparation::STORAGELOCATION_SIZE) {
+       if (strlen($StorageLocation ?? '') > huh_preparation::STORAGELOCATION_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->StorageLocation = $this->l_addslashes($StorageLocation);
@@ -626,7 +626,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_preparation::TEXT1_SIZE) {
+       if (strlen($Text1 ?? '') > huh_preparation::TEXT1_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Text1 = $this->l_addslashes($Text1);
@@ -641,7 +641,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_preparation::TEXT2_SIZE) {
+       if (strlen($Text2 ?? '') > huh_preparation::TEXT2_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->Text2 = $this->l_addslashes($Text2);
@@ -656,7 +656,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_preparation::YESNO1_SIZE) {
+       if (strlen($YesNo1 ?? '') > huh_preparation::YESNO1_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -671,7 +671,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_preparation::YESNO2_SIZE) {
+       if (strlen($YesNo2 ?? '') > huh_preparation::YESNO2_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -686,7 +686,7 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setYesNo3($YesNo3) {
-       if (strlen($YesNo3) > huh_preparation::YESNO3_SIZE) {
+       if (strlen($YesNo3 ?? '') > huh_preparation::YESNO3_SIZE) {
            throw new Exception('Value exceeds field length.');
        }
        $this->YesNo3 = $this->l_addslashes($YesNo3);
@@ -701,10 +701,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPreparationAttributeID($PreparationAttributeID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PreparationAttributeID)) > huh_preparation::PREPARATIONATTRIBUTEID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$PreparationAttributeID ?? '')) > huh_preparation::PREPARATIONATTRIBUTEID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $PreparationAttributeID = trim($PreparationAttributeID);
+       $PreparationAttributeID = trim($PreparationAttributeID ?? '');
        if (!ctype_digit(strval($PreparationAttributeID)) && trim(strval($PreparationAttributeID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -720,10 +720,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setGeographyID($GeographyID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeographyID)) > huh_preparation::GEOGRAPHYID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$GeographyID ?? '')) > huh_preparation::GEOGRAPHYID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $GeographyID = trim($GeographyID);
+       $GeographyID = trim($GeographyID ?? '');
        if (!ctype_digit(strval($GeographyID)) && trim(strval($GeographyID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -739,10 +739,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_preparation::MODIFIEDBYAGENTID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_preparation::MODIFIEDBYAGENTID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -758,10 +758,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPreparedByID($PreparedByID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PreparedByID)) > huh_preparation::PREPAREDBYID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$PreparedByID ?? '')) > huh_preparation::PREPAREDBYID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $PreparedByID = trim($PreparedByID);
+       $PreparedByID = trim($PreparedByID ?? '');
        if (!ctype_digit(strval($PreparedByID)) && trim(strval($PreparedByID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -777,10 +777,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setPrepTypeID($PrepTypeID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PrepTypeID)) > huh_preparation::PREPTYPEID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$PrepTypeID ?? '')) > huh_preparation::PREPTYPEID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $PrepTypeID = trim($PrepTypeID);
+       $PrepTypeID = trim($PrepTypeID ?? '');
        if (!ctype_digit(strval($PrepTypeID))) {
              throw new Exception("Value must be an integer");
        }
@@ -796,10 +796,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setParentID($ParentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ParentID)) > huh_preparation::PARENTID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$ParentID ?? '')) > huh_preparation::PARENTID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $ParentID = trim($ParentID);
+       $ParentID = trim($ParentID ?? '');
        if (!ctype_digit(strval($ParentID)) && trim(strval($ParentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -815,10 +815,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setTaxonID($TaxonID) {
-       if (strlen(preg_replace('/[^0-9]/','',$TaxonID)) > huh_preparation::TAXONID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$TaxonID ?? '')) > huh_preparation::TAXONID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $TaxonID = trim($TaxonID);
+       $TaxonID = trim($TaxonID ?? '');
        if (!ctype_digit(strval($TaxonID)) && trim(strval($TaxonID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -834,10 +834,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_preparation::CREATEDBYAGENTID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_preparation::CREATEDBYAGENTID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -853,10 +853,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setAppraisalID($AppraisalID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AppraisalID)) > huh_preparation::APPRAISALID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$AppraisalID ?? '')) > huh_preparation::APPRAISALID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $AppraisalID = trim($AppraisalID);
+       $AppraisalID = trim($AppraisalID ?? '');
        if (!ctype_digit(strval($AppraisalID)) && trim(strval($AppraisalID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -872,10 +872,10 @@ class huh_preparation implements  model , loadableModel, saveableModel, tableSch
        }
    }
    public function setStorageID($StorageID) {
-       if (strlen(preg_replace('/[^0-9]/','',$StorageID)) > huh_preparation::STORAGEID_SIZE) {
+       if (strlen(preg_replace('/[^0-9]/','',$StorageID ?? '')) > huh_preparation::STORAGEID_SIZE) {
            throw new Exception('Value has too many digits for the field length.');
        }
-       $StorageID = trim($StorageID);
+       $StorageID = trim($StorageID ?? '');
        if (!ctype_digit(strval($StorageID)) && trim(strval($StorageID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1193,8 +1193,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) {
                $operator = '=';
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') {
                    $wherebit .= "$and ($fieldname is null or $fieldname='') ";
                } else {
@@ -1344,11 +1344,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) {
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') {
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1376,8 +1376,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') {
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') {
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1399,8 +1399,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE CollectionMemberID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE CollectionMemberID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1422,8 +1422,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE Identifier $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE Identifier $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1445,8 +1445,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE PreparedDate $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE PreparedDate $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1468,8 +1468,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE PreparationAttributeID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE PreparationAttributeID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1491,8 +1491,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE GeographyID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE GeographyID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1514,8 +1514,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1537,8 +1537,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE PreparedByID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE PreparedByID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1560,8 +1560,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE PrepTypeID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE PrepTypeID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1583,8 +1583,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE ParentID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE ParentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1606,8 +1606,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE TaxonID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE TaxonID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1629,8 +1629,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1652,8 +1652,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE AppraisalID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE AppraisalID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1675,8 +1675,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationID FROM preparation WHERE StorageID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationID FROM preparation WHERE StorageID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) {
@@ -1712,7 +1712,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1740,7 +1740,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1768,7 +1768,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1796,7 +1796,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1824,7 +1824,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1852,7 +1852,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1880,7 +1880,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1908,7 +1908,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1936,7 +1936,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1964,7 +1964,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -1992,7 +1992,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -2020,7 +2020,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -2048,7 +2048,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]';
                      $escaped = urlencode('[NULL]');
@@ -2115,7 +2115,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) {
                $returnvalue = true;
             }
@@ -2142,15 +2142,15 @@ class huh_preparationView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') {
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; }
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; }
           $nullpk = false;
           foreach ($primarykeys as $primarykey) {
               // Add fieldname=value pairs for primary key(s) to editLinkURL.
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; }
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_preparation <a href='$editLinkURL'>Edit</a></li>\n";  }

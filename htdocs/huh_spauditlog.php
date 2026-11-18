@@ -114,12 +114,12 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -193,10 +193,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setSpAuditLogID($SpAuditLogID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpAuditLogID)) > huh_spauditlog::SPAUDITLOGID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpAuditLogID ?? '')) > huh_spauditlog::SPAUDITLOGID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpAuditLogID = trim($SpAuditLogID);
+       $SpAuditLogID = trim($SpAuditLogID ?? '');
        if (!ctype_digit(strval($SpAuditLogID)) && trim(strval($SpAuditLogID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -212,7 +212,7 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_spauditlog::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_spauditlog::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -227,7 +227,7 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_spauditlog::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_spauditlog::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -242,10 +242,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_spauditlog::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_spauditlog::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -261,7 +261,7 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setAction($Action) {
-       if (strlen($Action) > huh_spauditlog::ACTION_SIZE) { 
+       if (strlen($Action ?? '') > huh_spauditlog::ACTION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Action = $this->l_addslashes($Action);
@@ -276,10 +276,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setParentRecordId($ParentRecordId) {
-       if (strlen(preg_replace('/[^0-9]/','',$ParentRecordId)) > huh_spauditlog::PARENTRECORDID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ParentRecordId ?? '')) > huh_spauditlog::PARENTRECORDID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ParentRecordId = trim($ParentRecordId);
+       $ParentRecordId = trim($ParentRecordId ?? '');
        if (!ctype_digit(strval($ParentRecordId)) && trim(strval($ParentRecordId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -295,7 +295,7 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setParentTableNum($ParentTableNum) {
-       if (strlen($ParentTableNum) > huh_spauditlog::PARENTTABLENUM_SIZE) { 
+       if (strlen($ParentTableNum ?? '') > huh_spauditlog::PARENTTABLENUM_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ParentTableNum = $this->l_addslashes($ParentTableNum);
@@ -310,10 +310,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setRecordId($RecordId) {
-       if (strlen(preg_replace('/[^0-9]/','',$RecordId)) > huh_spauditlog::RECORDID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$RecordId ?? '')) > huh_spauditlog::RECORDID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $RecordId = trim($RecordId);
+       $RecordId = trim($RecordId ?? '');
        if (!ctype_digit(strval($RecordId)) && trim(strval($RecordId))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -329,10 +329,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setRecordVersion($RecordVersion) {
-       if (strlen(preg_replace('/[^0-9]/','',$RecordVersion)) > huh_spauditlog::RECORDVERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$RecordVersion ?? '')) > huh_spauditlog::RECORDVERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $RecordVersion = trim($RecordVersion);
+       $RecordVersion = trim($RecordVersion ?? '');
        if (!ctype_digit(strval($RecordVersion))) {
              throw new Exception("Value must be an integer");
        }
@@ -348,7 +348,7 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setTableNum($TableNum) {
-       if (strlen($TableNum) > huh_spauditlog::TABLENUM_SIZE) { 
+       if (strlen($TableNum ?? '') > huh_spauditlog::TABLENUM_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TableNum = $this->l_addslashes($TableNum);
@@ -363,10 +363,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_spauditlog::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_spauditlog::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -382,10 +382,10 @@ class huh_spauditlog implements  model , loadableModel, saveableModel, tableSche
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_spauditlog::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_spauditlog::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -619,8 +619,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -702,11 +702,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -734,8 +734,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -757,8 +757,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAuditLogID FROM spauditlog WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAuditLogID FROM spauditlog WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -780,8 +780,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAuditLogID FROM spauditlog WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAuditLogID FROM spauditlog WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -817,7 +817,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -845,7 +845,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -879,7 +879,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -906,15 +906,15 @@ class huh_spauditlogView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_spauditlog <a href='$editLinkURL'>Edit</a></li>\n";  } 

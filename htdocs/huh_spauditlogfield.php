@@ -104,12 +104,12 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -179,10 +179,10 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setSpAuditLogFieldID($SpAuditLogFieldID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpAuditLogFieldID)) > huh_spauditlogfield::SPAUDITLOGFIELDID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpAuditLogFieldID ?? '')) > huh_spauditlogfield::SPAUDITLOGFIELDID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpAuditLogFieldID = trim($SpAuditLogFieldID);
+       $SpAuditLogFieldID = trim($SpAuditLogFieldID ?? '');
        if (!ctype_digit(strval($SpAuditLogFieldID)) && trim(strval($SpAuditLogFieldID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -198,7 +198,7 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_spauditlogfield::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_spauditlogfield::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -213,7 +213,7 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_spauditlogfield::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_spauditlogfield::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -228,10 +228,10 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_spauditlogfield::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_spauditlogfield::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -247,7 +247,7 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setFieldName($FieldName) {
-       if (strlen($FieldName) > huh_spauditlogfield::FIELDNAME_SIZE) { 
+       if (strlen($FieldName ?? '') > huh_spauditlogfield::FIELDNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FieldName = $this->l_addslashes($FieldName);
@@ -262,7 +262,7 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setNewValue($NewValue) {
-       if (strlen($NewValue) > huh_spauditlogfield::NEWVALUE_SIZE) { 
+       if (strlen($NewValue ?? '') > huh_spauditlogfield::NEWVALUE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->NewValue = $this->l_addslashes($NewValue);
@@ -277,7 +277,7 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setOldValue($OldValue) {
-       if (strlen($OldValue) > huh_spauditlogfield::OLDVALUE_SIZE) { 
+       if (strlen($OldValue ?? '') > huh_spauditlogfield::OLDVALUE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OldValue = $this->l_addslashes($OldValue);
@@ -292,10 +292,10 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_spauditlogfield::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_spauditlogfield::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -311,10 +311,10 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setSpAuditLogID($SpAuditLogID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpAuditLogID)) > huh_spauditlogfield::SPAUDITLOGID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpAuditLogID ?? '')) > huh_spauditlogfield::SPAUDITLOGID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpAuditLogID = trim($SpAuditLogID);
+       $SpAuditLogID = trim($SpAuditLogID ?? '');
        if (!ctype_digit(strval($SpAuditLogID)) && trim(strval($SpAuditLogID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -330,10 +330,10 @@ class huh_spauditlogfield implements  model , loadableModel, saveableModel, tabl
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_spauditlogfield::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_spauditlogfield::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -559,8 +559,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -642,11 +642,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -674,8 +674,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -697,8 +697,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAuditLogFieldID FROM spauditlogfield WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAuditLogFieldID FROM spauditlogfield WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -720,8 +720,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAuditLogFieldID FROM spauditlogfield WHERE SpAuditLogID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAuditLogFieldID FROM spauditlogfield WHERE SpAuditLogID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -743,8 +743,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAuditLogFieldID FROM spauditlogfield WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAuditLogFieldID FROM spauditlogfield WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -780,7 +780,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -808,7 +808,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -836,7 +836,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -873,7 +873,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -900,15 +900,15 @@ class huh_spauditlogfieldView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_spauditlogfield <a href='$editLinkURL'>Edit</a></li>\n";  } 

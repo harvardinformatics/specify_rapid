@@ -104,12 +104,12 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -179,10 +179,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setRepositoryAgreementAttachmentID($RepositoryAgreementAttachmentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$RepositoryAgreementAttachmentID)) > huh_repositoryagreementattachment::REPOSITORYAGREEMENTATTACHMENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$RepositoryAgreementAttachmentID ?? '')) > huh_repositoryagreementattachment::REPOSITORYAGREEMENTATTACHMENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $RepositoryAgreementAttachmentID = trim($RepositoryAgreementAttachmentID);
+       $RepositoryAgreementAttachmentID = trim($RepositoryAgreementAttachmentID ?? '');
        if (!ctype_digit(strval($RepositoryAgreementAttachmentID)) && trim(strval($RepositoryAgreementAttachmentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -198,7 +198,7 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_repositoryagreementattachment::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_repositoryagreementattachment::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -213,7 +213,7 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_repositoryagreementattachment::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_repositoryagreementattachment::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -228,10 +228,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_repositoryagreementattachment::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_repositoryagreementattachment::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -247,10 +247,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setOrdinal($Ordinal) {
-       if (strlen(preg_replace('/[^0-9]/','',$Ordinal)) > huh_repositoryagreementattachment::ORDINAL_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Ordinal ?? '')) > huh_repositoryagreementattachment::ORDINAL_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Ordinal = trim($Ordinal);
+       $Ordinal = trim($Ordinal ?? '');
        if (!ctype_digit(strval($Ordinal)) && trim(strval($Ordinal))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -266,7 +266,7 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_repositoryagreementattachment::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_repositoryagreementattachment::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -281,10 +281,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_repositoryagreementattachment::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_repositoryagreementattachment::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -300,10 +300,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_repositoryagreementattachment::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_repositoryagreementattachment::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -319,10 +319,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setAttachmentID($AttachmentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AttachmentID)) > huh_repositoryagreementattachment::ATTACHMENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AttachmentID ?? '')) > huh_repositoryagreementattachment::ATTACHMENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AttachmentID = trim($AttachmentID);
+       $AttachmentID = trim($AttachmentID ?? '');
        if (!ctype_digit(strval($AttachmentID))) {
              throw new Exception("Value must be an integer");
        }
@@ -338,10 +338,10 @@ class huh_repositoryagreementattachment implements  model , loadableModel, savea
        }
    }
    public function setRepositoryAgreementID($RepositoryAgreementID) {
-       if (strlen(preg_replace('/[^0-9]/','',$RepositoryAgreementID)) > huh_repositoryagreementattachment::REPOSITORYAGREEMENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$RepositoryAgreementID ?? '')) > huh_repositoryagreementattachment::REPOSITORYAGREEMENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $RepositoryAgreementID = trim($RepositoryAgreementID);
+       $RepositoryAgreementID = trim($RepositoryAgreementID ?? '');
        if (!ctype_digit(strval($RepositoryAgreementID))) {
              throw new Exception("Value must be an integer");
        }
@@ -567,8 +567,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -654,11 +654,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -686,8 +686,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -709,8 +709,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -732,8 +732,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -755,8 +755,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE AttachmentID $operator '$searchTerm'";
         $preparedsql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE AttachmentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -778,8 +778,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE RepositoryAgreementID $operator '$searchTerm'";
         $preparedsql = "SELECT RepositoryAgreementAttachmentID FROM repositoryagreementattachment WHERE RepositoryAgreementID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -815,7 +815,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -843,7 +843,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -871,7 +871,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -899,7 +899,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -939,7 +939,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -966,15 +966,15 @@ class huh_repositoryagreementattachmentView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_repositoryagreementattachment <a href='$editLinkURL'>Edit</a></li>\n";  } 

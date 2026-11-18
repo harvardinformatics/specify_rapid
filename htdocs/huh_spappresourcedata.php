@@ -99,12 +99,12 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -172,10 +172,10 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setSpAppResourceDataID($SpAppResourceDataID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpAppResourceDataID)) > huh_spappresourcedata::SPAPPRESOURCEDATAID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpAppResourceDataID ?? '')) > huh_spappresourcedata::SPAPPRESOURCEDATAID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpAppResourceDataID = trim($SpAppResourceDataID);
+       $SpAppResourceDataID = trim($SpAppResourceDataID ?? '');
        if (!ctype_digit(strval($SpAppResourceDataID)) && trim(strval($SpAppResourceDataID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -191,7 +191,7 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_spappresourcedata::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_spappresourcedata::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -206,7 +206,7 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_spappresourcedata::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_spappresourcedata::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -221,10 +221,10 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_spappresourcedata::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_spappresourcedata::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -240,7 +240,7 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setdata($data) {
-       if (strlen($data) > huh_spappresourcedata::DATA_SIZE) { 
+       if (strlen($data ?? '') > huh_spappresourcedata::DATA_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->data = $this->l_addslashes($data);
@@ -255,10 +255,10 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_spappresourcedata::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_spappresourcedata::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -274,10 +274,10 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setSpAppResourceID($SpAppResourceID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpAppResourceID)) > huh_spappresourcedata::SPAPPRESOURCEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpAppResourceID ?? '')) > huh_spappresourcedata::SPAPPRESOURCEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpAppResourceID = trim($SpAppResourceID);
+       $SpAppResourceID = trim($SpAppResourceID ?? '');
        if (!ctype_digit(strval($SpAppResourceID)) && trim(strval($SpAppResourceID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -293,10 +293,10 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setSpViewSetObjID($SpViewSetObjID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpViewSetObjID)) > huh_spappresourcedata::SPVIEWSETOBJID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpViewSetObjID ?? '')) > huh_spappresourcedata::SPVIEWSETOBJID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpViewSetObjID = trim($SpViewSetObjID);
+       $SpViewSetObjID = trim($SpViewSetObjID ?? '');
        if (!ctype_digit(strval($SpViewSetObjID)) && trim(strval($SpViewSetObjID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -312,10 +312,10 @@ class huh_spappresourcedata implements  model , loadableModel, saveableModel, ta
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_spappresourcedata::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_spappresourcedata::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -537,8 +537,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -624,11 +624,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -656,8 +656,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -679,8 +679,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -702,8 +702,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE SpAppResourceID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE SpAppResourceID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -725,8 +725,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE SpViewSetObjID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE SpViewSetObjID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -748,8 +748,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpAppResourceDataID FROM spappresourcedata WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -785,7 +785,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -813,7 +813,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -841,7 +841,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -869,7 +869,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -909,7 +909,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -936,15 +936,15 @@ class huh_spappresourcedataView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_spappresourcedata <a href='$editLinkURL'>Edit</a></li>\n";  } 

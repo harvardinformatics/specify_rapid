@@ -204,12 +204,12 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -319,10 +319,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setGeographyID($GeographyID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeographyID)) > huh_geography::GEOGRAPHYID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeographyID ?? '')) > huh_geography::GEOGRAPHYID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeographyID = trim($GeographyID);
+       $GeographyID = trim($GeographyID ?? '');
        if (!ctype_digit(strval($GeographyID)) && trim(strval($GeographyID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -338,7 +338,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_geography::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_geography::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -353,7 +353,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_geography::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_geography::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -368,10 +368,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_geography::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_geography::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -387,7 +387,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAbbrev($Abbrev) {
-       if (strlen($Abbrev) > huh_geography::ABBREV_SIZE) { 
+       if (strlen($Abbrev ?? '') > huh_geography::ABBREV_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Abbrev = $this->l_addslashes($Abbrev);
@@ -402,10 +402,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setCentroidLat($CentroidLat) {
-       if (strlen(preg_replace('/[^0-9]/','',$CentroidLat)) > huh_geography::CENTROIDLAT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CentroidLat ?? '')) > huh_geography::CENTROIDLAT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CentroidLat = trim($CentroidLat);
+       $CentroidLat = trim($CentroidLat ?? '');
        if (!is_numeric($CentroidLat) && trim(strval($CentroidLat))!='' ) {
              throw new Exception("Value must be a number");
        }
@@ -421,10 +421,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setCentroidLon($CentroidLon) {
-       if (strlen(preg_replace('/[^0-9]/','',$CentroidLon)) > huh_geography::CENTROIDLON_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CentroidLon ?? '')) > huh_geography::CENTROIDLON_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CentroidLon = trim($CentroidLon);
+       $CentroidLon = trim($CentroidLon ?? '');
        if (!is_numeric($CentroidLon) && trim(strval($CentroidLon))!='' ) {
              throw new Exception("Value must be a number");
        }
@@ -440,7 +440,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setCommonName($CommonName) {
-       if (strlen($CommonName) > huh_geography::COMMONNAME_SIZE) { 
+       if (strlen($CommonName ?? '') > huh_geography::COMMONNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->CommonName = $this->l_addslashes($CommonName);
@@ -455,7 +455,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setFullName($FullName) {
-       if (strlen($FullName) > huh_geography::FULLNAME_SIZE) { 
+       if (strlen($FullName ?? '') > huh_geography::FULLNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FullName = $this->l_addslashes($FullName);
@@ -470,7 +470,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setGeographyCode($GeographyCode) {
-       if (strlen($GeographyCode) > huh_geography::GEOGRAPHYCODE_SIZE) { 
+       if (strlen($GeographyCode ?? '') > huh_geography::GEOGRAPHYCODE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GeographyCode = $this->l_addslashes($GeographyCode);
@@ -485,7 +485,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setGML($GML) {
-       if (strlen($GML) > huh_geography::GML_SIZE) { 
+       if (strlen($GML ?? '') > huh_geography::GML_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GML = $this->l_addslashes($GML);
@@ -500,7 +500,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setGUID($GUID) {
-       if (strlen($GUID) > huh_geography::GUID_SIZE) { 
+       if (strlen($GUID ?? '') > huh_geography::GUID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GUID = $this->l_addslashes($GUID);
@@ -515,10 +515,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setHighestChildNodeNumber($HighestChildNodeNumber) {
-       if (strlen(preg_replace('/[^0-9]/','',$HighestChildNodeNumber)) > huh_geography::HIGHESTCHILDNODENUMBER_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$HighestChildNodeNumber ?? '')) > huh_geography::HIGHESTCHILDNODENUMBER_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $HighestChildNodeNumber = trim($HighestChildNodeNumber);
+       $HighestChildNodeNumber = trim($HighestChildNodeNumber ?? '');
        if (!ctype_digit(strval($HighestChildNodeNumber)) && trim(strval($HighestChildNodeNumber))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -534,7 +534,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setIsAccepted($IsAccepted) {
-       if (strlen($IsAccepted) > huh_geography::ISACCEPTED_SIZE) { 
+       if (strlen($IsAccepted ?? '') > huh_geography::ISACCEPTED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsAccepted = $this->l_addslashes($IsAccepted);
@@ -549,7 +549,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setIsCurrent($IsCurrent) {
-       if (strlen($IsCurrent) > huh_geography::ISCURRENT_SIZE) { 
+       if (strlen($IsCurrent ?? '') > huh_geography::ISCURRENT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsCurrent = $this->l_addslashes($IsCurrent);
@@ -564,7 +564,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setName($Name) {
-       if (strlen($Name) > huh_geography::NAME_SIZE) { 
+       if (strlen($Name ?? '') > huh_geography::NAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Name = $this->l_addslashes($Name);
@@ -579,10 +579,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setNodeNumber($NodeNumber) {
-       if (strlen(preg_replace('/[^0-9]/','',$NodeNumber)) > huh_geography::NODENUMBER_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$NodeNumber ?? '')) > huh_geography::NODENUMBER_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $NodeNumber = trim($NodeNumber);
+       $NodeNumber = trim($NodeNumber ?? '');
        if (!ctype_digit(strval($NodeNumber)) && trim(strval($NodeNumber))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -598,10 +598,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setNumber1($Number1) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number1)) > huh_geography::NUMBER1_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number1 ?? '')) > huh_geography::NUMBER1_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number1 = trim($Number1);
+       $Number1 = trim($Number1 ?? '');
        if (!ctype_digit(strval($Number1)) && trim(strval($Number1))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -617,10 +617,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setNumber2($Number2) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number2)) > huh_geography::NUMBER2_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number2 ?? '')) > huh_geography::NUMBER2_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number2 = trim($Number2);
+       $Number2 = trim($Number2 ?? '');
        if (!ctype_digit(strval($Number2)) && trim(strval($Number2))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -636,10 +636,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setRankID($RankID) {
-       if (strlen(preg_replace('/[^0-9]/','',$RankID)) > huh_geography::RANKID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$RankID ?? '')) > huh_geography::RANKID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $RankID = trim($RankID);
+       $RankID = trim($RankID ?? '');
        if (!ctype_digit(strval($RankID))) {
              throw new Exception("Value must be an integer");
        }
@@ -655,7 +655,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_geography::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_geography::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -670,7 +670,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_geography::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_geography::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -685,7 +685,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_geography::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_geography::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -700,7 +700,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setTimestampVersion($TimestampVersion) {
-       if (strlen($TimestampVersion) > huh_geography::TIMESTAMPVERSION_SIZE) { 
+       if (strlen($TimestampVersion ?? '') > huh_geography::TIMESTAMPVERSION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampVersion = $this->l_addslashes($TimestampVersion);
@@ -715,10 +715,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setGeographyTreeDefItemID($GeographyTreeDefItemID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeographyTreeDefItemID)) > huh_geography::GEOGRAPHYTREEDEFITEMID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeographyTreeDefItemID ?? '')) > huh_geography::GEOGRAPHYTREEDEFITEMID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeographyTreeDefItemID = trim($GeographyTreeDefItemID);
+       $GeographyTreeDefItemID = trim($GeographyTreeDefItemID ?? '');
        if (!ctype_digit(strval($GeographyTreeDefItemID))) {
              throw new Exception("Value must be an integer");
        }
@@ -734,10 +734,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_geography::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_geography::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -753,10 +753,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setParentID($ParentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ParentID)) > huh_geography::PARENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ParentID ?? '')) > huh_geography::PARENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ParentID = trim($ParentID);
+       $ParentID = trim($ParentID ?? '');
        if (!ctype_digit(strval($ParentID)) && trim(strval($ParentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -772,10 +772,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setAcceptedID($AcceptedID) {
-       if (strlen(preg_replace('/[^0-9]/','',$AcceptedID)) > huh_geography::ACCEPTEDID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$AcceptedID ?? '')) > huh_geography::ACCEPTEDID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $AcceptedID = trim($AcceptedID);
+       $AcceptedID = trim($AcceptedID ?? '');
        if (!ctype_digit(strval($AcceptedID)) && trim(strval($AcceptedID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -791,10 +791,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_geography::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_geography::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -810,10 +810,10 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
        }
    }
    public function setGeographyTreeDefID($GeographyTreeDefID) {
-       if (strlen(preg_replace('/[^0-9]/','',$GeographyTreeDefID)) > huh_geography::GEOGRAPHYTREEDEFID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$GeographyTreeDefID ?? '')) > huh_geography::GEOGRAPHYTREEDEFID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $GeographyTreeDefID = trim($GeographyTreeDefID);
+       $GeographyTreeDefID = trim($GeographyTreeDefID ?? '');
        if (!ctype_digit(strval($GeographyTreeDefID))) {
              throw new Exception("Value must be an integer");
        }
@@ -1119,8 +1119,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1226,11 +1226,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1258,8 +1258,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1281,8 +1281,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE FullName $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE FullName $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1304,8 +1304,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE GUID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE GUID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1327,8 +1327,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE HighestChildNodeNumber $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE HighestChildNodeNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1350,8 +1350,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE Name $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE Name $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1373,8 +1373,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE NodeNumber $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE NodeNumber $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1396,8 +1396,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE GeographyTreeDefItemID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE GeographyTreeDefItemID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1419,8 +1419,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1442,8 +1442,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE ParentID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE ParentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1465,8 +1465,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE AcceptedID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE AcceptedID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1488,8 +1488,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1511,8 +1511,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT GeographyID FROM geography WHERE GeographyTreeDefID $operator '$searchTerm'";
         $preparedsql = "SELECT GeographyID FROM geography WHERE GeographyTreeDefID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1548,7 +1548,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1576,7 +1576,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1604,7 +1604,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1632,7 +1632,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1660,7 +1660,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1688,7 +1688,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1716,7 +1716,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1744,7 +1744,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1772,7 +1772,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1800,7 +1800,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1828,7 +1828,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1889,7 +1889,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1916,15 +1916,15 @@ class huh_geographyView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_geography <a href='$editLinkURL'>Edit</a></li>\n";  } 

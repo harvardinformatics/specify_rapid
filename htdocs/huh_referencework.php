@@ -199,12 +199,12 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -312,10 +312,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setReferenceWorkID($ReferenceWorkID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ReferenceWorkID)) > huh_referencework::REFERENCEWORKID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ReferenceWorkID ?? '')) > huh_referencework::REFERENCEWORKID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ReferenceWorkID = trim($ReferenceWorkID);
+       $ReferenceWorkID = trim($ReferenceWorkID ?? '');
        if (!ctype_digit(strval($ReferenceWorkID)) && trim(strval($ReferenceWorkID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -331,7 +331,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_referencework::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_referencework::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -346,7 +346,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_referencework::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_referencework::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -361,10 +361,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_referencework::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_referencework::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -380,7 +380,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setGUID($GUID) {
-       if (strlen($GUID) > huh_referencework::GUID_SIZE) { 
+       if (strlen($GUID ?? '') > huh_referencework::GUID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->GUID = $this->l_addslashes($GUID);
@@ -395,7 +395,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setIsPublished($IsPublished) {
-       if (strlen($IsPublished) > huh_referencework::ISPUBLISHED_SIZE) { 
+       if (strlen($IsPublished ?? '') > huh_referencework::ISPUBLISHED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsPublished = $this->l_addslashes($IsPublished);
@@ -410,7 +410,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setISBN($ISBN) {
-       if (strlen($ISBN) > huh_referencework::ISBN_SIZE) { 
+       if (strlen($ISBN ?? '') > huh_referencework::ISBN_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ISBN = $this->l_addslashes($ISBN);
@@ -425,7 +425,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setLibraryNumber($LibraryNumber) {
-       if (strlen($LibraryNumber) > huh_referencework::LIBRARYNUMBER_SIZE) { 
+       if (strlen($LibraryNumber ?? '') > huh_referencework::LIBRARYNUMBER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->LibraryNumber = $this->l_addslashes($LibraryNumber);
@@ -440,7 +440,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_referencework::NUMBER1_SIZE) { 
+       if (strlen($Number1 ?? '') > huh_referencework::NUMBER1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number1 = $this->l_addslashes($Number1);
@@ -455,7 +455,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_referencework::NUMBER2_SIZE) { 
+       if (strlen($Number2 ?? '') > huh_referencework::NUMBER2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number2 = $this->l_addslashes($Number2);
@@ -470,7 +470,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setPages($Pages) {
-       if (strlen($Pages) > huh_referencework::PAGES_SIZE) { 
+       if (strlen($Pages ?? '') > huh_referencework::PAGES_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Pages = $this->l_addslashes($Pages);
@@ -485,7 +485,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setPlaceOfPublication($PlaceOfPublication) {
-       if (strlen($PlaceOfPublication) > huh_referencework::PLACEOFPUBLICATION_SIZE) { 
+       if (strlen($PlaceOfPublication ?? '') > huh_referencework::PLACEOFPUBLICATION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->PlaceOfPublication = $this->l_addslashes($PlaceOfPublication);
@@ -500,7 +500,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setPublisher($Publisher) {
-       if (strlen($Publisher) > huh_referencework::PUBLISHER_SIZE) { 
+       if (strlen($Publisher ?? '') > huh_referencework::PUBLISHER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Publisher = $this->l_addslashes($Publisher);
@@ -515,7 +515,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setReferenceWorkType($ReferenceWorkType) {
-       if (strlen($ReferenceWorkType) > huh_referencework::REFERENCEWORKTYPE_SIZE) { 
+       if (strlen($ReferenceWorkType ?? '') > huh_referencework::REFERENCEWORKTYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ReferenceWorkType = $this->l_addslashes($ReferenceWorkType);
@@ -530,7 +530,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_referencework::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_referencework::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -545,7 +545,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_referencework::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_referencework::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -560,7 +560,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_referencework::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_referencework::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -575,7 +575,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function settitle($title) {
-       if (strlen($title) > huh_referencework::TITLE_SIZE) { 
+       if (strlen($title ?? '') > huh_referencework::TITLE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->title = $this->l_addslashes($title);
@@ -590,7 +590,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setURL($URL) {
-       if (strlen($URL) > huh_referencework::URL_SIZE) { 
+       if (strlen($URL ?? '') > huh_referencework::URL_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->URL = $this->l_addslashes($URL);
@@ -605,7 +605,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setVolume($Volume) {
-       if (strlen($Volume) > huh_referencework::VOLUME_SIZE) { 
+       if (strlen($Volume ?? '') > huh_referencework::VOLUME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Volume = $this->l_addslashes($Volume);
@@ -620,7 +620,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setWorkDate($WorkDate) {
-       if (strlen($WorkDate) > huh_referencework::WORKDATE_SIZE) { 
+       if (strlen($WorkDate ?? '') > huh_referencework::WORKDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->WorkDate = $this->l_addslashes($WorkDate);
@@ -635,7 +635,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_referencework::YESNO1_SIZE) { 
+       if (strlen($YesNo1 ?? '') > huh_referencework::YESNO1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -650,7 +650,7 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_referencework::YESNO2_SIZE) { 
+       if (strlen($YesNo2 ?? '') > huh_referencework::YESNO2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -665,10 +665,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setJournalID($JournalID) {
-       if (strlen(preg_replace('/[^0-9]/','',$JournalID)) > huh_referencework::JOURNALID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$JournalID ?? '')) > huh_referencework::JOURNALID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $JournalID = trim($JournalID);
+       $JournalID = trim($JournalID ?? '');
        if (!ctype_digit(strval($JournalID)) && trim(strval($JournalID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -684,10 +684,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setContainedRFParentID($ContainedRFParentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ContainedRFParentID)) > huh_referencework::CONTAINEDRFPARENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ContainedRFParentID ?? '')) > huh_referencework::CONTAINEDRFPARENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ContainedRFParentID = trim($ContainedRFParentID);
+       $ContainedRFParentID = trim($ContainedRFParentID ?? '');
        if (!ctype_digit(strval($ContainedRFParentID)) && trim(strval($ContainedRFParentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -703,10 +703,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setPrecedingWorkID($PrecedingWorkID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PrecedingWorkID)) > huh_referencework::PRECEDINGWORKID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$PrecedingWorkID ?? '')) > huh_referencework::PRECEDINGWORKID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $PrecedingWorkID = trim($PrecedingWorkID);
+       $PrecedingWorkID = trim($PrecedingWorkID ?? '');
        if (!ctype_digit(strval($PrecedingWorkID)) && trim(strval($PrecedingWorkID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -722,10 +722,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_referencework::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_referencework::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -741,10 +741,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setSucceedingWorkID($SucceedingWorkID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SucceedingWorkID)) > huh_referencework::SUCCEEDINGWORKID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SucceedingWorkID ?? '')) > huh_referencework::SUCCEEDINGWORKID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SucceedingWorkID = trim($SucceedingWorkID);
+       $SucceedingWorkID = trim($SucceedingWorkID ?? '');
        if (!ctype_digit(strval($SucceedingWorkID)) && trim(strval($SucceedingWorkID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -760,10 +760,10 @@ class huh_referencework implements  model , loadableModel, saveableModel, tableS
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_referencework::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_referencework::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1065,8 +1065,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1200,11 +1200,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1232,8 +1232,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1255,8 +1255,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE GUID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE GUID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1278,8 +1278,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE ISBN $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE ISBN $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1301,8 +1301,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE Publisher $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE Publisher $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1324,8 +1324,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE Text1 $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE Text1 $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1347,8 +1347,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE title $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE title $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1370,8 +1370,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE JournalID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE JournalID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1393,8 +1393,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE ContainedRFParentID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE ContainedRFParentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1416,8 +1416,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE PrecedingWorkID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE PrecedingWorkID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1439,8 +1439,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1462,8 +1462,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE SucceedingWorkID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE SucceedingWorkID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1485,8 +1485,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT ReferenceWorkID FROM referencework WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT ReferenceWorkID FROM referencework WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1522,7 +1522,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1550,7 +1550,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1578,7 +1578,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1606,7 +1606,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1634,7 +1634,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1662,7 +1662,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1690,7 +1690,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1718,7 +1718,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1746,7 +1746,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1774,7 +1774,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1802,7 +1802,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1863,7 +1863,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1890,15 +1890,15 @@ class huh_referenceworkView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_referencework <a href='$editLinkURL'>Edit</a></li>\n";  } 

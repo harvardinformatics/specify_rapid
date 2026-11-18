@@ -294,12 +294,12 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -445,10 +445,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setPreparationAttributeID($PreparationAttributeID) {
-       if (strlen(preg_replace('/[^0-9]/','',$PreparationAttributeID)) > huh_preparationattribute::PREPARATIONATTRIBUTEID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$PreparationAttributeID ?? '')) > huh_preparationattribute::PREPARATIONATTRIBUTEID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $PreparationAttributeID = trim($PreparationAttributeID);
+       $PreparationAttributeID = trim($PreparationAttributeID ?? '');
        if (!ctype_digit(strval($PreparationAttributeID)) && trim(strval($PreparationAttributeID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -464,7 +464,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_preparationattribute::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_preparationattribute::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -479,7 +479,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_preparationattribute::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_preparationattribute::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -494,10 +494,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_preparationattribute::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_preparationattribute::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -513,10 +513,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setCollectionMemberID($CollectionMemberID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID)) > huh_preparationattribute::COLLECTIONMEMBERID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CollectionMemberID ?? '')) > huh_preparationattribute::COLLECTIONMEMBERID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CollectionMemberID = trim($CollectionMemberID);
+       $CollectionMemberID = trim($CollectionMemberID ?? '');
        if (!ctype_digit(strval($CollectionMemberID))) {
              throw new Exception("Value must be an integer");
        }
@@ -532,7 +532,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setAttrDate($AttrDate) {
-       if (strlen($AttrDate) > huh_preparationattribute::ATTRDATE_SIZE) { 
+       if (strlen($AttrDate ?? '') > huh_preparationattribute::ATTRDATE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->AttrDate = $this->l_addslashes($AttrDate);
@@ -547,7 +547,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber1($Number1) {
-       if (strlen($Number1) > huh_preparationattribute::NUMBER1_SIZE) { 
+       if (strlen($Number1 ?? '') > huh_preparationattribute::NUMBER1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number1 = $this->l_addslashes($Number1);
@@ -562,7 +562,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber2($Number2) {
-       if (strlen($Number2) > huh_preparationattribute::NUMBER2_SIZE) { 
+       if (strlen($Number2 ?? '') > huh_preparationattribute::NUMBER2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number2 = $this->l_addslashes($Number2);
@@ -577,7 +577,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber3($Number3) {
-       if (strlen($Number3) > huh_preparationattribute::NUMBER3_SIZE) { 
+       if (strlen($Number3 ?? '') > huh_preparationattribute::NUMBER3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number3 = $this->l_addslashes($Number3);
@@ -592,10 +592,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber4($Number4) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number4)) > huh_preparationattribute::NUMBER4_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number4 ?? '')) > huh_preparationattribute::NUMBER4_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number4 = trim($Number4);
+       $Number4 = trim($Number4 ?? '');
        if (!ctype_digit(strval($Number4)) && trim(strval($Number4))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -611,10 +611,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber5($Number5) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number5)) > huh_preparationattribute::NUMBER5_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number5 ?? '')) > huh_preparationattribute::NUMBER5_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number5 = trim($Number5);
+       $Number5 = trim($Number5 ?? '');
        if (!ctype_digit(strval($Number5)) && trim(strval($Number5))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -630,10 +630,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber6($Number6) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number6)) > huh_preparationattribute::NUMBER6_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number6 ?? '')) > huh_preparationattribute::NUMBER6_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number6 = trim($Number6);
+       $Number6 = trim($Number6 ?? '');
        if (!ctype_digit(strval($Number6)) && trim(strval($Number6))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -649,10 +649,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber7($Number7) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number7)) > huh_preparationattribute::NUMBER7_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number7 ?? '')) > huh_preparationattribute::NUMBER7_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number7 = trim($Number7);
+       $Number7 = trim($Number7 ?? '');
        if (!ctype_digit(strval($Number7)) && trim(strval($Number7))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -668,10 +668,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber8($Number8) {
-       if (strlen(preg_replace('/[^0-9]/','',$Number8)) > huh_preparationattribute::NUMBER8_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Number8 ?? '')) > huh_preparationattribute::NUMBER8_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Number8 = trim($Number8);
+       $Number8 = trim($Number8 ?? '');
        if (!ctype_digit(strval($Number8)) && trim(strval($Number8))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -687,7 +687,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setNumber9($Number9) {
-       if (strlen($Number9) > huh_preparationattribute::NUMBER9_SIZE) { 
+       if (strlen($Number9 ?? '') > huh_preparationattribute::NUMBER9_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Number9 = $this->l_addslashes($Number9);
@@ -702,7 +702,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setRemarks($Remarks) {
-       if (strlen($Remarks) > huh_preparationattribute::REMARKS_SIZE) { 
+       if (strlen($Remarks ?? '') > huh_preparationattribute::REMARKS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Remarks = $this->l_addslashes($Remarks);
@@ -717,7 +717,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText1($Text1) {
-       if (strlen($Text1) > huh_preparationattribute::TEXT1_SIZE) { 
+       if (strlen($Text1 ?? '') > huh_preparationattribute::TEXT1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text1 = $this->l_addslashes($Text1);
@@ -732,7 +732,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText10($Text10) {
-       if (strlen($Text10) > huh_preparationattribute::TEXT10_SIZE) { 
+       if (strlen($Text10 ?? '') > huh_preparationattribute::TEXT10_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text10 = $this->l_addslashes($Text10);
@@ -747,7 +747,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText11($Text11) {
-       if (strlen($Text11) > huh_preparationattribute::TEXT11_SIZE) { 
+       if (strlen($Text11 ?? '') > huh_preparationattribute::TEXT11_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text11 = $this->l_addslashes($Text11);
@@ -762,7 +762,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText12($Text12) {
-       if (strlen($Text12) > huh_preparationattribute::TEXT12_SIZE) { 
+       if (strlen($Text12 ?? '') > huh_preparationattribute::TEXT12_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text12 = $this->l_addslashes($Text12);
@@ -777,7 +777,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText13($Text13) {
-       if (strlen($Text13) > huh_preparationattribute::TEXT13_SIZE) { 
+       if (strlen($Text13 ?? '') > huh_preparationattribute::TEXT13_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text13 = $this->l_addslashes($Text13);
@@ -792,7 +792,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText14($Text14) {
-       if (strlen($Text14) > huh_preparationattribute::TEXT14_SIZE) { 
+       if (strlen($Text14 ?? '') > huh_preparationattribute::TEXT14_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text14 = $this->l_addslashes($Text14);
@@ -807,7 +807,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText15($Text15) {
-       if (strlen($Text15) > huh_preparationattribute::TEXT15_SIZE) { 
+       if (strlen($Text15 ?? '') > huh_preparationattribute::TEXT15_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text15 = $this->l_addslashes($Text15);
@@ -822,7 +822,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText16($Text16) {
-       if (strlen($Text16) > huh_preparationattribute::TEXT16_SIZE) { 
+       if (strlen($Text16 ?? '') > huh_preparationattribute::TEXT16_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text16 = $this->l_addslashes($Text16);
@@ -837,7 +837,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText17($Text17) {
-       if (strlen($Text17) > huh_preparationattribute::TEXT17_SIZE) { 
+       if (strlen($Text17 ?? '') > huh_preparationattribute::TEXT17_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text17 = $this->l_addslashes($Text17);
@@ -852,7 +852,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText18($Text18) {
-       if (strlen($Text18) > huh_preparationattribute::TEXT18_SIZE) { 
+       if (strlen($Text18 ?? '') > huh_preparationattribute::TEXT18_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text18 = $this->l_addslashes($Text18);
@@ -867,7 +867,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText19($Text19) {
-       if (strlen($Text19) > huh_preparationattribute::TEXT19_SIZE) { 
+       if (strlen($Text19 ?? '') > huh_preparationattribute::TEXT19_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text19 = $this->l_addslashes($Text19);
@@ -882,7 +882,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText2($Text2) {
-       if (strlen($Text2) > huh_preparationattribute::TEXT2_SIZE) { 
+       if (strlen($Text2 ?? '') > huh_preparationattribute::TEXT2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text2 = $this->l_addslashes($Text2);
@@ -897,7 +897,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText20($Text20) {
-       if (strlen($Text20) > huh_preparationattribute::TEXT20_SIZE) { 
+       if (strlen($Text20 ?? '') > huh_preparationattribute::TEXT20_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text20 = $this->l_addslashes($Text20);
@@ -912,7 +912,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText21($Text21) {
-       if (strlen($Text21) > huh_preparationattribute::TEXT21_SIZE) { 
+       if (strlen($Text21 ?? '') > huh_preparationattribute::TEXT21_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text21 = $this->l_addslashes($Text21);
@@ -927,7 +927,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText22($Text22) {
-       if (strlen($Text22) > huh_preparationattribute::TEXT22_SIZE) { 
+       if (strlen($Text22 ?? '') > huh_preparationattribute::TEXT22_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text22 = $this->l_addslashes($Text22);
@@ -942,7 +942,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText23($Text23) {
-       if (strlen($Text23) > huh_preparationattribute::TEXT23_SIZE) { 
+       if (strlen($Text23 ?? '') > huh_preparationattribute::TEXT23_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text23 = $this->l_addslashes($Text23);
@@ -957,7 +957,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText24($Text24) {
-       if (strlen($Text24) > huh_preparationattribute::TEXT24_SIZE) { 
+       if (strlen($Text24 ?? '') > huh_preparationattribute::TEXT24_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text24 = $this->l_addslashes($Text24);
@@ -972,7 +972,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText25($Text25) {
-       if (strlen($Text25) > huh_preparationattribute::TEXT25_SIZE) { 
+       if (strlen($Text25 ?? '') > huh_preparationattribute::TEXT25_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text25 = $this->l_addslashes($Text25);
@@ -987,7 +987,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText26($Text26) {
-       if (strlen($Text26) > huh_preparationattribute::TEXT26_SIZE) { 
+       if (strlen($Text26 ?? '') > huh_preparationattribute::TEXT26_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text26 = $this->l_addslashes($Text26);
@@ -1002,7 +1002,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText3($Text3) {
-       if (strlen($Text3) > huh_preparationattribute::TEXT3_SIZE) { 
+       if (strlen($Text3 ?? '') > huh_preparationattribute::TEXT3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text3 = $this->l_addslashes($Text3);
@@ -1017,7 +1017,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText4($Text4) {
-       if (strlen($Text4) > huh_preparationattribute::TEXT4_SIZE) { 
+       if (strlen($Text4 ?? '') > huh_preparationattribute::TEXT4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text4 = $this->l_addslashes($Text4);
@@ -1032,7 +1032,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText5($Text5) {
-       if (strlen($Text5) > huh_preparationattribute::TEXT5_SIZE) { 
+       if (strlen($Text5 ?? '') > huh_preparationattribute::TEXT5_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text5 = $this->l_addslashes($Text5);
@@ -1047,7 +1047,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText6($Text6) {
-       if (strlen($Text6) > huh_preparationattribute::TEXT6_SIZE) { 
+       if (strlen($Text6 ?? '') > huh_preparationattribute::TEXT6_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text6 = $this->l_addslashes($Text6);
@@ -1062,7 +1062,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText7($Text7) {
-       if (strlen($Text7) > huh_preparationattribute::TEXT7_SIZE) { 
+       if (strlen($Text7 ?? '') > huh_preparationattribute::TEXT7_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text7 = $this->l_addslashes($Text7);
@@ -1077,7 +1077,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText8($Text8) {
-       if (strlen($Text8) > huh_preparationattribute::TEXT8_SIZE) { 
+       if (strlen($Text8 ?? '') > huh_preparationattribute::TEXT8_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text8 = $this->l_addslashes($Text8);
@@ -1092,7 +1092,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setText9($Text9) {
-       if (strlen($Text9) > huh_preparationattribute::TEXT9_SIZE) { 
+       if (strlen($Text9 ?? '') > huh_preparationattribute::TEXT9_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Text9 = $this->l_addslashes($Text9);
@@ -1107,7 +1107,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setYesNo1($YesNo1) {
-       if (strlen($YesNo1) > huh_preparationattribute::YESNO1_SIZE) { 
+       if (strlen($YesNo1 ?? '') > huh_preparationattribute::YESNO1_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo1 = $this->l_addslashes($YesNo1);
@@ -1122,7 +1122,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setYesNo2($YesNo2) {
-       if (strlen($YesNo2) > huh_preparationattribute::YESNO2_SIZE) { 
+       if (strlen($YesNo2 ?? '') > huh_preparationattribute::YESNO2_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo2 = $this->l_addslashes($YesNo2);
@@ -1137,7 +1137,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setYesNo3($YesNo3) {
-       if (strlen($YesNo3) > huh_preparationattribute::YESNO3_SIZE) { 
+       if (strlen($YesNo3 ?? '') > huh_preparationattribute::YESNO3_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo3 = $this->l_addslashes($YesNo3);
@@ -1152,7 +1152,7 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setYesNo4($YesNo4) {
-       if (strlen($YesNo4) > huh_preparationattribute::YESNO4_SIZE) { 
+       if (strlen($YesNo4 ?? '') > huh_preparationattribute::YESNO4_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->YesNo4 = $this->l_addslashes($YesNo4);
@@ -1167,10 +1167,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_preparationattribute::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_preparationattribute::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1186,10 +1186,10 @@ class huh_preparationattribute implements  model , loadableModel, saveableModel,
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_preparationattribute::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_preparationattribute::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -1567,8 +1567,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1650,11 +1650,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1682,8 +1682,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1705,8 +1705,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationAttributeID FROM preparationattribute WHERE CollectionMemberID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationAttributeID FROM preparationattribute WHERE CollectionMemberID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1728,8 +1728,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationAttributeID FROM preparationattribute WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationAttributeID FROM preparationattribute WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1751,8 +1751,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT PreparationAttributeID FROM preparationattribute WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT PreparationAttributeID FROM preparationattribute WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1788,7 +1788,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1816,7 +1816,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1844,7 +1844,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1881,7 +1881,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1908,15 +1908,15 @@ class huh_preparationattributeView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_preparationattribute <a href='$editLinkURL'>Edit</a></li>\n";  } 

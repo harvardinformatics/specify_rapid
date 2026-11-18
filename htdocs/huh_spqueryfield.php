@@ -174,12 +174,12 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
 
    private function l_addslashes($value) {
       $retval = $value;
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
    public function isDirty() {
@@ -277,10 +277,10 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setSpQueryFieldID($SpQueryFieldID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpQueryFieldID)) > huh_spqueryfield::SPQUERYFIELDID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpQueryFieldID ?? '')) > huh_spqueryfield::SPQUERYFIELDID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpQueryFieldID = trim($SpQueryFieldID);
+       $SpQueryFieldID = trim($SpQueryFieldID ?? '');
        if (!ctype_digit(strval($SpQueryFieldID)) && trim(strval($SpQueryFieldID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -296,7 +296,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setTimestampCreated($TimestampCreated) {
-       if (strlen($TimestampCreated) > huh_spqueryfield::TIMESTAMPCREATED_SIZE) { 
+       if (strlen($TimestampCreated ?? '') > huh_spqueryfield::TIMESTAMPCREATED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampCreated = $this->l_addslashes($TimestampCreated);
@@ -311,7 +311,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setTimestampModified($TimestampModified) {
-       if (strlen($TimestampModified) > huh_spqueryfield::TIMESTAMPMODIFIED_SIZE) { 
+       if (strlen($TimestampModified ?? '') > huh_spqueryfield::TIMESTAMPMODIFIED_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TimestampModified = $this->l_addslashes($TimestampModified);
@@ -326,10 +326,10 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setVersion($Version) {
-       if (strlen(preg_replace('/[^0-9]/','',$Version)) > huh_spqueryfield::VERSION_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$Version ?? '')) > huh_spqueryfield::VERSION_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $Version = trim($Version);
+       $Version = trim($Version ?? '');
        if (!ctype_digit(strval($Version)) && trim(strval($Version))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -345,7 +345,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setAlwaysFilter($AlwaysFilter) {
-       if (strlen($AlwaysFilter) > huh_spqueryfield::ALWAYSFILTER_SIZE) { 
+       if (strlen($AlwaysFilter ?? '') > huh_spqueryfield::ALWAYSFILTER_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->AlwaysFilter = $this->l_addslashes($AlwaysFilter);
@@ -360,7 +360,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setColumnAlias($ColumnAlias) {
-       if (strlen($ColumnAlias) > huh_spqueryfield::COLUMNALIAS_SIZE) { 
+       if (strlen($ColumnAlias ?? '') > huh_spqueryfield::COLUMNALIAS_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->ColumnAlias = $this->l_addslashes($ColumnAlias);
@@ -375,10 +375,10 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setContextTableIdent($ContextTableIdent) {
-       if (strlen(preg_replace('/[^0-9]/','',$ContextTableIdent)) > huh_spqueryfield::CONTEXTTABLEIDENT_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ContextTableIdent ?? '')) > huh_spqueryfield::CONTEXTTABLEIDENT_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ContextTableIdent = trim($ContextTableIdent);
+       $ContextTableIdent = trim($ContextTableIdent ?? '');
        if (!ctype_digit(strval($ContextTableIdent)) && trim(strval($ContextTableIdent))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -394,7 +394,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setEndValue($EndValue) {
-       if (strlen($EndValue) > huh_spqueryfield::ENDVALUE_SIZE) { 
+       if (strlen($EndValue ?? '') > huh_spqueryfield::ENDVALUE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->EndValue = $this->l_addslashes($EndValue);
@@ -409,7 +409,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setFieldName($FieldName) {
-       if (strlen($FieldName) > huh_spqueryfield::FIELDNAME_SIZE) { 
+       if (strlen($FieldName ?? '') > huh_spqueryfield::FIELDNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FieldName = $this->l_addslashes($FieldName);
@@ -424,7 +424,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setFormatName($FormatName) {
-       if (strlen($FormatName) > huh_spqueryfield::FORMATNAME_SIZE) { 
+       if (strlen($FormatName ?? '') > huh_spqueryfield::FORMATNAME_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->FormatName = $this->l_addslashes($FormatName);
@@ -439,7 +439,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setIsDisplay($IsDisplay) {
-       if (strlen($IsDisplay) > huh_spqueryfield::ISDISPLAY_SIZE) { 
+       if (strlen($IsDisplay ?? '') > huh_spqueryfield::ISDISPLAY_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsDisplay = $this->l_addslashes($IsDisplay);
@@ -454,7 +454,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setIsNot($IsNot) {
-       if (strlen($IsNot) > huh_spqueryfield::ISNOT_SIZE) { 
+       if (strlen($IsNot ?? '') > huh_spqueryfield::ISNOT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsNot = $this->l_addslashes($IsNot);
@@ -469,7 +469,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setIsPrompt($IsPrompt) {
-       if (strlen($IsPrompt) > huh_spqueryfield::ISPROMPT_SIZE) { 
+       if (strlen($IsPrompt ?? '') > huh_spqueryfield::ISPROMPT_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsPrompt = $this->l_addslashes($IsPrompt);
@@ -484,7 +484,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setIsRelFld($IsRelFld) {
-       if (strlen($IsRelFld) > huh_spqueryfield::ISRELFLD_SIZE) { 
+       if (strlen($IsRelFld ?? '') > huh_spqueryfield::ISRELFLD_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->IsRelFld = $this->l_addslashes($IsRelFld);
@@ -499,7 +499,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setOperEnd($OperEnd) {
-       if (strlen($OperEnd) > huh_spqueryfield::OPEREND_SIZE) { 
+       if (strlen($OperEnd ?? '') > huh_spqueryfield::OPEREND_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OperEnd = $this->l_addslashes($OperEnd);
@@ -514,7 +514,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setOperStart($OperStart) {
-       if (strlen($OperStart) > huh_spqueryfield::OPERSTART_SIZE) { 
+       if (strlen($OperStart ?? '') > huh_spqueryfield::OPERSTART_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->OperStart = $this->l_addslashes($OperStart);
@@ -529,7 +529,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setPosition($Position) {
-       if (strlen($Position) > huh_spqueryfield::POSITION_SIZE) { 
+       if (strlen($Position ?? '') > huh_spqueryfield::POSITION_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->Position = $this->l_addslashes($Position);
@@ -544,7 +544,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setSortType($SortType) {
-       if (strlen($SortType) > huh_spqueryfield::SORTTYPE_SIZE) { 
+       if (strlen($SortType ?? '') > huh_spqueryfield::SORTTYPE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->SortType = $this->l_addslashes($SortType);
@@ -559,7 +559,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setStartValue($StartValue) {
-       if (strlen($StartValue) > huh_spqueryfield::STARTVALUE_SIZE) { 
+       if (strlen($StartValue ?? '') > huh_spqueryfield::STARTVALUE_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StartValue = $this->l_addslashes($StartValue);
@@ -574,7 +574,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setStringId($StringId) {
-       if (strlen($StringId) > huh_spqueryfield::STRINGID_SIZE) { 
+       if (strlen($StringId ?? '') > huh_spqueryfield::STRINGID_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->StringId = $this->l_addslashes($StringId);
@@ -589,7 +589,7 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setTableList($TableList) {
-       if (strlen($TableList) > huh_spqueryfield::TABLELIST_SIZE) { 
+       if (strlen($TableList ?? '') > huh_spqueryfield::TABLELIST_SIZE) { 
            throw new Exception('Value exceeds field length.');
        } 
        $this->TableList = $this->l_addslashes($TableList);
@@ -604,10 +604,10 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setSpQueryID($SpQueryID) {
-       if (strlen(preg_replace('/[^0-9]/','',$SpQueryID)) > huh_spqueryfield::SPQUERYID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$SpQueryID ?? '')) > huh_spqueryfield::SPQUERYID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $SpQueryID = trim($SpQueryID);
+       $SpQueryID = trim($SpQueryID ?? '');
        if (!ctype_digit(strval($SpQueryID)) && trim(strval($SpQueryID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -623,10 +623,10 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setCreatedByAgentID($CreatedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID)) > huh_spqueryfield::CREATEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$CreatedByAgentID ?? '')) > huh_spqueryfield::CREATEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $CreatedByAgentID = trim($CreatedByAgentID);
+       $CreatedByAgentID = trim($CreatedByAgentID ?? '');
        if (!ctype_digit(strval($CreatedByAgentID)) && trim(strval($CreatedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -642,10 +642,10 @@ class huh_spqueryfield implements  model , loadableModel, saveableModel, tableSc
        }
    }
    public function setModifiedByAgentID($ModifiedByAgentID) {
-       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID)) > huh_spqueryfield::MODIFIEDBYAGENTID_SIZE) { 
+       if (strlen(preg_replace('/[^0-9]/','',$ModifiedByAgentID ?? '')) > huh_spqueryfield::MODIFIEDBYAGENTID_SIZE) { 
            throw new Exception('Value has too many digits for the field length.');
        } 
-       $ModifiedByAgentID = trim($ModifiedByAgentID);
+       $ModifiedByAgentID = trim($ModifiedByAgentID ?? '');
        if (!ctype_digit(strval($ModifiedByAgentID)) && trim(strval($ModifiedByAgentID))!='' ) {
              throw new Exception("Value must be an integer");
        }
@@ -927,8 +927,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
                // change to a like search if a wildcard character is present
-               if (!(strpos($searchTerm,'%')===false)) { $operator = 'like'; }
-               if (!(strpos($searchTerm,'_')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','%')===false)) { $operator = 'like'; }
+               if (!(strpos($searchTerm ?? '','_')===false)) { $operator = 'like'; }
                if ($searchTerm=='[NULL]') { 
                    $wherebit .= "$and ($fieldname is null or $fieldname='') "; 
                } else { 
@@ -1014,11 +1014,11 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
        if ($result = $connection->query($sql)) { 
           while ($row = $result->fetch_row()) {
              if ($row) {
-                $pkval = trim($row[0]);
-                $fval = trim($row[1]);
+                $pkval = trim($row[0] ?? '');
+                $fval = trim($row[1] ?? '');
                 if ($pkval!='') { 
-                    $pkval = str_replace('"','&quot;',$pkval);
-                    $fval = str_replace('"','&quot;',$fval);
+                    $pkval = str_replace('"','&quot;',$pkval ?? '');
+                    $fval = str_replace('"','&quot;',$fval ?? '');
                     $returnvalue .= $comma . ' { "id":"'.$pkval.'", "fields": "'.$fval.'" } ';
                     $comma = ', ';
                 }
@@ -1046,8 +1046,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
              $stmt->execute();
              $stmt->bind_result($val);
              while ($stmt->fetch()) {
-                $val = trim($val);                if ($val!='') { 
-                    $val = str_replace('"','&quot;',$val);
+                $val = trim($val ?? '');                if ($val!='') { 
+                    $val = str_replace('"','&quot;',$val ?? '');
                     $returnvalue .= $comma . ' { "'.$field.'":"'.$val.'" } ';
                     $comma = ', ';
                  }
@@ -1069,8 +1069,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpQueryFieldID FROM spqueryfield WHERE SpQueryID $operator '$searchTerm'";
         $preparedsql = "SELECT SpQueryFieldID FROM spqueryfield WHERE SpQueryID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1092,8 +1092,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpQueryFieldID FROM spqueryfield WHERE CreatedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpQueryFieldID FROM spqueryfield WHERE CreatedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1115,8 +1115,8 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
         $returnvalue = array();
         $operator = "=";
         // change to a like search if a wildcard character is present
-        if (!(strpos($searchTerm,"%")===false)) { $operator = "like"; }
-        if (!(strpos($searchTerm,"_")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"%")===false)) { $operator = "like"; }
+        if (!(strpos($searchTerm ?? '',"_")===false)) { $operator = "like"; }
         $sql = "SELECT SpQueryFieldID FROM spqueryfield WHERE ModifiedByAgentID $operator '$searchTerm'";
         $preparedsql = "SELECT SpQueryFieldID FROM spqueryfield WHERE ModifiedByAgentID $operator ? ";
         if ($statement = $connection->prepare($preparedsql)) { 
@@ -1152,7 +1152,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1180,7 +1180,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1208,7 +1208,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
               if ($row) {
                   $count = $row[0];
                   $val = $row[1];
-                  $escaped = urlencode($row[1]);
+                  $escaped = urlencode($row[1] ?? '');
                   if ($val=='') {
                      $val = '[NULL]'; 
                      $escaped = urlencode('[NULL]');
@@ -1245,7 +1245,7 @@ if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null pri
 
    public function hasField($fieldname) {
        $returnvalue = false;
-       if (trim($fieldname)!='' && trim($fieldname)!=',') {
+       if (trim($fieldname ?? '')!='' && trim($fieldname ?? '')!=',') {
             if (strpos(self::FIELDLIST," $fieldname, ")!==false) { 
                $returnvalue = true;
             }
@@ -1272,15 +1272,15 @@ class huh_spqueryfieldView implements viewer
    // @param $editLinkURL default '' allows adding a link to show this record in an editing form.
    public function getDetailsView($includeRelated=true, $editLinkURL='') {
        $returnvalue = '<ul>';
-       $editLinkURL=trim($editLinkURL);
+       $editLinkURL=trim($editLinkURL ?? '');
        $model = $this->model;
        $primarykeys = $model->schemaPK();
        if ($editLinkURL!='') { 
-          if (!preg_match('/\&$/',$editLinkURL)) { $editLinkURL .= '&'; } 
+          if (!preg_match('/\&$/',$editLinkURL ?? '')) { $editLinkURL .= '&'; } 
           $nullpk = false; 
           foreach ($primarykeys as $primarykey) { 
               // Add fieldname=value pairs for primary key(s) to editLinkURL. 
-              $editLinkURL .= urlencode($primarykey) . '=' . urlencode($model->keyGet($primarykey));
+              $editLinkURL .= urlencode($primarykey ?? '') . '=' . urlencode($model->keyGet($primarykey));
               if ($model->keyGet($primarykey)=='') { $nullpk = true; } 
           }
           if (!$nullpk) { $returnvalue .= "<li>huh_spqueryfield <a href='$editLinkURL'>Edit</a></li>\n";  } 
