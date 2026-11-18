@@ -154,7 +154,7 @@ class huh_accession implements  model , loadableModel, saveableModel, tableSchem
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_accession(){
+   function __construct(){
        $this->AccessionID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -189,16 +189,12 @@ class huh_accession implements  model , loadableModel, saveableModel, tableSchem
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -815,7 +811,7 @@ class huh_accession implements  model , loadableModel, saveableModel, tableSchem
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setAccessionID($pk[AccessionID]);
+                 $this->setAccessionID($pk['AccessionID']);
              } else { ;
                  $this->setAccessionID($pk);
              };
@@ -887,7 +883,7 @@ class huh_accession implements  model , loadableModel, saveableModel, tableSchem
         } else {
             $sql  = 'INSERT INTO accession ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( AccessionID ,  TimestampCreated ,  TimestampModified ,  Version ,  AccessionCondition ,  AccessionNumber ,  AltAccessionNumber ,  DateAccessioned ,  DateAcknowledged ,  DateReceived ,  Number1 ,  Number2 ,  Remarks ,  Status ,  Text1 ,  Text2 ,  Text3 ,  TotalValue ,  Type ,  VerbatimDate ,  YesNo1 ,  YesNo2 ,  DivisionID ,  CreatedByAgentID ,  ModifiedByAgentID ,  AddressOfRecordID ,  RepositoryAgreementID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -1011,6 +1007,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -1100,23 +1098,23 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: DivisionID
       $t = new division();
       $t->load(getDivisionID());
-      $returnvalue[DivisionID] = $t;
+      $returnvalue['DivisionID'] = $t;
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: AddressOfRecordID
       $t = new addressofrecord();
       $t->load(getAddressOfRecordID());
-      $returnvalue[AddressOfRecordID] = $t;
+      $returnvalue['AddressOfRecordID'] = $t;
        // fk: RepositoryAgreementID
       $t = new repositoryagreement();
       $t->load(getRepositoryAgreementID());
-      $returnvalue[RepositoryAgreementID] = $t;
+      $returnvalue['RepositoryAgreementID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -1145,7 +1143,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -1158,7 +1156,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM accession order by $fieldesc $order ";
           $comma = '';
@@ -1877,7 +1875,7 @@ class huh_accessionView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_accession">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new AccessionID"; 
        } else { 

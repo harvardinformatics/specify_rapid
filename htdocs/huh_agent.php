@@ -178,7 +178,7 @@ class huh_agent implements  model , loadableModel, saveableModel, tableSchema
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_agent(){
+   function __construct(){
        $this->AgentID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -219,16 +219,12 @@ class huh_agent implements  model , loadableModel, saveableModel, tableSchema
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -971,7 +967,7 @@ class huh_agent implements  model , loadableModel, saveableModel, tableSchema
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setAgentID($pk[AgentID]);
+                 $this->setAgentID($pk['AgentID']);
              } else { ;
                  $this->setAgentID($pk);
              };
@@ -1051,7 +1047,7 @@ class huh_agent implements  model , loadableModel, saveableModel, tableSchema
         } else {
             $sql  = 'INSERT INTO agent ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( AgentID ,  TimestampCreated ,  TimestampModified ,  Version ,  Abbreviation ,  AgentType ,  DateOfBirth ,  DateOfBirthConfidence ,  DateOfBirthPrecision ,  DateOfDeath ,  DateOfDeathConfidence ,  DateOfDeathPrecision ,  DatesType ,  Email ,  FirstName ,  GUID ,  Initials ,  Interests ,  JobTitle ,  LastName ,  MiddleInitial ,  Remarks ,  Title ,  URL ,  InstitutionCCID ,  CollectionCCID ,  CreatedByAgentID ,  ModifiedByAgentID ,  SpecifyUserID ,  CollectionTCID ,  DivisionID ,  InstitutionTCID ,  ParentOrganizationID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -1181,6 +1177,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -1838,39 +1836,39 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: InstitutionCCID
       $t = new institution();
       $t->load(getInstitutionCCID());
-      $returnvalue[InstitutionCCID] = $t;
+      $returnvalue['InstitutionCCID'] = $t;
        // fk: CollectionCCID
       $t = new collection();
       $t->load(getCollectionCCID());
-      $returnvalue[CollectionCCID] = $t;
+      $returnvalue['CollectionCCID'] = $t;
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: SpecifyUserID
       $t = new specifyuser();
       $t->load(getSpecifyUserID());
-      $returnvalue[SpecifyUserID] = $t;
+      $returnvalue['SpecifyUserID'] = $t;
        // fk: CollectionTCID
       $t = new collection();
       $t->load(getCollectionTCID());
-      $returnvalue[CollectionTCID] = $t;
+      $returnvalue['CollectionTCID'] = $t;
        // fk: DivisionID
       $t = new division();
       $t->load(getDivisionID());
-      $returnvalue[DivisionID] = $t;
+      $returnvalue['DivisionID'] = $t;
        // fk: InstitutionTCID
       $t = new institution();
       $t->load(getInstitutionTCID());
-      $returnvalue[InstitutionTCID] = $t;
+      $returnvalue['InstitutionTCID'] = $t;
        // fk: ParentOrganizationID
       $t = new agent();
       $t->load(getParentOrganizationID());
-      $returnvalue[ParentOrganizationID] = $t;
+      $returnvalue['ParentOrganizationID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -1899,7 +1897,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -1912,7 +1910,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM agent order by $fieldesc $order ";
           $comma = '';
@@ -3011,7 +3009,7 @@ class huh_agentView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_agent">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new AgentID"; 
        } else { 

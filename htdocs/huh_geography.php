@@ -166,7 +166,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_geography(){
+   function __construct(){
        $this->GeographyID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -204,16 +204,12 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -915,7 +911,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setGeographyID($pk[GeographyID]);
+                 $this->setGeographyID($pk['GeographyID']);
              } else { ;
                  $this->setGeographyID($pk);
              };
@@ -990,7 +986,7 @@ class huh_geography implements  model , loadableModel, saveableModel, tableSchem
         } else {
             $sql  = 'INSERT INTO geography ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( GeographyID ,  TimestampCreated ,  TimestampModified ,  Version ,  Abbrev ,  CentroidLat ,  CentroidLon ,  CommonName ,  FullName ,  GeographyCode ,  GML ,  GUID ,  HighestChildNodeNumber ,  IsAccepted ,  IsCurrent ,  Name ,  NodeNumber ,  Number1 ,  Number2 ,  RankID ,  Remarks ,  Text1 ,  Text2 ,  TimestampVersion ,  GeographyTreeDefItemID ,  CreatedByAgentID ,  ParentID ,  AcceptedID ,  ModifiedByAgentID ,  GeographyTreeDefID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -1117,6 +1113,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -1190,27 +1188,27 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: GeographyTreeDefItemID
       $t = new geographytreedefitem();
       $t->load(getGeographyTreeDefItemID());
-      $returnvalue[GeographyTreeDefItemID] = $t;
+      $returnvalue['GeographyTreeDefItemID'] = $t;
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: ParentID
       $t = new geography();
       $t->load(getParentID());
-      $returnvalue[ParentID] = $t;
+      $returnvalue['ParentID'] = $t;
        // fk: AcceptedID
       $t = new geography();
       $t->load(getAcceptedID());
-      $returnvalue[AcceptedID] = $t;
+      $returnvalue['AcceptedID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: GeographyTreeDefID
       $t = new geographytreedef();
       $t->load(getGeographyTreeDefID());
-      $returnvalue[GeographyTreeDefID] = $t;
+      $returnvalue['GeographyTreeDefID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -1239,7 +1237,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -1252,7 +1250,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM geography order by $fieldesc $order ";
           $comma = '';
@@ -2153,7 +2151,7 @@ class huh_geographyView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_geography">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new GeographyID"; 
        } else { 

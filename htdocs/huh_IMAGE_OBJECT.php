@@ -130,7 +130,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_IMAGE_OBJECT(){
+   function __construct(){
        $this->ID = NULL;
        $this->IMAGE_SET_ID = '';
        $this->OBJECT_TYPE_ID = '';
@@ -159,16 +159,12 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -663,7 +659,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setID($pk[ID]);
+                 $this->setID($pk['ID']);
              } else { ;
                  $this->setID($pk);
              };
@@ -729,7 +725,7 @@ class huh_IMAGE_OBJECT implements  model , loadableModel, saveableModel, tableSc
         } else {
             $sql  = 'INSERT INTO IMAGE_OBJECT ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( ID ,  IMAGE_SET_ID ,  OBJECT_TYPE_ID ,  REPOSITORY_ID ,  MIME_TYPE_ID ,  BITS_PER_SAMPLE_ID ,  COMPRESSION_ID ,  PHOTO_INTERP_ID ,  ACTIVE_FLAG ,  ALTERED_FLAG ,  IN_PROCESS_FLAG ,  ORDINAL ,  PIXEL_WIDTH ,  PIXEL_HEIGHT ,  CREATE_DATE ,  RESOLUTION ,  FILE_SIZE ,  OBJECT_NAME ,  URI ,  SIGNATURE ,  COLOR_TARGET_ID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -847,6 +843,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -929,7 +927,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -942,7 +940,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM IMAGE_OBJECT order by $fieldesc $order ";
           $comma = '';
@@ -1219,7 +1217,7 @@ class huh_IMAGE_OBJECTView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_IMAGE_OBJECT">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new ID"; 
        } else { 

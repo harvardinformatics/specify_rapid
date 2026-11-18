@@ -54,7 +54,7 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_specifyuser_spprincipal(){
+   function __construct(){
        $this->SpecifyUserID = NULL;
        $this->SpPrincipalID = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -199,8 +195,8 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setSpecifyUserID($pk[SpecifyUserID]);
-             $this->setSpPrincipalID($pk[SpPrincipalID]);
+             $this->setSpecifyUserID($pk['SpecifyUserID']);
+             $this->setSpPrincipalID($pk['SpPrincipalID']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -208,7 +204,7 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(SpecifyUserID != NULL  && SpPrincipalID != NULL ) {
+        if($this->SpecifyUserID != NULL  && $this->SpPrincipalID != NULL ) {
            $sql = 'SELECT SpecifyUserID, SpPrincipalID FROM specifyuser_spprincipal WHERE SpecifyUserID = "'. $this->SpecifyUserID.'"  and SpPrincipalID = "'. $this->SpPrincipalID.'" ' ;
 
            $preparesql = 'SELECT SpecifyUserID, SpPrincipalID FROM specifyuser_spprincipal WHERE SpecifyUserID = ? SpPrincipalID = ?  ';
@@ -279,7 +275,7 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(SpecifyUserID != NULL  && SpPrincipalID != NULL ) {
+        if($this->SpecifyUserID != NULL  && $this->SpPrincipalID != NULL ) {
            $sql = 'SELECT SpecifyUserID, SpPrincipalID FROM specifyuser_spprincipal WHERE SpecifyUserID = "'.$this->SpecifyUserID.'"  and SpPrincipalID = "'.$this->SpPrincipalID.'"  ' ;
 
            $preparedsql = 'SELECT  FROM specifyuser_spprincipal WHERE  and SpecifyUserID = ?  and SpPrincipalID = ?  ' ;
@@ -345,6 +341,8 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -402,11 +400,11 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
        // fk: SpecifyUserID
       $t = new specifyuser();
       $t->load(getSpecifyUserID());
-      $returnvalue[SpecifyUserID] = $t;
+      $returnvalue['SpecifyUserID'] = $t;
        // fk: SpPrincipalID
       $t = new spprincipal();
       $t->load(getSpPrincipalID());
-      $returnvalue[SpPrincipalID] = $t;
+      $returnvalue['SpPrincipalID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -435,7 +433,7 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -448,7 +446,7 @@ class huh_specifyuser_spprincipal implements  model , loadableModel, saveableMod
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM specifyuser_spprincipal order by $fieldesc $order ";
           $comma = '';
@@ -610,7 +608,7 @@ class huh_specifyuser_spprincipalView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_specifyuser_spprincipal">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_specifyuser_spprincipal::SPECIFYUSERID.">SPECIFYUSERID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_specifyuser_spprincipal::SPECIFYUSERID." id=".huh_specifyuser_spprincipal::SPECIFYUSERID." value='".$model->getSpecifyUserID()."'  style=' width:".huh_specifyuser_spprincipal::SPECIFYUSERID_SIZE ."em;  '  maxlength='".huh_specifyuser_spprincipal::SPECIFYUSERID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_specifyuser_spprincipal::SPPRINCIPALID.">SPPRINCIPALID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_specifyuser_spprincipal::SPPRINCIPALID." id=".huh_specifyuser_spprincipal::SPPRINCIPALID." value='".$model->getSpPrincipalID()."'  style=' width:".huh_specifyuser_spprincipal::SPPRINCIPALID_SIZE ."em;  '  maxlength='".huh_specifyuser_spprincipal::SPPRINCIPALID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

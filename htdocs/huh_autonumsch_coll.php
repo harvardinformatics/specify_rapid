@@ -54,7 +54,7 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_autonumsch_coll(){
+   function __construct(){
        $this->CollectionID = NULL;
        $this->AutoNumberingSchemeID = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -199,8 +195,8 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setCollectionID($pk[CollectionID]);
-             $this->setAutoNumberingSchemeID($pk[AutoNumberingSchemeID]);
+             $this->setCollectionID($pk['CollectionID']);
+             $this->setAutoNumberingSchemeID($pk['AutoNumberingSchemeID']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -208,7 +204,7 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(CollectionID != NULL  && AutoNumberingSchemeID != NULL ) {
+        if($this->CollectionID != NULL  && $this->AutoNumberingSchemeID != NULL ) {
            $sql = 'SELECT CollectionID, AutoNumberingSchemeID FROM autonumsch_coll WHERE CollectionID = "'. $this->CollectionID.'"  and AutoNumberingSchemeID = "'. $this->AutoNumberingSchemeID.'" ' ;
 
            $preparesql = 'SELECT CollectionID, AutoNumberingSchemeID FROM autonumsch_coll WHERE CollectionID = ? AutoNumberingSchemeID = ?  ';
@@ -279,7 +275,7 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(CollectionID != NULL  && AutoNumberingSchemeID != NULL ) {
+        if($this->CollectionID != NULL  && $this->AutoNumberingSchemeID != NULL ) {
            $sql = 'SELECT CollectionID, AutoNumberingSchemeID FROM autonumsch_coll WHERE CollectionID = "'.$this->CollectionID.'"  and AutoNumberingSchemeID = "'.$this->AutoNumberingSchemeID.'"  ' ;
 
            $preparedsql = 'SELECT  FROM autonumsch_coll WHERE  and CollectionID = ?  and AutoNumberingSchemeID = ?  ' ;
@@ -345,6 +341,8 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -402,11 +400,11 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
        // fk: CollectionID
       $t = new collection();
       $t->load(getCollectionID());
-      $returnvalue[CollectionID] = $t;
+      $returnvalue['CollectionID'] = $t;
        // fk: AutoNumberingSchemeID
       $t = new autonumberingscheme();
       $t->load(getAutoNumberingSchemeID());
-      $returnvalue[AutoNumberingSchemeID] = $t;
+      $returnvalue['AutoNumberingSchemeID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -435,7 +433,7 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -448,7 +446,7 @@ class huh_autonumsch_coll implements  model , loadableModel, saveableModel, tabl
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM autonumsch_coll order by $fieldesc $order ";
           $comma = '';
@@ -610,7 +608,7 @@ class huh_autonumsch_collView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_autonumsch_coll">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_autonumsch_coll::COLLECTIONID.">COLLECTIONID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_autonumsch_coll::COLLECTIONID." id=".huh_autonumsch_coll::COLLECTIONID." value='".$model->getCollectionID()."'  style=' width:".huh_autonumsch_coll::COLLECTIONID_SIZE ."em;  '  maxlength='".huh_autonumsch_coll::COLLECTIONID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_autonumsch_coll::AUTONUMBERINGSCHEMEID.">AUTONUMBERINGSCHEMEID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_autonumsch_coll::AUTONUMBERINGSCHEMEID." id=".huh_autonumsch_coll::AUTONUMBERINGSCHEMEID." value='".$model->getAutoNumberingSchemeID()."'  style=' width:".huh_autonumsch_coll::AUTONUMBERINGSCHEMEID_SIZE ."em;  '  maxlength='".huh_autonumsch_coll::AUTONUMBERINGSCHEMEID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

@@ -102,7 +102,7 @@ class huh_splocaleitemstr implements  model , loadableModel, saveableModel, tabl
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_splocaleitemstr(){
+   function __construct(){
        $this->SpLocaleItemStrID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -124,16 +124,12 @@ class huh_splocaleitemstr implements  model , loadableModel, saveableModel, tabl
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -503,7 +499,7 @@ class huh_splocaleitemstr implements  model , loadableModel, saveableModel, tabl
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setSpLocaleItemStrID($pk[SpLocaleItemStrID]);
+                 $this->setSpLocaleItemStrID($pk['SpLocaleItemStrID']);
              } else { ;
                  $this->setSpLocaleItemStrID($pk);
              };
@@ -562,7 +558,7 @@ class huh_splocaleitemstr implements  model , loadableModel, saveableModel, tabl
         } else {
             $sql  = 'INSERT INTO splocaleitemstr ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( SpLocaleItemStrID ,  TimestampCreated ,  TimestampModified ,  Version ,  Country ,  Language ,  Text ,  Variant ,  SpLocaleContainerItemDescID ,  SpLocaleContainerDescID ,  CreatedByAgentID ,  ModifiedByAgentID ,  SpLocaleContainerItemNameID ,  SpLocaleContainerNameID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -673,6 +669,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -734,27 +732,27 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: SpLocaleContainerItemDescID
       $t = new splocalecontaineritem();
       $t->load(getSpLocaleContainerItemDescID());
-      $returnvalue[SpLocaleContainerItemDescID] = $t;
+      $returnvalue['SpLocaleContainerItemDescID'] = $t;
        // fk: SpLocaleContainerDescID
       $t = new splocalecontainer();
       $t->load(getSpLocaleContainerDescID());
-      $returnvalue[SpLocaleContainerDescID] = $t;
+      $returnvalue['SpLocaleContainerDescID'] = $t;
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: SpLocaleContainerItemNameID
       $t = new splocalecontaineritem();
       $t->load(getSpLocaleContainerItemNameID());
-      $returnvalue[SpLocaleContainerItemNameID] = $t;
+      $returnvalue['SpLocaleContainerItemNameID'] = $t;
        // fk: SpLocaleContainerNameID
       $t = new splocalecontainer();
       $t->load(getSpLocaleContainerNameID());
-      $returnvalue[SpLocaleContainerNameID] = $t;
+      $returnvalue['SpLocaleContainerNameID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -783,7 +781,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -796,7 +794,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM splocaleitemstr order by $fieldesc $order ";
           $comma = '';
@@ -1471,7 +1469,7 @@ class huh_splocaleitemstrView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_splocaleitemstr">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new SpLocaleItemStrID"; 
        } else { 

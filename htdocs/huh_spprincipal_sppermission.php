@@ -54,7 +54,7 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_spprincipal_sppermission(){
+   function __construct(){
        $this->SpPermissionID = NULL;
        $this->SpPrincipalID = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -199,8 +195,8 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setSpPermissionID($pk[SpPermissionID]);
-             $this->setSpPrincipalID($pk[SpPrincipalID]);
+             $this->setSpPermissionID($pk['SpPermissionID']);
+             $this->setSpPrincipalID($pk['SpPrincipalID']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -208,7 +204,7 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(SpPermissionID != NULL  && SpPrincipalID != NULL ) {
+        if($this->SpPermissionID != NULL  && $this->SpPrincipalID != NULL ) {
            $sql = 'SELECT SpPermissionID, SpPrincipalID FROM spprincipal_sppermission WHERE SpPermissionID = "'. $this->SpPermissionID.'"  and SpPrincipalID = "'. $this->SpPrincipalID.'" ' ;
 
            $preparesql = 'SELECT SpPermissionID, SpPrincipalID FROM spprincipal_sppermission WHERE SpPermissionID = ? SpPrincipalID = ?  ';
@@ -279,7 +275,7 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(SpPermissionID != NULL  && SpPrincipalID != NULL ) {
+        if($this->SpPermissionID != NULL  && $this->SpPrincipalID != NULL ) {
            $sql = 'SELECT SpPermissionID, SpPrincipalID FROM spprincipal_sppermission WHERE SpPermissionID = "'.$this->SpPermissionID.'"  and SpPrincipalID = "'.$this->SpPrincipalID.'"  ' ;
 
            $preparedsql = 'SELECT  FROM spprincipal_sppermission WHERE  and SpPermissionID = ?  and SpPrincipalID = ?  ' ;
@@ -345,6 +341,8 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -402,11 +400,11 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
        // fk: SpPermissionID
       $t = new sppermission();
       $t->load(getSpPermissionID());
-      $returnvalue[SpPermissionID] = $t;
+      $returnvalue['SpPermissionID'] = $t;
        // fk: SpPrincipalID
       $t = new spprincipal();
       $t->load(getSpPrincipalID());
-      $returnvalue[SpPrincipalID] = $t;
+      $returnvalue['SpPrincipalID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -435,7 +433,7 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -448,7 +446,7 @@ class huh_spprincipal_sppermission implements  model , loadableModel, saveableMo
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM spprincipal_sppermission order by $fieldesc $order ";
           $comma = '';
@@ -610,7 +608,7 @@ class huh_spprincipal_sppermissionView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_spprincipal_sppermission">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_spprincipal_sppermission::SPPERMISSIONID.">SPPERMISSIONID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_spprincipal_sppermission::SPPERMISSIONID." id=".huh_spprincipal_sppermission::SPPERMISSIONID." value='".$model->getSpPermissionID()."'  style=' width:".huh_spprincipal_sppermission::SPPERMISSIONID_SIZE ."em;  '  maxlength='".huh_spprincipal_sppermission::SPPERMISSIONID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_spprincipal_sppermission::SPPRINCIPALID.">SPPRINCIPALID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_spprincipal_sppermission::SPPRINCIPALID." id=".huh_spprincipal_sppermission::SPPRINCIPALID." value='".$model->getSpPrincipalID()."'  style=' width:".huh_spprincipal_sppermission::SPPRINCIPALID_SIZE ."em;  '  maxlength='".huh_spprincipal_sppermission::SPPRINCIPALID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

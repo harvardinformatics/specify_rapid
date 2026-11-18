@@ -54,7 +54,7 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_project_colobj(){
+   function __construct(){
        $this->ProjectID = NULL;
        $this->CollectionObjectID = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -199,8 +195,8 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setProjectID($pk[ProjectID]);
-             $this->setCollectionObjectID($pk[CollectionObjectID]);
+             $this->setProjectID($pk['ProjectID']);
+             $this->setCollectionObjectID($pk['CollectionObjectID']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -208,7 +204,7 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(ProjectID != NULL  && CollectionObjectID != NULL ) {
+        if($this->ProjectID != NULL  && $this->CollectionObjectID != NULL ) {
            $sql = 'SELECT ProjectID, CollectionObjectID FROM project_colobj WHERE ProjectID = "'. $this->ProjectID.'"  and CollectionObjectID = "'. $this->CollectionObjectID.'" ' ;
 
            $preparesql = 'SELECT ProjectID, CollectionObjectID FROM project_colobj WHERE ProjectID = ? CollectionObjectID = ?  ';
@@ -279,7 +275,7 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(ProjectID != NULL  && CollectionObjectID != NULL ) {
+        if($this->ProjectID != NULL  && $this->CollectionObjectID != NULL ) {
            $sql = 'SELECT ProjectID, CollectionObjectID FROM project_colobj WHERE ProjectID = "'.$this->ProjectID.'"  and CollectionObjectID = "'.$this->CollectionObjectID.'"  ' ;
 
            $preparedsql = 'SELECT  FROM project_colobj WHERE  and ProjectID = ?  and CollectionObjectID = ?  ' ;
@@ -345,6 +341,8 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -402,11 +400,11 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
        // fk: ProjectID
       $t = new project();
       $t->load(getProjectID());
-      $returnvalue[ProjectID] = $t;
+      $returnvalue['ProjectID'] = $t;
        // fk: CollectionObjectID
       $t = new collectionobject();
       $t->load(getCollectionObjectID());
-      $returnvalue[CollectionObjectID] = $t;
+      $returnvalue['CollectionObjectID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -435,7 +433,7 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -448,7 +446,7 @@ class huh_project_colobj implements  model , loadableModel, saveableModel, table
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM project_colobj order by $fieldesc $order ";
           $comma = '';
@@ -610,7 +608,7 @@ class huh_project_colobjView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_project_colobj">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_project_colobj::PROJECTID.">PROJECTID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_project_colobj::PROJECTID." id=".huh_project_colobj::PROJECTID." value='".$model->getProjectID()."'  style=' width:".huh_project_colobj::PROJECTID_SIZE ."em;  '  maxlength='".huh_project_colobj::PROJECTID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_project_colobj::COLLECTIONOBJECTID.">COLLECTIONOBJECTID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_project_colobj::COLLECTIONOBJECTID." id=".huh_project_colobj::COLLECTIONOBJECTID." value='".$model->getCollectionObjectID()."'  style=' width:".huh_project_colobj::COLLECTIONOBJECTID_SIZE ."em;  '  maxlength='".huh_project_colobj::COLLECTIONOBJECTID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

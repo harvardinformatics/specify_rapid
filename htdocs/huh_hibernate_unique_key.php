@@ -51,7 +51,7 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_hibernate_unique_key(){
+   function __construct(){
        $this->next_hi = '';
        $this->dirty = false;
        $this->loaded = false;
@@ -60,16 +60,12 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -239,7 +235,7 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -252,7 +248,7 @@ class huh_hibernate_unique_key implements  model , loadableModel, saveableModel,
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM hibernate_unique_key order by $fieldesc $order ";
           $comma = '';
@@ -394,7 +390,7 @@ class huh_hibernate_unique_keyView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_hibernate_unique_key">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_hibernate_unique_key::NEXT_HI.">NEXT_HI</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_hibernate_unique_key::NEXT_HI." id=".huh_hibernate_unique_key::NEXT_HI." value='".$model->getnext_hi()."'  style=' width:".huh_hibernate_unique_key::NEXT_HI_SIZE ."em;  '  maxlength='".huh_hibernate_unique_key::NEXT_HI_SIZE ."' ></div>\n";
        if ($includeRelated) { 
            // note that $includeRelated is provided as false in calls out to

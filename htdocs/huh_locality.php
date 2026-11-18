@@ -194,7 +194,7 @@ class huh_locality implements  model , loadableModel, saveableModel, tableSchema
    //---------------------------------------------------------------------------
 
    // constructor
-   function huh_locality(){
+   function __construct(){
        $this->LocalityID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -239,16 +239,12 @@ class huh_locality implements  model , loadableModel, saveableModel, tableSchema
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -1071,7 +1067,7 @@ class huh_locality implements  model , loadableModel, saveableModel, tableSchema
         $returnvalue = false;
         try {
              if (is_array($pk)) {
-                 $this->setLocalityID($pk[LocalityID]);
+                 $this->setLocalityID($pk['LocalityID']);
              } else { ;
                  $this->setLocalityID($pk);
              };
@@ -1153,7 +1149,7 @@ class huh_locality implements  model , loadableModel, saveableModel, tableSchema
         } else {
             $sql  = 'INSERT INTO locality ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( LocalityID ,  TimestampCreated ,  TimestampModified ,  Version ,  Datum ,  ElevationAccuracy ,  ElevationMethod ,  GML ,  GUID ,  Lat1Text ,  Lat2Text ,  LatLongAccuracy ,  LatLongMethod ,  LatLongType ,  Latitude1 ,  Latitude2 ,  LocalityName ,  Long1Text ,  Long2Text ,  Longitude1 ,  Longitude2 ,  MaxElevation ,  MinElevation ,  NamedPlace ,  OriginalElevationUnit ,  OriginalLatLongUnit ,  RelationToNamedPlace ,  Remarks ,  ShortName ,  SrcLatLongUnit ,  VerbatimElevation ,  Visibility ,  DisciplineID ,  ModifiedByAgentID ,  VisibilitySetByID ,  CreatedByAgentID ,  GeographyID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -1287,6 +1283,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) {
                $operator = '=';
@@ -1421,7 +1419,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else {
-          $this->error = mysqli_error();
+          $this->error = mysqli_error($connection);
        }
        $result->close();
        return $returnvalue;
@@ -1434,7 +1432,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) {
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; }
           $preparemysql = "SELECT DISTINCT $fieldesc FROM locality order by $fieldesc $order ";
           $comma = '';
@@ -2247,7 +2245,7 @@ class huh_localityView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_locality">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) {
           $returnvalue .= "Add a new LocalityID";
        } else {

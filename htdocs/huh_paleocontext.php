@@ -122,7 +122,7 @@ class huh_paleocontext implements  model , loadableModel, saveableModel, tableSc
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_paleocontext(){
+   function __construct(){
        $this->PaleoContextID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -149,16 +149,12 @@ class huh_paleocontext implements  model , loadableModel, saveableModel, tableSc
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -623,7 +619,7 @@ class huh_paleocontext implements  model , loadableModel, saveableModel, tableSc
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setPaleoContextID($pk[PaleoContextID]);
+                 $this->setPaleoContextID($pk['PaleoContextID']);
              } else { ;
                  $this->setPaleoContextID($pk);
              };
@@ -687,7 +683,7 @@ class huh_paleocontext implements  model , loadableModel, saveableModel, tableSc
         } else {
             $sql  = 'INSERT INTO paleocontext ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( PaleoContextID ,  TimestampCreated ,  TimestampModified ,  Version ,  CollectionMemberID ,  BottomDistance ,  Direction ,  DistanceUnits ,  PositionState ,  Text1 ,  Text2 ,  TopDistance ,  YesNo1 ,  YesNo2 ,  CreatedByAgentID ,  LithoStratID ,  ChronosStratID ,  ModifiedByAgentID ,  BioStratID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -803,6 +799,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -868,23 +866,23 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: LithoStratID
       $t = new lithostrat();
       $t->load(getLithoStratID());
-      $returnvalue[LithoStratID] = $t;
+      $returnvalue['LithoStratID'] = $t;
        // fk: ChronosStratID
       $t = new geologictimeperiod();
       $t->load(getChronosStratID());
-      $returnvalue[ChronosStratID] = $t;
+      $returnvalue['ChronosStratID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: BioStratID
       $t = new geologictimeperiod();
       $t->load(getBioStratID());
-      $returnvalue[BioStratID] = $t;
+      $returnvalue['BioStratID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -913,7 +911,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -926,7 +924,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM paleocontext order by $fieldesc $order ";
           $comma = '';
@@ -1505,7 +1503,7 @@ class huh_paleocontextView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_paleocontext">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new PaleoContextID"; 
        } else { 

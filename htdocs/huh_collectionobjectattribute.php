@@ -330,7 +330,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_collectionobjectattribute(){
+   function __construct(){
        $this->CollectionObjectAttributeID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -409,16 +409,12 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -1859,7 +1855,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setCollectionObjectAttributeID($pk[CollectionObjectAttributeID]);
+                 $this->setCollectionObjectAttributeID($pk['CollectionObjectAttributeID']);
              } else { ;
                  $this->setCollectionObjectAttributeID($pk);
              };
@@ -1975,7 +1971,7 @@ class huh_collectionobjectattribute implements  model , loadableModel, saveableM
         } else {
             $sql  = 'INSERT INTO collectionobjectattribute ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( CollectionObjectAttributeID ,  TimestampCreated ,  TimestampModified ,  Version ,  CollectionMemberID ,  Number1 ,  Number10 ,  Number11 ,  Number12 ,  Number13 ,  Number14 ,  Number15 ,  Number16 ,  Number17 ,  Number18 ,  Number19 ,  Number2 ,  Number20 ,  Number21 ,  Number22 ,  Number23 ,  Number24 ,  Number25 ,  Number26 ,  Number27 ,  Number28 ,  Number29 ,  Number3 ,  Number30 ,  Number31 ,  Number32 ,  Number33 ,  Number34 ,  Number35 ,  Number36 ,  Number37 ,  Number38 ,  Number39 ,  Number4 ,  Number40 ,  Number41 ,  Number42 ,  Number5 ,  Number6 ,  Number7 ,  Number8 ,  Number9 ,  Remarks ,  Text1 ,  Text10 ,  Text11 ,  Text12 ,  Text13 ,  Text14 ,  Text2 ,  Text3 ,  Text4 ,  Text5 ,  Text6 ,  Text7 ,  Text8 ,  Text9 ,  YesNo1 ,  YesNo2 ,  YesNo3 ,  YesNo4 ,  YesNo5 ,  YesNo6 ,  YesNo7 ,  CreatedByAgentID ,  ModifiedByAgentID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -2143,6 +2139,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -2208,11 +2206,11 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -2241,7 +2239,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -2254,7 +2252,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM collectionobjectattribute order by $fieldesc $order ";
           $comma = '';
@@ -2855,7 +2853,7 @@ class huh_collectionobjectattributeView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_collectionobjectattribute">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new CollectionObjectAttributeID"; 
        } else { 

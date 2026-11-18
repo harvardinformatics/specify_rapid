@@ -54,7 +54,7 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_agent_discipline(){
+   function __construct(){
        $this->AgentID = NULL;
        $this->DisciplineID = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -199,8 +195,8 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setAgentID($pk[AgentID]);
-             $this->setDisciplineID($pk[DisciplineID]);
+             $this->setAgentID($pk['AgentID']);
+             $this->setDisciplineID($pk['DisciplineID']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -208,7 +204,7 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(AgentID != NULL  && DisciplineID != NULL ) {
+        if($this->AgentID != NULL  && $this->DisciplineID != NULL ) {
            $sql = 'SELECT AgentID, DisciplineID FROM agent_discipline WHERE AgentID = "'. $this->AgentID.'"  and DisciplineID = "'. $this->DisciplineID.'" ' ;
 
            $preparesql = 'SELECT AgentID, DisciplineID FROM agent_discipline WHERE AgentID = ? DisciplineID = ?  ';
@@ -279,7 +275,7 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(AgentID != NULL  && DisciplineID != NULL ) {
+        if($this->AgentID != NULL  && $this->DisciplineID != NULL ) {
            $sql = 'SELECT AgentID, DisciplineID FROM agent_discipline WHERE AgentID = "'.$this->AgentID.'"  and DisciplineID = "'.$this->DisciplineID.'"  ' ;
 
            $preparedsql = 'SELECT  FROM agent_discipline WHERE  and AgentID = ?  and DisciplineID = ?  ' ;
@@ -345,6 +341,8 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -402,11 +400,11 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
        // fk: AgentID
       $t = new agent();
       $t->load(getAgentID());
-      $returnvalue[AgentID] = $t;
+      $returnvalue['AgentID'] = $t;
        // fk: DisciplineID
       $t = new discipline();
       $t->load(getDisciplineID());
-      $returnvalue[DisciplineID] = $t;
+      $returnvalue['DisciplineID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -435,7 +433,7 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -448,7 +446,7 @@ class huh_agent_discipline implements  model , loadableModel, saveableModel, tab
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM agent_discipline order by $fieldesc $order ";
           $comma = '';
@@ -610,7 +608,7 @@ class huh_agent_disciplineView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_agent_discipline">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_agent_discipline::AGENTID.">AGENTID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_agent_discipline::AGENTID." id=".huh_agent_discipline::AGENTID." value='".$model->getAgentID()."'  style=' width:".huh_agent_discipline::AGENTID_SIZE ."em;  '  maxlength='".huh_agent_discipline::AGENTID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_agent_discipline::DISCIPLINEID.">DISCIPLINEID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_agent_discipline::DISCIPLINEID." id=".huh_agent_discipline::DISCIPLINEID." value='".$model->getDisciplineID()."'  style=' width:".huh_agent_discipline::DISCIPLINEID_SIZE ."em;  '  maxlength='".huh_agent_discipline::DISCIPLINEID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

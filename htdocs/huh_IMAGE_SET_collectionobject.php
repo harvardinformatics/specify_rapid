@@ -54,7 +54,7 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_IMAGE_SET_collectionobject(){
+   function __construct(){
        $this->collectionobjectid = NULL;
        $this->imagesetid = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -195,8 +191,8 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setcollectionobjectid($pk[collectionobjectid]);
-             $this->setimagesetid($pk[imagesetid]);
+             $this->setcollectionobjectid($pk['collectionobjectid']);
+             $this->setimagesetid($pk['imagesetid']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -204,7 +200,7 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(collectionobjectid != NULL  && imagesetid != NULL ) {
+        if($this->collectionobjectid != NULL  && $this->imagesetid != NULL ) {
            $sql = 'SELECT collectionobjectid, imagesetid FROM IMAGE_SET_collectionobject WHERE collectionobjectid = "'. $this->collectionobjectid.'"  and imagesetid = "'. $this->imagesetid.'" ' ;
 
            $preparesql = 'SELECT collectionobjectid, imagesetid FROM IMAGE_SET_collectionobject WHERE collectionobjectid = ? imagesetid = ?  ';
@@ -275,7 +271,7 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(collectionobjectid != NULL  && imagesetid != NULL ) {
+        if($this->collectionobjectid != NULL  && $this->imagesetid != NULL ) {
            $sql = 'SELECT collectionobjectid, imagesetid FROM IMAGE_SET_collectionobject WHERE collectionobjectid = "'.$this->collectionobjectid.'"  and imagesetid = "'.$this->imagesetid.'"  ' ;
 
            $preparedsql = 'SELECT  FROM IMAGE_SET_collectionobject WHERE  and collectionobjectid = ?  and imagesetid = ?  ' ;
@@ -341,6 +337,8 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -419,7 +417,7 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -432,7 +430,7 @@ class huh_IMAGE_SET_collectionobject implements  model , loadableModel, saveable
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM IMAGE_SET_collectionobject order by $fieldesc $order ";
           $comma = '';
@@ -686,7 +684,7 @@ class huh_IMAGE_SET_collectionobjectView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_IMAGE_SET_collectionobject">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_IMAGE_SET_collectionobject::COLLECTIONOBJECTID.">COLLECTIONOBJECTID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_IMAGE_SET_collectionobject::COLLECTIONOBJECTID." id=".huh_IMAGE_SET_collectionobject::COLLECTIONOBJECTID." value='".$model->getcollectionobjectid()."'  style=' width:".huh_IMAGE_SET_collectionobject::COLLECTIONOBJECTID_SIZE ."em;  '  maxlength='".huh_IMAGE_SET_collectionobject::COLLECTIONOBJECTID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_IMAGE_SET_collectionobject::IMAGESETID.">IMAGESETID</label><input  dojoType='dijit.form.ValidationTextBox'  name=".huh_IMAGE_SET_collectionobject::IMAGESETID." id=".huh_IMAGE_SET_collectionobject::IMAGESETID." value='".$model->getimagesetid()."'  style=' width:".huh_IMAGE_SET_collectionobject::IMAGESETID_SIZE ."em;  '  maxlength='".huh_IMAGE_SET_collectionobject::IMAGESETID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

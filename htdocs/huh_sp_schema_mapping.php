@@ -54,7 +54,7 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_sp_schema_mapping(){
+   function __construct(){
        $this->SpExportSchemaMappingID = NULL;
        $this->SpExportSchemaID = NULL;
        $this->dirty = false;
@@ -64,16 +64,12 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -199,8 +195,8 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-             $this->setSpExportSchemaMappingID($pk[SpExportSchemaMappingID]);
-             $this->setSpExportSchemaID($pk[SpExportSchemaID]);
+             $this->setSpExportSchemaMappingID($pk['SpExportSchemaMappingID']);
+             $this->setSpExportSchemaID($pk['SpExportSchemaID']);
              } else { ;
                  throw new Exception('Load given a single value, not an array, for a multiple field primary key.');
              };
@@ -208,7 +204,7 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
         catch (Exception $e) { 
              throw new Exception($e->getMessage());
         }
-        if(SpExportSchemaMappingID != NULL  && SpExportSchemaID != NULL ) {
+        if($this->SpExportSchemaMappingID != NULL  && $this->SpExportSchemaID != NULL ) {
            $sql = 'SELECT SpExportSchemaMappingID, SpExportSchemaID FROM sp_schema_mapping WHERE SpExportSchemaMappingID = "'. $this->SpExportSchemaMappingID.'"  and SpExportSchemaID = "'. $this->SpExportSchemaID.'" ' ;
 
            $preparesql = 'SELECT SpExportSchemaMappingID, SpExportSchemaID FROM sp_schema_mapping WHERE SpExportSchemaMappingID = ? SpExportSchemaID = ?  ';
@@ -279,7 +275,7 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
         // ******* Note: $connection must be a mysqli object.
         global $connection;
         $returnvalue = false;
-        if(SpExportSchemaMappingID != NULL  && SpExportSchemaID != NULL ) {
+        if($this->SpExportSchemaMappingID != NULL  && $this->SpExportSchemaID != NULL ) {
            $sql = 'SELECT SpExportSchemaMappingID, SpExportSchemaID FROM sp_schema_mapping WHERE SpExportSchemaMappingID = "'.$this->SpExportSchemaMappingID.'"  and SpExportSchemaID = "'.$this->SpExportSchemaID.'"  ' ;
 
            $preparedsql = 'SELECT  FROM sp_schema_mapping WHERE  and SpExportSchemaMappingID = ?  and SpExportSchemaID = ?  ' ;
@@ -345,6 +341,8 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -402,11 +400,11 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
        // fk: SpExportSchemaMappingID
       $t = new spexportschemamapping();
       $t->load(getSpExportSchemaMappingID());
-      $returnvalue[SpExportSchemaMappingID] = $t;
+      $returnvalue['SpExportSchemaMappingID'] = $t;
        // fk: SpExportSchemaID
       $t = new spexportschema();
       $t->load(getSpExportSchemaID());
-      $returnvalue[SpExportSchemaID] = $t;
+      $returnvalue['SpExportSchemaID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -435,7 +433,7 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -448,7 +446,7 @@ class huh_sp_schema_mapping implements  model , loadableModel, saveableModel, ta
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM sp_schema_mapping order by $fieldesc $order ";
           $comma = '';
@@ -610,7 +608,7 @@ class huh_sp_schema_mappingView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_sp_schema_mapping">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        $returnvalue .= "<div><label for=".huh_sp_schema_mapping::SPEXPORTSCHEMAMAPPINGID.">SPEXPORTSCHEMAMAPPINGID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_sp_schema_mapping::SPEXPORTSCHEMAMAPPINGID." id=".huh_sp_schema_mapping::SPEXPORTSCHEMAMAPPINGID." value='".$model->getSpExportSchemaMappingID()."'  style=' width:".huh_sp_schema_mapping::SPEXPORTSCHEMAMAPPINGID_SIZE ."em;  '  maxlength='".huh_sp_schema_mapping::SPEXPORTSCHEMAMAPPINGID_SIZE ."' ></div>\n";
        $returnvalue .= "<div><label for=".huh_sp_schema_mapping::SPEXPORTSCHEMAID.">SPEXPORTSCHEMAID</label><input  dojoType='dijit.form.ValidationTextBox'  regExp='^[0-9-]*'  invalidMessage='The value entered is not valid.  It must be an integer.' name=".huh_sp_schema_mapping::SPEXPORTSCHEMAID." id=".huh_sp_schema_mapping::SPEXPORTSCHEMAID." value='".$model->getSpExportSchemaID()."'  style=' width:".huh_sp_schema_mapping::SPEXPORTSCHEMAID_SIZE ."em;  '  maxlength='".huh_sp_schema_mapping::SPEXPORTSCHEMAID_SIZE ."' ></div>\n";
        if ($includeRelated) { 

@@ -270,7 +270,7 @@ class huh_taxon implements  model , loadableModel, saveableModel, tableSchema
    //---------------------------------------------------------------------------
 
    // constructor 
-   function huh_taxon(){
+   function __construct(){
        $this->TaxonID = NULL;
        $this->TimestampCreated = '';
        $this->TimestampModified = '';
@@ -334,16 +334,12 @@ class huh_taxon implements  model , loadableModel, saveableModel, tableSchema
 
    private function l_addslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
       $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-          $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
    public function isDirty() {
@@ -1571,7 +1567,7 @@ class huh_taxon implements  model , loadableModel, saveableModel, tableSchema
         $returnvalue = false;
         try {
              if (is_array($pk)) { 
-                 $this->setTaxonID($pk[TaxonID]);
+                 $this->setTaxonID($pk['TaxonID']);
              } else { ;
                  $this->setTaxonID($pk);
              };
@@ -1672,7 +1668,7 @@ class huh_taxon implements  model , loadableModel, saveableModel, tableSchema
         } else {
             $sql  = 'INSERT INTO taxon ';
             $isInsert = true;
-if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
+if ($this->PK()==NULL) { throw new Exception('Can\'t insert record with null primary key for this table'); }
             $sql .= '( TaxonID ,  TimestampCreated ,  TimestampModified ,  Version ,  Author ,  CitesStatus ,  COLStatus ,  CommonName ,  CultivarName ,  EnvironmentalProtectionStatus ,  EsaStatus ,  FullName ,  GroupNumber ,  GUID ,  HighestChildNodeNumber ,  IsAccepted ,  IsHybrid ,  IsisNumber ,  LabelFormat ,  Name ,  NcbiTaxonNumber ,  NodeNumber ,  Number1 ,  Number2 ,  RankID ,  Remarks ,  Source ,  TaxonomicSerialNumber ,  Text1 ,  Text2 ,  UnitInd1 ,  UnitInd2 ,  UnitInd3 ,  UnitInd4 ,  UnitName1 ,  UnitName2 ,  UnitName3 ,  UnitName4 ,  UsfwsCode ,  Visibility ,  AcceptedID ,  StdExAuthorID ,  TaxonTreeDefItemID ,  HybridParent2ID ,  StdAuthorID ,  ParentID ,  TaxonTreeDefID ,  CitInAuthorID ,  SanctAuthorID ,  ModifiedByAgentID ,  CreatedByAgentID ,  ParAuthorID ,  BasionymID ,  HybridParent1ID ,  ParExAuthorID ,  VisibilitySetByID ) VALUES (';
             $sql .=  "  ? ";
             $sql .=  " ,  ? ";
@@ -1825,6 +1821,8 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = array();
        $and = '';
        $wherebit = 'WHERE ';
+       $types = '';
+       $result = null;
        foreach($searchTermArray as $fieldname => $searchTerm) {
            if ($this->hasField($fieldname)) { 
                $operator = '='; 
@@ -1914,67 +1912,67 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        // fk: AcceptedID
       $t = new taxon();
       $t->load(getAcceptedID());
-      $returnvalue[AcceptedID] = $t;
+      $returnvalue['AcceptedID'] = $t;
        // fk: StdExAuthorID
       $t = new agent();
       $t->load(getStdExAuthorID());
-      $returnvalue[StdExAuthorID] = $t;
+      $returnvalue['StdExAuthorID'] = $t;
        // fk: TaxonTreeDefItemID
       $t = new taxontreedefitem();
       $t->load(getTaxonTreeDefItemID());
-      $returnvalue[TaxonTreeDefItemID] = $t;
+      $returnvalue['TaxonTreeDefItemID'] = $t;
        // fk: HybridParent2ID
       $t = new taxon();
       $t->load(getHybridParent2ID());
-      $returnvalue[HybridParent2ID] = $t;
+      $returnvalue['HybridParent2ID'] = $t;
        // fk: StdAuthorID
       $t = new agent();
       $t->load(getStdAuthorID());
-      $returnvalue[StdAuthorID] = $t;
+      $returnvalue['StdAuthorID'] = $t;
        // fk: ParentID
       $t = new taxon();
       $t->load(getParentID());
-      $returnvalue[ParentID] = $t;
+      $returnvalue['ParentID'] = $t;
        // fk: TaxonTreeDefID
       $t = new taxontreedef();
       $t->load(getTaxonTreeDefID());
-      $returnvalue[TaxonTreeDefID] = $t;
+      $returnvalue['TaxonTreeDefID'] = $t;
        // fk: CitInAuthorID
       $t = new agent();
       $t->load(getCitInAuthorID());
-      $returnvalue[CitInAuthorID] = $t;
+      $returnvalue['CitInAuthorID'] = $t;
        // fk: SanctAuthorID
       $t = new agent();
       $t->load(getSanctAuthorID());
-      $returnvalue[SanctAuthorID] = $t;
+      $returnvalue['SanctAuthorID'] = $t;
        // fk: ModifiedByAgentID
       $t = new agent();
       $t->load(getModifiedByAgentID());
-      $returnvalue[ModifiedByAgentID] = $t;
+      $returnvalue['ModifiedByAgentID'] = $t;
        // fk: CreatedByAgentID
       $t = new agent();
       $t->load(getCreatedByAgentID());
-      $returnvalue[CreatedByAgentID] = $t;
+      $returnvalue['CreatedByAgentID'] = $t;
        // fk: ParAuthorID
       $t = new agent();
       $t->load(getParAuthorID());
-      $returnvalue[ParAuthorID] = $t;
+      $returnvalue['ParAuthorID'] = $t;
        // fk: BasionymID
       $t = new taxon();
       $t->load(getBasionymID());
-      $returnvalue[BasionymID] = $t;
+      $returnvalue['BasionymID'] = $t;
        // fk: HybridParent1ID
       $t = new taxon();
       $t->load(getHybridParent1ID());
-      $returnvalue[HybridParent1ID] = $t;
+      $returnvalue['HybridParent1ID'] = $t;
        // fk: ParExAuthorID
       $t = new agent();
       $t->load(getParExAuthorID());
-      $returnvalue[ParExAuthorID] = $t;
+      $returnvalue['ParExAuthorID'] = $t;
        // fk: VisibilitySetByID
       $t = new specifyuser();
       $t->load(getVisibilitySetByID());
-      $returnvalue[VisibilitySetByID] = $t;
+      $returnvalue['VisibilitySetByID'] = $t;
      return $returnvalue;
   } 
    // Returns an array of primary key values (id) and concatenated values of all other fields (fields)
@@ -2003,7 +2001,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
              }
           }
        } else { 
-          $this->error = mysqli_error(); 
+          $this->error = mysqli_error($connection); 
        }
        $result->close();
        return $returnvalue;
@@ -2016,7 +2014,7 @@ if ($this->PK==NULL) { throw new Exception('Can\'t insert record with null prima
        $returnvalue = '';
        if ($this->hasField($field)) { 
           $order = '';
-          $fieldesc = mysql_escape_string($field);
+          $fieldesc = $connection->real_escape_string($field);
           if ($orderby=='ASC') { $order = 'ASC'; } else { $order = 'DESC'; } 
           $preparemysql = "SELECT DISTINCT $fieldesc FROM taxon order by $fieldesc $order ";
           $comma = '';
@@ -3965,7 +3963,7 @@ class huh_taxonView implements viewer
        $returnvalue .= "<form id='$formname' name='$formname' dojoType='dijit.form.Form'>";
        $returnvalue .= '<input type=hidden name=druid_action id=druid_action value=save>';
        $returnvalue .= '<input type=hidden name=druid_table id=druid_action value="huh_taxon">';
-       $returnvalue .= "<div id='div_$formnane' >";
+       $returnvalue .= "<div id='div_$formname' >";
        if($addform) { 
           $returnvalue .= "Add a new TaxonID"; 
        } else { 
