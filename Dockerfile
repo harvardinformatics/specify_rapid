@@ -1,20 +1,27 @@
-FROM harvardinformatics/wheezy-php55
+FROM php:8.3-apache
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN echo 'America/New_York' > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata && apt-get update && apt-get install default-jre git unzip -y
+RUN ln -snf /usr/share/zoneinfo/America/New_York /etc/localtime && echo 'America/New_York' > /etc/timezone && \
+    apt-get update && apt-get install -y --no-install-recommends default-jre-headless git unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# mysqli: database access.  exif: exif_read_data() and exif_imagetype() in class_lib.php.
+RUN docker-php-ext-install mysqli exif
 
 RUN groupadd -g 402623 huh && useradd -u 12807 huhimageproc -g huh
-RUN a2enmod php5 && \
-    sed -i -e 's?ErrorLog.*?ErrorLog /dev/stderr?' /etc/apache2/apache2.conf && \
-    sed -i -e 's?export APACHE_RUN_USER=.*?export APACHE_RUN_USER=huhimageproc?' /etc/apache2/envvars && \
-    sed -i -e 's?export APACHE_RUN_GROUP=.*?export APACHE_RUN_GROUP=huh?' /etc/apache2/envvars && \
-    printf "display_error = stderr\nerror_log = /dev/stderr\n" > /etc/php5/apache2/conf.d/20-logging.ini && \
-    sed -i -e 's?;include_path = ".:/usr/share/php"?include_path = ".:/var/php/includes:/var/php/includes/specify_web:/usr/share/php"?' /etc/php5/apache2/php.ini && \
-    printf "date.timezone = \"America/New_York\"\n" >> /etc/php5/apache2/php.ini && \
-    rm -f /var/www/index.html
 
-ADD etc/000-default /etc/apache2/sites-enabled/000-default
+# The official image reads the user and group Apache runs as from these variables,
+# and already sends the Apache error log to stderr.
+ENV APACHE_RUN_USER=huhimageproc \
+    APACHE_RUN_GROUP=huh
+
+# PHP errors go to the container log, not to the browser.
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+    printf 'display_errors = Off\nlog_errors = On\nerror_log = /dev/stderr\n' > "$PHP_INI_DIR/conf.d/20-logging.ini" && \
+    printf 'include_path = ".:/var/php/includes:/var/php/includes/specify_web:/usr/local/lib/php"\ndate.timezone = "America/New_York"\n' > "$PHP_INI_DIR/conf.d/30-specify-rapid.ini"
+
+ADD etc/000-default /etc/apache2/sites-enabled/000-default.conf
 ADD dojo /var/www/dojo
 ADD jquery /var/www/jquery
 
@@ -26,4 +33,4 @@ ENV PHPINCPATH=/var/php/includes/ \
     BASE_IMAGE_URI=/images/ \
     BATCHPATH=''
 
-CMD ["apachectl", "-DFOREGROUND"]
+CMD ["apache2-foreground"]
