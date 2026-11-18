@@ -97,17 +97,17 @@ switch ($action) {
             $t = $schema->getClass($table);
             if (strpos($key,';')>0) { 
                 // multiple fieldname,value pairs 
-                $kv = explode($key,';');
+                $kv = explode(';',$key);
                 $kvpairs = array();
-                for ($x=0;$x<length($kv); $x++) { 
-                    $kvparts = explode($kv[$x]); 
-                    $kvpairs[$kvparts[0]] = $kvparts[1];
+                for ($x=0;$x<count($kv); $x++) { 
+                    $kvparts = explode(',',$kv[$x]); 
+                    $kvpairs[$kvparts[0]] = $kvparts[1] ?? '';
                 }
-                $t->loadPKArray($kvparts);
+                $t->loadPKArray($kvpairs);
             } else if (strpos($key,'.')>0) { 
                 // single fieldname,value pair 
-                $kv = explode($key,',',1);
-                $t->load($kv[1]);
+                $kv = explode(',',$key,2);
+                $t->load($kv[1] ?? $kv[0]);
             } else { 
                 // we know that key is a single field
                 $t->load($key);

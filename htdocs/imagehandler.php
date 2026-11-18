@@ -48,7 +48,7 @@ class ImageHandler {
             @$files = scandir($dir,SCANDIR_SORT_ASCENDING);
          } catch (Exception $e) {
          	error_log($e->getMessage());
-            $result.="Error" + $e->getMessage();
+            $result.="Error" . $e->getMessage();
             $error = true;
          }
       } else {

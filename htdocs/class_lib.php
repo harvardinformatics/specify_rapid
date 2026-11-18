@@ -58,8 +58,9 @@ class User {
    private $date_last_login;
    private $failures_since_last_login;
    private $session_secret;  // used in hash for session, stored in db, not sent to user
+   public $error = '';       // last error message
 
-   function User($email='', $password='') {
+   function __construct($email='', $password='') {
       $this->setEmail($email);
       $this->setPassword($password);
       $this->authenticated = false;
@@ -68,17 +69,11 @@ class User {
    }
 
    private function l_addslashes($value) {
-      $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-         $retval = addslashes($value);
-      }
+      $retval = addslashes($value);
       return $retval;
    }
    private function l_stripslashes($value) {
-      $retval = $value;
-      if (!get_magic_quotes_gpc()) {
-         $retval = stripslashes($value);
-      }
+      $retval = stripslashes($value);
       return $retval;
    }
 
@@ -194,16 +189,42 @@ class User {
        ';
    }
 
+   /**
+    * End the current session.  If the session holds the currently valid ticket for
+    * its user, the session secret stored for that user in huh_webuser is replaced,
+    * so that the ticket can't be validated again.
+    *
+    * The stored secret is only changed for the holder of the current valid ticket,
+    * so a stale session (e.g. one superseded by a later login from another browser)
+    * can't log out the newer session.  A new random value is stored rather than
+    * NULL: validateTicket() treats a missing secret as an empty string, which
+    * would make the ticket hash predictable.
+    */
    function logout() {
-      if($this->email != '' && $this->password !='') {
-         $sql = "UPDATE User set session_secret = NULL WHERE email = '".$this->email."' ";
-         $result = mysql_query($sql);
-         if ($result===false) {
-            $this->error = mysql_error();
+      global $connection;
+      $username = ($this->email != '') ? $this->email : ($_SESSION['username'] ?? '');
+      $ticket = $_SESSION['user_ticket'] ?? '';
+      if ($username != '' && $ticket != '' && $connection) {
+         $holder = new User($username,'');
+         if ($holder->validateTicket($ticket, $_SERVER['REMOTE_ADDR'] ?? '')) {
+            $newsecret = hash('sha256', random_bytes(32));
+            $sql = "update huh_webuser set sessionsecret = ? where username = ?";
+            $stmt = $connection->prepare($sql);
+            if ($stmt) {
+               $stmt->bind_param("ss",$newsecret,$username);
+               if (!$stmt->execute()) {
+                  $this->error = $stmt->error;
+               }
+               $stmt->close();
+            } else {
+               $this->error = $connection->error;
+            }
          }
       }
       $_SESSION = array();
-      session_destroy();
+      if (session_status() === PHP_SESSION_ACTIVE) {
+         session_destroy();
+      }
    }
 
    function authenticate() {
@@ -440,7 +461,7 @@ class DateWithPrecision {
 	private $datePrecision = 1;
 	private $badValue = false;
 
-  public function DateWithPrecision($aDate) {
+  public function __construct($aDate) {
     $this->parse($aDate);
   }
 
@@ -500,7 +521,7 @@ class DateRangeWithPrecision {
    private $endDatePrecision = 1;
    private $badValue = false;
 
-   public function DateRangeWithPrecision($isodate) {
+   public function __construct($isodate) {
       if (strpos($isodate,'/')>0) {
          $parts = explode('/',$isodate);
          if (sizeof($parts)>0) {
@@ -888,7 +909,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          } else { $order = 'DESC';
          }
          $limit = str_replace("*", "%", $limit);
-         $fielde = mysql_escape_string($field);
+         $fielde = $connection->real_escape_string($field);
          $preparemysql = "SELECT DISTINCT taxonid, $fielde FROM taxon where $fielde like ? order by $fielde $order ";
          if ($field=="FullName") {
             $preparemysql = "SELECT DISTINCT taxonid, concat(FullName, ' ',ifnull(Author,'')) FROM taxon where FullName like ? and FullName <> '' order by $fielde $order ";
@@ -927,7 +948,7 @@ class huh_picklistitem_custom extends huh_picklistitem {
 	      } else {
           $order = 'DESC';
 	      }
-	      $limit = mysql_escape_string($limit);
+	      $limit = $connection->real_escape_string($limit);
 	      // note: using title for order rather than ordinal to support dojo combo box
 	      $preparemysql = "SELECT DISTINCT title, value FROM picklistitem where picklistid = ? and title like ? order by title $orderby ";
 	      $comma = '';
@@ -962,7 +983,7 @@ class huh_agentvariant_custom extends huh_agentvariant {
       $preparemysql = "select distinct agentid, name from agentvariant where name like ? and vartype = 4 order by name asc ";
       $comma = '';
       $term = str_replace("*", "%", $term);
-      $term = mysql_escape_string($term);
+      $term = $connection->real_escape_string($term);
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param("s", $term);
          $stmt->execute();
@@ -990,7 +1011,7 @@ class huh_referencework_custom extends huh_referencework {
    	$preparemysql = "select distinct referenceworkid, concat(text1, ' (', coalesce(title,''), ')') from referencework where text1 like ? or title like ? order by title asc ";
    	$comma = '';
    	$term = str_replace("*", "%", $term);
-   	$term = mysql_escape_string($term);
+   	$term = $connection->real_escape_string($term);
    	if ($stmt = $connection->prepare($preparemysql)) {
    		$stmt->bind_param("ss", $term, $term);
    		$stmt->execute();
@@ -1024,7 +1045,7 @@ class huh_container_custom extends huh_container {
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
 		$comma = '';
 		$term = str_replace("*", "%", $term);
-		$term = mysql_escape_string($term);
+		$term = $connection->real_escape_string($term);
 		if ($stmt = $connection->prepare($preparemysql)) {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
@@ -1051,7 +1072,7 @@ class huh_container_custom extends huh_container {
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
 		$comma = '';
 		$term = str_replace("*", "%", $term);
-		$term = mysql_escape_string($term);
+		$term = $connection->real_escape_string($term);
 		if ($stmt = $connection->prepare($preparemysql)) {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
@@ -1170,7 +1191,7 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
 		$preparemysql = "select distinct collectingtripid, collectingtripname from collectingtrip where collectingtripname like ? order by collectingtripname asc ";
 		$comma = '';
 		$term = str_replace("*", "%", $term);
-		$term = mysql_escape_string($term);
+		$term = $connection->real_escape_string($term);
 		if ($stmt = $connection->prepare($preparemysql)) {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
@@ -1210,7 +1231,7 @@ class huh_storage_custom extends huh_storage {
         $preparemysql = "select distinct storageid, name from storage where name like ? order by name asc ";
         $comma = '';
         $term = str_replace("*", "%", $term);
-        $term = mysql_escape_string($term);
+        $term = $connection->real_escape_string($term);
         if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s", $term);
             $stmt->execute();
@@ -1628,7 +1649,7 @@ class huh_project_custom extends huh_project {
         $preparemysql = "select distinct projectid, projectname from project where projectname like ? order by projectname asc ";
         $comma = '';
         $term = str_replace("*", "%", $term);
-        $term = mysql_escape_string($term);
+        $term = $connection->real_escape_string($term);
         if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s", $term);
             $stmt->execute();
@@ -2416,7 +2437,7 @@ function ingestCollectionObject() {
                $feedback.= "Query error: " . $connection->error . " " . $sql;
             }
 
-            if (utmzone!=null) {
+            if ($utmzone!=null) {
                $sql = "insert into localitydetail (localityid, utmzone, utmeasting, utmnorthing, utmdatum, " .
                                                        "  createdbyagentid,  ".
                                                        "  timestampcreated, version) " .

@@ -31,7 +31,7 @@ function specify_connect() {
       $connection->set_charset('utf8');
       $returnvalue = $connection;
    } else { 
-      echo mysqli_connect_errorno();
+      echo mysqli_connect_errno();
    }
    return $returnvalue;
 }

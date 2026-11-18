@@ -5,6 +5,9 @@ include_once("connection_library.php");
 include_once("class_lib.php");
 include_once("transcribe_lib.php");
 
+// PHP 8.1+ makes mysqli throw exceptions by default; this code checks return
+// values and $connection->error instead, so keep the pre-8.1 behavior.
+mysqli_report(MYSQLI_REPORT_OFF);
 @$connection = specify_connect();
 if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
