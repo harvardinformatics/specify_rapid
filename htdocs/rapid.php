@@ -26,9 +26,9 @@ if (!$connection) {
 }
 
 $display = '';
-@$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+$display = substr(preg_replace('/[^a-z]/','',($_GET['display'] ?? '')),0,20);
 if ($display=='') {
-   @$display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
+   $display = substr(preg_replace('/[^a-z]/','',($_POST['display'] ?? '')),0,20);
 }
 $tdisplay = $display;
 $showDefault = true;
@@ -48,18 +48,18 @@ if ($require_authentication) {
       session_start();
       session_regenerate_id(true);
       $_SESSION = array();
-   } elseif (@$_POST['password']!="" && @$_POST['username']!="") {
+   } elseif (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
       // New login attempt: discard any existing session data (possibly for another
       // user) so that the credentials just submitted are the ones authenticated.
       $_SESSION = array();
       session_regenerate_id(true);
    }
-   if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
+   if(!isset($_SESSION['session_id']) || ($_SESSION['session_id'] ?? '')!=session_id()) {
       $display = "logindialog";
-      if (@$_POST['password']!="" && $_POST['username']!="") {
+      if (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
          // authenticate
-         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",$_POST['password']),0,255);
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_POST['username']),0,255);
+         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",($_POST['password'] ?? '')),0,255);
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_POST['username'] ?? '')),0,255);
          $user = new User($username,$password);
          if ($user->authenticate()){
             $_SESSION["session_id"]=session_id();
@@ -82,13 +82,13 @@ if ($require_authentication) {
          $error = "Login to HUH Specify Rapid Data Capture Form";
       }
    } else {
-      $user = new User($_SESSION["username"],'');
-      if ($user->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
+      $user = new User(($_SESSION["username"] ?? ''),'');
+      if ($user->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
       	 $authenticated = true;
-         $user->setFullname($_SESSION["fullname"]);
-         $user->setAgentId($_SESSION["agentid"]);
-         $user->setLastLogin($_SESSION["lastlogin"]);
-         $user->setAbout($_SESSION["about"]);
+         $user->setFullname(($_SESSION["fullname"] ?? ''));
+         $user->setAgentId(($_SESSION["agentid"] ?? ''));
+         $user->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+         $user->setAbout(($_SESSION["about"] ?? ''));
       } else {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
@@ -128,8 +128,8 @@ switch ($display) {
    case "logindialog":
    default:
       $email = $username;
-      if (@$_GET['email']!="") {
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_GET['email']),0,255);
+      if (($_GET['email'] ?? '')!="") {
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_GET['email'] ?? '')),0,255);
       }
       $title = "Specify Login";
       echo '<div dojoType="dijit.layout.ContentPane" region="center" >';
@@ -182,7 +182,7 @@ function inProfile($profile,$field, $location) {
            $bits = explode(",",$line);
            if (count($bits)==3) {
               $key = $bits[0].$bits[1];
-              $profiles[$key] = trim($bits[2]);
+              $profiles[$key] = trim($bits[2] ?? '');
            }
         }
       }
@@ -267,7 +267,7 @@ function pageheader($error="") {
 
 function form() {
 
-   @$profile = substr(preg_replace("/[^0-9A-Za-z]/","",$_GET['profile']),0,255);
+   $profile = substr(preg_replace("/[^0-9A-Za-z]/","",($_GET['profile'] ?? '')),0,255);
    if ($profile == "") { $profile = "default"; }
    echo '
            <script type="text/javascript">
@@ -333,13 +333,13 @@ function form() {
         </script>
    ';
 
-   @$cleardefaultgeography = substr(preg_replace('/[^01]/','',$_GET['cleardefaultgeography']),0,2);
+   $cleardefaultgeography = substr(preg_replace('/[^01]/','',($_GET['cleardefaultgeography'] ?? '')),0,2);
    if ($cleardefaultgeography==1) {
        $defaultcountry = "";
        $defaultprimary = "";
    } else {
-        @$defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultcountry']),0,255);
-        @$defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',$_GET['defaultprimary']),0,255);
+        $defaultcountry = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',($_GET['defaultcountry'] ?? '')),0,255);
+        $defaultprimary = substr(preg_replace('/[^A-Za-z[:alpha:] ]/','',($_GET['defaultprimary'] ?? '')),0,255);
 
        // Sensible default values for original California project, no longer sensible.
        // if ($defaultcountry=='') {
@@ -349,13 +349,13 @@ function form() {
        //     }
        // }
    }
-   @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
+   $defaultherbarium = substr(preg_replace('/[^A-Z]/','',($_GET['defaultherbarium'] ?? '')),0,5);
    if ($defaultherbarium=='') { $defaultherbarium = "GH"; }
-   @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
+   $defaultformat = substr(preg_replace('/[^A-Za-z ]/','',($_GET['defaultformat'] ?? '')),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
-   @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
+   $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',($_GET['defaultprepmethod'] ?? '')),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
-   @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
+   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',($_GET['defaultproject'] ?? '')),0,255);
 
    echo "<form action='ajax_handler.php' method='GET' id='rapidForm' >\n";
    //echo "<div dojoType='dijit.form.Form' id='rapidForm' jsId='rapidForm' encType='multipart/form-data' action='ajax_handler.php' method='GET'>";
@@ -642,6 +642,7 @@ function selectAcronym($field,$default) {
    echo "<tr><td>\n";
    echo "<label for='$field'>Herbarium acronym</label>";
    echo "</td><td>\n";
+   $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs="";
    if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="FH") { $ghs = ""; $as = ""; $fhs = 'selected="selected"'; $amess=""; $econs=""; $nebcs=""; }
@@ -664,6 +665,7 @@ function selectCurrentID($field,$label,$required='false') {
    //if ($field=="filedundername") {
    //    $onchangeval = "onchange='setNamesToFiledUnder();'";
    //}
+   $onchangeval = '';
    $returnvalue = "<tr><td><div dojoType='custom.ComboBoxReadStore' jsId='taxonStore$field'
 	 url='ajax_handler.php?druid_action=returndistinctjsonidnamelimited&table=huh_taxon&field=FullName'> </div>";
    $width = BASEWIDTH - 3;
@@ -829,25 +831,26 @@ global $debug, $expectedheader, $expectedheaderquoted,
    $identifiedby,$dateidentified,$specimenremarks,$container,$utmzone,$utmeasting,$utmnorthing;
 
 
-$filename = substr(preg_replace('/[.]{2}/','',$_POST['filename']),0,255);
+$filename = substr(preg_replace('/[.]{2}/','',($_POST['filename'] ?? '')),0,255);
 
 //TODO: Embed processing within spreadsheet().
 
-ini_set("auto_detect_line_endings", true);
-$handle = fopen("uploads/$filename", "r");
+$handle = fopenNormalizedLineEndings("uploads/$filename");
 $report = fopen("uploads/results_$filename", "w");
 $successcount = 0;
 $failurecount = 0;
+$results = "";
+$resultsummary = "";
 if ($handle !== FALSE) {
     $header = fgets($handle);
-    fputs($report,"result,".$header);
+    if ($report) { fputs($report,"result,".$header); }
     $recognized = false;
-    if (trim($header)==trim($expectedheader)) {
+    if (trim($header)==trim($expectedheader ?? '')) {
        $recognized = true;
        $enclosed = '"';
        $delimiter = ",";
     }
-    if (trim($header)==trim($expectedheaderquoted)) {
+    if (trim($header)==trim($expectedheaderquoted ?? '')) {
        $recognized = true;
        $enclosed = '"';
        $delimiter = ",";
@@ -858,7 +861,7 @@ if ($handle !== FALSE) {
       $results .= "<tr><td>Found header</td><td>$header</td></tr></table>";
     } else {
        $row = 1;
-       while (($data = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
+       while (($data = fgetcsv($handle, 0, $delimiter, '"', '\\')) !== FALSE) {
           $message = "";
           $num = count($data);
           if ($num==44) {
@@ -1023,9 +1026,9 @@ if ($handle !== FALSE) {
              $oktoingest = true;
              // Test for success in all pk lookups
              // collectors, highergeography, filedundername are required and numeric only.
-             $collectors = preg_replace("/[^0-9]/","",$collectors);
-             $highergeography = preg_replace("/[^0-9]/","",$highergeography);
-             $filedundername = preg_replace("/[^0-9]/","",$filedundername);
+             $collectors = preg_replace("/[^0-9]/","",$collectors ?? '');
+             $highergeography = preg_replace("/[^0-9]/","",$highergeography ?? '');
+             $filedundername = preg_replace("/[^0-9]/","",$filedundername ?? '');
              if (!$lookupok) {
                 $oktoingest = false;
              }
@@ -1056,11 +1059,11 @@ if ($handle !== FALSE) {
              $results .= "Bad Line<BR>";
              $failurecount++;
           }
-          fputs($report,$row."\n");
+          if ($report) { fputs($report,$row."\n"); }
        }
     }
     fclose($handle);
-    fclose($report);
+    if ($report) { fclose($report); }
 } else {
   $results .= "Error: Can't read uploaded file.";
 }
@@ -1099,6 +1102,29 @@ function toCsvLine($data,$delimiter,$enclosed) {
 }
 
 /**
+ * Open a file for reading, treating a lone carriage return (classic Mac line ending)
+ * as a line break.  Replaces ini_set("auto_detect_line_endings"), which is deprecated
+ * as of PHP 8.1.
+ *
+ * @param string $filename the file to open.
+ * @return resource|false a read handle positioned at the start of the file, or false
+ *   if the file can't be read.
+ */
+function fopenNormalizedLineEndings($filename) {
+   if (!is_file($filename) || !is_readable($filename)) {
+      return false;
+   }
+   $data = file_get_contents($filename);
+   if ($data === false) {
+      return false;
+   }
+   $handle = fopen('php://temp', 'r+');
+   fwrite($handle, preg_replace('/\r(?!\n)/', "\n", $data));
+   rewind($handle);
+   return $handle;
+}
+
+/**
  * Step two of batch upload process.  Check that the uploaded file has the expected format and
  * display its contents if it does.
  */
@@ -1108,24 +1134,24 @@ global $expectedheader, $expectedheaderquoted;
 $filename = "";
 
 $uploaddir = "/var/www/htdocs/huh_rapid/uploads/";
-$uploadfile = $uploaddir . basename($_FILES['uploadfile']['name']);
-if (move_uploaded_file($_FILES['uploadfile']['tmp_name'], $uploadfile)) {
+$uploadfile = $uploaddir . basename($_FILES['uploadfile']['name'] ?? '');
+if (move_uploaded_file($_FILES['uploadfile']['tmp_name'] ?? '', $uploadfile)) {
     $filename = "uploads/".basename($uploadfile);
     $uploadresult = "File successfully uploaded: " . basename($uploadfile);
 } else {
     $uploadresult = "Upload unsuccessful";
 }
 
-ini_set("auto_detect_line_endings", true);
-$handle = fopen("$filename", "r");
+$recognized = false;
+$handle = fopenNormalizedLineEndings("$filename");
 if ($handle !== FALSE) {
     $header = fgets($handle);
     $recognized = false;
-    if (trim($header)==trim($expectedheader)) {
+    if (trim($header)==trim($expectedheader ?? '')) {
        $recognized = true;
        $enclosed = '';
     }
-    if (trim($header)==trim($expectedheaderquoted)) {
+    if (trim($header)==trim($expectedheaderquoted ?? '')) {
        $recognized = true;
        $enclosed = '"';
     }

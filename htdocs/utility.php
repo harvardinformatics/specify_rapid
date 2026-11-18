@@ -20,9 +20,9 @@ if (!$connection) {
 }
 
 $display = '';
-$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+$display = substr(preg_replace('/[^a-z]/','',($_GET['display'] ?? '')),0,20);
 if ($display=='') {
-   $display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
+   $display = substr(preg_replace('/[^a-z]/','',($_POST['display'] ?? '')),0,20);
 }
 $tdisplay = $display;
 $showDefault = true;
@@ -41,18 +41,18 @@ if ($require_authentication) {
       session_start();
       session_regenerate_id(true);
       $_SESSION = array();
-   } elseif (@$_POST['password']!="" && @$_POST['username']!="") {
+   } elseif (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
       // New login attempt: discard any existing session data (possibly for another
       // user) so that the credentials just submitted are the ones authenticated.
       $_SESSION = array();
       session_regenerate_id(true);
    }
-   if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
+   if(!isset($_SESSION['session_id']) || ($_SESSION['session_id'] ?? '')!=session_id()) {
       $display = "logindialog";
-      if (@$_POST['password']!="" && $_POST['username']!="") {
+      if (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
          // authenticate
-         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",$_POST['password']),0,255);
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_POST['username']),0,255);
+         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",($_POST['password'] ?? '')),0,255);
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_POST['username'] ?? '')),0,255);
          $user = new User($username,$password);
          if ($user->authenticate()){
             $_SESSION["session_id"]=session_id();
@@ -75,13 +75,13 @@ if ($require_authentication) {
          $error = "Login to HUH Specify Utilities";
       }
    } else {
-      $user = new User($_SESSION["username"],'');
-      if ($user->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
+      $user = new User(($_SESSION["username"] ?? ''),'');
+      if ($user->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
       	 $authenticated = true;
-         $user->setFullname($_SESSION["fullname"]);
-         $user->setAgentId($_SESSION["agentid"]);
-         $user->setLastLogin($_SESSION["lastlogin"]);
-         $user->setAbout($_SESSION["about"]);
+         $user->setFullname(($_SESSION["fullname"] ?? ''));
+         $user->setAgentId(($_SESSION["agentid"] ?? ''));
+         $user->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+         $user->setAbout(($_SESSION["about"] ?? ''));
       } else {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
@@ -116,8 +116,8 @@ switch ($display) {
    default:
       // $email = $username; // causing errors, doesn't seem to be used
       $username=null;
-      if (@$_GET['email']!="") {
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_GET['email']),0,255);
+      if (($_GET['email'] ?? '')!="") {
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_GET['email'] ?? '')),0,255);
       }
       $title = "Specify Login";
       echo '<div dojoType="dijit.layout.ContentPane" region="center" >';
@@ -313,7 +313,7 @@ function form() {
    echo "<div id='mergeresult'></div>";
    echo '</div>'; // content pane
    //
-   $barcode = preg_replace("/[^0-9]/","",$_GET['barcode']);
+   $barcode = preg_replace("/[^0-9]/","",($_GET['barcode'] ?? ''));
    echo '<div dojoType="dijit.layout.ContentPane" title="Show Relationships" selected="true" >';
    echo "<form action='ajax_handler.php' method='GET' id='structureForm' >\n";
    echo "<input type=hidden name='druid_action' value='showstructure'>";

@@ -69,20 +69,20 @@ class User {
    }
 
    private function l_addslashes($value) {
-      $retval = addslashes($value);
+      $retval = addslashes($value ?? '');
       return $retval;
    }
    private function l_stripslashes($value) {
-      $retval = stripslashes($value);
+      $retval = stripslashes($value ?? '');
       return $retval;
    }
 
    function setEmail ($email) {
       $returnvalue = false;
-      $len = strlen($email);
+      $len = strlen($email ?? '');
       //$match = preg_match("/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/",$email);
       // specify usernames aren't emails
-      $match = preg_match("/[A-Za-z0-9]+/",$email);
+      $match = preg_match("/[A-Za-z0-9]+/",$email ?? '');
       if (($match || $len==0) && $len<256) {
          $this->email = $this->l_addslashes($email);
          $returnvalue = true;
@@ -94,8 +94,8 @@ class User {
 
    function setPassword ($password) {
       $returnvalue = false;
-      $len = strlen($password);
-      $match = preg_match("/[A-Za-z0-9!#$%*+\/=?^_{|}~\-@.]*/",$password);
+      $len = strlen($password ?? '');
+      $match = preg_match("/[A-Za-z0-9!#$%*+\/=?^_{|}~\-@.]*/",$password ?? '');
       if ($match && $len<256 && $len >=1) {
          $this->password = $this->l_addslashes($password);
          $returnvalue = true;
@@ -244,10 +244,10 @@ class User {
                // $exec = $javaexe . ' -jar ' . $encryptionjar . ' decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
                // test
                //$exec = '/usr/bin/java -jar /var/www/phpincludes/Encryption.jar decrypt ' . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
-               $exec = $execstring . $encryptedPassword . " " . escapeshellarg($this->password) . " 2>&1";
+               $exec = $execstring . $encryptedPassword . " " . escapeshellarg($this->password ?? '') . " 2>&1";
 
                $decryptedPassword = shell_exec($exec);
-               if (trim($decryptedPassword)==trim($this->password)) {
+               if (trim($decryptedPassword ?? '')==trim($this->password ?? '')) {
 
                   $preparesql = 'SELECT  specifyuser.timestampcreated,   specifyuser.TimestampModified,
      		    	     	concat(agent.firstname, \' \', agent.lastname),
@@ -485,15 +485,15 @@ class DateWithPrecision {
 	}
 
   public function parse($dt) {
-     if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dt)) {
+     if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}-[0-9]{2}$/",$dt ?? '')) {
        $this->setDate($dt);
        $this->setDatePrecision(1);
      } else {
-       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dt)) {
+       if (preg_match("/^[1-2][0-9]{3}-[0-9]{2}$/",$dt ?? '')) {
          $this->setDate($dt . "-01");
          $this->setDatePrecision(2);
        } else {
-         if (preg_match("/^[1-2][0-9]{3}$/",$dt)) {
+         if (preg_match("/^[1-2][0-9]{3}$/",$dt ?? '')) {
              $this->setDate($dt . "-01-01");
              $this->setDatePrecision(3);
          } else {
@@ -502,7 +502,7 @@ class DateWithPrecision {
        }
      }
 
-     if (preg_match("/^([1-2][0-9]{3})-([0-9]{2})-([0-9]{2})$/", $this->getDate(), $matches)) {
+     if (preg_match("/^([1-2][0-9]{3})-([0-9]{2})-([0-9]{2})$/", $this->getDate() ?? '', $matches)) {
        if (!checkdate($matches[2], $matches[3], $matches[1])) {
          $this->setBadValue(true);
        }
@@ -522,8 +522,8 @@ class DateRangeWithPrecision {
    private $badValue = false;
 
    public function __construct($isodate) {
-      if (strpos($isodate,'/')>0) {
-         $parts = explode('/',$isodate);
+      if (strpos($isodate ?? '','/')>0) {
+         $parts = explode('/',$isodate ?? '');
          if (sizeof($parts)>0) {
             $startDateStr = new DateWithPrecision($parts[0]);
             if ($startDateStr->isBadValue()) {
@@ -642,6 +642,10 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
+      // Every key a caller may read is present, null until a determination is found.
+      foreach (array("typestatusname","determinationid","taxonid","isfiledunder","iscurrent","determinertext","annotationtext","determinerid","taxonname","qualifier","determineddate","determineddateprecision","remarks","alternatename","author") as $key) {
+         $result[$key]=null;
+      }
       $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.text2 as annotationtext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename, t.author from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.iscurrent=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
@@ -694,6 +698,10 @@ class huh_determination_custom extends huh_determination {
       $result["status"]="NotRun";
       $result["errormessage"]="";
       $result["records"]=0;
+      // Every key a caller may read is present, null until a determination is found.
+      foreach (array("typestatusname","determinationid","taxonid","isfiledunder","iscurrent","determinertext","annotationtext","determinerid","taxonname","qualifier","determineddate","determineddateprecision","remarks","alternatename","author") as $key) {
+         $result[$key]=null;
+      }
       $sql = "select d.typestatusname, d.determinationid, d.taxonid, d.yesno3=1 as isfiledunder, d.iscurrent=1, d.text1 as determinertext, d.determinerid, t.fullname, d.qualifier, d.determineddate, d.determineddateprecision, d.remarks, d.alternatename from determination d left join taxon t on d.taxonid = t.taxonid where d.fragmentid = ? and d.yesno3=1 order by d.timestampcreated asc ";
       $statement = $connection->prepare($sql);
       if ($statement) {
@@ -760,7 +768,7 @@ class huh_preptype_custom extends huh_preptype {
             $stmt->execute();
             $stmt->bind_result($val);
             while ($stmt->fetch()) {
-               $val = trim($val);
+               $val = trim($val ?? '');
                if ($val!='') {
                   $val = str_replace('"','&quot;',$val);
                   $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$val.'" } ';
@@ -790,7 +798,7 @@ class huh_preptype_custom extends huh_preptype {
             $stmt->execute();
             $stmt->bind_result($val);
             while ($stmt->fetch()) {
-               $val = trim($val);
+               $val = trim($val ?? '');
                if ($val!='') {
                   $val = str_replace('"','&quot;',$val);
                   $returnvalue .= $comma . ' { "value":"'.$val.'", "name":"'.$val.'" } ';
@@ -885,7 +893,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
          $stmt->execute();
          $stmt->bind_result($id, $fullname, $label);
          while ($stmt->fetch()) {
-            $label = trim($label);
+            $label = trim($label ?? '');
             if ($label!='') {
                   $label = str_replace('"','&quot;',$label);
                   $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$fullname.'"}';
@@ -908,7 +916,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
             $order = 'ASC';
          } else { $order = 'DESC';
          }
-         $limit = str_replace("*", "%", $limit);
+         $limit = str_replace("*", "%", $limit ?? '');
          $fielde = $connection->real_escape_string($field);
          $preparemysql = "SELECT DISTINCT taxonid, $fielde FROM taxon where $fielde like ? order by $fielde $order ";
          if ($field=="FullName") {
@@ -922,7 +930,7 @@ class huh_taxon_CUSTOM extends huh_taxon {
             $stmt->bind_result($id, $val);
             $stmt->store_result();
             while ($stmt->fetch()) {
-               $val = trim($val);
+               $val = trim($val ?? '');
                if ($val!='') {
                   $val = str_replace('"','&quot;',$val);
                   $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$val.'" } ';
@@ -957,7 +965,7 @@ class huh_picklistitem_custom extends huh_picklistitem {
 	         $stmt->execute();
 	         $stmt->bind_result($label,$val);
 	         while ($stmt->fetch()) {
-	            $val = trim($val);
+	            $val = trim($val ?? '');
 	            if ($val!='') {
 	               $val = str_replace('"','&quot;',$val);
 	               $returnvalue .= $comma . ' { "label":"'.$label.'", "value":"'.$val.'" } ';
@@ -982,14 +990,14 @@ class huh_agentvariant_custom extends huh_agentvariant {
       $returnvalue = '';
       $preparemysql = "select distinct agentid, name from agentvariant where name like ? and vartype = 4 order by name asc ";
       $comma = '';
-      $term = str_replace("*", "%", $term);
+      $term = str_replace("*", "%", $term ?? '');
       $term = $connection->real_escape_string($term);
       if ($stmt = $connection->prepare($preparemysql)) {
          $stmt->bind_param("s", $term);
          $stmt->execute();
          $stmt->bind_result($id, $name);
          while ($stmt->fetch()) {
-            $name = trim($name);
+            $name = trim($name ?? '');
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
@@ -1010,14 +1018,14 @@ class huh_referencework_custom extends huh_referencework {
    	$returnvalue = '';
    	$preparemysql = "select distinct referenceworkid, concat(text1, ' (', coalesce(title,''), ')') from referencework where text1 like ? or title like ? order by title asc ";
    	$comma = '';
-   	$term = str_replace("*", "%", $term);
+   	$term = str_replace("*", "%", $term ?? '');
    	$term = $connection->real_escape_string($term);
    	if ($stmt = $connection->prepare($preparemysql)) {
    		$stmt->bind_param("ss", $term, $term);
    		$stmt->execute();
    		$stmt->bind_result($id, $name);
    		while ($stmt->fetch()) {
-   			$name = trim($name);
+   			$name = trim($name ?? '');
    			if ($name!='') {
    				$name = str_replace('"','&quot;',$name);
    				$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
@@ -1044,14 +1052,14 @@ class huh_container_custom extends huh_container {
 		$returnvalue = '';
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
 		$comma = '';
-		$term = str_replace("*", "%", $term);
+		$term = str_replace("*", "%", $term ?? '');
 		$term = $connection->real_escape_string($term);
 		if ($stmt = $connection->prepare($preparemysql)) {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
 			while ($stmt->fetch()) {
-				$name = trim($name);
+				$name = trim($name ?? '');
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "id":"'.$id.'", "label":"'.$name.'", "value":"'.$name.'" } ';
@@ -1071,14 +1079,14 @@ class huh_container_custom extends huh_container {
 		$returnvalue = '';
 		$preparemysql = "select distinct containerid, name from container where name like ? order by name asc ";
 		$comma = '';
-		$term = str_replace("*", "%", $term);
+		$term = str_replace("*", "%", $term ?? '');
 		$term = $connection->real_escape_string($term);
 		if ($stmt = $connection->prepare($preparemysql)) {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
 			while ($stmt->fetch()) {
-				$name = trim($name);
+				$name = trim($name ?? '');
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'"} ';
@@ -1123,10 +1131,10 @@ class huh_collector_custom extends huh_collector {
          $stmt->execute();
          $stmt->bind_result($id, $label,$value);
          while ($stmt->fetch()) {
-            $label = trim($label);
+            $label = trim($label ?? '');
             if ($label!='') {
                   $label = str_replace('"','&quot;',$label);
-                  $value = str_replace('"','&quot;',$value);
+                  $value = str_replace('"','&quot;',$value ?? '');
                   $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
                   $comma = ',';
             }
@@ -1170,10 +1178,10 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
          $stmt->execute();
          $stmt->bind_result($id, $label,$value);
          while ($stmt->fetch()) {
-            $label = trim($label);
+            $label = trim($label ?? '');
             if ($label!='') {
                   $label = str_replace('"','&quot;',$label);
-                  $value = str_replace('"','&quot;',$value);
+                  $value = str_replace('"','&quot;',$value ?? '');
                   $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
                   $comma = ',';
             }
@@ -1190,14 +1198,14 @@ class huh_collectingtrip_custom extends huh_collectingtrip {
     $returnvalue = '';
 		$preparemysql = "select distinct collectingtripid, collectingtripname from collectingtrip where collectingtripname like ? order by collectingtripname asc ";
 		$comma = '';
-		$term = str_replace("*", "%", $term);
+		$term = str_replace("*", "%", $term ?? '');
 		$term = $connection->real_escape_string($term);
 		if ($stmt = $connection->prepare($preparemysql)) {
 			$stmt->bind_param("s", $term);
 			$stmt->execute();
 			$stmt->bind_result($id, $name);
 			while ($stmt->fetch()) {
-				$name = trim($name);
+				$name = trim($name ?? '');
 				if ($name!='') {
 					$name = str_replace('"','&quot;',$name);
 					$returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
@@ -1230,14 +1238,14 @@ class huh_storage_custom extends huh_storage {
         $returnvalue = '';
         $preparemysql = "select distinct storageid, name from storage where name like ? order by name asc ";
         $comma = '';
-        $term = str_replace("*", "%", $term);
+        $term = str_replace("*", "%", $term ?? '');
         $term = $connection->real_escape_string($term);
         if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s", $term);
             $stmt->execute();
             $stmt->bind_result($id, $name);
             while ($stmt->fetch()) {
-                $name = trim($name);
+                $name = trim($name ?? '');
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
                     $returnvalue .= $comma . ' { "value":"'.$id.'", "name":"'.$name.'" } ';
@@ -1266,7 +1274,7 @@ class huh_image_set_custom extends huh_IMAGE_SET {
     public static function createImageSetFromLocalFile($pathbelowbase, $filename,$knownbarcode) {
        global $connection;
 
-       $path = trim($pathbelowbase);
+       $path = trim($pathbelowbase ?? '');
        // IMAGE_LOCAL_FILE.path is expected to end with a /
        if (substr($path,-1,1)!="/") {
           $path = "$path/";
@@ -1275,7 +1283,9 @@ class huh_image_set_custom extends huh_IMAGE_SET {
        if (substr($path,0,1)=="/") {
           $path = substr($path,1);
        }
-       $imagelocalfileexists==false;
+       $imagelocalfileexists=false;
+       $imagefilesize = null;
+       $result = '';
        $sql = "select id, extension, mimetype, barcode from IMAGE_LOCAL_FILE where path = ? and filename = ? ";
        $statement = $connection->prepare($sql);
        if ($statement) {
@@ -1299,10 +1309,10 @@ class huh_image_set_custom extends huh_IMAGE_SET {
           $extension = pathinfo($pathfile, PATHINFO_EXTENSION);
           $imagefilesize = filesize($pathfile);
        }
-       $bits = explode(".",$filename);
+       $bits = explode(".",$filename ?? '');
        if ($bits && count($bits)>1) {
            //$extension = $bits[count($bits)];
-           $basefilename = substr($filename,0,strlen($filename)-strlen($extension));
+           $basefilename = substr($filename ?? '',0,strlen($filename ?? '')-strlen($extension ?? ''));
            $sizeArray = getimagesize($pathfile,$info);
            $imageWidth = $sizeArray[0];
            $imageHeight = $sizeArray[1];
@@ -1354,7 +1364,7 @@ class huh_image_set_custom extends huh_IMAGE_SET {
                // array where key is a barcode number and value is an array of catalognumberid values associated with that barcode.
                $barcodemapping = array();
                foreach($barcodes as $barcode) {
-                   $barcode = trim($barcode);
+                   $barcode = trim($barcode ?? '');
                    $cid = array();
                    $sql = "select distinct collectionobjectid from fragment left join preparation on fragment.preparationid = preparation.preparationid where fragment.identifier = ? or preparation.identifier = ?";
                    if ($stmt = $connection->prepare($sql)) {
@@ -1445,7 +1455,10 @@ class huh_image_set_custom extends huh_IMAGE_SET {
               $sql = "insert into IMAGE_LOCAL_FILE (base, path, filename, extension, barcode, mimetype, fragmentid) values (?,?,?,?,?,?,?)";
               if ($stmt = $connection->prepare($sql)) {
                   $bc = array_reduce($barcodes,"arrConcat");
-                  $stmt->bind_param("ssssssi", BASE_IMAGE_PATH, $path, $filename, $extension, $bc,$mimetype,null);
+                  // bind_param() takes its arguments by reference, so they must be variables.
+                  $base = BASE_IMAGE_PATH;
+                  $nofragmentid = null;
+                  $stmt->bind_param("ssssssi", $base, $path, $filename, $extension, $bc,$mimetype,$nofragmentid);
                   $stmt->execute();
                   $imagelocalfileid = $stmt->insert_id;
                   $stmt->close();
@@ -1648,7 +1661,7 @@ class huh_project_custom extends huh_project {
         $returnvalue = '';
         $preparemysql = "select distinct projectid, projectname from project where projectname like ? order by projectname asc ";
         $comma = '';
-        $term = str_replace("*", "%", $term);
+        $term = str_replace("*", "%", $term ?? '');
         $term = $connection->real_escape_string($term);
         if ($stmt = $connection->prepare($preparemysql)) {
             $stmt->bind_param("s", $term);
@@ -1656,7 +1669,7 @@ class huh_project_custom extends huh_project {
             $stmt->bind_result($id, $name);
             $comma = '';
             while ($stmt->fetch()) {
-                $name = trim($name);
+                $name = trim($name ?? '');
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
                     if ($withid) {
@@ -1684,7 +1697,7 @@ class huh_project_custom extends huh_project {
             $stmt->execute();
             $stmt->bind_result($name);
             while ($stmt->fetch()) {
-                $name = trim($name);
+                $name = trim($name ?? '');
                 if ($name!='') {
                     $name = str_replace('"','&quot;',$name);
                     $returnvalue = $name;
@@ -1711,14 +1724,14 @@ class huh_geography_custom extends huh_geography {
       global $connection;
       $returnvalue = '[';
       $hasfilter = FALSE;
-      if (strlen(trim($within))>0) {
+      if (strlen(trim($within ?? ''))>0) {
           $sql = "select nodenumber, highestchildnodenumber from geography where fullname like ? order by rankid asc";
           if ($stmt = $connection->prepare($sql)) {
             $stmt->bind_param('s',$within);
             $stmt->execute();
             $stmt->bind_result($highernode, $higherhighestchildnode);
             $stmt->fetch();
-            if (strlen($highernode)>0) {  $hasfilter=TRUE; }
+            if (strlen($highernode ?? '')>0) {  $hasfilter=TRUE; }
             $stmt->close();
           }
       }
@@ -1732,7 +1745,7 @@ class huh_geography_custom extends huh_geography {
             $stmt->execute();
             $stmt->bind_result($id, $label,$value);
             while ($stmt->fetch()) {
-               $label = trim($label);
+               $label = trim($label ?? '');
                if ($label!='') {
                      $label = str_replace('"','&quot;',$label);
                      $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
@@ -1752,7 +1765,7 @@ class huh_geography_custom extends huh_geography {
             $stmt->execute();
             $stmt->bind_result($id, $label,$value);
             while ($stmt->fetch()) {
-               $label = trim($label);
+               $label = trim($label ?? '');
                if ($label!='') {
                      $label = str_replace('"','&quot;',$label);
                      $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
@@ -1778,7 +1791,7 @@ class huh_geography_custom extends huh_geography {
          $stmt->execute();
          $stmt->bind_result($id, $label,$value);
          while ($stmt->fetch()) {
-            $label = trim($label);
+            $label = trim($label ?? '');
             if ($label!='') {
                   $label = str_replace('"','&quot;',$label);
                   $returnvalue .= $comma . '{"id":"'.$id.'","label":"'.$label.'","value":"'.$value.'"}';
@@ -1800,7 +1813,7 @@ class huh_geography_custom extends huh_geography {
          $stmt->execute();
          $stmt->bind_result($id,$name);
          if ($stmt->fetch()) {
-            $name = trim($name);
+            $name = trim($name ?? '');
             $name = str_replace('"','&quot;',$name);
             $returnvalue =  '{"id":"'.$id.'","label":"'.$name.'","value":"'.$name.'"}';
          } else {
@@ -1821,7 +1834,7 @@ class huh_geography_custom extends huh_geography {
          $stmt->execute();
          $stmt->bind_result($name);
          while ($stmt->fetch()) {
-            $name = trim($name);
+            $name = trim($name ?? '');
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
@@ -1843,7 +1856,7 @@ class huh_geography_custom extends huh_geography {
          $stmt->execute();
          $stmt->bind_result($name);
          while ($stmt->fetch()) {
-            $name = trim($name);
+            $name = trim($name ?? '');
             if ($name!='') {
                $name = str_replace('"','&quot;',$name);
                $returnvalue .= $comma . ' { "value":"'.$name.'", "name":"'.$name.'" } ';
@@ -1870,7 +1883,7 @@ class huh_geography_custom extends huh_geography {
             $stmt->execute();
             $stmt->bind_result($primaryid,$nn,$hcnn);
            if ($stmt->fetch()) {
-               $name = str_replace('"','&quot;',$name);
+               $name = str_replace('"','&quot;',$name ?? '');
                $wherebit .= "where nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
             }
             $stmt->close();
@@ -1883,7 +1896,7 @@ class huh_geography_custom extends huh_geography {
                $stmt->execute();
                $stmt->bind_result($countryid,$nn,$hcnn);
                if ($stmt->fetch()) {
-                  $name = str_replace('"','&quot;',$name);
+                  $name = str_replace('"','&quot;',$name ?? '');
                   $wherebit .= "where nodenumber >= $nn and highestchildnodenumber <= $hcnn ";
                }
                $stmt->close();
@@ -1898,7 +1911,7 @@ class huh_geography_custom extends huh_geography {
          $stmt->bind_result($id,$name);
 
          while ($stmt->fetch()) {
-            $name = trim($name);
+            $name = trim($name ?? '');
             if ($name!='') {
                setlocale(LC_ALL, 'C.UTF-8');
                $name_ic = iconv("UTF8","ASCII//TRANSLIT//IGNORE", $name);
@@ -1940,22 +1953,22 @@ function ingestCollectionObject() {
    }
 
    // Use IDs instead of text field if present
-   if (strlen(trim($filedundernameid)) > 0) {
+   if (strlen(trim($filedundernameid ?? '')) > 0) {
      $filedundername = $filedundernameid;
    }
-   if (strlen(trim($fiidentifiedbyid)) > 0) {
+   if (strlen(trim($fiidentifiedbyid ?? '')) > 0) {
      $fiidentifiedby = $fiidentifiedbyid;
    }
-   if (strlen(trim($currentdeterminationid)) > 0) {
+   if (strlen(trim($currentdeterminationid ?? '')) > 0) {
      $currentdetermination = $currentdeterminationid;
    }
-   if (strlen(trim($identifiedbyid)) > 0) {
+   if (strlen(trim($identifiedbyid ?? '')) > 0) {
      $identifiedby = $identifiedbyid;
    }
-   if (strlen(trim($label_determinationid)) > 0) {
+   if (strlen(trim($label_determinationid ?? '')) > 0) {
      $label_name = $label_determinationid;
    }
-   if (strlen(trim($label_identifiedbyid)) > 0) {
+   if (strlen(trim($label_identifiedbyid ?? '')) > 0) {
      $label_identifiedby = $label_identifiedbyid;
    }
 
@@ -2011,7 +2024,7 @@ function ingestCollectionObject() {
    }
 
    // zero pad barcode up to 8 digits if needed
-   $barcode = str_pad($barcode,8,"0",STR_PAD_LEFT);
+   $barcode = str_pad($barcode ?? '',8,"0",STR_PAD_LEFT);
 
    // Test for validly formed barcode
    if ($barcode=='00000000') {
@@ -2133,7 +2146,7 @@ function ingestCollectionObject() {
    if ($utmeasting=='') { $utmeasting = null; }
    if ($utmnorthing=='') { $utmnorthing = null; }
    if ($utmeasting!=null) {
-      if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing)==1) {
+      if (preg_match('/^[0-9]{6}$/',$utmeasting)==1 && preg_match('/^[0-9]{7}$/', $utmnorthing ?? '')==1) {
          // OK, specify takes UTM easting and northing in meters, can't abstract to MGRS or USNG
       } else {
          $fail = true;
@@ -2240,6 +2253,7 @@ function ingestCollectionObject() {
    }
 
    $df = "";
+   $adds = "";
    if ($debug) {
       $df.=" ";
       $df.= "collectors=[$collectors] ";
@@ -2337,7 +2351,7 @@ function ingestCollectionObject() {
 
 
       // allow for higher geography as string or id.
-      if (preg_match("/^[0-9]+$/",$highergeography)>0) {
+      if (preg_match("/^[0-9]+$/",$highergeography ?? '')>0) {
          $geographyid = $highergeography;
       } else {
          $sql = "select geographyid from geography where fullname = ? ";
@@ -2360,7 +2374,7 @@ function ingestCollectionObject() {
          $statement->close();
       }
 
-      $currentuserid = $_SESSION["agentid"];
+      $currentuserid = ($_SESSION["agentid"] ?? '');
 
       if (!$fail) {
          // Locality + localitydetail + geocoorddetail
@@ -2389,7 +2403,7 @@ function ingestCollectionObject() {
 
          if ($coordinateuncertanty!=null || $georeferencedby!=null ) {
             $georeferenceagentid = null;
-            if (preg_match("/^[0-9]+$/", $georeferencedby)) {
+            if (preg_match("/^[0-9]+$/", $georeferencedby ?? '')) {
                $sql = "select distinct agentid from agent where agentid = ? ";
                $param = "i";
             } else {
@@ -2928,7 +2942,7 @@ function ingestCollectionObject() {
             // referencework of type=6 plus fragmentcitation
             $rworkid = null;
             $referenceworkid = null;
-            if (preg_match("/^[0-9]+$/", $exsiccati )) {
+            if (preg_match("/^[0-9]+$/", $exsiccati ?? '' )) {
                $sql = "select referenceworkid from referencework where referenceworkid = ? ";
                $param = "i";
             } else {
@@ -2989,7 +3003,7 @@ function ingestCollectionObject() {
             // type name
             $taxonid = null;
             $basionymid = null;
-            if (preg_match("/^[0-9]+$/", $basionym )) {
+            if (preg_match("/^[0-9]+$/", $basionym ?? '' )) {
                $sql = "select taxonid from taxon where taxonid = ? ";
                $param = "i";
             } else {
@@ -3047,7 +3061,7 @@ function ingestCollectionObject() {
 
             if ($publication!=null) {
                $referenceworkid = null;
-               if (preg_match("/^[0-9]+$/", $publication )) {
+               if (preg_match("/^[0-9]+$/", $publication ?? '' )) {
                   $sql = "select referenceworkid from referencework where referenceworkid = ? ";
                   $param = "i";
                } else {
@@ -3103,8 +3117,8 @@ function ingestCollectionObject() {
       if (!$fail && $filedundername) {
 
         $determinerid = null;
-        if (strlen(trim($fiidentifiedby))>0) {
-          if (preg_match("/^[0-9]+$/", $fiidentifiedby)) {
+        if (strlen(trim($fiidentifiedby ?? ''))>0) {
+          if (preg_match("/^[0-9]+$/", $fiidentifiedby ?? '')) {
              $sql = "select distinct agentid from agent where agentid = ? ";
              $param = "i";
           } else {
@@ -3150,7 +3164,7 @@ function ingestCollectionObject() {
        }
 
          $taxonid = null;
-         if (preg_match("/^[0-9]+$/", $filedundername )) {
+         if (preg_match("/^[0-9]+$/", $filedundername ?? '' )) {
             $sql = "select taxonid from taxon where taxonid = ? ";
             $param = "i";
          } else {
@@ -3209,7 +3223,7 @@ function ingestCollectionObject() {
       // Current determination
       if (!$fail && $currentdetermination) {
          $taxonid = null;
-         if (preg_match("/^[0-9]+$/", $currentdetermination )) {
+         if (preg_match("/^[0-9]+$/", $currentdetermination ?? '' )) {
             $sql = "select taxonid from taxon where taxonid = ? ";
             $param = "i";
          } else {
@@ -3241,8 +3255,8 @@ function ingestCollectionObject() {
          }
 
          $determinerid = null;
-         if (strlen(trim($identifiedby))>0) {
-           if (preg_match("/^[0-9]+$/", $identifiedby)) {
+         if (strlen(trim($identifiedby ?? ''))>0) {
+           if (preg_match("/^[0-9]+$/", $identifiedby ?? '')) {
               $sql = "select distinct agentid from agent where agentid = ? ";
               $param = "i";
            } else {
@@ -3315,7 +3329,7 @@ function ingestCollectionObject() {
       if (!$fail && $label_name) {
          // Always add.
          $taxonid = null;
-         if (preg_match("/^[0-9]+$/", $label_name )) {
+         if (preg_match("/^[0-9]+$/", $label_name ?? '' )) {
             $sql = "select taxonid from taxon where taxonid = ? ";
             $param = "i";
          } else {
@@ -3347,8 +3361,8 @@ function ingestCollectionObject() {
          }
 
          $determinerid = null;
-         if (strlen(trim($label_identifiedby))>0) {
-           if (preg_match("/^[0-9]+$/", $label_identifiedby)) {
+         if (strlen(trim($label_identifiedby ?? ''))>0) {
+           if (preg_match("/^[0-9]+$/", $label_identifiedby ?? '')) {
               $sql = "select distinct agentid from agent where agentid = ? ";
               $param = "i";
            } else {
@@ -3438,7 +3452,7 @@ function ingestCollectionObject() {
 
    if ($fail) {
       $connection->rollback();
-      @$feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
+      $feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
    } else {
       // unlock barcode
       $sql = "delete from proc_add_barcode where barcode = ?";

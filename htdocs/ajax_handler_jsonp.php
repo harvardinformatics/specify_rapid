@@ -34,11 +34,11 @@ if (!function_exists('specify_connect')) {
 mysqli_report(MYSQLI_REPORT_OFF);
 @$connection = specify_connect();
 
-if (!isset($_GET['callback']) || !preg_match('/^[a-z][\w.]*$/',$_GET['callback'])) {
+if (!isset($_GET['callback']) || !preg_match('/^[a-z][\w.]*$/',($_GET['callback'] ?? ''))) {
   die('valid "callback" param is required.');
 }
 
-if (!isset($_GET['name']) || !in_array($_GET['name'],array_keys($sql))) {
+if (!isset($_GET['name']) || !in_array(($_GET['name'] ?? ''),array_keys($sql))) {
   die('valid "name" param is required.');
 }
 
@@ -50,8 +50,8 @@ if (!isset($_GET['value'])) {
 // Get the data
 //
 
-$type = $_GET['name'];
-$stub = $_GET['value'];
+$type = ($_GET['name'] ?? '');
+$stub = ($_GET['value'] ?? '');
 $matches = array();
 while ($stub && count($matches)<2) {
   // TODO: possibility that stripping one character expands the result set hugely and we lose the one of interest.
@@ -78,7 +78,7 @@ if (isset($best) && count($matches)>1) {
 // Send it out
 //
 
-if (!defined("json_encode")) { 
+if (!function_exists("json_encode")) {  // always available as of PHP 8 
 
 /**
  * Converts an associative array of arbitrary depth and dimension into JSON representation.
@@ -117,7 +117,7 @@ function json_encode( $array ){
             if( is_array( $value )){
                 $value = json_encode( $value );
             } else if( !is_numeric( $value ) || is_string( $value ) ){
-                $value = '"'.addslashes($value).'"';
+                $value = '"'.addslashes($value ?? '').'"';
             }
 
             // Add to staging array:
@@ -136,7 +136,7 @@ function json_encode( $array ){
             if( is_array( $value )){
                 $value = json_encode( $value );
             } else if( !is_numeric( $value ) || is_string( $value ) ){
-                $value = '"'.addslashes($value).'"';
+                $value = '"'.addslashes($value ?? '').'"';
             }
 
             // Add to staging array:
@@ -153,12 +153,12 @@ function json_encode( $array ){
 }
 
 $json = json_encode(array(
-  'name' => $_GET['name'],
+  'name' => ($_GET['name'] ?? ''),
   'list' => $matches
 ));
 
 
-echo $_GET['callback'] . '(' . $json . ');';
+echo ($_GET['callback'] ?? '') . '(' . $json . ');';
 
 //
 // Functions

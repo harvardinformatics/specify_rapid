@@ -13,7 +13,7 @@ session_write_close();
 
 $debug = false;
 if ($debug) {
-   echo  "[". $_SESSION["user_ticket"] . "][". $_SESSION["session_id"] ."]";
+   echo  "[". ($_SESSION["user_ticket"] ?? '') . "][". ($_SESSION["session_id"] ?? '') ."]";
 	// See PHP documentation.
 	mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 } else {
@@ -45,12 +45,12 @@ if (!function_exists('specify_connect')) {
 $authenticated=false;
 if (isset($_SESSION['user_ticket'])) {
    $u = new User();
-   $u->setEmail($_SESSION["username"]);
-   if ($u->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
-      $u->setFullname($_SESSION["fullname"]);
-      $u->setAgentId($_SESSION["agentid"]);
-      $u->setLastLogin($_SESSION["lastlogin"]);
-      $u->setAbout($_SESSION["about"]);
+   $u->setEmail(($_SESSION["username"] ?? ''));
+   if ($u->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
+      $u->setFullname(($_SESSION["fullname"] ?? ''));
+      $u->setAgentId(($_SESSION["agentid"] ?? ''));
+      $u->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+      $u->setAbout(($_SESSION["about"] ?? ''));
       $authenticated = true;
    }
 }
@@ -58,7 +58,7 @@ if (isset($_SESSION['user_ticket'])) {
 if ($connection && $authenticated) {
    include_once('druid_handler.php');
 
-   @$action = substr(preg_replace('/[^a-z]/','',$_GET['druid_action']),0,45);
+   $action = substr(preg_replace('/[^a-z]/','',($_GET['druid_action'] ?? '')),0,45);
 
    $debug = false;
 
@@ -68,8 +68,8 @@ if ($connection && $authenticated) {
 
    switch ($action) {
       case 'prepmergeprocessorpre':
-        	@$firstbarcode= substr(preg_replace('/[^0-9]/','',$_GET['targetbarcode']),0,huh_fragment::IDENTIFIER_SIZE);
-        	@$secondbarcode= substr(preg_replace('/[^0-9]/','',$_GET['movebarcode']),0,huh_fragment::IDENTIFIER_SIZE);
+        	$firstbarcode= substr(preg_replace('/[^0-9]/','',($_GET['targetbarcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
+        	$secondbarcode= substr(preg_replace('/[^0-9]/','',($_GET['movebarcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
             if (strlen($firstbarcode)==0 || strlen($secondbarcode)==0) {
                echo "You must provide two barcodes.";
             } elseif ($firstbarcode==$secondbarcode) {
@@ -95,8 +95,8 @@ if ($connection && $authenticated) {
             }
          break;
       case 'prepmergeprocessor':
-        	@$firstbarcode= substr(preg_replace('/[^0-9]/','',$_GET['targetbarcode']),0,huh_fragment::IDENTIFIER_SIZE);
-        	@$secondbarcode= substr(preg_replace('/[^0-9]/','',$_GET['movebarcode']),0,huh_fragment::IDENTIFIER_SIZE);
+        	$firstbarcode= substr(preg_replace('/[^0-9]/','',($_GET['targetbarcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
+        	$secondbarcode= substr(preg_replace('/[^0-9]/','',($_GET['movebarcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
             $barcodes[0]=$firstbarcode;
             $barcodes[1]=$secondbarcode;
             $result =  preMergeCheck($barcodes);
@@ -122,7 +122,7 @@ if ($connection && $authenticated) {
             }
          break;
       case 'showstructure':
-        	@$barcode= substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
+        	$barcode= substr(preg_replace('/[^0-9]/','',($_GET['barcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
             $result = showStructure($barcode);
             if ($result->success===TRUE) {
                echo $result->html;
@@ -137,150 +137,150 @@ if ($connection && $authenticated) {
             $todo = 100;
             $truncation = false;
             $truncated = "";
-        	@$collectors= substr(preg_replace('/[^0-9]/','',$_GET['collectors']),0,huh_agentvariant::NAME_SIZE);
-        	@$etal= substr($_GET['etal'],0,huh_collector::ETAL_SIZE);
-        	@$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#_]/','',$_GET['fieldnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-        	@$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#_]/','',$_GET['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-        	@$verbatimdate= substr($_GET['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
-        	@$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_GET['datecollected']),0,40);  // allow larger than date to parse ISO date range
-        	@$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_GET['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
-        	@$barcode= substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
-        	@$provenance= substr(preg_replace('/^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',$_GET['provenance']),0,huh_fragment::PROVENANCE_SIZE);
-        	@$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['filedundername']),0,huh_taxon::FULLNAME_SIZE);
-        	@$fiidentificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['fiidentificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
-          @$fiidentifiedby= substr(preg_replace('/[^0-9]/','',$_GET['fiidentifiedby']),0,huh_determination::DETERMINERID_SIZE);
-          @$fideterminertext= substr($_GET['fideterminertext'],0,huh_determination::TEXT1_SIZE);
-          @$fiannotationtext= substr($_GET['fiannotationtext'],0,huh_determination::TEXT2_SIZE);
-          @$fidateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['fidateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
+        	$collectors= substr(preg_replace('/[^0-9]/','',($_GET['collectors'] ?? '')),0,huh_agentvariant::NAME_SIZE);
+        	$etal= substr(($_GET['etal'] ?? ''),0,huh_collector::ETAL_SIZE);
+        	$fieldnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#_]/','',($_GET['fieldnumber'] ?? '')),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+        	$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/\(\)\[\]=#_]/','',($_GET['accessionnumber'] ?? '')),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+        	$verbatimdate= substr(($_GET['verbatimdate'] ?? ''),0,huh_collectingevent::VERBATIMDATE_SIZE);
+        	$datecollected= substr(preg_replace('/[^\-\/0-9]/','',($_GET['datecollected'] ?? '')),0,40);  // allow larger than date to parse ISO date range
+        	$herbariumacronym= substr(preg_replace('/[^A-Z]/','',($_GET['herbariumacronym'] ?? '')),0,huh_fragment::TEXT1_SIZE);
+        	$barcode= substr(preg_replace('/[^0-9]/','',($_GET['barcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
+        	$provenance= substr(preg_replace('/^A-Za-z 0-9\[\]\.\-\,\(\)\?\;\:]/','',($_GET['provenance'] ?? '')),0,huh_fragment::PROVENANCE_SIZE);
+        	$filedundername= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',($_GET['filedundername'] ?? '')),0,huh_taxon::FULLNAME_SIZE);
+        	$fiidentificationqualifier= substr(preg_replace('/[^A-Za-z]/','',($_GET['fiidentificationqualifier'] ?? '')),0,huh_determination::QUALIFIER_SIZE);
+          $fiidentifiedby= substr(preg_replace('/[^0-9]/','',($_GET['fiidentifiedby'] ?? '')),0,huh_determination::DETERMINERID_SIZE);
+          $fideterminertext= substr(($_GET['fideterminertext'] ?? ''),0,huh_determination::TEXT1_SIZE);
+          $fiannotationtext= substr(($_GET['fiannotationtext'] ?? ''),0,huh_determination::TEXT2_SIZE);
+          $fidateidentified= substr(preg_replace('/[^0-9\-\/]/','',($_GET['fidateidentified'] ?? '')),0,huh_determination::DETERMINEDDATE_SIZE);
 
-        	@$currentdetermination= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['currentdetermination']),0,huh_taxon::FULLNAME_SIZE);
-        	@$identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
-        	@$identifiedby=      substr(preg_replace('/[^0-9]/','',$_GET['identifiedby']),0,huh_determination::DETERMINERID_SIZE);
-        	@$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['determinertext']),0,huh_determination::TEXT1_SIZE);
-          @$annotationtext= substr($_GET['annotationtext'],0,huh_determination::TEXT2_SIZE);
-        	@$dateidentified= substr($_GET['dateidentified'],0,huh_determination::DETERMINEDDATE_SIZE);
-        	@$highergeography= substr(preg_replace('/[^0-9]/','',$_GET['highergeography']),0,huh_geography::GEOGRAPHYID_SIZE);
-        	@$specificlocality = substr($_GET['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
-        	@$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_GET['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
-        	@$format = substr(preg_replace('/[^A-Za-z]/','',$_GET['format']),0,huh_preptype::NAME_SIZE);
+        	$currentdetermination= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',($_GET['currentdetermination'] ?? '')),0,huh_taxon::FULLNAME_SIZE);
+        	$identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',($_GET['identificationqualifier'] ?? '')),0,huh_determination::QUALIFIER_SIZE);
+        	$identifiedby=      substr(preg_replace('/[^0-9]/','',($_GET['identifiedby'] ?? '')),0,huh_determination::DETERMINERID_SIZE);
+        	$determinertext= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',($_GET['determinertext'] ?? '')),0,huh_determination::TEXT1_SIZE);
+          $annotationtext= substr(($_GET['annotationtext'] ?? ''),0,huh_determination::TEXT2_SIZE);
+        	$dateidentified= substr(($_GET['dateidentified'] ?? ''),0,huh_determination::DETERMINEDDATE_SIZE);
+        	$highergeography= substr(preg_replace('/[^0-9]/','',($_GET['highergeography'] ?? '')),0,huh_geography::GEOGRAPHYID_SIZE);
+        	$specificlocality = substr(($_GET['specificlocality'] ?? ''),0,huh_locality::LOCALITYNAME_SIZE);
+        	$prepmethod = substr(preg_replace('/[^A-Za-z]/','',($_GET['prepmethod'] ?? '')),0,huh_preparation::PREPTYPEID_SIZE);
+        	$format = substr(preg_replace('/[^A-Za-z]/','',($_GET['format'] ?? '')),0,huh_preptype::NAME_SIZE);
 
-        	@$verbatimlat= substr(preg_replace('/[^0-9\. \'"°NSn-]/','',$_GET['verbatimlat']),0,huh_locality::LAT1TEXT_SIZE);
-        	@$verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',$_GET['verbatimlong']),0,huh_locality::LONG1TEXT_SIZE);
-        	@$decimallat= substr(preg_replace('/[^0-9\.\-]/','',$_GET['decimallat']),0,huh_locality::LATITUDE1_SIZE);
-        	@$decimallong= substr(preg_replace('/[^0-9\.\-]/','',$_GET['decimallong']),0,huh_locality::LONGITUDE1_SIZE);
-        	@$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_GET['datum']),0,huh_locality::DATUM_SIZE);
-        	@$coordinateuncertanty= substr(preg_replace('/[^0-9]/','',$_GET['coordinateuncertanty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
-        	@$georeferencedby= substr(preg_replace('/[^0-9]/','',$_GET['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
-        	@$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',$_GET['georeferencedate']),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
-        	@$georeferencesource= substr(preg_replace('/[^A-Za-z]/','',$_GET['georeferencesource']),0,huh_locality::LATLONGMETHOD_SIZE);
-        	@$utmzone= substr(preg_replace('/[^0-9A-Z]/','',$_GET['utmzone']),0,huh_localitydetail::UTMZONE_SIZE);
-        	@$utmeasting= substr(preg_replace('/[^0-9]/','',$_GET['utmeasting']),0,huh_localitydetail::UTMEASTING_SIZE);
-        	@$utmnorthing= substr(preg_replace('/[^0-9]/','',$_GET['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
+        	$verbatimlat= substr(preg_replace('/[^0-9\. \'"°NSn-]/','',($_GET['verbatimlat'] ?? '')),0,huh_locality::LAT1TEXT_SIZE);
+        	$verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',($_GET['verbatimlong'] ?? '')),0,huh_locality::LONG1TEXT_SIZE);
+        	$decimallat= substr(preg_replace('/[^0-9\.\-]/','',($_GET['decimallat'] ?? '')),0,huh_locality::LATITUDE1_SIZE);
+        	$decimallong= substr(preg_replace('/[^0-9\.\-]/','',($_GET['decimallong'] ?? '')),0,huh_locality::LONGITUDE1_SIZE);
+        	$datum= substr(preg_replace('/[^A-Za-z0-9]/','',($_GET['datum'] ?? '')),0,huh_locality::DATUM_SIZE);
+        	$coordinateuncertanty= substr(preg_replace('/[^0-9]/','',($_GET['coordinateuncertanty'] ?? '')),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
+        	$georeferencedby= substr(preg_replace('/[^0-9]/','',($_GET['georeferencedby'] ?? '')),0,huh_agentvariant::NAME_SIZE);
+        	$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',($_GET['georeferencedate'] ?? '')),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
+        	$georeferencesource= substr(preg_replace('/[^A-Za-z]/','',($_GET['georeferencesource'] ?? '')),0,huh_locality::LATLONGMETHOD_SIZE);
+        	$utmzone= substr(preg_replace('/[^0-9A-Z]/','',($_GET['utmzone'] ?? '')),0,huh_localitydetail::UTMZONE_SIZE);
+        	$utmeasting= substr(preg_replace('/[^0-9]/','',($_GET['utmeasting'] ?? '')),0,huh_localitydetail::UTMEASTING_SIZE);
+        	$utmnorthing= substr(preg_replace('/[^0-9]/','',($_GET['utmnorthing'] ?? '')),0,huh_localitydetail::UTMNORTHING_SIZE);
 
-        	@$typestatus= substr(preg_replace('/[^A-Za-z]/','',$_GET['typestatus']),0,huh_determination::TYPESTATUSNAME_SIZE);
-        	@$typeconfidence= substr(preg_replace('/[^A-Za-z]/','',$_GET['typeconfidence']),0,huh_determination::CONFIDENCE_SIZE);
-        	@$basionym= substr(preg_replace('/[^0-9]/','',$_GET['basionym']),0,huh_taxon::FULLNAME_SIZE);
-        	@$publication= substr(preg_replace('/[^[:alpha:]A-Za-z 0-9]/','',$_GET['publication']),0,huh_referencework::REFERENCEWORKID_SIZE);
-        	@$page= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_GET['page']),0,huh_taxoncitation::TEXT1_SIZE);
-        	@$datepublished= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_GET['datepublished']),0,huh_taxoncitation::TEXT2_SIZE);
-        	@$isfragment= substr(preg_replace('/[^0-9a-z]/','',$_GET['isfragment']),0,1);   // taxon
-        	@$habitat= substr($_GET['habitat'],0,huh_collectingevent::REMARKS_SIZE);
-        	@$host = substr($_GET['host'],0,900);
-        	@$substrate= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',$_GET['substrate']),0,huh_fragment::TEXT2_SIZE);
-        	@$phenology= substr(preg_replace('/[^A-Za-z ]/','',$_GET['phenology']),0,huh_fragment::PHENOLOGY_SIZE);
-        	@$verbatimelevation= substr($_GET['verbatimelevation'],0,huh_locality::VERBATIMELEVATION_SIZE);
-        	@$minelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['minelevation']),0,huh_locality::MINELEVATION_SIZE);
-        	@$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_GET['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
-        	@$specimenremarks= substr($_GET['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
-        	@$specimendescription= substr($_GET['specimendescription'],0,huh_collectionobject::DESCRIPTION_SIZE);
-        	@$itemdescription= substr($_GET['itemdescription'],0,huh_fragment::DESCRIPTION_SIZE);
-        	@$container= substr(preg_replace('/[^0-9]/','',$_GET['container']),0,huh_collectionobject::CONTAINERID_SIZE);
-			    @$collectingtrip = substr(preg_replace('/[^0-9]/','',$_GET['collectingtrip']),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
-        	@$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',$_GET['storagelocation']),0,huh_preparation::STORAGELOCATION_SIZE);
-        	@$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',$_GET['project']),0,huh_project::PROJECTNAME_SIZE);
-        	@$storage= substr(preg_replace('/[^0-9]/','',$_GET['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
-        	@$exsiccati= substr(preg_replace('/[^0-9]/','',$_GET['exsiccati']),0,huh_referencework::REFERENCEWORKID_SIZE);
-        	@$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
-        	@$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_GET['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
-          @$label_name= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',$_GET['label_name']),0,huh_taxon::FULLNAME_SIZE);
-          @$label_identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',$_GET['label_identificationqualifier']),0,huh_determination::QUALIFIER_SIZE);
-          @$label_identifiedby= substr(preg_replace('/[^0-9]/','',$_GET['label_identifiedby']),0,huh_determination::DETERMINERID_SIZE);
-          @$label_determinertext= substr($_GET['label_determinertext'],0,huh_determination::TEXT1_SIZE);
-          @$label_annotationtext= substr($_GET['label_annotationtext'],0,huh_determination::TEXT2_SIZE);
-          @$label_dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_GET['label_dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
+        	$typestatus= substr(preg_replace('/[^A-Za-z]/','',($_GET['typestatus'] ?? '')),0,huh_determination::TYPESTATUSNAME_SIZE);
+        	$typeconfidence= substr(preg_replace('/[^A-Za-z]/','',($_GET['typeconfidence'] ?? '')),0,huh_determination::CONFIDENCE_SIZE);
+        	$basionym= substr(preg_replace('/[^0-9]/','',($_GET['basionym'] ?? '')),0,huh_taxon::FULLNAME_SIZE);
+        	$publication= substr(preg_replace('/[^[:alpha:]A-Za-z 0-9]/','',($_GET['publication'] ?? '')),0,huh_referencework::REFERENCEWORKID_SIZE);
+        	$page= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',($_GET['page'] ?? '')),0,huh_taxoncitation::TEXT1_SIZE);
+        	$datepublished= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',($_GET['datepublished'] ?? '')),0,huh_taxoncitation::TEXT2_SIZE);
+        	$isfragment= substr(preg_replace('/[^0-9a-z]/','',($_GET['isfragment'] ?? '')),0,1);   // taxon
+        	$habitat= substr(($_GET['habitat'] ?? ''),0,huh_collectingevent::REMARKS_SIZE);
+        	$host = substr(($_GET['host'] ?? ''),0,900);
+        	$substrate= substr(preg_replace('/[^A-Za-z[:alpha:]'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ°]/','',($_GET['substrate'] ?? '')),0,huh_fragment::TEXT2_SIZE);
+        	$phenology= substr(preg_replace('/[^A-Za-z ]/','',($_GET['phenology'] ?? '')),0,huh_fragment::PHENOLOGY_SIZE);
+        	$verbatimelevation= substr(($_GET['verbatimelevation'] ?? ''),0,huh_locality::VERBATIMELEVATION_SIZE);
+        	$minelevation= substr(preg_replace('/[^0-9\.]/','',($_GET['minelevation'] ?? '')),0,huh_locality::MINELEVATION_SIZE);
+        	$maxelevation= substr(preg_replace('/[^0-9\.]/','',($_GET['maxelevation'] ?? '')),0,huh_locality::MAXELEVATION_SIZE);
+        	$specimenremarks= substr(($_GET['specimenremarks'] ?? ''),0,huh_collectionobject::REMARKS_SIZE);
+        	$specimendescription= substr(($_GET['specimendescription'] ?? ''),0,huh_collectionobject::DESCRIPTION_SIZE);
+        	$itemdescription= substr(($_GET['itemdescription'] ?? ''),0,huh_fragment::DESCRIPTION_SIZE);
+        	$container= substr(preg_replace('/[^0-9]/','',($_GET['container'] ?? '')),0,huh_collectionobject::CONTAINERID_SIZE);
+			    $collectingtrip = substr(preg_replace('/[^0-9]/','',($_GET['collectingtrip'] ?? '')),0,huh_collectingevent::COLLECTINGTRIPID_SIZE);
+        	$storagelocation= substr(preg_replace('/[^A-Za-z'.$alpha.'0-9+\;\:() \.\-\,\[\]\&\'\/?#"ñ]/','',($_GET['storagelocation'] ?? '')),0,huh_preparation::STORAGELOCATION_SIZE);
+        	$project= substr(preg_replace('/[^A-Za-z\. \-0-9]/','',($_GET['project'] ?? '')),0,huh_project::PROJECTNAME_SIZE);
+        	$storage= substr(preg_replace('/[^0-9]/','',($_GET['storage'] ?? '')),0,huh_storage::STORAGEID_SIZE); // subcollection
+        	$exsiccati= substr(preg_replace('/[^0-9]/','',($_GET['exsiccati'] ?? '')),0,huh_referencework::REFERENCEWORKID_SIZE);
+        	$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',($_GET['fascicle'] ?? '')),0,huh_fragmentcitation::TEXT1_SIZE);
+        	$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',($_GET['exsiccatinumber'] ?? '')),0,huh_fragmentcitation::TEXT2_SIZE);
+          $label_name= substr(preg_replace('/[^A-Za-z[:alpha:]\(\) 0-9]/','',($_GET['label_name'] ?? '')),0,huh_taxon::FULLNAME_SIZE);
+          $label_identificationqualifier= substr(preg_replace('/[^A-Za-z]/','',($_GET['label_identificationqualifier'] ?? '')),0,huh_determination::QUALIFIER_SIZE);
+          $label_identifiedby= substr(preg_replace('/[^0-9]/','',($_GET['label_identifiedby'] ?? '')),0,huh_determination::DETERMINERID_SIZE);
+          $label_determinertext= substr(($_GET['label_determinertext'] ?? ''),0,huh_determination::TEXT1_SIZE);
+          $label_annotationtext= substr(($_GET['label_annotationtext'] ?? ''),0,huh_determination::TEXT2_SIZE);
+          $label_dateidentified= substr(preg_replace('/[^0-9\-\/]/','',($_GET['label_dateidentified'] ?? '')),0,huh_determination::DETERMINEDDATE_SIZE);
 
         	//@$= substr(preg_replace('/[^0-9]/','',$_GET['']),0,huh_);
 
-        	if ($collectors!=$_GET['collectors'])  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
-        	if ($etal!=$_GET['etal']) { $truncation = true; $truncated .= "etal : [$etal] "; }
-        	if ($fieldnumber!=$_GET['fieldnumber']) { $truncation = true; $truncated .= "fieldnumber : [$fieldnumber] "; }
-        	if ($accessionnumber!=$_GET['accessionnumber']) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
-        	if ($verbatimdate!=$_GET['verbatimdate']) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
-        	if ($datecollected!=$_GET['datecollected']) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
-        	if ($herbariumacronym!=$_GET['herbariumacronym']) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
-        	if ($barcode!=$_GET['barcode']) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
-        	if ($provenance!=$_GET['provenance']) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
-        	if ($filedundername!=$_GET['filedundername']) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
-        	if ($fiidentificationqualifier!=$_GET['fiidentificationqualifier']) { $truncation = true; $truncated .= "fiidentificationqualifier : [$fiidentificationqualifier] "; }
-          if ($fiidentifiedby!=$_GET['fiidentifiedby']) { $truncation = true; $truncated .= "fiidentifiedby : [$fiidentifiedby] "; }
-          if ($fideterminertext!=$_GET['fideterminertext']) { $truncation = true; $truncated .= "fideterminertext : [$fideterminertext] "; }
-          if ($fiannotationtext!=$_GET['fiannotationtext']) { $truncation = true; $truncated .= "fiannotationtext : [$fiannotationtext] "; }
-          if ($fidateidentified!=$_GET['fidateidentified']) { $truncation = true; $truncated .= "fidateidentified : [$fidateidentified] "; }
-        	if ($currentdetermination!=$_GET['currentdetermination']) { $truncation = true; $truncated .= "currentdetermination : [$currentdetermination] "; }
-        	if ($identificationqualifier!=$_GET['identificationqualifier']) { $truncation = true; $truncated .= "identificationqualifier : [$identificationqualifier] "; }
-        	if ($identifiedby!=$_GET['identifiedby']) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
-        	if ($determinertext!=$_GET['determinertext']) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
-          if ($annotationtext!=$_GET['annotationtext']) { $truncation = true; $truncated .= "annotationtext : [$annotationtext] "; }
-        	if ($dateidentified!=$_GET['dateidentified']) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
-        	if ($highergeography!=$_GET['highergeography']) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
-        	if ($specificlocality!=$_GET['specificlocality']) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
-        	if ($prepmethod!=$_GET['prepmethod']) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
-        	if ($format!=$_GET['format']) { $truncation = true; $truncated .= "format : [$format] "; }
-          if ($label_name!=$_GET['label_name']) { $truncation = true; $truncated .= "label_name : [$label_name] "; }
-          if ($label_identificationqualifier!=$_GET['label_identificationqualifier']) { $truncation = true; $truncated .= "label_identificationqualifier : [$label_identificationqualifier] "; }
-          if ($label_identifiedby!=$_GET['label_identifiedby']) { $truncation = true; $truncated .= "label_identifiedby : [$label_identifiedby] "; }
-          if ($label_determinertext!=$_GET['label_determinertext']) { $truncation = true; $truncated .= "label_determinertext : [$label_determinertext] "; }
-          if ($label_annotationtext!=$_GET['label_annotationtext']) { $truncation = true; $truncated .= "label_annotationtext : [$label_annotationtext] "; }
-          if ($label_dateidentified!=$_GET['label_dateidentified']) { $truncation = true; $truncated .= "label_dateidentified : [$label_dateidentified] "; }
+        	if ($collectors!=($_GET['collectors'] ?? ''))  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
+        	if ($etal!=($_GET['etal'] ?? '')) { $truncation = true; $truncated .= "etal : [$etal] "; }
+        	if ($fieldnumber!=($_GET['fieldnumber'] ?? '')) { $truncation = true; $truncated .= "fieldnumber : [$fieldnumber] "; }
+        	if ($accessionnumber!=($_GET['accessionnumber'] ?? '')) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
+        	if ($verbatimdate!=($_GET['verbatimdate'] ?? '')) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
+        	if ($datecollected!=($_GET['datecollected'] ?? '')) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
+        	if ($herbariumacronym!=($_GET['herbariumacronym'] ?? '')) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
+        	if ($barcode!=($_GET['barcode'] ?? '')) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
+        	if ($provenance!=($_GET['provenance'] ?? '')) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
+        	if ($filedundername!=($_GET['filedundername'] ?? '')) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
+        	if ($fiidentificationqualifier!=($_GET['fiidentificationqualifier'] ?? '')) { $truncation = true; $truncated .= "fiidentificationqualifier : [$fiidentificationqualifier] "; }
+          if ($fiidentifiedby!=($_GET['fiidentifiedby'] ?? '')) { $truncation = true; $truncated .= "fiidentifiedby : [$fiidentifiedby] "; }
+          if ($fideterminertext!=($_GET['fideterminertext'] ?? '')) { $truncation = true; $truncated .= "fideterminertext : [$fideterminertext] "; }
+          if ($fiannotationtext!=($_GET['fiannotationtext'] ?? '')) { $truncation = true; $truncated .= "fiannotationtext : [$fiannotationtext] "; }
+          if ($fidateidentified!=($_GET['fidateidentified'] ?? '')) { $truncation = true; $truncated .= "fidateidentified : [$fidateidentified] "; }
+        	if ($currentdetermination!=($_GET['currentdetermination'] ?? '')) { $truncation = true; $truncated .= "currentdetermination : [$currentdetermination] "; }
+        	if ($identificationqualifier!=($_GET['identificationqualifier'] ?? '')) { $truncation = true; $truncated .= "identificationqualifier : [$identificationqualifier] "; }
+        	if ($identifiedby!=($_GET['identifiedby'] ?? '')) { $truncation = true; $truncated .= "identifiedby : [$identifiedby] "; }
+        	if ($determinertext!=($_GET['determinertext'] ?? '')) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
+          if ($annotationtext!=($_GET['annotationtext'] ?? '')) { $truncation = true; $truncated .= "annotationtext : [$annotationtext] "; }
+        	if ($dateidentified!=($_GET['dateidentified'] ?? '')) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
+        	if ($highergeography!=($_GET['highergeography'] ?? '')) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
+        	if ($specificlocality!=($_GET['specificlocality'] ?? '')) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
+        	if ($prepmethod!=($_GET['prepmethod'] ?? '')) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
+        	if ($format!=($_GET['format'] ?? '')) { $truncation = true; $truncated .= "format : [$format] "; }
+          if ($label_name!=($_GET['label_name'] ?? '')) { $truncation = true; $truncated .= "label_name : [$label_name] "; }
+          if ($label_identificationqualifier!=($_GET['label_identificationqualifier'] ?? '')) { $truncation = true; $truncated .= "label_identificationqualifier : [$label_identificationqualifier] "; }
+          if ($label_identifiedby!=($_GET['label_identifiedby'] ?? '')) { $truncation = true; $truncated .= "label_identifiedby : [$label_identifiedby] "; }
+          if ($label_determinertext!=($_GET['label_determinertext'] ?? '')) { $truncation = true; $truncated .= "label_determinertext : [$label_determinertext] "; }
+          if ($label_annotationtext!=($_GET['label_annotationtext'] ?? '')) { $truncation = true; $truncated .= "label_annotationtext : [$label_annotationtext] "; }
+          if ($label_dateidentified!=($_GET['label_dateidentified'] ?? '')) { $truncation = true; $truncated .= "label_dateidentified : [$label_dateidentified] "; }
 
-        	if ($verbatimlat!=$_GET['verbatimlat']) { $truncation = true; $truncated .= "verbatimlat : [$verbatimlat] "; }
-        	if ($verbatimlong!=$_GET['verbatimlong']) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
-        	if ($decimallat!=$_GET['decimallat']) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
-        	if ($decimallong!=$_GET['decimallong']) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
-        	if ($datum!=$_GET['datum']) { $truncation = true; $truncated .= "datum : [$datum] "; }
-        	if ($coordinateuncertanty!=$_GET['coordinateuncertanty']) { $truncation = true; $truncated .= "coordinateuncertanty : [$coordinateuncertanty] "; }
-        	if ($georeferencedby!=$_GET['georeferencedby']) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
-        	if ($georeferencedate!=$_GET['georeferencedate']) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
-        	if ($georeferencesource!=$_GET['georeferencesource']) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
-        	if ($utmzone!=$_GET['utmzone']) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
-        	if ($utmeasting!=$_GET['utmeasting']) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
-        	if ($utmnorthing!=$_GET['utmnorthing']) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
+        	if ($verbatimlat!=($_GET['verbatimlat'] ?? '')) { $truncation = true; $truncated .= "verbatimlat : [$verbatimlat] "; }
+        	if ($verbatimlong!=($_GET['verbatimlong'] ?? '')) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
+        	if ($decimallat!=($_GET['decimallat'] ?? '')) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
+        	if ($decimallong!=($_GET['decimallong'] ?? '')) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
+        	if ($datum!=($_GET['datum'] ?? '')) { $truncation = true; $truncated .= "datum : [$datum] "; }
+        	if ($coordinateuncertanty!=($_GET['coordinateuncertanty'] ?? '')) { $truncation = true; $truncated .= "coordinateuncertanty : [$coordinateuncertanty] "; }
+        	if ($georeferencedby!=($_GET['georeferencedby'] ?? '')) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
+        	if ($georeferencedate!=($_GET['georeferencedate'] ?? '')) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
+        	if ($georeferencesource!=($_GET['georeferencesource'] ?? '')) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
+        	if ($utmzone!=($_GET['utmzone'] ?? '')) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
+        	if ($utmeasting!=($_GET['utmeasting'] ?? '')) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
+        	if ($utmnorthing!=($_GET['utmnorthing'] ?? '')) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
 
-        	if ($typestatus!=$_GET['typestatus']) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
-        	if ($typeconfidence!=@$_GET['typeconfidence']) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
-        	if ($basionym!=$_GET['basionym']) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
-        	if ($publication!=$_GET['publication']) { $truncation = true; $truncated .= "publication : [$publication] "; }
-        	if ($page!=$_GET['page']) { $truncation = true; $truncated .= "page : [$page] "; }
-        	if ($datepublished!=$_GET['datepublished']) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
-        	if ($isfragment!=$_GET['isfragment']) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
-        	if ($habitat!=$_GET['habitat']) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
-        	if ($host!=$_GET['host']) { $truncation = true; $truncated .= "host : [$host] "; }
-        	if ($substrate!=$_GET['substrate']) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
-        	if ($phenology!=$_GET['phenology']) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
-        	if ($verbatimelevation!=$_GET['verbatimelevation']) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
-        	if ($minelevation!=@$_GET['minelevation']) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
-        	if ($maxelevation!=@$_GET['maxelevation']) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
-        	if ($specimenremarks!=$_GET['specimenremarks']) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
-        	if ($specimendescription!=$_GET['specimendescription']) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
-        	if ($itemdescription!=$_GET['itemdescription']) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
-        	if ($container!=$_GET['container']) { $truncation = true; $truncated .= "container : [$container] "; }
-        	if ($collectingtrip!=$_GET['collectingtrip']) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
-        	if ($storagelocation!=$_GET['storagelocation']) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
-        	if ($project!=$_GET['project']) { $truncation = true; $truncated .= "project : [$project] "; }
-        	if ($storage!=$_GET['storage']) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
-        	if ($exsiccati!=$_GET['exsiccati']) { $truncation = true; $truncated .= "exsiccati : [$exsiccati] "; }
-        	if ($fascicle!=$_GET['fascicle']) { $truncation = true; $truncated .= "fascicle : [$fascicle] "; }
-        	if ($exsiccatinumber!=$_GET['exsiccatinumber']) { $truncation = true; $truncated .= "exsiccatinumber : [$exsiccatinumber] "; }
+        	if ($typestatus!=($_GET['typestatus'] ?? '')) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
+        	if ($typeconfidence!=($_GET['typeconfidence'] ?? '')) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
+        	if ($basionym!=($_GET['basionym'] ?? '')) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
+        	if ($publication!=($_GET['publication'] ?? '')) { $truncation = true; $truncated .= "publication : [$publication] "; }
+        	if ($page!=($_GET['page'] ?? '')) { $truncation = true; $truncated .= "page : [$page] "; }
+        	if ($datepublished!=($_GET['datepublished'] ?? '')) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
+        	if ($isfragment!=($_GET['isfragment'] ?? '')) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
+        	if ($habitat!=($_GET['habitat'] ?? '')) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
+        	if ($host!=($_GET['host'] ?? '')) { $truncation = true; $truncated .= "host : [$host] "; }
+        	if ($substrate!=($_GET['substrate'] ?? '')) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
+        	if ($phenology!=($_GET['phenology'] ?? '')) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
+        	if ($verbatimelevation!=($_GET['verbatimelevation'] ?? '')) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
+        	if ($minelevation!=($_GET['minelevation'] ?? '')) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
+        	if ($maxelevation!=($_GET['maxelevation'] ?? '')) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
+        	if ($specimenremarks!=($_GET['specimenremarks'] ?? '')) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
+        	if ($specimendescription!=($_GET['specimendescription'] ?? '')) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
+        	if ($itemdescription!=($_GET['itemdescription'] ?? '')) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
+        	if ($container!=($_GET['container'] ?? '')) { $truncation = true; $truncated .= "container : [$container] "; }
+        	if ($collectingtrip!=($_GET['collectingtrip'] ?? '')) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
+        	if ($storagelocation!=($_GET['storagelocation'] ?? '')) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
+        	if ($project!=($_GET['project'] ?? '')) { $truncation = true; $truncated .= "project : [$project] "; }
+        	if ($storage!=($_GET['storage'] ?? '')) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
+        	if ($exsiccati!=($_GET['exsiccati'] ?? '')) { $truncation = true; $truncated .= "exsiccati : [$exsiccati] "; }
+        	if ($fascicle!=($_GET['fascicle'] ?? '')) { $truncation = true; $truncated .= "fascicle : [$fascicle] "; }
+        	if ($exsiccatinumber!=($_GET['exsiccatinumber'] ?? '')) { $truncation = true; $truncated .= "exsiccatinumber : [$exsiccatinumber] "; }
 
 
         	$feedback = ingestCollectionObject();
@@ -296,8 +296,8 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         @$table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',$_GET['table']),0,40); // name of the table to update
-         @$field= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['field']),0,40);  // field to update in table
+         $table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',($_GET['table'] ?? '')),0,40); // name of the table to update
+         $field= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['field'] ?? '')),0,40);  // field to update in table
 
          if ($debug) {
             echo "[$table][$field]";
@@ -345,7 +345,7 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         $term = $_GET['term'];
+         $term = ($_GET['term'] ?? '');
          $table="taxon";
          $t = new huh_taxon_custom();
          if (strlen($term)>0) {
@@ -376,17 +376,17 @@ if ($connection && $authenticated) {
     case 'geoidgeojson':
          $ok = false;
          $within = "";
-         @$within = $_GET['within'];
-         @$rank = $_GET['rank'];
+         $within = ($_GET['within'] ?? '');
+         $rank = ($_GET['rank'] ?? '');
          if (strlen($rank)==0) {
            $rank = 10000;
          }
          $key = '';
-         @$field = $_GET['field'];
+         $field = ($_GET['field'] ?? '');
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         $term = $_GET['term'];
+         $term = ($_GET['term'] ?? '');
          $t = new huh_geography_custom();
          if (strlen($term)>0) {
             try {
@@ -418,7 +418,7 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         $term = $_GET['term'];
+         $term = ($_GET['term'] ?? '');
          $table="taxon";
          $t = new huh_collector_custom();
          if (strlen($term)>0) {
@@ -448,7 +448,7 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         $term = $_GET['term'];
+         $term = ($_GET['term'] ?? '');
          $table="taxon";
          $t = new huh_collectingtrip_custom();
          if (strlen($term)>0) {
@@ -471,7 +471,7 @@ if ($connection && $authenticated) {
          break;
 
     case 'returndistinctjqaprepmethod':
-         @$term = $_GET['term'];
+         $term = ($_GET['term'] ?? '');
          $values = array( "DNAsample", "Drawing", "Dried", "Fossil", "Glycerine", "Other", "Photograph", "Pressed", "Protolog", "SpiritMedium", "Wood" );
          header("Content-type text/json-comment-filtered");
          if ($term==null || $term=='') {
@@ -495,7 +495,7 @@ if ($connection && $authenticated) {
          $key = '';
          $field = 'Name';
          $value = '';
-         @$term = $_GET['term'];
+         $term = ($_GET['term'] ?? '');
          $term = "$term%";
          $uniqueid = '';
          $controltype = '';
@@ -540,7 +540,7 @@ if ($connection && $authenticated) {
    case 'returndistinctseriestype':
         $ok = false;
         $values = '';
-        @$term = $_GET['term'];
+        $term = ($_GET['term'] ?? '');
         $term = "%$term%";
 
         // check that table is on allowed list
@@ -578,10 +578,10 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         @$limit= substr(preg_replace('/[^0-9]/','',$_GET['picklistid']),0,6);  // value to limit
-         @$field= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['field']),0,40);  // field to update in table
+         $limit= substr(preg_replace('/[^0-9]/','',($_GET['picklistid'] ?? '')),0,6);  // value to limit
+         $field= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['field'] ?? '')),0,40);  // field to update in table
          $required = false;
-         @$req = substr(preg_replace('/[^a-z]/','',$_GET['required']),0,6);
+         $req = substr(preg_replace('/[^a-z]/','',($_GET['required'] ?? '')),0,6);
          if ($req=='true') {
             $required=true;
          }
@@ -621,7 +621,7 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= $_GET['term'];  // value to limit
+         	$limit= ($_GET['term'] ?? '');  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_container_custom();
@@ -652,7 +652,7 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= $_GET['name'];  // value to limit
+         	$limit= ($_GET['name'] ?? '');  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_container_custom();
@@ -684,7 +684,7 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
+         	$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['name'] ?? '')),0,60);  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_collectingtrip_custom();
@@ -716,9 +716,9 @@ if ($connection && $authenticated) {
             $value = '';
             $uniqueid = '';
             $controltype = '';
-            @$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
-            if (@isset($_GET['term']) && strlen($_GET['term'])>0) {
-               $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['term']),0,60);  // value to limit
+            $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['name'] ?? '')),0,60);  // value to limit
+            if (isset($_GET['term']) && strlen(($_GET['term'] ?? ''))>0) {
+               $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['term'] ?? '')),0,60);  // value to limit
                if (strlen($limit)==0) {
                   $limit = "%";
                } else {
@@ -758,8 +758,8 @@ if ($connection && $authenticated) {
             $value = '';
             $uniqueid = '';
             $controltype = '';
-            if (@isset($_GET['term']) && strlen($_GET['term'])>0) {
-               $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['term']),0,60);  // value to limit
+            if (isset($_GET['term']) && strlen(($_GET['term'] ?? ''))>0) {
+               $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['term'] ?? '')),0,60);  // value to limit
                if (strlen($limit)==0) {
                   $limit = "%";
                } else {
@@ -767,7 +767,7 @@ if ($connection && $authenticated) {
                }
             }
 
-            if (strlen($limit)>0) {
+            if (strlen($limit ?? '')>0) {
                 $t = new huh_project_custom();
                 try {
                     $values = $t->keySelectDistinctJSONname($limit,TRUE);
@@ -799,7 +799,7 @@ if ($connection && $authenticated) {
          $value = '';
          $uniqueid = '';
          $controltype = '';
-         @$limit= substr(preg_replace('/[^A-Za-z,\. &*%\[\]]/','',$_GET['name']),0,60);  // value to limit
+         $limit= substr(preg_replace('/[^A-Za-z,\. &*%\[\]]/','',($_GET['name'] ?? '')),0,60);  // value to limit
 
          if (strlen($limit)>4) {
             $t = new huh_agentvariant_custom();
@@ -831,7 +831,7 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
+         	$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['name'] ?? '')),0,60);  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_referencework_custom();
@@ -862,7 +862,7 @@ if ($connection && $authenticated) {
          	$value = '';
          	$uniqueid = '';
          	$controltype = '';
-         	@$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
+         	$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['name'] ?? '')),0,60);  // value to limit
 
          	if (strlen($limit)>4) {
          		$t = new huh_referencework_custom();
@@ -894,7 +894,7 @@ if ($connection && $authenticated) {
             $value = '';
             $uniqueid = '';
             $controltype = '';
-            @$limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['name']),0,60);  // value to limit
+            $limit= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['name'] ?? '')),0,60);  // value to limit
 
             if (strlen($limit)>4) {
                 $t = new huh_storage_custom();
@@ -922,8 +922,8 @@ if ($connection && $authenticated) {
            // test call: druid_handler.php?action=returncountryjson
            // use with dojo dojo.data.ItemFileDataStore and dijit.form.ComboBox to generate a pick list of countries
            $ok = false;
-           @$childid= substr(preg_replace('/[^0-9]/','',$_GET['id']),0,60);  // value to limit
-           @$parentrank= substr(preg_replace('/[^0-9]/','',$_GET['rank']),0,60);  // value to limit
+           $childid= substr(preg_replace('/[^0-9]/','',($_GET['id'] ?? '')),0,60);  // value to limit
+           $parentrank= substr(preg_replace('/[^0-9]/','',($_GET['rank'] ?? '')),0,60);  // value to limit
 
            $t = new huh_geography_custom();
            try {
@@ -1011,8 +1011,8 @@ if ($connection && $authenticated) {
     		   $value = '';
     		   $uniqueid = '';
     		   $controltype = '';
-    		   @$country= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['country']),0,240);  // value to limit
-    		   @$primary= substr(preg_replace('/[^A-Za-z\. &*%]/','',$_GET['primary']),0,240);  // value to limit
+    		   $country= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['country'] ?? '')),0,240);  // value to limit
+    		   $primary= substr(preg_replace('/[^A-Za-z\. &*%]/','',($_GET['primary'] ?? '')),0,240);  // value to limit
 
     		   $t = new huh_geography_custom();
     		   try {
@@ -1042,9 +1042,9 @@ if ($connection && $authenticated) {
     		   $value = '';
     		   $uniqueid = '';
     		   $controltype = '';
-    		   @$table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',$_GET['table']),0,40); // name of the table to update
-    		   @$field= substr(preg_replace('/[^A-Za-z0-9_]/','',$_GET['field']),0,40);  // field to find distinct values for in table
-    		   @$limit= substr(preg_replace('/[^A-Za-z0-9\ _*]/','',$_GET['name']),0,40);  // value to limit
+    		   $table = substr(preg_replace('/[^A-Za-z0-9_\.]/','',($_GET['table'] ?? '')),0,40); // name of the table to update
+    		   $field= substr(preg_replace('/[^A-Za-z0-9_]/','',($_GET['field'] ?? '')),0,40);  // field to find distinct values for in table
+    		   $limit= substr(preg_replace('/[^A-Za-z0-9\ _*]/','',($_GET['name'] ?? '')),0,40);  // value to limit
 
     		   if ($debug) {
     		      echo "[$table][$field][$limit]";
@@ -1107,6 +1107,7 @@ if ($connection && $authenticated) {
 
 function preMergeCheck($barcodes) {
    global $connection;
+   $result = '';
    $retval = new Result();
    $retval->html = "";
    $hitFailureCondition = FALSE;
@@ -1191,7 +1192,7 @@ function preMergeCheck($barcodes) {
             if ($prepparent=="0") { $prepparent = ""; }
             $preps = "";
             // Rule, if preparation is child, don't merge.
-            if ($stmtprep->num_rows!=1 || strlen($prepparent)>0 ) {
+            if ($stmtprep->num_rows!=1 || strlen($prepparent ?? '')>0 ) {
                $hitFailureCondition = TRUE;
                $retval->errors .= "Unable to merge when preparation is a child of another preparation. ";
             }
@@ -1231,7 +1232,7 @@ function preMergeCheck($barcodes) {
 
 function getAgentName($agentid) {
    $result = "[No Agent]";
-   if (strlen($agentid)>0) {
+   if (strlen($agentid ?? '')>0) {
       $agent = new HUH_AGENT();
       $agent->load($agentid);
       $result = $agent->getFirstName() . " " . $agent->getLastName();
@@ -1363,7 +1364,7 @@ function movePreparation($targetPreparationId,$movePreparationId,$sql) {
    $result = new Result();
    $result->success=FALSE;
    $regex="/^update [a-zA-Z]+ set preparationid = \? where preparationid = \? */";
-   if (preg_match($regex,$sql)) {
+   if (preg_match($regex,$sql ?? '')) {
       if ($stmt = $connection->prepare($sql)) {
          $stmt->bind_param("ii",$targetPreparationId,$movePreparationId);
          if ($stmt->execute()) {
@@ -1382,6 +1383,7 @@ function movePreparation($targetPreparationId,$movePreparationId,$sql) {
 
 function showStructure($barcode) {
    global $connection;
+   $html = '';
    $result = new Result();
    $result->success=FALSE;
 
@@ -1397,7 +1399,7 @@ function showStructure($barcode) {
    $barcodecount = 0;
    while ($stmt0->fetch()) {
       $barcodecount++;
-      if (strlen(trim($habitat))>0) { $habitat = "$habitat<br/>"; }
+      if (strlen(trim($habitat ?? ''))>0) { $habitat = "$habitat<br/>"; }
       $loans = "";
       $sql = "select isresolved, loannumber,isclosed from loanpreparation lp left join loan lo on lp.loanid = lo.loanid left join loanreturnpreparation lrp on lp.loanpreparationid = lrp.loanpreparationid where lp.preparationid = ? ";
       $stmt = $connection->prepare($sql);
@@ -1445,7 +1447,7 @@ function showStructure($barcode) {
       $stmt->store_result();
       $stmt->fetch();
       $stmt->close();
-      $highergeography = preg_replace("/^[: ]*/","",$highergeography);
+      $highergeography = preg_replace("/^[: ]*/","",$highergeography ?? '');
 
 
       $ceitems = "";
@@ -1475,6 +1477,8 @@ function showStructure($barcode) {
       $stmt->close();
 
       $collector = "";
+      $colls = "";
+      $et_al = "";
       $sql = " select name, etal  from collector left join agentvariant on collector.agentid = agentvariant.agentid where collectingeventid = ? and vartype = 4 order by isprimary, ordernumber";
       $stmt = $connection->prepare($sql);
       $stmt->bind_param("i",$collectingeventid);
