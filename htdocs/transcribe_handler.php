@@ -4,7 +4,7 @@ session_write_close();
 
 $debug = false;
 if ($debug) {
-   echo  "[". $_SESSION["user_ticket"] . "][". $_SESSION["session_id"] ."]";
+   echo  "[". ($_SESSION["user_ticket"] ?? '') . "][". ($_SESSION["session_id"] ?? '') ."]";
         // See PHP documentation.
         mysqli_report(MYSQLI_REPORT_ERROR ^ MYSQLI_REPORT_STRICT);
 } else {
@@ -39,12 +39,12 @@ if (!function_exists('specify_connect')) {
 $authenticated=false;
 if (isset($_SESSION['user_ticket'])) {
    $u = new User();
-   $u->setEmail($_SESSION["username"]);
-   if ($u->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
-      $u->setFullname($_SESSION["fullname"]);
-      $u->setAgentId($_SESSION["agentid"]);
-      $u->setLastLogin($_SESSION["lastlogin"]);
-      $u->setAbout($_SESSION["about"]);
+   $u->setEmail(($_SESSION["username"] ?? ''));
+   if ($u->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
+      $u->setFullname(($_SESSION["fullname"] ?? ''));
+      $u->setAgentId(($_SESSION["agentid"] ?? ''));
+      $u->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+      $u->setAbout(($_SESSION["about"] ?? ''));
       $authenticated = true;
    }
 }
@@ -52,9 +52,9 @@ if (isset($_SESSION['user_ticket'])) {
 if ($connection && $authenticated) {
 
    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      @$action = substr(preg_replace('/[^a-z]/','',$_POST['action']),0,45);
+      $action = substr(preg_replace('/[^a-z]/','',($_POST['action'] ?? '')),0,45);
    } else {
-      @$action = substr(preg_replace('/[^a-z]/','',$_GET['action']),0,45);
+      $action = substr(preg_replace('/[^a-z]/','',($_GET['action'] ?? '')),0,45);
    }
 
    if ($debug) { echo "[$action]"; }
@@ -64,7 +64,7 @@ if ($connection && $authenticated) {
 
    switch ($action) {
       case 'interpretdate':
-         @$verbatimdate = $_GET['verbatimdate'];
+         $verbatimdate = ($_GET['verbatimdate'] ?? '');
          $exec = $vdateexecstring . escapeshellarg($verbatimdate) . " 2>&1";
          $isodate = shell_exec($exec);
 
@@ -73,7 +73,7 @@ if ($connection && $authenticated) {
          break;
 
       case 'processbatch':
-         @$directory= $_POST['directory'];
+         $directory= ($_POST['directory'] ?? '');
 
          $toencode = array();
          header("Content-type: application/json");
@@ -91,7 +91,7 @@ if ($connection && $authenticated) {
 
       case 'updatedosetup':
          // to update the doSetup page upon changing a batch to work on.
-         @$targetBatchDir = $_POST['targetBatch'];
+         $targetBatchDir = ($_POST['targetBatch'] ?? '');
          if($targetBatchDir=="") {
             $targetBatch = getNextBatch();
          } else {
@@ -104,16 +104,17 @@ if ($connection && $authenticated) {
 
       case 'getrecord':
          $ok = false;
-         @$id = $_GET['batch_id'];
-         @$position = $_GET['position'];
-         @$imgsrc   = $_GET['imgsrc'];
+         $id = ($_GET['batch_id'] ?? '');
+         $position = ($_GET['position'] ?? '');
+         $imgsrc   = ($_GET['imgsrc'] ?? '');
          // lookup the filename for this position
          $batch = new TR_BATCH();
          $batch->setID($id);
          $pathfile = $batch->movePosition($position);
-         $position = $pathfile->position;
-         $barcode = $pathfile->barcode;
-         $webpath = $pathfile->webPath;
+         // $pathfile is null when there is no file at this position.
+         $position = $pathfile?->position;
+         $barcode = $pathfile?->barcode;
+         $webpath = $pathfile?->webPath;
 
          // lookup the data for this barcode.
          $dataarray = lookupDataForBarcode($barcode);
@@ -126,12 +127,12 @@ if ($connection && $authenticated) {
          $dataarray['position'] = $position;
          $dataarray['filecount'] = $batch->getFileCount();
          if ($imgsrc == 'RC' || !$webpath) {
-           $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile->path."/".$pathfile->filename;
+           $dataarray['mediauri'] = BASE_IMAGE_URI.$pathfile?->path."/".$pathfile?->filename;
          } else {
            $dataarray['mediauri'] = $webpath;
          }
-         $dataarray['path'] = $pathfile->path;
-         $dataarray['filename'] = $pathfile->filename;
+         $dataarray['path'] = $pathfile?->path;
+         $dataarray['filename'] = $pathfile?->filename;
 
          $response = json_encode($dataarray);
 
@@ -141,7 +142,7 @@ if ($connection && $authenticated) {
          break;
 
       case 'getdataforbarcode':
-         @$barcode = $_GET['barcode'];
+         $barcode = ($_GET['barcode'] ?? '');
          $result = lookupDataForBarcode($barcode);
          echo json_encode($result);
          break;
@@ -149,7 +150,7 @@ if ($connection && $authenticated) {
       case 'findbarcode':
          // Find a barcode in the database (fragment and preparation identifiers), and all
          // transcription batches (and positions within them) containing it.
-         @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+         $barcode = substr(preg_replace('/[^0-9]/','',($_GET['barcode'] ?? '')),0,20);
          $toencode = array();
          $toencode['barcode'] = $barcode;
          $toencode['error'] = '';
@@ -180,17 +181,17 @@ if ($connection && $authenticated) {
          $toencode['saved'] = '';
          try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') { throw new Exception('POST required.'); }
-            @$usedefault = $_POST['usedefault'];
+            $usedefault = ($_POST['usedefault'] ?? '');
             if ($usedefault=='1') {
-               deleteUserSetting($_SESSION["username"], 'carryover_fields');
+               deleteUserSetting(($_SESSION["username"] ?? ''), 'carryover_fields');
                $toencode['saved'] = 'default';
             } else {
-               @$fields = json_decode($_POST['fields'], true);
+               $fields = json_decode(($_POST['fields'] ?? ''), true);
                if (!is_array($fields) || count($fields) > 100) { throw new Exception('Invalid list of fields.'); }
                foreach ($fields as $field) {
                   if (!isValidFieldName($field)) { throw new Exception('Invalid field name.'); }
                }
-               setUserSetting($_SESSION["username"], 'carryover_fields', json_encode(array_values(array_unique($fields))));
+               setUserSetting(($_SESSION["username"] ?? ''), 'carryover_fields', json_encode(array_values(array_unique($fields))));
                $toencode['saved'] = 'custom';
             }
          } catch (Exception $e) {
@@ -202,8 +203,8 @@ if ($connection && $authenticated) {
 
       case 'getimagesforbarcode':
          // Find images for a barcode, from IMAGE_SET_collectionobject and from TR_BATCH_IMAGE.
-         @$barcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
-         @$imgsrc = substr(preg_replace('/[^A-Z]/','',$_GET['imgsrc']),0,5);
+         $barcode = substr(preg_replace('/[^0-9]/','',($_GET['barcode'] ?? '')),0,20);
+         $imgsrc = substr(preg_replace('/[^A-Z]/','',($_GET['imgsrc'] ?? '')),0,5);
          $toencode = array();
          $toencode['barcode'] = $barcode;
          $toencode['error'] = '';
@@ -228,156 +229,156 @@ if ($connection && $authenticated) {
          $todo = 100;
          $truncation = false;
          $truncated = "";
-         @$collectors= $_POST['collectors'];
-         @$collectorsid= substr(preg_replace('/[^0-9]/','',$_POST['collectorsid']),0,huh_agentvariant::AGENTID_SIZE);
-         @$etal= substr($_POST['etal'],0,huh_collector::ETAL_SIZE);
-         @$fieldnumber= substr($_POST['fieldnumber'],0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # unused?
-         @$stationfieldnumber= substr($_POST['stationfieldnumber'],0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # collector number
-         @$accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',$_POST['accessionnumber']),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
-         @$seriesid= substr($_POST['seriesid'],0,huh_otheridentifier::IDENTIFIER_SIZE);
-         @$seriestype= substr($_POST['seriestype'],0,huh_otheridentifier::INSTITUTION_SIZE);
-         @$verbatimdate= substr($_POST['verbatimdate'],0,huh_collectingevent::VERBATIMDATE_SIZE);
-         @$datecollected= substr(preg_replace('/[^\-\/0-9]/','',$_POST['datecollected']),0,40);  // allow larger than date to parse ISO date range
-         @$herbariumacronym= substr(preg_replace('/[^A-Z]/','',$_POST['herbariumacronym']),0,huh_fragment::TEXT1_SIZE);
-         @$iscultivated=preg_replace('/[^0-9]/','',$_POST['iscultivated']);
-         @$barcode= substr(preg_replace('/[^0-9]/','',$_POST['barcode']),0,huh_fragment::IDENTIFIER_SIZE);
-         @$barcodeval= substr(preg_replace('/[^0-9]/','',$_POST['barcodeval']),0,huh_fragment::IDENTIFIER_SIZE);
-         @$provenance= substr($_POST['provenance'],0,huh_fragment::PROVENANCE_SIZE);
-         @$filedundername= substr($_POST['filedundername'],0,huh_taxon::FULLNAME_SIZE);
-         @$filedundernameid= substr(preg_replace('/[^0-9\-]/','',$_POST['filedundernameid']),0,huh_taxon::TAXONID_SIZE);
-         @$currentname= substr($_POST['currentname'],0,huh_taxon::FULLNAME_SIZE);
-         @$currentnameid= substr(preg_replace('/[^0-9\-]/','',$_POST['currentnameid']),0,huh_taxon::TAXONID_SIZE);
-         @$currentqualifier= substr(preg_replace('/[^A-Za-z]/','',$_POST['currentqualifier']),0,huh_determination::QUALIFIER_SIZE);
-         @$identifiedby= $_POST['identifiedby'];
-         @$identifiedbyid= substr(preg_replace('/[^0-9]/','',$_POST['identifiedbyid']),0,huh_determination::DETERMINERID_SIZE);
-         @$determinertext= substr($_POST['determinertext'],0,huh_determination::TEXT1_SIZE);
-         @$dateidentified= substr(preg_replace('/[^0-9\-\/]/','',$_POST['dateidentified']),0,huh_determination::DETERMINEDDATE_SIZE);
-         @$highergeography= $_POST['highergeography'];
-         @$highergeographyid= substr(preg_replace('/[^0-9]/','',$_POST['highergeographyid']),0,huh_geography::GEOGRAPHYID_SIZE);
-         @$geographyfilter= $_POST['geographyfilter'];
-         @$geographyfilterid= substr(preg_replace('/[^0-9]/','',$_POST['geographyfilterid']),0,huh_geography::GEOGRAPHYID_SIZE);
-         @$specificlocality = substr($_POST['specificlocality'],0,huh_locality::LOCALITYNAME_SIZE);
-         @$prepmethod = substr(preg_replace('/[^A-Za-z]/','',$_POST['prepmethod']),0,huh_preparation::PREPTYPEID_SIZE);
-         @$format = substr(preg_replace('/[^A-Za-z]/','',$_POST['preptype']),0,huh_preptype::NAME_SIZE);
+         $collectors= ($_POST['collectors'] ?? '');
+         $collectorsid= substr(preg_replace('/[^0-9]/','',($_POST['collectorsid'] ?? '')),0,huh_agentvariant::AGENTID_SIZE);
+         $etal= substr(($_POST['etal'] ?? ''),0,huh_collector::ETAL_SIZE);
+         $fieldnumber= substr(($_POST['fieldnumber'] ?? ''),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # unused?
+         $stationfieldnumber= substr(($_POST['stationfieldnumber'] ?? ''),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE); # collector number
+         $accessionnumber= substr(preg_replace('/[^A-Za-z\- \.0-9\,\/]/','',($_POST['accessionnumber'] ?? '')),0,huh_collectingevent::STATIONFIELDNUMBER_SIZE);
+         $seriesid= substr(($_POST['seriesid'] ?? ''),0,huh_otheridentifier::IDENTIFIER_SIZE);
+         $seriestype= substr(($_POST['seriestype'] ?? ''),0,huh_otheridentifier::INSTITUTION_SIZE);
+         $verbatimdate= substr(($_POST['verbatimdate'] ?? ''),0,huh_collectingevent::VERBATIMDATE_SIZE);
+         $datecollected= substr(preg_replace('/[^\-\/0-9]/','',($_POST['datecollected'] ?? '')),0,40);  // allow larger than date to parse ISO date range
+         $herbariumacronym= substr(preg_replace('/[^A-Z]/','',($_POST['herbariumacronym'] ?? '')),0,huh_fragment::TEXT1_SIZE);
+         $iscultivated=preg_replace('/[^0-9]/','',($_POST['iscultivated'] ?? ''));
+         $barcode= substr(preg_replace('/[^0-9]/','',($_POST['barcode'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
+         $barcodeval= substr(preg_replace('/[^0-9]/','',($_POST['barcodeval'] ?? '')),0,huh_fragment::IDENTIFIER_SIZE);
+         $provenance= substr(($_POST['provenance'] ?? ''),0,huh_fragment::PROVENANCE_SIZE);
+         $filedundername= substr(($_POST['filedundername'] ?? ''),0,huh_taxon::FULLNAME_SIZE);
+         $filedundernameid= substr(preg_replace('/[^0-9\-]/','',($_POST['filedundernameid'] ?? '')),0,huh_taxon::TAXONID_SIZE);
+         $currentname= substr(($_POST['currentname'] ?? ''),0,huh_taxon::FULLNAME_SIZE);
+         $currentnameid= substr(preg_replace('/[^0-9\-]/','',($_POST['currentnameid'] ?? '')),0,huh_taxon::TAXONID_SIZE);
+         $currentqualifier= substr(preg_replace('/[^A-Za-z]/','',($_POST['currentqualifier'] ?? '')),0,huh_determination::QUALIFIER_SIZE);
+         $identifiedby= ($_POST['identifiedby'] ?? '');
+         $identifiedbyid= substr(preg_replace('/[^0-9]/','',($_POST['identifiedbyid'] ?? '')),0,huh_determination::DETERMINERID_SIZE);
+         $determinertext= substr(($_POST['determinertext'] ?? ''),0,huh_determination::TEXT1_SIZE);
+         $dateidentified= substr(preg_replace('/[^0-9\-\/]/','',($_POST['dateidentified'] ?? '')),0,huh_determination::DETERMINEDDATE_SIZE);
+         $highergeography= ($_POST['highergeography'] ?? '');
+         $highergeographyid= substr(preg_replace('/[^0-9]/','',($_POST['highergeographyid'] ?? '')),0,huh_geography::GEOGRAPHYID_SIZE);
+         $geographyfilter= ($_POST['geographyfilter'] ?? '');
+         $geographyfilterid= substr(preg_replace('/[^0-9]/','',($_POST['geographyfilterid'] ?? '')),0,huh_geography::GEOGRAPHYID_SIZE);
+         $specificlocality = substr(($_POST['specificlocality'] ?? ''),0,huh_locality::LOCALITYNAME_SIZE);
+         $prepmethod = substr(preg_replace('/[^A-Za-z]/','',($_POST['prepmethod'] ?? '')),0,huh_preparation::PREPTYPEID_SIZE);
+         $format = substr(preg_replace('/[^A-Za-z]/','',($_POST['preptype'] ?? '')),0,huh_preptype::NAME_SIZE);
 
-         @$verbatimlat= substr(preg_replace('/[^0-9\. \'"°NSn-]/','',$_POST['verbatimlat']),0,huh_locality::LAT1TEXT_SIZE);
-         @$verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',$_POST['verbatimlong']),0,huh_locality::LONG1TEXT_SIZE);
-         @$decimallat= preg_replace('/[^0-9\.\-]/','',$_POST['decimallat']);
-         @$decimallong= preg_replace('/[^0-9\.\-]/','',$_POST['decimallong']);
+         $verbatimlat= substr(preg_replace('/[^0-9\. \'"°NSn-]/','',($_POST['verbatimlat'] ?? '')),0,huh_locality::LAT1TEXT_SIZE);
+         $verbatimlong= substr(preg_replace('/[^0-9\. \'"°EWew\-]/','',($_POST['verbatimlong'] ?? '')),0,huh_locality::LONG1TEXT_SIZE);
+         $decimallat= preg_replace('/[^0-9\.\-]/','',($_POST['decimallat'] ?? ''));
+         $decimallong= preg_replace('/[^0-9\.\-]/','',($_POST['decimallong'] ?? ''));
          //@$datum= substr(preg_replace('/[^A-Za-z0-9]/','',$_POST['datum']),0,huh_locality::DATUM_SIZE);
-         @$coordinateuncertainty= substr(preg_replace('/[^0-9]/','',$_POST['coordinateuncertainty']),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
+         $coordinateuncertainty= substr(preg_replace('/[^0-9]/','',($_POST['coordinateuncertainty'] ?? '')),0,huh_geocoorddetail::MAXUNCERTAINTYEST_SIZE);
          //@$georeferencedby= substr(preg_replace('/[^0-9]/','',$_POST['georeferencedby']),0,huh_agentvariant::NAME_SIZE);
          //@$georeferencedate= substr(preg_replace('/[^\-\/0-9]/','',$_POST['georeferencedate']),0,huh_geocoorddetail::GEOREFDETDATE_SIZE);
-         @$georeferencesource= substr(preg_replace('/[^A-Za-z]/','',$_POST['georeferencesource']),0,huh_locality::LATLONGMETHOD_SIZE);
+         $georeferencesource= substr(preg_replace('/[^A-Za-z]/','',($_POST['georeferencesource'] ?? '')),0,huh_locality::LATLONGMETHOD_SIZE);
          //@$utmzone= substr(preg_replace('/[^0-9A-Z]/','',$_POST['utmzone']),0,huh_localitydetail::UTMZONE_SIZE);
          //@$utmeasting= substr(preg_replace('/[^0-9]/','',$_POST['utmeasting']),0,huh_localitydetail::UTMEASTING_SIZE);
          //@$utmnorthing= substr(preg_replace('/[^0-9]/','',$_POST['utmnorthing']),0,huh_localitydetail::UTMNORTHING_SIZE);
 
-         @$typestatus= substr(preg_replace('/[^A-Za-z]/','',$_POST['typestatus']),0,huh_determination::TYPESTATUSNAME_SIZE);
-         @$typeconfidence= substr(preg_replace('/[^A-Za-z]/','',$_POST['typeconfidence']),0,huh_determination::CONFIDENCE_SIZE);
-         @$basionym= substr(preg_replace('/[^0-9]/','',$_POST['basionym']),0,huh_taxon::FULLNAME_SIZE);
-         @$publication= substr(preg_replace('/[^[:alpha:]A-Za-z 0-9]/','',$_POST['publication']),0,huh_referencework::REFERENCEWORKID_SIZE);
-         @$page= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',$_POST['page']),0,huh_taxoncitation::TEXT1_SIZE);
-         @$datepublished= substr($_POST['datepublished'],0,huh_taxoncitation::TEXT2_SIZE);
-         @$isfragment= substr(preg_replace('/[^0-9a-z]/','',$_POST['isfragment']),0,1);   // taxon
-         @$habitat= substr($_POST['habitat'],0,huh_collectingevent::REMARKS_SIZE);
-         @$frequency= substr($_POST['frequency'],0,huh_collectionobject::TEXT4_SIZE);
-         @$host = substr($_POST['host'],0,900);
-         @$substrate= substr($_POST['substrate'],0,huh_fragment::TEXT2_SIZE);
-         @$phenology= substr($_POST['phenology'],0,huh_fragment::PHENOLOGY_SIZE);
-         @$verbatimelevation= substr($_POST['verbatimelevation'],0,huh_locality::VERBATIMELEVATION_SIZE);
-         @$namedplace = substr($_POST['namedplace'],0,huh_locality::NAMEDPLACE_SIZE);
-         @$minelevation= substr(preg_replace('/[^0-9\.]/','',$_POST['minelevation']),0,huh_locality::MINELEVATION_SIZE);
-         @$maxelevation= substr(preg_replace('/[^0-9\.]/','',$_POST['maxelevation']),0,huh_locality::MAXELEVATION_SIZE);
-         @$specimenremarks= substr($_POST['specimenremarks'],0,huh_collectionobject::REMARKS_SIZE);
-         @$specimendescription= substr($_POST['specimendescription'],0,huh_collectionobject::DESCRIPTION_SIZE);
-         @$itemdescription= substr($_POST['itemdescription'],0,huh_fragment::DESCRIPTION_SIZE);
-         @$container= substr($_POST['container'],0,huh_container::NAME_SIZE);
-         @$containerid= substr(preg_replace('/[^0-9]/','',$_POST['containerid']),0,huh_container::CONTAINERID_SIZE);
- 		     @$collectingtrip = substr($_POST['collectingtrip'],0,huh_collectingtrip::COLLECTINGTRIPNAME_SIZE);
-         @$collectingtripid = substr(preg_replace('/[^0-9]/','',$_POST['collectingtripid']),0,huh_collectingtrip::COLLECTINGTRIPID_SIZE);
-         @$storagelocation= substr($_POST['storagelocation'],0,huh_preparation::STORAGELOCATION_SIZE);
-         @$project= substr($_POST['project'],0,huh_project::PROJECTNAME_SIZE);
-         @$storage= substr(preg_replace('/[^0-9]/','',$_POST['storage']),0,huh_storage::STORAGEID_SIZE); // subcollection
-         @$exsiccati= substr(preg_replace('/[^0-9]/','',$_POST['exsiccati']),0,huh_referencework::REFERENCEWORKID_SIZE);
-         @$fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['fascicle']),0,huh_fragmentcitation::TEXT1_SIZE);
-         @$exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',$_POST['exsiccatinumber']),0,huh_fragmentcitation::TEXT2_SIZE);
+         $typestatus= substr(preg_replace('/[^A-Za-z]/','',($_POST['typestatus'] ?? '')),0,huh_determination::TYPESTATUSNAME_SIZE);
+         $typeconfidence= substr(preg_replace('/[^A-Za-z]/','',($_POST['typeconfidence'] ?? '')),0,huh_determination::CONFIDENCE_SIZE);
+         $basionym= substr(preg_replace('/[^0-9]/','',($_POST['basionym'] ?? '')),0,huh_taxon::FULLNAME_SIZE);
+         $publication= substr(preg_replace('/[^[:alpha:]A-Za-z 0-9]/','',($_POST['publication'] ?? '')),0,huh_referencework::REFERENCEWORKID_SIZE);
+         $page= substr(preg_replace('/[^0-9 A-Za-z\,\(\)\-\:\;\.\[\]]/','',($_POST['page'] ?? '')),0,huh_taxoncitation::TEXT1_SIZE);
+         $datepublished= substr(($_POST['datepublished'] ?? ''),0,huh_taxoncitation::TEXT2_SIZE);
+         $isfragment= substr(preg_replace('/[^0-9a-z]/','',($_POST['isfragment'] ?? '')),0,1);   // taxon
+         $habitat= substr(($_POST['habitat'] ?? ''),0,huh_collectingevent::REMARKS_SIZE);
+         $frequency= substr(($_POST['frequency'] ?? ''),0,huh_collectionobject::TEXT4_SIZE);
+         $host = substr(($_POST['host'] ?? ''),0,900);
+         $substrate= substr(($_POST['substrate'] ?? ''),0,huh_fragment::TEXT2_SIZE);
+         $phenology= substr(($_POST['phenology'] ?? ''),0,huh_fragment::PHENOLOGY_SIZE);
+         $verbatimelevation= substr(($_POST['verbatimelevation'] ?? ''),0,huh_locality::VERBATIMELEVATION_SIZE);
+         $namedplace = substr(($_POST['namedplace'] ?? ''),0,huh_locality::NAMEDPLACE_SIZE);
+         $minelevation= substr(preg_replace('/[^0-9\.]/','',($_POST['minelevation'] ?? '')),0,huh_locality::MINELEVATION_SIZE);
+         $maxelevation= substr(preg_replace('/[^0-9\.]/','',($_POST['maxelevation'] ?? '')),0,huh_locality::MAXELEVATION_SIZE);
+         $specimenremarks= substr(($_POST['specimenremarks'] ?? ''),0,huh_collectionobject::REMARKS_SIZE);
+         $specimendescription= substr(($_POST['specimendescription'] ?? ''),0,huh_collectionobject::DESCRIPTION_SIZE);
+         $itemdescription= substr(($_POST['itemdescription'] ?? ''),0,huh_fragment::DESCRIPTION_SIZE);
+         $container= substr(($_POST['container'] ?? ''),0,huh_container::NAME_SIZE);
+         $containerid= substr(preg_replace('/[^0-9]/','',($_POST['containerid'] ?? '')),0,huh_container::CONTAINERID_SIZE);
+ 		     $collectingtrip = substr(($_POST['collectingtrip'] ?? ''),0,huh_collectingtrip::COLLECTINGTRIPNAME_SIZE);
+         $collectingtripid = substr(preg_replace('/[^0-9]/','',($_POST['collectingtripid'] ?? '')),0,huh_collectingtrip::COLLECTINGTRIPID_SIZE);
+         $storagelocation= substr(($_POST['storagelocation'] ?? ''),0,huh_preparation::STORAGELOCATION_SIZE);
+         $project= substr(($_POST['project'] ?? ''),0,huh_project::PROJECTNAME_SIZE);
+         $storage= substr(preg_replace('/[^0-9]/','',($_POST['storage'] ?? '')),0,huh_storage::STORAGEID_SIZE); // subcollection
+         $exsiccati= substr(preg_replace('/[^0-9]/','',($_POST['exsiccati'] ?? '')),0,huh_referencework::REFERENCEWORKID_SIZE);
+         $fascicle= substr(preg_replace('/[^A-Za-z\. 0-9]/','',($_POST['fascicle'] ?? '')),0,huh_fragmentcitation::TEXT1_SIZE);
+         $exsiccatinumber= substr(preg_replace('/[^A-Za-z\. 0-9]/','',($_POST['exsiccatinumber'] ?? '')),0,huh_fragmentcitation::TEXT2_SIZE);
 
-         @$batchid = preg_replace('/[^0-9]/','',$_POST['batch_id']);
-         @$batchposition = preg_replace('/[^0-9]/','',$_POST['batch_position']);
+         $batchid = preg_replace('/[^0-9]/','',($_POST['batch_id'] ?? ''));
+         $batchposition = preg_replace('/[^0-9]/','',($_POST['batch_position'] ?? ''));
          //@$= substr(preg_replace('/[^0-9]/','',$_POST['']),0,huh_);
 
-         if ( @($batchid!=$_POST['batch_id']) )  { $truncation = true; $truncated .= "Batch ID: [$batchid] "; }
-         if ( @($batchposition!=$_POST['batch_position']) )  { $truncation = true; $truncated .= "Batch Position: [$batchposition] "; }
-         if ( @($collectors!=$_POST['collectors']) )  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
-         if ( @($collectorsid!=$_POST['collectorsid']) )  { $truncation = true; $truncated .= "CollectorsID: [$collectorsid] "; }
-         if ( @($etal!=$_POST['etal']) ) { $truncation = true; $truncated .= "etal : [$etal] "; }
-         if ( @($fieldnumber!=$_POST['fieldnumber']) ) { $truncation = true; $truncated .= "fieldnumber : [$fieldnumber] "; }
-         if ( @($stationfieldnumber!=$_POST['stationfieldnumber']) ) { $truncation = true; $truncated .= "stationfieldnumber : [$stationfieldnumber] "; }
-         if ( @($accessionnumber!=$_POST['accessionnumber']) ) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
-         if ( @($verbatimdate!=$_POST['verbatimdate']) ) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
-         if ( @($datecollected!=$_POST['datecollected']) ) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
-         if ( @($herbariumacronym!=$_POST['herbariumacronym']) ) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
-         if ( @($iscultivated!=$_POST['iscultivated']) ) { $truncation = true; $truncated .= "iscultivated : [$iscultivated] "; }
-         if ( @($barcode!=$_POST['barcode']) ) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
-         if ( @($provenance!=$_POST['provenance']) ) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
-         if ( @($filedundername!=$_POST['filedundername']) ) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
-         if ( @($filedundernameid!=$_POST['filedundernameid']) ) { $truncation = true; $truncated .= "filedundernameid : [$filedundernameid] "; }
-         if ( @($currentname!=$_POST['currentname']) ) { $truncation = true; $truncated .= "currentname : [$currentname] "; }
-         if ( @($currentnameid!=$_POST['currentnameid']) ) { $truncation = true; $truncated .= "currentnameid : [$currentnameid] "; }
-         if ( @($currentqualifier!=$_POST['currentqualifier']) ) { $truncation = true; $truncated .= "currentqualifier : [$currentqualifier] "; }
-         if ( @($identifiedbyid!=$_POST['identifiedbyid']) ) { $truncation = true; $truncated .= "identifiedbyid : [$identifiedbyid] "; }
-         if ( @($determinertext!=$_POST['determinertext']) ) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
-         if ( @($dateidentified!=$_POST['dateidentified']) ) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
-         if ( @($highergeography!=$_POST['highergeography']) ) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
-         if ( @($highergeographyid!=$_POST['highergeographyid']) ) { $truncation = true; $truncated .= "highergeographyid : [$highergeographyid] "; }
-         if ( @($geographyfilter!=$_POST['geographyfilter']) ) { $truncation = true; $truncated .= "geographyfilter : [$geographyfilter] "; }
-         if ( @($geographyfilterid!=$_POST['geographyfilterid']) ) { $truncation = true; $truncated .= "geographyfilterid : [$geographyfilterid] "; }
-         if ( @($specificlocality!=$_POST['specificlocality']) ) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
-         if ( @($prepmethod!=$_POST['prepmethod']) ) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
-         if ( @($format!=$_POST['preptype']) ) { $truncation = true; $truncated .= "preptype/format : [$format] "; }
+         if ( @($batchid!=($_POST['batch_id'] ?? '')) )  { $truncation = true; $truncated .= "Batch ID: [$batchid] "; }
+         if ( @($batchposition!=($_POST['batch_position'] ?? '')) )  { $truncation = true; $truncated .= "Batch Position: [$batchposition] "; }
+         if ( @($collectors!=($_POST['collectors'] ?? '')) )  { $truncation = true; $truncated .= "Collector: [$collectors] "; }
+         if ( @($collectorsid!=($_POST['collectorsid'] ?? '')) )  { $truncation = true; $truncated .= "CollectorsID: [$collectorsid] "; }
+         if ( @($etal!=($_POST['etal'] ?? '')) ) { $truncation = true; $truncated .= "etal : [$etal] "; }
+         if ( @($fieldnumber!=($_POST['fieldnumber'] ?? '')) ) { $truncation = true; $truncated .= "fieldnumber : [$fieldnumber] "; }
+         if ( @($stationfieldnumber!=($_POST['stationfieldnumber'] ?? '')) ) { $truncation = true; $truncated .= "stationfieldnumber : [$stationfieldnumber] "; }
+         if ( @($accessionnumber!=($_POST['accessionnumber'] ?? '')) ) { $truncation = true; $truncated .= "accessionnumber : [$accessionnumber] "; }
+         if ( @($verbatimdate!=($_POST['verbatimdate'] ?? '')) ) { $truncation = true; $truncated .= "verbatimdate : [$verbatimdate] "; }
+         if ( @($datecollected!=($_POST['datecollected'] ?? '')) ) { $truncation = true; $truncated .= "datecollected : [$datecollected] "; }
+         if ( @($herbariumacronym!=($_POST['herbariumacronym'] ?? '')) ) { $truncation = true; $truncated .= "herbariumacronym : [$herbariumacronym] "; }
+         if ( @($iscultivated!=($_POST['iscultivated'] ?? '')) ) { $truncation = true; $truncated .= "iscultivated : [$iscultivated] "; }
+         if ( @($barcode!=($_POST['barcode'] ?? '')) ) { $truncation = true; $truncated .= "barcode : [$barcode] "; }
+         if ( @($provenance!=($_POST['provenance'] ?? '')) ) { $truncation = true; $truncated .= "provenance : [$provenance] "; }
+         if ( @($filedundername!=($_POST['filedundername'] ?? '')) ) { $truncation = true; $truncated .= "filedundername : [$filedundername] "; }
+         if ( @($filedundernameid!=($_POST['filedundernameid'] ?? '')) ) { $truncation = true; $truncated .= "filedundernameid : [$filedundernameid] "; }
+         if ( @($currentname!=($_POST['currentname'] ?? '')) ) { $truncation = true; $truncated .= "currentname : [$currentname] "; }
+         if ( @($currentnameid!=($_POST['currentnameid'] ?? '')) ) { $truncation = true; $truncated .= "currentnameid : [$currentnameid] "; }
+         if ( @($currentqualifier!=($_POST['currentqualifier'] ?? '')) ) { $truncation = true; $truncated .= "currentqualifier : [$currentqualifier] "; }
+         if ( @($identifiedbyid!=($_POST['identifiedbyid'] ?? '')) ) { $truncation = true; $truncated .= "identifiedbyid : [$identifiedbyid] "; }
+         if ( @($determinertext!=($_POST['determinertext'] ?? '')) ) { $truncation = true; $truncated .= "determinertext : [$determinertext] "; }
+         if ( @($dateidentified!=($_POST['dateidentified'] ?? '')) ) { $truncation = true; $truncated .= "dateidentified : [$dateidentified] "; }
+         if ( @($highergeography!=($_POST['highergeography'] ?? '')) ) { $truncation = true; $truncated .= "highergeography : [$highergeography] "; }
+         if ( @($highergeographyid!=($_POST['highergeographyid'] ?? '')) ) { $truncation = true; $truncated .= "highergeographyid : [$highergeographyid] "; }
+         if ( @($geographyfilter!=($_POST['geographyfilter'] ?? '')) ) { $truncation = true; $truncated .= "geographyfilter : [$geographyfilter] "; }
+         if ( @($geographyfilterid!=($_POST['geographyfilterid'] ?? '')) ) { $truncation = true; $truncated .= "geographyfilterid : [$geographyfilterid] "; }
+         if ( @($specificlocality!=($_POST['specificlocality'] ?? '')) ) { $truncation = true; $truncated .= "specificlocality : [$specificlocality] "; }
+         if ( @($prepmethod!=($_POST['prepmethod'] ?? '')) ) { $truncation = true; $truncated .= "prepmethod : [$prepmethod] "; }
+         if ( @($format!=($_POST['preptype'] ?? '')) ) { $truncation = true; $truncated .= "preptype/format : [$format] "; }
 
-         if ( @($verbatimlat!=$_POST['verbatimlat']) ) { $truncation = true; $truncated .= "verbatimlat : [$verbatimlat] "; }
-         if ( @($verbatimlong!=$_POST['verbatimlong']) ) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
-         if ( @($decimallat!=$_POST['decimallat']) ) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
-         if ( @($decimallong!=$_POST['decimallong']) ) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
+         if ( @($verbatimlat!=($_POST['verbatimlat'] ?? '')) ) { $truncation = true; $truncated .= "verbatimlat : [$verbatimlat] "; }
+         if ( @($verbatimlong!=($_POST['verbatimlong'] ?? '')) ) { $truncation = true; $truncated .= "verbatimlong : [$verbatimlong] "; }
+         if ( @($decimallat!=($_POST['decimallat'] ?? '')) ) { $truncation = true; $truncated .= "decimallat : [$decimallat] "; }
+         if ( @($decimallong!=($_POST['decimallong'] ?? '')) ) { $truncation = true; $truncated .= "decimallong : [$decimallong] "; }
 
          //if ( @($datum!=$_POST['datum']) ) { $truncation = true; $truncated .= "datum : [$datum] "; }
-         if ( @($coordinateuncertainty!=$_POST['coordinateuncertainty']) ) { $truncation = true; $truncated .= "coordinateuncertainty : [$coordinateuncertainty] "; }
+         if ( @($coordinateuncertainty!=($_POST['coordinateuncertainty'] ?? '')) ) { $truncation = true; $truncated .= "coordinateuncertainty : [$coordinateuncertainty] "; }
          //if ( @($georeferencedby!=$_POST['georeferencedby']) ) { $truncation = true; $truncated .= "georeferencedby : [$georeferencedby] "; }
          //if ( @($georeferencedate!=$_POST['georeferencedate']) ) { $truncation = true; $truncated .= "georeferencedate : [$georeferencedate] "; }
-         if ( @($georeferencesource!=$_POST['georeferencesource']) ) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
+         if ( @($georeferencesource!=($_POST['georeferencesource'] ?? '')) ) { $truncation = true; $truncated .= "georeferencesource : [$georeferencesource] "; }
          //if ( @($utmzone!=$_POST['utmzone']) ) { $truncation = true; $truncated .= "utmzone : [$utmzone] "; }
          //if ( @($utmeasting!=$_POST['utmeasting']) ) { $truncation = true; $truncated .= "utmeasting : [$utmeasting] "; }
          //if ( @($utmnorthing!=$_POST['utmnorthing']) ) { $truncation = true; $truncated .= "utmnorthing : [$utmnorthing] "; }
 
-         if ( @($typestatus!=$_POST['typestatus']) ) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
-         if ( @($typeconfidence!=@$_POST['typeconfidence']) ) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
-         if ( @($basionym!=$_POST['basionym']) ) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
-         if ( @($publication!=$_POST['publication']) ) { $truncation = true; $truncated .= "publication : [$publication] "; }
-         if ( @($page!=$_POST['page']) ) { $truncation = true; $truncated .= "page : [$page] "; }
-         if ( @($datepublished!=$_POST['datepublished']) ) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
-         if ( @($isfragment!=$_POST['isfragment']) ) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
-         if ( @($habitat!=$_POST['habitat']) ) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
-         if ( @($frequency!=$_POST['frequency']) ) { $truncation = true; $truncated .= "frequency : [$frequency] "; }
-         if ( @($host!=$_POST['host']) ) { $truncation = true; $truncated .= "host : [$host] "; }
-         if ( @($substrate!=$_POST['substrate']) ) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
-         if ( @($phenology!=$_POST['phenology']) ) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
-         if ( @($verbatimelevation!=$_POST['verbatimelevation']) ) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
-         if ( @($minelevation!=@$_POST['minelevation']) ) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
-         if ( @($maxelevation!=@$_POST['maxelevation']) ) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
-         if ( @($specimenremarks!=$_POST['specimenremarks']) ) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
-         if ( @($specimendescription!=$_POST['specimendescription']) ) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
-         if ( @($itemdescription!=$_POST['itemdescription']) ) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
-         if ( @($container!=$_POST['container']) ) { $truncation = true; $truncated .= "container : [$container] "; }
-         if ( @($containerid!=$_POST['containerid']) ) { $truncation = true; $truncated .= "containerid : [$containerid] "; }
-         if ( @($collectingtrip!=$_POST['collectingtrip']) ) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
-         if ( @($collectingtripid!=$_POST['collectingtripid']) ) { $truncation = true; $truncated .= "collectingtripid : [$collectingtripid] "; }
-         if ( @($storagelocation!=$_POST['storagelocation']) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
-         if ( @($project!=$_POST['project']) ) { $truncation = true; $truncated .= "project : [$project] "; }
-         if ( @($storage!=$_POST['storage']) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
-         if ( @($seriesid!=$_POST['seriesid']) ) { $truncation = true; $truncated .= "seriesid : [$seriesid] "; }
-         if ( @($seriestype!=$_POST['seriestype']) ) { $truncation = true; $truncated .= "seriestype : [$seriestype] "; }
+         if ( @($typestatus!=($_POST['typestatus'] ?? '')) ) { $truncation = true; $truncated .= "typestatus : [$typestatus] "; }
+         if ( @($typeconfidence!=($_POST['typeconfidence'] ?? '')) ) { $truncation = true; $truncated .= "typeconfidence : [$typeconfidence] "; }
+         if ( @($basionym!=($_POST['basionym'] ?? '')) ) { $truncation = true; $truncated .= "basionym : [$basionym] "; }
+         if ( @($publication!=($_POST['publication'] ?? '')) ) { $truncation = true; $truncated .= "publication : [$publication] "; }
+         if ( @($page!=($_POST['page'] ?? '')) ) { $truncation = true; $truncated .= "page : [$page] "; }
+         if ( @($datepublished!=($_POST['datepublished'] ?? '')) ) { $truncation = true; $truncated .= "datepublished : [$datepublished] "; }
+         if ( @($isfragment!=($_POST['isfragment'] ?? '')) ) { $truncation = true; $truncated .= "isfragment : [$isfragment] "; }
+         if ( @($habitat!=($_POST['habitat'] ?? '')) ) { $truncation = true; $truncated .= "habitat : [$habitat] "; }
+         if ( @($frequency!=($_POST['frequency'] ?? '')) ) { $truncation = true; $truncated .= "frequency : [$frequency] "; }
+         if ( @($host!=($_POST['host'] ?? '')) ) { $truncation = true; $truncated .= "host : [$host] "; }
+         if ( @($substrate!=($_POST['substrate'] ?? '')) ) { $truncation = true; $truncated .= "substrate : [$substrate] "; }
+         if ( @($phenology!=($_POST['phenology'] ?? '')) ) { $truncation = true; $truncated .= "phenology : [$phenology] "; }
+         if ( @($verbatimelevation!=($_POST['verbatimelevation'] ?? '')) ) { $truncation = true; $truncated .= "verbatimelevation : [$verbatimelevation] "; }
+         if ( @($minelevation!=($_POST['minelevation'] ?? '')) ) { $truncation = true; $truncated .= "minelevation : [$minelevation] "; }
+         if ( @($maxelevation!=($_POST['maxelevation'] ?? '')) ) { $truncation = true; $truncated .= "maxelevation : [$maxelevation] "; }
+         if ( @($specimenremarks!=($_POST['specimenremarks'] ?? '')) ) { $truncation = true; $truncated .= "specimenremarks : [$specimenremarks] "; }
+         if ( @($specimendescription!=($_POST['specimendescription'] ?? '')) ) { $truncation = true; $truncated .= "specimendescription : [$specimendescription] "; }
+         if ( @($itemdescription!=($_POST['itemdescription'] ?? '')) ) { $truncation = true; $truncated .= "itemdescription : [$itemdescription] "; }
+         if ( @($container!=($_POST['container'] ?? '')) ) { $truncation = true; $truncated .= "container : [$container] "; }
+         if ( @($containerid!=($_POST['containerid'] ?? '')) ) { $truncation = true; $truncated .= "containerid : [$containerid] "; }
+         if ( @($collectingtrip!=($_POST['collectingtrip'] ?? '')) ) { $truncation = true; $truncated .= "collectingtrip : [$collectingtrip] "; }
+         if ( @($collectingtripid!=($_POST['collectingtripid'] ?? '')) ) { $truncation = true; $truncated .= "collectingtripid : [$collectingtripid] "; }
+         if ( @($storagelocation!=($_POST['storagelocation'] ?? '')) ) { $truncation = true; $truncated .= "storagelocation : [$storagelocation] "; }
+         if ( @($project!=($_POST['project'] ?? '')) ) { $truncation = true; $truncated .= "project : [$project] "; }
+         if ( @($storage!=($_POST['storage'] ?? '')) ) { $truncation = true; $truncated .= "storage : [$storage] "; }  // subcollection
+         if ( @($seriesid!=($_POST['seriesid'] ?? '')) ) { $truncation = true; $truncated .= "seriesid : [$seriesid] "; }
+         if ( @($seriestype!=($_POST['seriestype'] ?? '')) ) { $truncation = true; $truncated .= "seriestype : [$seriestype] "; }
 
 
          // barcode field isn't passed if disabled, value stored in barcodeval instead.
@@ -400,7 +401,7 @@ if ($connection && $authenticated) {
 
        case 'donebatch':
           $ok = false;
-          @$id = $_GET['batch_id'];
+          $id = ($_GET['batch_id'] ?? '');
           $currentBatch = new TR_Batch();
           $currentBatch->setID($id);
           $currentBatch->setCompleted();
@@ -622,6 +623,7 @@ function ingest() {
    }
 
    $df = "";
+   $adds = "";
    if ($debug) {
       $df.=" ";
       $df.= "collectors=[$collectors] ";
@@ -695,7 +697,7 @@ function ingest() {
    }
 
    // zero pad barcode up to 8 digits if needed
-   $barcode = str_pad($barcode,8,"0",STR_PAD_LEFT);
+   $barcode = str_pad($barcode ?? '',8,"0",STR_PAD_LEFT);
    // Test for validly formed barcode
    if (!preg_match("/^[0-9]{8}$/",$barcode)) {
       $fail = true;
@@ -731,7 +733,7 @@ function ingest() {
      $feedback.="Series ID and Type must both be entered";
    }
 
-   $currentuserid = $_SESSION["agentid"];
+   $currentuserid = ($_SESSION["agentid"] ?? '');
 
    $link = "";
 
@@ -1062,7 +1064,7 @@ EOT;
 
 
                            // check for existing collectingtrip if just name is supplied
-                           if (!$fail && strlen(trim($collectingtripid))==0 && strlen(trim($collectingtrip))>0) { // new record
+                           if (!$fail && strlen(trim($collectingtripid ?? ''))==0 && strlen(trim($collectingtrip ?? ''))>0) { // new record
                              $sql = "select collectingtripid from collectingtrip where collectingtripname = ? limit 1";
                              $statement = $connection->prepare($sql);
                              if ($statement) {
@@ -1175,12 +1177,12 @@ EOT;
                                }
 
                               // containerid should not be submitted without string
-                               if (strlen(trim($container))==0) {
+                               if (strlen(trim($container ?? ''))==0) {
                                  $containerid = null;
                                }
 
                                // check for existing container if just name is supplied
-                               if (!$fail && strlen(trim($containerid))==0 && strlen(trim($container))>0) { // new record
+                               if (!$fail && strlen(trim($containerid ?? ''))==0 && strlen(trim($container ?? ''))>0) { // new record
                                  $sql = "select containerid from container where name = ? limit 1";
                                  $statement = $connection->prepare($sql);
                                  if ($statement) {
@@ -1239,7 +1241,7 @@ EOT;
                               }
 
                                // lookup agentid for collector
-                               if ($collectorsid==null && strlen(trim($collectors))>0) {
+                               if ($collectorsid==null && strlen(trim($collectors ?? ''))>0) {
                                   $sql = "select distinct agentid from agentvariant where name = ? and vartype = 4 ";
                                   $statement = $connection->prepare($sql);
                                   if ($statement) {
@@ -1507,7 +1509,7 @@ EOD;
                           }
 
                           // make sure that we have taxonid values.
-                          if (($filedundernameid==null || strlen(trim($filedundernameid))==0) && strlen(trim($filedundername))>0) {
+                          if (($filedundernameid==null || strlen(trim($filedundernameid))==0) && strlen(trim($filedundername ?? ''))>0) {
                               $filedundernameid = huh_taxon_CUSTOM::lookupTaxonIdForName($filedundername);
                           } else {
                             // Make sure taxon name matches id
@@ -1517,7 +1519,7 @@ EOD;
                             }
                           }
 
-                          if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && strlen(trim($currentdetermination))>0) {
+                          if (($currentdeterminationid==null || strlen(trim($currentdeterminationid))==0) && strlen(trim($currentdetermination ?? ''))>0) {
                               $currentdeterminationid = huh_taxon_CUSTOM::lookupTaxonIdForName($currentdetermination);
                           } else {
                             // Make sure taxon name matches id
@@ -1688,7 +1690,7 @@ EOD;
                        $statement->execute();
                        $statement->bind_result($preparationid);
                        $statement->store_result();
-                       if ($statement->$fetch) {
+                       if ($statement->fetch()) {
                           $feedback.="preparationid=[$preparationid] ";
                        }
                        $statement->free_result();
@@ -1724,7 +1726,7 @@ EOD;
 
    if ($fail) {
       $connection->rollback();
-      @$feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
+      $feedback = "<div style='background-color: #FF8695;'><strong>Save Failed: $feedback</strong> $adds $df</div>" ;
    } else {
       $connection->commit();
       if ($debug) {
@@ -1768,7 +1770,7 @@ function lookupDataForBarcode($barcode) {
    global $connection;
    $result = array();
 
-   $barcode = str_pad($barcode,8,"0",STR_PAD_LEFT);
+   $barcode = str_pad($barcode ?? '',8,"0",STR_PAD_LEFT);
 
    $result['barcode']=$barcode;
 
@@ -1810,10 +1812,10 @@ function lookupDataForBarcode($barcode) {
        $filedundername = $filedunder["taxonname"];
        $filedunderalternatename = $filedunder["alternatename"];
        $filedundernameid = $filedunder["taxonid"];
-       if (strlen(trim($determinationid)) > 0 && ($filedundernameid==null || trim($filedundernameid)=='')) {
+       if (strlen(trim($determinationid ?? '')) > 0 && ($filedundernameid==null || trim($filedundernameid)=='')) {
          $filedundernameid = -1;
 
-         if (strlen(trim($filedunderalternatename))>0) {
+         if (strlen(trim($filedunderalternatename ?? ''))>0) {
            $filedundername="[Alt name: $filedunderalternatename]";
          } else {
            $filedundername="[Det has no taxon]";
@@ -1828,10 +1830,10 @@ function lookupDataForBarcode($barcode) {
        if ($current["author"]) $currentname = $current["taxonname"] . ' ' . $current["author"];
        $currentalternatename = $current["alternatename"];
        $currentnameid = $current["taxonid"];
-       if (strlen(trim($determinationid)) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
+       if (strlen(trim($determinationid ?? '')) > 0 && ($currentnameid==null || trim($currentnameid)=='')) {
          $currentnameid = -1;
 
-         if (strlen(trim($filedunderalternatename))>0) {
+         if (strlen(trim($filedunderalternatename ?? ''))>0) {
            $currentname="[Alt name: $currentalternatename]";
          } else {
            $currentname="[Det has no taxon]";

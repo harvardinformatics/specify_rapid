@@ -23,7 +23,7 @@ if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
-@$imgSrc = substr(preg_replace('/[^a-z]/','',$_GET['imgsrc']),0,20);
+$imgSrc = substr(preg_replace('/[^a-z]/','',($_GET['imgsrc'] ?? '')),0,20);
 if ($imgSrc == 'RC') {
   $imgSrcLabel = 'RC';
 } else {
@@ -31,7 +31,7 @@ if ($imgSrc == 'RC') {
   $imgSrcLabel = 'AWS';
 }
 
-@$transcriptionMode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
+$transcriptionMode = substr(preg_replace('/[^a-z]/','',($_GET['mode'] ?? '')),0,20);
 if ($transcriptionMode == 'minimal') {
   $modeLabel = 'Minimal';
 } else {
@@ -40,9 +40,9 @@ if ($transcriptionMode == 'minimal') {
 }
 
 $display = '';
-@$display = substr(preg_replace('/[^a-z]/','',$_GET['display']),0,20);
+$display = substr(preg_replace('/[^a-z]/','',($_GET['display'] ?? '')),0,20);
 if ($display=='') {
-   @$display = substr(preg_replace('/[^a-z]/','',$_POST['display']),0,20);
+   $display = substr(preg_replace('/[^a-z]/','',($_POST['display'] ?? '')),0,20);
 }
 $tdisplay = $display;
 $showDefault = true;
@@ -62,18 +62,18 @@ if ($require_authentication) {
       session_start();
       session_regenerate_id(true);
       $_SESSION = array();
-   } elseif (@$_POST['password']!="" && @$_POST['username']!="") {
+   } elseif (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
       // New login attempt: discard any existing session data (possibly for another
       // user) so that the credentials just submitted are the ones authenticated.
       $_SESSION = array();
       session_regenerate_id(true);
    }
-   if(!isset($_SESSION['session_id']) || @$_SESSION['session_id']!=session_id()) {
+   if(!isset($_SESSION['session_id']) || ($_SESSION['session_id'] ?? '')!=session_id()) {
       $display = "logindialog";
-      if (@$_POST['password']!="" && $_POST['username']!="") {
+      if (($_POST['password'] ?? '')!="" && ($_POST['username'] ?? '')!="") {
          // authenticate
-         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",$_POST['password']),0,255);
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_POST['username']),0,255);
+         $password = substr(preg_replace("/[^A-Za-z0-9\&!#$%*+\/=?^_{|}~\-@.]*/","",($_POST['password'] ?? '')),0,255);
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_POST['username'] ?? '')),0,255);
          $user = new User($username,$password);
          if ($user->authenticate()){
             $_SESSION["session_id"]=session_id();
@@ -96,13 +96,13 @@ if ($require_authentication) {
          $error .= "Login to HUH Specify Data Transcription Form";
       }
    } else {
-      $user = new User($_SESSION["username"],'');
-      if ($user->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
+      $user = new User(($_SESSION["username"] ?? ''),'');
+      if ($user->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
       	 $authenticated = true;
-         $user->setFullname($_SESSION["fullname"]);
-         $user->setAgentId($_SESSION["agentid"]);
-         $user->setLastLogin($_SESSION["lastlogin"]);
-         $user->setAbout($_SESSION["about"]);
+         $user->setFullname(($_SESSION["fullname"] ?? ''));
+         $user->setAgentId(($_SESSION["agentid"] ?? ''));
+         $user->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+         $user->setAbout(($_SESSION["about"] ?? ''));
       } else {
          // invalid or expired ticket, logout to clear session and go to login form.
          $authenticated = false;
@@ -144,7 +144,7 @@ function checkReady() {
 function doSetup() {
    global $connection;
 
-   @$targetBatchDir = $_GET['targetBatch'];
+   $targetBatchDir = ($_GET['targetBatch'] ?? '');
 
    if($targetBatchDir=="") {
       $targetBatch = getNextBatch();
@@ -174,12 +174,12 @@ function doSetup() {
           } else {
              $complete="Done: ";
           }
-          if (strlen($users)>0) {
+          if (strlen($users ?? '')>0) {
             $usersworking = " ($users)";
           } else {
             $usersworking = "";
           }
-          $upath = urlencode($path);
+          $upath = urlencode($path ?? '');
 
           if ($path==$batchPath) {
             $selected = "selected";
@@ -394,7 +394,7 @@ function targetfile($path,$filename) {
    $barcode = '999999999';
    $result->barcode = $barcode;
    $mediaid = '';
-   if (substr($path,-1)=="/") {
+   if (substr($path ?? '',-1)=="/") {
        $localpathfile = "$path$filename";
    } else {
        $localpathfile = "$path/$filename";
@@ -513,8 +513,8 @@ switch ($display) {
    case "logindialog":
    default:
       $email = $username;
-      if (@$_GET['email']!="") {
-         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",$_GET['email']),0,255);
+      if (($_GET['email'] ?? '')!="") {
+         $username = substr(preg_replace("/[^0-9A-Za-z\.\@\-\_]/","",($_GET['email'] ?? '')),0,255);
       }
       $title = "Specify Login";
       echo '<div class="flexbox">';
@@ -612,23 +612,24 @@ function navigation() {
 function form() {
    global $user, $transcriptionMode, $imgSrc;
 
-   @$config = substr(preg_replace('/[^a-z]/','',$_GET['config']),0,10);
-   @$batchpath = urldecode($_GET['batch']);
+   $config = substr(preg_replace('/[^a-z]/','',($_GET['config'] ?? '')),0,10);
+   $batchpath = urldecode(($_GET['batch'] ?? ''));
    $position = 1;
-   @$position= preg_replace('/[^0-9]/','',$_GET['position']);
+   $position= preg_replace('/[^0-9]/','',($_GET['position'] ?? ''));
    if ($position==null || $position=="") { $position = 1;  }
 
    $currentBatch = new TR_Batch();
    $currentBatch->setPath($batchpath);
    $filecount = $currentBatch->getFileCount();
    $file = $currentBatch->movePosition($position);
-   $filepath = $file->path;
-   $filename = $file->filename;
+   // $file is null when there is no file at this position.
+   $filepath = $file?->path;
+   $filename = $file?->filename;
 
    $currentBatch->selectOrCreateUserForBatch();
 
    # Find out the barcode to load.
-   if (strlen($filename)==0) {
+   if (strlen($filename ?? '')==0) {
       $target = target();
    } else {
       $target = targetfile($filepath,$filename);
@@ -651,7 +652,7 @@ function form() {
                   url: 'transcribe_logger.php',
                   data: {
                        action: eventaction,
-                       username: '".$_SESSION["username"]."',
+                       username: '".($_SESSION["username"] ?? '')."',
                        batch_id: ".$currentBatch->getBatchID().",
                        details: eventdetails
                   },
@@ -689,13 +690,13 @@ function form() {
    */
 
    $created = "New Record";
-   @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
+   $defaultherbarium = substr(preg_replace('/[^A-Z]/','',($_GET['defaultherbarium'] ?? '')),0,5);
    if ($defaultherbarium=='') { $herbarium = "GH"; }
-   @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
+   $defaultformat = substr(preg_replace('/[^A-Za-z ]/','',($_GET['defaultformat'] ?? '')),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
-   @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
+   $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',($_GET['defaultprepmethod'] ?? '')),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
-   @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
+   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',($_GET['defaultproject'] ?? '')),0,255);
    if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = ''; }
 
    echo "<div class='hfbox' style='height: 1em;'>";
@@ -1383,20 +1384,20 @@ function form() {
 function newRecordForm() {
    global $user, $imgSrc;
 
-   @$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['barcode']),0,20);
+   $startbarcode = substr(preg_replace('/[^0-9]/','',($_GET['barcode'] ?? '')),0,20);
 
-   @$defaultherbarium = substr(preg_replace('/[^A-Z]/','',$_GET['defaultherbarium']),0,5);
-   @$defaultformat = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultformat']),0,255);
+   $defaultherbarium = substr(preg_replace('/[^A-Z]/','',($_GET['defaultherbarium'] ?? '')),0,5);
+   $defaultformat = substr(preg_replace('/[^A-Za-z ]/','',($_GET['defaultformat'] ?? '')),0,255);
    if ($defaultformat=='') { $defaultformat = "Sheet"; }
-   @$defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',$_GET['defaultprepmethod']),0,255);
+   $defaultprepmethod = substr(preg_replace('/[^A-Za-z ]/','',($_GET['defaultprepmethod'] ?? '')),0,255);
    if ($defaultprepmethod=='') { $defaultprepmethod = "Pressed"; }
-   @$defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',$_GET['defaultproject']),0,255);
+   $defaultproject = substr(preg_replace('/[^0-9A-Za-z\. \-]/','',($_GET['defaultproject'] ?? '')),0,255);
    if ($defaultproject==null || strlen($defaultproject)==0 ) { $defaultproject = ''; }
 
    // The user's saved choice of carryover fields (null: use the defaults).
    $carryoverfields = null;
    try {
-      $carryoverfields = getCarryoverFields($_SESSION["username"]);
+      $carryoverfields = getCarryoverFields(($_SESSION["username"] ?? ''));
    } catch (Exception $e) {
       $carryoverfields = null;
    }
@@ -1406,7 +1407,7 @@ function newRecordForm() {
       'startbarcode' => $startbarcode,
       'carryoverfields' => $carryoverfields,
       'imgsrc' => $imgSrc,
-      'username' => $_SESSION["username"],
+      'username' => ($_SESSION["username"] ?? ''),
       'defaultheight' => 4344,
       'defaultwidth' => 2896
    );
@@ -2160,7 +2161,7 @@ function field($name, $label, $default="", $required='false', $regex='', $placeh
       if ($validationmessage!='') {
          $validationmessage = "validationMessage='Required Field. $validationmessage'";
       }
-      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationMessage  style='width: ".$width."em; ' $disabled >";
+      echo "<input id=$name name=$name class='inputField' value='$default' required='$required' $regex $placeholder $validationmessage  style='width: ".$width."em; ' $disabled >";
    }
    echo $after;
    echo "</td></tr>\n";
@@ -2418,6 +2419,7 @@ function selectQualifier($field,$label,$default) {
 	echo "<label for='$field'>$label</label>";
 	echo "</td><td>\n";
 	echo '<select name="'.$field.'" id="'.$field.'" class="inputField">';
+    $s0 = ''; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf="";
     if ($default=="") { $s0 = 'selected="selected"'; $sss = ""; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; }
     if ($default=="SensuStricto") { $s0 = ''; $sss = 'selected="selected"'; $sq = ""; $sn=""; $scf=""; $ssl=""; $saf=""; }
     if ($default=="InQuestion") { $s0 = ''; $sss = ""; $sq = 'selected="selected"'; $sn=""; $scf=""; $ssl=""; $saf=""; }
@@ -2429,7 +2431,7 @@ function selectQualifier($field,$label,$default) {
     echo "<option value='SensuStricto' $sss>s. str.</option>";
     echo "<option value='InQuestion' $sq>?</option>";
     echo "<option value='Not' $sn>not</option>";
-    echo "<option value='Compare' $cfs>cf.</option>";
+    echo "<option value='Compare' $scf>cf.</option>";
     echo "<option value='SensuLato' $ssl>s. lat.</option>";
     echo "<option value='Affine' $saf>aff.</option>";
 	echo '</select>';
@@ -2440,6 +2442,7 @@ function selectAcronym($field,$default) {
    echo "<tr><td>\n";
    echo "<label for='$field'>Herbarium</label>";
    echo "</td><td>\n";
+   $ghs = ""; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs="";
    if ($default=="GH") { $ghs = 'selected="selected"'; $as = ""; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="A") { $ghs = ""; $as = 'selected="selected"'; $fhs = ""; $amess=""; $econs=""; $nebcs=""; }
    if ($default=="FH") { $ghs = ""; $as = ""; $fhs = 'selected="selected"'; $amess=""; $econs=""; $nebcs=""; }

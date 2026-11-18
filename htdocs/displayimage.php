@@ -8,13 +8,14 @@ include_once("transcribe_lib.php");
 // PHP 8.1+ makes mysqli throw exceptions by default; this code checks return
 // values and $connection->error instead, so keep the pre-8.1 behavior.
 mysqli_report(MYSQLI_REPORT_OFF);
+$targethostdb = '';
 @$connection = specify_connect();
 if (!$connection) {
    $error =  'Error: No database connection. '. $targethostdb;
 }
 
 $mode= '';
-@$mode = substr(preg_replace('/[^a-z]/','',$_GET['mode']),0,20);
+$mode = substr(preg_replace('/[^a-z]/','',($_GET['mode'] ?? '')),0,20);
 
 function imageDataForBarcode($barcode) {
    global $connection;
@@ -95,14 +96,14 @@ function imageDataForBarcode($barcode) {
 switch ($mode) {
     case 'image':
        $startbarcode = '';
-       @$startbarcode = substr(preg_replace('/[^0-9]/','',$_GET['startbarcode']),0,20);
+       $startbarcode = substr(preg_replace('/[^0-9]/','',($_GET['startbarcode'] ?? '')),0,20);
        image($startbarcode);
        break;
     case 'imagefile':
        $path= '';
-       @$path = urldecode($_GET['path']);
+       $path = urldecode(($_GET['path'] ?? ''));
        $filename= '';
-       @$filename = urldecode($_GET['filename']);
+       $filename = urldecode(($_GET['filename'] ?? ''));
        imagefile($path,$filename);
        break;
     default:
@@ -142,6 +143,8 @@ function image($barcode) {
         </script>
     ";
    $mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
+   $h = '';
+   $w = '';
    if ($barcode!="") {
        $media = imageDataForBarcode($barcode);
        $mediauri = $media->url;
@@ -245,7 +248,7 @@ function imagefile($path,$filename) {
     ";
    //$mediauri = 'http://nrs.harvard.edu/urn-3:FMUS.HUH:s16-47087-301139-3';
    //$mediauri = BASE_IMAGE_URI.$path."/".$filename;
-   if (substr($path,-1)=="/") {
+   if (substr($path ?? '',-1)=="/") {
        $localpathfile = "$path$filename";
    } else {
        $localpathfile = "$path/$filename";
@@ -255,6 +258,7 @@ function imagefile($path,$filename) {
    $mediauri = BASE_IMAGE_URI.$localpathfile;
 
    if ($filename!="") {
+       $barcode = null;  // no barcode is passed to imagefile()
        $media = imageDataForBarcode($barcode);
        $mediauri = $media->url;
        $mediaid = $media->image_set_id;
@@ -327,7 +331,7 @@ function imagefile($path,$filename) {
              url: 'transcribe_logger.php',
              data: {
                   action: eventaction,
-                  username: '".$_SESSION["username"]."',
+                  username: '".($_SESSION["username"] ?? '')."',
                   path: $('#path').html(),
                   filename: $('#filename').html(),
                   details: eventdetails

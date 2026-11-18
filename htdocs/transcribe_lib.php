@@ -116,7 +116,7 @@ function getBarcodeForFilename($pathbelowbase, $filename) {
   *   and the form with leading zeros removed, empty array if no digits are present.
   */
 function barcodeVariants($barcode) {
-    $digits = substr(preg_replace('/[^0-9]/','',$barcode),0,20);
+    $digits = substr(preg_replace('/[^0-9]/','',$barcode ?? ''),0,20);
     if (strlen($digits)==0) { return array(); }
     $padded = str_pad($digits,8,"0",STR_PAD_LEFT);
     $unpadded = ltrim($digits,"0");
@@ -240,9 +240,9 @@ function resolveImageUrl($url_prefix, $uri) {
     if (!isImagePhpUrlPrefix($url_prefix)) { return $url_prefix . $uri; }
     $params = array();
     parse_str((string)$uri, $params);
-    $id = isset($params['id']) ? preg_replace('/[^0-9]/', '', $params['id']) : '';
-    $convert = isset($params['convert']) ? preg_replace('/[^a-z]/', '', $params['convert']) : '';
-    if (strlen($id)==0) { return null; }
+    $id = isset($params['id']) ? preg_replace('/[^0-9]/', '', $params['id'] ?? '') : '';
+    $convert = isset($params['convert']) ? preg_replace('/[^a-z]/', '', $params['convert'] ?? '') : '';
+    if (strlen($id ?? '')==0) { return null; }
     $file = lookupImageLocalFile(intval($id));
     if ($file==null) { return null; }
     if ($file['mimetype']=='image/tiff' || $convert=='jpeg' || $convert=='jpg') { return null; }
@@ -352,7 +352,7 @@ function lookupImagesForBarcode($barcode, $imgsrc='AWS') {
             $sets[$id] = array('image_set_id'=>$batchrow['image_set_id'], 'linked'=>false, 'batches'=>array(), 'localuri'=>null);
         }
         $sets[$id]['batches'][] = $batchrow;
-        if ($sets[$id]['localuri']==null && strlen($batchrow['filename'])>0 && defined('BASE_IMAGE_URI')) {
+        if ($sets[$id]['localuri']==null && strlen($batchrow['filename'] ?? '')>0 && defined('BASE_IMAGE_URI')) {
             $sets[$id]['localuri'] = BASE_IMAGE_URI.$batchrow['path'].$batchrow['filename'];
         }
     }
@@ -414,11 +414,11 @@ function echoCurrentBatchControls($targetBatch) {
    $targetBatchFirst = $targetBatch->getFile(1);
    echo " <strong>Current Batch:</strong> <span style=\"font-family: ui-monospace, Menlo, Consolas, 'Courier New', monospace; font-size: 0.85em;\">[$batchPath]</span>";
    if ($targetBatchFirst!=null) {
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path)."\",\"".urlencode($targetBatchFirst->filename)."\",\"1\",\"standard\");' class='ui-button'>Start from first</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchFirst->path ?? '')."\",\"".urlencode($targetBatchFirst->filename ?? '')."\",\"1\",\"standard\");' class='ui-button'>Start from first</button>";
    }
    if ($targetBatchCurrent!=null && $targetBatchCurrent->position > 1) {
       $position = $targetBatchCurrent->position;
-      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path)."\",\"".urlencode($targetBatchCurrent->filename)."\",\"$position\",\"standard\");' class='ui-button ui' style='margin-left: 0.4em;' >Start from $position</button>";
+      echo "<button type='button' onclick=' $(\"#cover\").fadeIn(100); dosetuppath(\"".urlencode($batchPath)."\",\"".urlencode($targetBatchCurrent->path ?? '')."\",\"".urlencode($targetBatchCurrent->filename ?? '')."\",\"$position\",\"standard\");' class='ui-button ui' style='margin-left: 0.4em;' >Start from $position</button>";
    }
 }
 
@@ -461,7 +461,7 @@ class TR_Batch {
   // construct a new tr_batch, then call setID(id) to initialize the tr_batch object from a tr_batch_id.
   function setID($id) {
      global $connection;
-     if (strlen($id)>0) {
+     if (strlen($id ?? '')>0) {
         $this->batch_id = $id;
         $sql = 'select tr_batch_id, image_batch_id, completed_date, path from TR_BATCH where tr_batch_id = ?';
         if ($statement = $connection->prepare($sql)) {
@@ -478,7 +478,7 @@ class TR_Batch {
                $this->selectOrCreateUserForBatch();
            }
            $statement->close();
-           if (strlen($this->batch_id)==0) {
+           if (strlen($this->batch_id ?? '')==0) {
                throw new Exception('Batch not found for id '. $id);
            }
         } else {
@@ -526,7 +526,8 @@ class TR_Batch {
 
       $sql = "select count(*) from TR_BATCH_IMAGE where tr_batch_id = ?";
       if ($statement = $connection->prepare($sql)) {
-         $statement->bind_param("i", $this->getBatchID());
+         $batchid = $this->getBatchID();
+         $statement->bind_param("i", $batchid);
          $statement->execute();
          $statement->bind_result($count);
          $statement->store_result();
@@ -577,7 +578,8 @@ class TR_Batch {
     // Look up current position
     $sql = 'select ub.position, b.tr_batch_id from TR_USER_BATCH ub left join TR_BATCH b on ub.tr_batch_id = b.tr_batch_id  where b.tr_batch_id = ? and username = ?';
     if ($statement = $connection->prepare($sql)) {
-       $statement->bind_param("is",$this->getBatchId(),$_SESSION["username"]);
+       $batchid = $this->getBatchId();
+       $statement->bind_param("is",$batchid,$_SESSION["username"]);
        $statement->execute();
        $statement->bind_result($position, $batch_id);
        $statement->store_result();
@@ -600,7 +602,7 @@ class TR_Batch {
      global $connection, $user;
 
      $batch_id = $this->getBatchId();
-     $username = $_SESSION["username"];
+     $username = ($_SESSION["username"] ?? '');
 
      // Check if there is a file at the new position
      $nextposition = $i;
@@ -676,7 +678,8 @@ class TR_Batch {
              order by imo2.ID desc ;";
 
      if ($statement = $connection->prepare($sql)) {
-        $statement->bind_param("ii", $this->getBatchID(), $position);
+        $batchid = $this->getBatchID();
+        $statement->bind_param("ii", $batchid, $position);
         $statement->execute();
         $statement->bind_result($path, $filename, $barcode, $objectname, $repoid, $repourl, $objecturi);
         $statement->store_result();

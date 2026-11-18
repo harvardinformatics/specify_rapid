@@ -4,7 +4,7 @@ session_write_close();
 
 $debug = false;
 if ($debug) {
-   echo  "[". $_SESSION["user_ticket"] . "][". $_SESSION["session_id"] ."]";
+   echo  "[". ($_SESSION["user_ticket"] ?? '') . "][". ($_SESSION["session_id"] ?? '') ."]";
 	// See PHP documentation.
 	mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 } else {
@@ -37,12 +37,12 @@ if (!function_exists('specify_connect')) {
 $authenticated=false;
 if (isset($_SESSION['user_ticket'])) {
    $u = new User();
-   $u->setEmail($_SESSION["username"]);
-   if ($u->validateTicket($_SESSION['user_ticket'],$_SERVER['REMOTE_ADDR'])) {
-      $u->setFullname($_SESSION["fullname"]);
-      $u->setAgentId($_SESSION["agentid"]);
-      $u->setLastLogin($_SESSION["lastlogin"]);
-      $u->setAbout($_SESSION["about"]);
+   $u->setEmail(($_SESSION["username"] ?? ''));
+   if ($u->validateTicket(($_SESSION['user_ticket'] ?? ''),$_SERVER['REMOTE_ADDR'])) {
+      $u->setFullname(($_SESSION["fullname"] ?? ''));
+      $u->setAgentId(($_SESSION["agentid"] ?? ''));
+      $u->setLastLogin(($_SESSION["lastlogin"] ?? ''));
+      $u->setAbout(($_SESSION["about"] ?? ''));
       $authenticated = true;
    }
 }
@@ -52,10 +52,10 @@ $retval->html = "";
 $retval->success = FALSE;
 if ($connection && $authenticated) {
     # find the action
-    @$test = substr(preg_replace('/[^a-z]/','',$_POST['test']),0,10);
-    @$action = substr(preg_replace('/[^a-z]/','',$_POST['action']),0,50);
+    $test = substr(preg_replace('/[^a-z]/','',($_POST['test'] ?? '')),0,10);
+    $action = substr(preg_replace('/[^a-z]/','',($_POST['action'] ?? '')),0,50);
     $postjson = json_encode($_POST);
-    $username = $_SESSION['username'];
+    $username = ($_SESSION['username'] ?? '');
     if (strlen($action)==0) {
        $retval->errors .= "Logging Error: No action provided. ";
     } else {

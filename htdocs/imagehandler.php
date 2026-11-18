@@ -33,12 +33,12 @@ class ImageHandler {
 
       $result = "";
       // IMAGE_LOCAL_FILE.path is expected to end with a /
-      if (substr($path,-1,1)!="/") {
+      if (substr($path ?? '',-1,1)!="/") {
          $path = "$path/";
       }
       // IMAGE_LOCAL_FILE.path is expected to not start with a /
-      if (substr($path,0,1)=="/") {
-          $path = substr($path,1);
+      if (substr($path ?? '',0,1)=="/") {
+          $path = substr($path ?? '',1);
       }
 
       // BASE_IMAGE_PATH must be defined in connection_library.php
@@ -146,7 +146,7 @@ class ImageHandler {
 
          $sql = "select tr_batch_id from TR_BATCH where path = ? ";
          $statement = $connection->prepare($sql);
-         $exists==false;
+         $exists=false;
          if ($statement) {
              $statement->bind_param("s",$path);
              $statement->execute();
@@ -278,7 +278,7 @@ class ImageHandler {
        global $connection;
        $retval = array();
 
-       if (substr($pathbelowbase,-1)=="/") {
+       if (substr($pathbelowbase ?? '',-1)=="/") {
           $localpathfile = "$pathbelowbase$file";
        } else {
           $localpathfile = "$pathbelowbase/$file";
@@ -286,7 +286,7 @@ class ImageHandler {
        $pathfile = BASE_IMAGE_PATH.'/'.$localpathfile;
 
        // check to see if the filename contains the barcode number, if so, return that.
-       $amatch = preg_match("/^(A|FH|GH|NEBC|ECON)([0-9]+).*/",$file,$matches);
+       $amatch = preg_match("/^(A|FH|GH|NEBC|ECON)([0-9]+).*/",$file ?? '',$matches);
        if ($amatch===1) {
           $retval = $matches[2];
        } else {
@@ -302,7 +302,7 @@ class ImageHandler {
                    // record for file exists
                    if ($statement->fetch()) {
                      $image_local_file_id = $id;
-                     if (trim($barcode)!="") {
+                     if (trim($barcode ?? '')!="") {
                         $retval[] = $barcode;
                      }
                    } else {
@@ -330,7 +330,7 @@ class ImageHandler {
                    // record for file exists
                    if ($statement->fetch()) {
                       $image_local_file_id = $id;
-                      if (trim($barcode)!="") {
+                      if (trim($barcode ?? '')!="") {
                           if (!array_key_exists($barcode,$retval)) {
                              $retval[] = $barcode;
                           }
